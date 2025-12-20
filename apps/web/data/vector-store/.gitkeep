@@ -1,0 +1,4 @@
+# Vector Store Directory
+# This directory contains the Vectra vector index for the RAG system.
+# The index files are generated at runtime and should not be committed.
+# This .gitkeep file ensures the directory exists in version control.

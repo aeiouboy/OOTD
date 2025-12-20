@@ -1,0 +1,82 @@
+{
+  "common": {
+    "loading": "Loading...",
+    "save": "Save",
+    "cancel": "Cancel",
+    "delete": "Delete",
+    "edit": "Edit",
+    "close": "Close",
+    "next": "Next",
+    "previous": "Previous",
+    "search": "Search",
+    "filter": "Filter",
+    "clear": "Clear",
+    "apply": "Apply",
+    "submit": "Submit",
+    "required": "Required"
+  },
+  "navigation": {
+    "home": "Home",
+    "chat": "Chat",
+    "discover": "Discover",
+    "outfits": "My Outfits",
+    "profile": "Profile"
+  },
+  "app": {
+    "title": "OOTDay - AI Fashion Assistant",
+    "description": "Discover personalized outfits with AI-powered fashion recommendations"
+  },
+  "components": {
+    "button": {
+      "loading": "Processing..."
+    },
+    "input": {
+      "placeholder": {
+        "name": "Enter your name",
+        "email": "your.email@example.com",
+        "search": "Search for fashion items...",
+        "message": "Type your message..."
+      },
+      "label": {
+        "name": "Name",
+        "email": "Email Address",
+        "search": "Search",
+        "message": "Message"
+      },
+      "error": {
+        "required": "This field is required",
+        "email": "Please enter a valid email address",
+        "minLength": "Please enter at least {min} characters"
+      },
+      "helper": {
+        "search": "Search for products, styles, or occasions"
+      }
+    }
+  },
+  "designSystem": {
+    "title": "OOTDay Design System",
+    "description": "Testing responsive components and Thai language support across all breakpoints",
+    "sections": {
+      "buttons": {
+        "title": "Button Components",
+        "description": "All button variants with responsive touch targets"
+      },
+      "inputs": {
+        "title": "Input Components",
+        "description": "Inputs with validation states and Thai text support"
+      },
+      "cards": {
+        "title": "Card Components",
+        "description": "Responsive card layouts"
+      },
+      "typography": {
+        "title": "Typography Scale",
+        "description": "Font sizes and Thai language support"
+      },
+      "colors": {
+        "title": "Color Palette",
+        "description": "OOTDay fashion brand colors"
+      }
+    }
+  }
+}

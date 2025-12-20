@@ -1,0 +1,474 @@
+@import "tailwindcss";
+@import "tw-animate-css";
+
+@custom-variant dark (&:is(.dark *));
+
+:root {
+  /* OOTDay Brand Color Palette */
+  --ootday-crimson: #C41E3A;
+  --ootday-cream: #F5F0EB;
+  --ootday-brown: #4A3728;
+  --ootday-gold: #B8860B;
+
+  /* Legacy color references (for compatibility) */
+  --color-primary: #C41E3A;
+  --color-primary-light: #F5F0EB;
+  --color-background: #F5F0EB;
+  --color-text-primary: #4A3728;
+  --color-text-secondary: #6B7280;
+  --color-accent-pink: #FDF2F8;
+  --color-border: #E5E7EB;
+
+  /* Onboarding Colors - Updated to brand crimson */
+  --onboarding-bg: #F5F0EB;
+  --onboarding-primary: #C41E3A;
+  --onboarding-primary-hover: #A01730;
+  --onboarding-card-border: #E8D5D5;
+  --onboarding-card-border-selected: #D4B5B5;
+
+  /* Converted to CSS custom properties for design system */
+  --background: oklch(0.96 0.01 50); /* F5F0EB cream background */
+  --foreground: oklch(0.3 0.02 40); /* 4A3728 brown text */
+  --card: oklch(1 0 0); /* FFFFFF white cards */
+  --card-foreground: oklch(0.3 0.02 40);
+  --popover: oklch(1 0 0);
+  --popover-foreground: oklch(0.3 0.02 40);
+  --primary: oklch(0.5 0.18 15); /* C41E3A crimson */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.97 0 0);
+  --secondary-foreground: oklch(0.3 0.02 40);
+  --muted: oklch(0.97 0 0);
+  --muted-foreground: oklch(0.3 0.02 40); /* 4A3728 brown for muted text */
+  --accent: oklch(0.5 0.18 15); /* C41E3A crimson for accent */
+  --accent-foreground: oklch(1 0 0);
+  --destructive: oklch(0.577 0.245 27.325);
+  --destructive-foreground: oklch(0.577 0.245 27.325);
+  --border: oklch(0.922 0 0); /* E5E7EB light gray */
+  --input: oklch(0.5 0.18 15); /* C41E3A crimson border */
+  --ring: oklch(0.5 0.18 15); /* C41E3A crimson for focus rings */
+  --fashion-pink: oklch(0.95 0.05 350); /* FDF2F8 soft pink */
+  --fashion-crimson: oklch(0.5 0.18 15); /* C41E3A brand crimson */
+  --fashion-gold: oklch(0.65 0.08 75); /* B8860B brand gold */
+  --chat-user: oklch(0.96 0.01 50); /* F5F0EB cream for user messages */
+  --chat-assistant: oklch(1 0 0); /* White background for assistant messages */
+  --chat-assistant-accent: oklch(0.5 0.18 15); /* C41E3A crimson avatar */
+  --radius: 0.5rem; /* 8px for consistent rounded corners */
+  --sidebar: oklch(1 0 0);
+  --sidebar-foreground: oklch(0.3 0.02 40);
+  --sidebar-primary: oklch(0.5 0.18 15); /* C41E3A crimson for active states */
+  --sidebar-primary-foreground: oklch(1 0 0);
+  --sidebar-accent: oklch(0.97 0 0);
+  --sidebar-accent-foreground: oklch(0.3 0.02 40);
+  --sidebar-border: oklch(0.922 0 0);
+  --sidebar-ring: oklch(0.5 0.18 15);
+}
+
+.dark {
+  --background: oklch(0.145 0 0);
+  --foreground: oklch(0.985 0 0);
+  --card: oklch(0.2 0 0);
+  --card-foreground: oklch(0.985 0 0);
+  --popover: oklch(0.2 0 0);
+  --popover-foreground: oklch(0.985 0 0);
+  --primary: oklch(0.6 0.18 15); /* Lighter crimson for dark mode */
+  --primary-foreground: oklch(1 0 0);
+  --secondary: oklch(0.269 0 0);
+  --secondary-foreground: oklch(0.985 0 0);
+  --muted: oklch(0.269 0 0);
+  --muted-foreground: oklch(0.708 0 0);
+  --accent: oklch(0.6 0.18 15); /* Crimson accent for dark mode */
+  --accent-foreground: oklch(0.985 0 0);
+  --destructive: oklch(0.396 0.141 25.723);
+  --destructive-foreground: oklch(0.637 0.237 25.331);
+  --border: oklch(0.269 0 0);
+  --input: oklch(0.6 0.18 15); /* Crimson border */
+  --ring: oklch(0.6 0.18 15); /* Crimson focus ring */
+  --fashion-pink: oklch(0.65 0.12 350);
+  --fashion-crimson: oklch(0.6 0.18 15); /* Lighter crimson for dark mode */
+  --fashion-gold: oklch(0.7 0.1 75);
+  --chat-user: oklch(0.25 0.03 40); /* Dark brown-tinted user messages */
+  --chat-assistant: oklch(0.22 0.01 0); /* Dark gray assistant messages */
+  --chat-assistant-accent: oklch(0.6 0.18 15); /* Crimson avatar in dark mode */
+  --sidebar: oklch(0.205 0 0);
+  --sidebar-foreground: oklch(0.985 0 0);
+  --sidebar-primary: oklch(0.6 0.18 15); /* Crimson for active states */
+  --sidebar-primary-foreground: oklch(0.985 0 0);
+  --sidebar-accent: oklch(0.269 0 0);
+  --sidebar-accent-foreground: oklch(0.985 0 0);
+  --sidebar-border: oklch(0.269 0 0);
+  --sidebar-ring: oklch(0.6 0.18 15);
+}
+
+@theme inline {
+  --font-sans: var(--font-noto-thai), var(--font-geist-sans);
+  --font-mono: var(--font-geist-mono);
+  --color-background: var(--background);
+  --color-foreground: var(--foreground);
+  --color-card: var(--card);
+  --color-card-foreground: var(--card-foreground);
+  --color-popover: var(--popover);
+  --color-popover-foreground: var(--popover-foreground);
+  --color-primary: var(--primary);
+  --color-primary-foreground: var(--primary-foreground);
+  --color-secondary: var(--secondary);
+  --color-secondary-foreground: var(--secondary-foreground);
+  --color-muted: var(--muted);
+  --color-muted-foreground: var(--muted-foreground);
+  --color-accent: var(--accent);
+  --color-accent-foreground: var(--accent-foreground);
+  --color-destructive: var(--destructive);
+  --color-destructive-foreground: var(--destructive-foreground);
+  --color-border: var(--border);
+  --color-input: var(--input);
+  --color-ring: var(--ring);
+  --color-fashion-pink: var(--fashion-pink);
+  --color-fashion-crimson: var(--fashion-crimson);
+  --color-fashion-gold: var(--fashion-gold);
+  --color-chat-user: var(--chat-user);
+  --color-chat-assistant: var(--chat-assistant);
+  --color-chat-assistant-accent: var(--chat-assistant-accent);
+  --color-ootday-crimson: var(--ootday-crimson);
+  --color-ootday-cream: var(--ootday-cream);
+  --color-ootday-brown: var(--ootday-brown);
+  --color-ootday-gold: var(--ootday-gold);
+  --radius-sm: calc(var(--radius) - 4px);
+  --radius-md: calc(var(--radius) - 2px);
+  --radius-lg: var(--radius);
+  --radius-xl: calc(var(--radius) + 4px);
+  --color-sidebar: var(--sidebar);
+  --color-sidebar-foreground: var(--sidebar-foreground);
+  --color-sidebar-primary: var(--sidebar-primary);
+  --color-sidebar-primary-foreground: var(--sidebar-primary-foreground);
+  --color-sidebar-accent: var(--sidebar-accent);
+  --color-sidebar-accent-foreground: var(--sidebar-accent-foreground);
+  --color-sidebar-border: var(--sidebar-border);
+  --color-sidebar-ring: var(--sidebar-ring);
+}
+
+@layer base {
+  * {
+    @apply border-border outline-ring/50;
+  }
+  body {
+    @apply bg-background text-foreground;
+  }
+}
+
+/* Custom animations for fashion app */
+@keyframes typing {
+  0%,
+  60%,
+  100% {
+    transform: translateY(0);
+  }
+  30% {
+    transform: translateY(-10px);
+  }
+}
+
+@keyframes fadeInUp {
+  from {
+    opacity: 0;
+    transform: translateY(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateY(0);
+  }
+}
+
+@keyframes shimmer {
+  0% {
+    background-position: -1000px 0;
+  }
+  100% {
+    background-position: 1000px 0;
+  }
+}
+
+.animate-typing {
+  animation: typing 1.4s infinite;
+}
+
+.animate-fade-in-up {
+  animation: fadeInUp 0.5s ease-out;
+}
+
+.animate-shimmer {
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.4) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  background-size: 1000px 100%;
+  animation: shimmer 2s infinite;
+}
+
+/* Z-index hierarchy for proper overlay stacking */
+.z-header {
+  z-index: 40;
+}
+
+.z-sidebar {
+  z-index: 30;
+}
+
+.z-dropdown {
+  z-index: 50;
+}
+
+.z-modal-overlay {
+  z-index: 60;
+}
+
+.z-modal-content {
+  z-index: 61;
+}
+
+.z-toast {
+  z-index: 100;
+}
+
+/* Prevent body scroll when modal is open */
+.modal-open {
+  overflow: hidden;
+  padding-right: var(--scrollbar-width, 0);
+}
+
+/* Consistent backdrop styling */
+.overlay-backdrop {
+  background-color: rgba(0, 0, 0, 0.75);
+  backdrop-filter: blur(4px);
+}
+
+/* Fix for mobile viewport issues */
+@supports (height: 100dvh) {
+  .min-h-screen {
+    min-height: 100dvh;
+  }
+}
+
+/* Mobile touch target sizing - minimum 44x44px */
+@media (max-width: 768px) {
+  .touch-target,
+  button:not(.no-touch-target),
+  a:not(.no-touch-target),
+  [role="button"]:not(.no-touch-target) {
+    min-width: 44px;
+    min-height: 44px;
+  }
+
+  /* Gallery dots - proper touch size */
+  .image-indicator {
+    min-width: 44px;
+    min-height: 44px;
+    display: inline-flex;
+    align-items: center;
+    justify-content: center;
+  }
+
+  .image-indicator > * {
+    width: 12px;
+    height: 12px;
+  }
+
+  /* Size and color selectors */
+  .size-selector,
+  .color-selector {
+    min-width: 44px;
+    min-height: 44px;
+    padding: 8px 12px;
+  }
+}
+
+/* Onboarding Styles */
+@keyframes slideInRight {
+  from {
+    opacity: 0;
+    transform: translateX(20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+@keyframes slideInLeft {
+  from {
+    opacity: 0;
+    transform: translateX(-20px);
+  }
+  to {
+    opacity: 1;
+    transform: translateX(0);
+  }
+}
+
+.onboarding-container {
+  min-height: 100vh;
+  background-color: var(--onboarding-bg);
+}
+
+.onboarding-screen-enter {
+  animation: slideInRight 0.3s ease-out;
+}
+
+.onboarding-screen-exit {
+  animation: slideInLeft 0.3s ease-out;
+}
+
+/* Onboarding circular arrow button */
+.onboarding-next-button {
+  width: 56px;
+  height: 56px;
+  border-radius: 50%;
+  background-color: var(--onboarding-primary);
+  color: white;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  border: none;
+  cursor: pointer;
+  transition: all 0.3s ease;
+}
+
+.onboarding-next-button:hover:not(:disabled) {
+  background-color: var(--onboarding-primary-hover);
+  transform: scale(1.05);
+}
+
+.onboarding-next-button:disabled {
+  background-color: #D1D5DB;
+  cursor: not-allowed;
+}
+
+/* Style carousel custom scrollbar */
+.embla {
+  overflow: hidden;
+}
+
+.embla__container {
+  display: flex;
+  gap: 1rem;
+}
+
+.embla__slide {
+  flex: 0 0 280px;
+  min-width: 0;
+}
+
+/* Selection Carousel Card Animations */
+.selection-carousel-card {
+  transition: all 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+.selection-carousel-card:hover {
+  transform: translateY(-4px);
+  box-shadow: 0 10px 25px -5px rgba(0, 0, 0, 0.1), 0 8px 10px -6px rgba(0, 0, 0, 0.1);
+}
+
+.selection-carousel-card:active {
+  transform: translateY(-2px);
+}
+
+/* Selection thumbnail animation */
+.selection-thumbnail-enter {
+  animation: thumbnailEnter 0.3s ease-out;
+}
+
+@keyframes thumbnailEnter {
+  from {
+    opacity: 0;
+    transform: scale(0.8);
+  }
+  to {
+    opacity: 1;
+    transform: scale(1);
+  }
+}
+
+/* Carousel card selection state */
+.carousel-card-selected {
+  border-color: var(--onboarding-card-border-selected);
+  box-shadow: 0 4px 15px -3px rgba(212, 181, 181, 0.4);
+}
+
+/* Smooth border transition for selection */
+.carousel-card-border {
+  transition: border-color 0.3s ease, box-shadow 0.3s ease;
+}
+
+/* Hide scrollbar for selected items row */
+.hide-scrollbar {
+  -ms-overflow-style: none;
+  scrollbar-width: none;
+}
+
+.hide-scrollbar::-webkit-scrollbar {
+  display: none;
+}
+
+/* Style card utility for uniform height and styling */
+.style-card {
+  height: 320px;
+  display: flex;
+  flex-direction: column;
+}
+
+.style-card-image {
+  height: 220px;
+  flex-shrink: 0;
+}
+
+.style-card-content {
+  height: 100px;
+  flex-shrink: 0;
+}
+
+/* Line clamp utilities for text truncation */
+.line-clamp-2 {
+  display: -webkit-box;
+  -webkit-line-clamp: 2;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+.line-clamp-3 {
+  display: -webkit-box;
+  -webkit-line-clamp: 3;
+  -webkit-box-orient: vertical;
+  overflow: hidden;
+}
+
+/* 3D Center-Focus Carousel Styles */
+.carousel-perspective {
+  perspective: 1000px;
+  perspective-origin: center center;
+}
+
+.carousel-slide-3d {
+  transform-origin: center center;
+  transform-style: preserve-3d;
+  backface-visibility: hidden;
+  will-change: transform, opacity;
+  transition: transform 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              opacity 0.4s cubic-bezier(0.4, 0, 0.2, 1),
+              box-shadow 0.4s cubic-bezier(0.4, 0, 0.2, 1);
+}
+
+/* Center card enhanced shadow - prominent depth effect */
+.carousel-slide-center {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2),
+              0 10px 20px -5px rgba(0, 0, 0, 0.15);
+}
+
+/* Side card minimal shadow */
+.carousel-slide-side {
+  box-shadow: 0 2px 4px rgba(0, 0, 0, 0.05);
+}
+
+/* Legacy support - center card enhanced shadow */
+.carousel-slide-3d button.shadow-lg {
+  box-shadow: 0 20px 40px -10px rgba(0, 0, 0, 0.2), 0 10px 20px -5px rgba(0, 0, 0, 0.15);
+}

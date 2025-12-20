@@ -29,7 +29,16 @@ yarn-error.log*
 
 # Playwright
 .playwright-mcp/
+playwright-report/
+test-results/
+
+# Python
+__pycache__/
+*.pyc
+*.pyo
+.pytest_cache/
 
 # Misc
 *.log
 .cache/
+*.bak
