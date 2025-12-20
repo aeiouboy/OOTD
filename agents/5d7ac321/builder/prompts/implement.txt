@@ -1,0 +1,1 @@
+/implement specs/chore-5d7ac321-fix-outfit-description-extraction.md

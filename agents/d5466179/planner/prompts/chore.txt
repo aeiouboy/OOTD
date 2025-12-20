@@ -1,0 +1,20 @@
+/chore d5466179 Fix the style carousel scrolling issue in OnboardingStyle.tsx - currently shows only 5 of 10 styles without clear scrolling affordance. 
+
+  Issue: Users cannot easily discover that there are more styles to scroll through (10 total styles).
+
+  Reference design: /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/*.png - shows horizontal swipeable carousel with partial cards visible on edges indicating more content.
+
+  Required fixes:
+  1. Ensure embla-carousel horizontal scrolling is working properly on both mobile (swipe) and desktop (drag/scroll)
+  2. Show partial cards on the right edge to indicate more content is available (cards should peek ~20-30px from the edge)
+  3. Add touch/swipe gestures for mobile - natural horizontal swipe to scroll through all 10 styles
+  4. Consider adding subtle scroll indicators (dots or arrows) to show current position and total items
+  5. Card width should be ~160px with proper gap spacing to show partial next card
+  6. Container should have proper overflow-x handling for smooth scrolling
+  7. Test that all 10 styles (Minimal, Luxury, Eccentric, Business, Vanilla, Sporty, Edgy, Bohemian, Classic, Mystery) are accessible via scrolling
+
+  Files to update:
+  - frontend/components/onboarding/OnboardingStyle.tsx
+  - frontend/components/ui/SelectionCarousel.tsx (if applicable for reusable fix)
+
+  Ensure the carousel feels natural to scroll/swipe and users clearly understand more options exist beyond the visible viewport.

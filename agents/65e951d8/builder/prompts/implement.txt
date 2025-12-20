@@ -1,0 +1,1 @@
+/implement specs/chore-65e951d8-remove-duplicate-style-card-description.md

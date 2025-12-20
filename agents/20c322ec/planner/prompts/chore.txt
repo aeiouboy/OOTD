@@ -1,0 +1,10 @@
+/chore 20c322ec Fix OnboardingStyle.tsx card layout to match reference 
+  EXACTLY. CRITICAL ISSUE: The red title and gray description must be INSIDE the white card, not 
+  outside. Reference shows: [White card with red left border containing: Image (cropped to hide 
+  text) + Red title 'Minimal · Timeless' + Gray description]. Currently the title and description
+   render OUTSIDE the card boundary. Move the title (h3) and description (p) elements INSIDE the 
+  card button element, below the image but within the card's white background and border. Also 
+  crop images using object-fit: cover with object-position: top and reduce image container height
+   to ~70% to hide the baked-in text at bottom of images. The entire card including image, title,
+   and description should be one cohesive white rounded rectangle with the red left border 
+  accent.

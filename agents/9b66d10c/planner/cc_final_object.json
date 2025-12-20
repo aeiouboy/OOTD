@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 62770,
+  "duration_api_ms": 80450,
+  "num_turns": 9,
+  "result": "Plan created at: `specs/chore-9b66d10c-fix-carousel-center-focus-effect.md`",
+  "session_id": "55f4afaa-d661-421b-99fa-07baa3714083",
+  "total_cost_usd": 0.465716,
+  "usage": {
+    "input_tokens": 6243,
+    "cache_creation_input_tokens": 30530,
+    "cache_read_input_tokens": 165951,
+    "output_tokens": 2202,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 30530
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 346,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 11342,
+      "webSearchRequests": 0,
+      "costUSD": 0.015910499999999998,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 6246,
+      "outputTokens": 2924,
+      "cacheReadInputTokens": 165951,
+      "cacheCreationInputTokens": 42000,
+      "webSearchRequests": 0,
+      "costUSD": 0.4498055,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "1c45f329-49e6-4c6a-9c1d-342068f982b6"
+}

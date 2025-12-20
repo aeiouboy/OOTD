@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "940df759",
+  "slash_command": "/chore",
+  "args": [
+    "940df759",
+    "Fix remaining style card issues: 1) BORDER COLOR INCONSISTENCY - 'Business \u00b7 Refined' card and some others have darker/gray border instead of soft rose. Ensure ALL cards use the SAME soft rose border color (#E8D5D5 unselected, #D4B5B5 selected). Check frontend/app/globals.css that --onboarding-card-border is #E8D5D5 (not gray or darker). In OnboardingStyle.tsx ensure border class applies consistently to all cards without any conditional that could override it. 2) DESCRIPTION TRUNCATION - text is cut off with ellipsis. The reference design from /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/ shows FULL descriptions visible. Remove line-clamp or increase card content height to h-[100px] or h-auto with min-h-[80px] to accommodate longest descriptions. Priority: full text visibility over strict uniform height - cards can have slight height variation if needed to show complete descriptions. 3) Verify CSS variable \n  --onboarding-card-border exists and equals #E8D5D5 (soft rose), not any red/crimson/gray value."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "7f8b18b6-b5d9-4b2c-83e8-1f235cd4e294",
+  "retry_code": "none",
+  "output": "Perfect! I've created the chore plan at:\n\n**`specs/chore-940df759-fix-style-card-border-description.md`**\n\nThe plan addresses all three issues mentioned in the prompt:\n\n1. **Border Color Inconsistency** - Ensures all cards use the soft rose border colors (#E8D5D5 unselected, #D4B5B5 selected) consistently\n2. **Description Truncation** - Removes the `line-clamp-3` restriction and adjusts card height to allow full text visibility\n3. **CSS Variable Verification** - Confirms the `--onboarding-card-border` variable is correctly defined\n\nThe plan includes:\n- Detailed step-by-step tasks starting with CSS verification, then fixing truncation, verifying border consistency, and finally visual testing\n- Specific file references with line numbers\n- Validation commands to confirm the fixes\n- Notes about the current state and priority (full text visibility over uniform height)",
+  "plan_path": "specs/chore-940df759-fix-style-card-border-description.md"
+}

@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "d7b3450a",
+  "slash_command": "/chore",
+  "args": [
+    "d7b3450a",
+    "Fix OnboardingStyle.tsx - the WRONG description was \n  removed. Current state shows gray placeholder text INSIDE the card (like 'Less is more, clean, \n  simple, neutral palette...') but the longDescription from fashion-styles.json that should \n  appear BELOW the red title was removed. REVERSE this: 1) REMOVE the gray description text that \n  appears INSIDE the card between the image and card border (this is the old styleOptions \n  description field), 2) ADD BACK the longDescription paragraph that should appear BELOW the red \n  style title heading. The card structure should be: [Image] -> [Style Title in red like 'Minimal\n   \u00b7 Timeless'] -> [longDescription paragraph from fashion-styles.json like 'Clean lines, neutral\n   palettes, and quality basics...']. Check the fashion-styles.json file for the correct \n  longDescription values."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "e104f57f-c276-4f8b-b127-5e3c8233fe7f",
+  "retry_code": "none",
+  "output": "Plan created successfully.\n\n**Plan file:** `/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-d7b3450a-fix-onboarding-style-description.md`\n\nThe plan details:\n1. **Problem**: The `longDescription` from `fashion-styles.json` is not being displayed in the style cards\n2. **Solution**: Add a new paragraph element below the style title (h3) to display `style.longDescription`\n3. **Key file to modify**: `frontend/components/onboarding/OnboardingStyle.tsx` - add a paragraph after line 147 (after the `</h3>` closing tag)",
+  "plan_path": "specs/chore-d7b3450a-fix-onboarding-style-description.md"
+}

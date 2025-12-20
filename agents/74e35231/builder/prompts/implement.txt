@@ -1,0 +1,1 @@
+/implement specs/chore-74e35231-fix-style-card-description-truncation.md

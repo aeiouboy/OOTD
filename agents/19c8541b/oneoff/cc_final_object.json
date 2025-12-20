@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 28642,
+  "duration_api_ms": 38918,
+  "num_turns": 4,
+  "result": "Created the chat dialog markdown file at `/Users/naruechon/Documents/Project/OOTDay_Anti/chat_dialog1/dl.md`. The file includes:\n\n- **Dialog Metadata** section with platform, user, and session info\n- **Chat Transcript** with 3 messages (AI greeting, user request, AI recommendation)\n- **Outfit Cards** for both looks with style descriptions, image placeholders, prices, and ASCII card visualizations\n- **Dialog Summary** with metrics like total messages, looks recommended, price range, and style tags",
+  "session_id": "8bf1fafb-82b0-4970-8a5a-9ee548c98df2",
+  "total_cost_usd": 0.2972855,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 17932,
+    "cache_read_input_tokens": 116790,
+    "output_tokens": 1492,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 17932
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 9,
+      "outputTokens": 1525,
+      "cacheReadInputTokens": 116790,
+      "cacheCreationInputTokens": 29429,
+      "webSearchRequests": 0,
+      "costUSD": 0.28049625,
+      "contextWindow": 200000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 768,
+      "outputTokens": 362,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 11369,
+      "webSearchRequests": 0,
+      "costUSD": 0.016789250000000002,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "9aa79cd1-4b2a-4786-8ee0-5bb47f3b9fe0"
+}

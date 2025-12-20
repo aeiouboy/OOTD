@@ -1,0 +1,34 @@
+/chore 707e4238 Fix duplicate style name display on 'What's your style?' onboarding page.
+
+  ## Problem
+  The source style images in frontend/public/images/styles/ (Group 31.png through Group 40.png) have style names and descriptions BAKED INTO the image at the bottom. The OnboardingStyle component also renders this text programmatically below the image, causing duplicate display.
+
+  ## Design Reference
+  Review onboarding/Style/preference/5.1Onboarding-Style.png - the design shows CLEAN images without text overlay, with only ONE set of text labels below the image.
+
+  ## Required Fix
+  Crop the images more aggressively to hide the baked-in text at the bottom. The current implementation uses:
+  - Image height: 220px
+  - object-cover object-top positioning
+
+  But the baked-in text at the bottom of the images is still visible. Need to either:
+
+  ### Option 1 (Preferred): CSS Cropping
+  - Reduce visible image height or use clip-path to hide bottom ~60px where baked-in text appears
+  - Adjust the image container to crop more from bottom while keeping top visible
+  - Could use aspect-ratio with overflow-hidden and negative margin-bottom on the image
+
+  ### Option 2: Image Replacement
+  - If CSS cropping doesn't work well, the images need to be replaced with versions without baked-in text
+
+  ## Files to Update
+  - frontend/components/onboarding/OnboardingStyle.tsx - adjust image cropping in the carousel cards (lines 156-171)
+
+  ## Validation
+  After fix, each style card should show:
+  1. Model/outfit image only (NO text visible in image)
+  2. Style name 'Name · Description' in crimson below image (ONE TIME ONLY)
+  3. Gray description text below that
+
+  Test by running: cd frontend && npm run dev
+  Navigate through onboarding to 'What's your style?' page and verify no duplicate labels appear.

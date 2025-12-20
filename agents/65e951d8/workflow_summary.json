@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "65e951d8",
+  "prompt": "Fix OnboardingStyle.tsx - the style cards still show TWO \n  descriptions: 1) A gray text description INSIDE the card below the image showing \n  old/inconsistent data, 2) A description BELOW the card title showing correct data from \n  fashion-styles.json. Looking at the current screenshot, cards like Minimal and Luxury show \n  'Less is more, clean, simple...' inside the card which is wrong. The fix should REMOVE the gray\n   description text that appears inside the card (between the image and the card border), keeping\n   ONLY the description that appears below the red style title. The card should show: [Image] -> \n  [Style Name \u00b7 Subtitle in red] -> [Description in black]. Remove the intermediate gray \n  description completely.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-65e951d8-remove-duplicate-style-card-description.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "16f83002-e1d8-402d-aa95-d5708cfbb6a4",
+      "agent": "planner",
+      "output_dir": "./agents/65e951d8/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "b9c88f78-e480-4886-8a05-ea6474896123",
+      "agent": "builder",
+      "output_dir": "./agents/65e951d8/builder/"
+    }
+  },
+  "overall_success": true
+}

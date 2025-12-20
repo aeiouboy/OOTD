@@ -1,0 +1,14 @@
+/chore 9b66d10c Fix OnboardingStyle carousel center-focus effect to match design mockups at /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/preference/. Current implementation has scale effect but it's too subtle to be noticeable.
+
+  Required fixes:
+  1. INCREASE SCALE CONTRAST: Change scale values from current (1.0 center, 0.85 side) to more dramatic values (1.0 center, 0.7 side cards, 0.55 for cards 2+ positions away). The design mockup shows center card significantly larger than adjacent cards.
+
+  2. ADD PERSPECTIVE WRAPPER: Wrap carousel in a container with CSS perspective (1000px) and add translateZ transforms - center card at translateZ(50px), side cards at translateZ(-50px) for real 3D depth.
+
+  3. ADJUST CARD WIDTHS FOR CENTER PROMINENCE: On mobile (375px), center card should take ~70% of viewport width while side cards peek from edges. Use dynamic width calculation based on selectedIndex, not fixed flex-basis.
+
+  4. ADD SHADOW DEPTH: Center card should have larger shadow (shadow-xl) while side cards have minimal or no shadow (shadow-none) to enhance depth perception.
+
+  5. SMOOTH INTERPOLATION: Use CSS transforms with will-change:transform for GPU acceleration. Calculate scale/opacity/translateZ values smoothly based on scroll position, not just discrete selectedIndex.
+
+  Reference design: onboarding/preference/5.1Onboarding-Style.png shows center 'Minimal' card taking ~70% width with adjacent cards clearly smaller and faded at edges.

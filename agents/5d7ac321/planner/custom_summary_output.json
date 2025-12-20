@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "5d7ac321",
+  "slash_command": "/chore",
+  "args": [
+    "5d7ac321",
+    "Fix outfit description extraction for image \n  generation. Currently the extracted description includes conversation history like \n  '\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e04\u0e48\u0e30 \u0e07\u0e32\u0e19\u0e04\u0e48\u0e30 \u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?' instead of a clean description. Update the image \n  generation flow in frontend/lib/chat-utils.ts or frontend/app/api/chat/route.ts to extract\n   only the current user request context (occasion, style, gender) and format it as a proper\n   outfit description for image generation, not raw conversation text."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "f6d442a2-5114-4c55-a65b-3df99b3aae13",
+  "retry_code": "none",
+  "output": "Perfect! I've created a comprehensive chore plan at:\n\n**`/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-5d7ac321-fix-outfit-description-extraction.md`**\n\n## Summary\n\nThe plan addresses the core issue where outfit description extraction is capturing raw conversation text (like \"\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e04\u0e48\u0e30 \u0e07\u0e32\u0e19\u0e04\u0e48\u0e30 \u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\") instead of building clean, structured descriptions for image generation.\n\n### Key Changes Planned:\n\n1. **Refactor `extractOutfitDescription()`** - Change from regex-based conversation scraping to structured data extraction\n2. **Use Available Metadata** - Leverage session context, user preferences, and product data that's already tracked\n3. **New Utility Function** - Create `buildOutfitDescription()` that constructs proper descriptions from structured inputs\n4. **Update Integration Points** - Modify both `ai-chat-service.ts` and `app/api/chat/route.ts` to pass structured data\n\n### Expected Outcome:\n\n**Before:** \"\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19 \u0e07\u0e32\u0e19\u0e04\u0e48\u0e30 \u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\" (conversation fragments)  \n**After:** \"Professional work outfit for women featuring a white blouse and black trousers\" (clean, structured description)\n\nThe plan includes 8 detailed implementation steps, validation commands, and comprehensive notes explaining the current issues and proposed solutions.",
+  "plan_path": "specs/chore-5d7ac321-fix-outfit-description-extraction.md"
+}

@@ -1,0 +1,1 @@
+/implement specs/chore-f329b6f1-configure-gemini-models-openrouter.md

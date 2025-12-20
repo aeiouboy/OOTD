@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "20c322ec",
+  "slash_command": "/chore",
+  "args": [
+    "20c322ec",
+    "Fix OnboardingStyle.tsx card layout to match reference \n  EXACTLY. CRITICAL ISSUE: The red title and gray description must be INSIDE the white card, not \n  outside. Reference shows: [White card with red left border containing: Image (cropped to hide \n  text) + Red title 'Minimal \u00b7 Timeless' + Gray description]. Currently the title and description\n   render OUTSIDE the card boundary. Move the title (h3) and description (p) elements INSIDE the \n  card button element, below the image but within the card's white background and border. Also \n  crop images using object-fit: cover with object-position: top and reduce image container height\n   to ~70% to hide the baked-in text at bottom of images. The entire card including image, title,\n   and description should be one cohesive white rounded rectangle with the red left border \n  accent."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "aefb0fb6-d8fd-4bc3-b441-ab63be50b389",
+  "retry_code": "none",
+  "output": "Plan file created at:\n\n**`specs/chore-20c322ec-fix-onboarding-style-card-layout.md`**\n\nThe plan addresses the critical layout issues for the OnboardingStyle.tsx component:\n1. Reducing image container height from 280px to ~200px to crop baked-in text\n2. Enhancing card styling for a cohesive white rounded rectangle appearance\n3. Improving the red left border visibility from border-l-2 to border-l-4\n4. Ensuring content padding creates visual unity\n5. Browser validation steps",
+  "plan_path": "specs/chore-20c322ec-fix-onboarding-style-card-layout.md"
+}

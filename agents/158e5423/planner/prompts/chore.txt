@@ -1,0 +1,103 @@
+/chore 158e5423 Implement a 7-screen onboarding flow for OOTDay fashion assistant 
+  (women only) in the existing Next.js frontend at /Users/naruechon/Documents/Project/OOTDay_Anti/frontend.
+
+  ## Customer Journey Context
+  This implements Step 2 ('Know you') of the customer journey - where OOTDay learns about the user before 
+  they can chat.
+
+  ## Screens to Implement (reference designs in /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/):
+
+  1. **Welcome** (1Onboarding-Welcome.png)
+     - OOTDay logo with two women illustration
+     - 'Hi FRIEND! Welcome to OOTDay'
+     - Tagline: 'Think outfit. Think OOTDay'
+     - 'Let's Go →' button (red/crimson)
+
+  2. **Name** (2Onboarding-Name.png)
+     - 'Hey there, What should I call you?' (red text for question)
+     - Text input with 'Your name' placeholder
+     - Red circular arrow button to proceed
+
+  3. **Department** (3Onboarding-Department.png) - WOMEN ONLY
+     - 'What's your vibe?' title
+     - 'Choose your fashion department' subtitle
+     - Show ONLY the women's flat lay image card (right card from design)
+     - Pre-selected/auto-selected since women-only
+
+  4. **Age** (4Onboarding-Age.png)
+     - 'Age is just a number 🎂'
+     - 'Help me curate the perfect styles for you'
+     - Four circle buttons: 'Less than 20', '20-29', '30-39', '40+'
+
+  5. **Style Selection** (5.1-5.7Onboarding-Style.png)
+     - 'What's your style?'
+     - 'Choose style that sparks you'
+     - Horizontal carousel with style cards (multi-select, shown as thumbnails at top when selected)
+     - Style options with AI-generated women images:
+       * Minimal · Timeless - 'Less is more, clean, simple, neutral palette, pieces that last forever'
+       * Luxury · Elegant - 'Less is more, clean, simple, neutral palette, pieces that last forever'
+       * Business · Refined - 'Smart, structured, and professional'
+       * Sporty · Active - 'Athletic wear, functional, ready for movement and confident'
+       * Bohemian · Natural - 'Relaxed, earthy, featuring flowly silhouettes and natural fabrics'
+       * Classic · Old Money - 'Understated quiet luxury built on timeless, tailored, and preppy pieces'
+       * Mystery Style 🎲 - 'Random style'
+     - Red circular arrow button to proceed
+
+  6. **Photo Upload** (6Onboarding-Photo.png)
+     - 'Show your face — your style starts here'
+     - 'Upload your photo — or let the magic happen'
+     - Large upload area with person icon
+     - Two buttons: 'Upload' (red filled) and 'Mystery' (red outlined with dice icon)
+
+  7. **Complete** (7Onboarding-Complete.png)
+     - 'Nice to meet you [name]' (name in red)
+     - 'Successfully Registered 🎉'
+     - Display user's uploaded photo or mystery avatar
+     - 'Your BFF's here — ready to find your perfect look'
+     - 'Time to Chat ✨' button (red)
+
+  ## Technical Requirements:
+
+  1. **New Files to Create**:
+     - components/onboarding/OnboardingFlow.tsx (main wizard controller)
+     - components/onboarding/OnboardingWelcome.tsx
+     - components/onboarding/OnboardingName.tsx
+     - components/onboarding/OnboardingDepartment.tsx
+     - components/onboarding/OnboardingAge.tsx
+     - components/onboarding/OnboardingStyle.tsx
+     - components/onboarding/OnboardingPhoto.tsx
+     - components/onboarding/OnboardingComplete.tsx
+     - components/onboarding/OnboardingProgress.tsx (dot indicators)
+     - lib/types/user-profile-types.ts
+     - lib/hooks/useUserProfile.ts
+
+  2. **UserProfile Type**:
+     interface UserProfile {
+       userName: string
+       gender: 'women' // women only for now
+       ageRange: '<20' | '20-29' | '30-39' | '40+'
+       stylePreferences: StylePreference[]
+       userPhoto?: string // base64 or URL
+       onboardingCompleted: boolean
+       createdAt: string
+     }
+
+  3. **Persistence**: Save to localStorage key 'ootday_user_profile'
+
+  4. **Integration with app/page.tsx**:
+     - Check if onboarding completed on app load
+     - If not completed, show OnboardingFlow instead of main content
+     - After completion, show main chat interface
+
+  5. **Styling**:
+     - Use existing shadcn/ui components (Button, Card, Input)
+     - Background color: cream/beige (#F5F5F0 or similar from designs)
+     - Primary color: crimson/red for buttons and highlights
+     - Use embla-carousel-react for style selection carousel
+     - Mobile-first responsive design
+
+  6. **UX Details**:
+     - Smooth transitions between screens
+     - Progress dots at bottom showing current step
+     - Back navigation capability
+     - Form validation (name required, age required, at least 1 style required)

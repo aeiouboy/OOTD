@@ -1,0 +1,10 @@
+/chore ac4f13bf Improve OnboardingStyle carousel interaction to match design mockups at /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/preference/. Current implementation at frontend/components/onboarding/OnboardingStyle.tsx uses basic Embla carousel with fixed 160px cards.
+
+  Required changes:
+  1. CENTER-FOCUS CAROUSEL: Implement center-snap carousel where active/center card is larger and prominent, side cards are smaller/scaled (inspired by 3D card carousel at https://webartdevelopers.com/blog/card-carousel/)
+  2. CARD CONTENT: Add style name (e.g., 'Minimal · Timeless') and description text below each card image as shown in design mockups
+  3. VISUAL HIERARCHY: Center card should have larger scale (1.0), side cards should have reduced scale (~0.85) with smooth transition effects
+  4. SMOOTH ANIMATION: Add CSS transforms for perspective/depth effect - use translateZ, scale, and opacity transitions for engaging scroll interaction
+  5. SNAP BEHAVIOR: Change Embla config from dragFree to center-snap alignment so cards snap to center position
+
+  Reference the fashion-styles.json for style names and cardDescription fields. Keep the selected thumbnails feature at top. Ensure mobile-responsive design.

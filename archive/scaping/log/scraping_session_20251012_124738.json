@@ -1,0 +1,69 @@
+{
+  "scraping_session_id": "e2dfa598-cfee-4dcf-9859-00c991182c9f",
+  "start_time": "2025-10-12T12:47:29.435785",
+  "end_time": "2025-10-12T12:47:38.339383",
+  "total_duration_seconds": 8.903598,
+  "configuration": {
+    "workers": 2,
+    "categories": [
+      "women",
+      "men"
+    ],
+    "scrape_details": false,
+    "validate_images": false,
+    "resume": true
+  },
+  "summary": {
+    "total_skus_scraped": 40,
+    "successful_categories": 2,
+    "failed_categories": 0,
+    "validation_pass_rate": 0.0,
+    "worker_utilization": 0.9653269947722257,
+    "worker_utilization_percent": "96.5%"
+  },
+  "category_details": [
+    {
+      "category": "women",
+      "skus_scraped": 20,
+      "duration_seconds": 8.310829,
+      "worker_id": 1,
+      "status": "completed",
+      "validation": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "failed": 20,
+        "duplicates": 0
+      }
+    },
+    {
+      "category": "men",
+      "skus_scraped": 20,
+      "duration_seconds": 8.878938,
+      "worker_id": 2,
+      "status": "completed",
+      "validation": {
+        "pass_rate": 0.0,
+        "passed": 0,
+        "failed": 20,
+        "duplicates": 0
+      }
+    }
+  ],
+  "worker_stats": [
+    {
+      "worker_id": 1,
+      "products_scraped": 20,
+      "duration_seconds": 8.310829,
+      "errors_count": 0,
+      "errors": []
+    },
+    {
+      "worker_id": 2,
+      "products_scraped": 20,
+      "duration_seconds": 8.878938,
+      "errors_count": 0,
+      "errors": []
+    }
+  ],
+  "errors": []
+}

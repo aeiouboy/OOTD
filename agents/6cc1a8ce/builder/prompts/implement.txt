@@ -1,0 +1,1 @@
+/implement specs/chore-6cc1a8ce-fix-style-card-uniform-size-border.md

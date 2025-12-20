@@ -1,0 +1,9 @@
+/chore 34757b43 Fix the onboarding flow not showing for new users 
+  when localStorage is empty. In frontend/app/page.tsx, the issue is that showOnboarding 
+  defaults to false and the useEffect check happens after initial render. Fix by: 1) 
+  Change initial state to show a loading state or check synchronously, 2) Consider 
+  initializing showOnboarding based on a synchronous localStorage check in useState 
+  initializer, or 3) Show a loading spinner while isLoadingProfile is true to prevent the
+   main content from flashing before onboarding check completes. The fix should ensure 
+  that new users (with no ootday_user_profile in localStorage) always see the onboarding 
+  flow on first visit.

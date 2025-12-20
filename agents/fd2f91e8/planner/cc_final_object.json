@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 87426,
+  "duration_api_ms": 96566,
+  "num_turns": 18,
+  "result": "Plan created successfully.\n\n**Plan file created at:** `specs/chore-fd2f91e8-implement-journey-steps-3-4.md`\n\nThe plan covers implementing Customer Journey Steps 3 & 4:\n- **Step 3 (RECOMMENDATION)**: Force recommendations after clarifications, using Template A/B based on category\n- **Step 4 (FOLLOW-UP)**: Handle user refinements without asking new questions (POST-RECOMMENDATION LOCKOUT)\n\nThe plan includes 10 tasks from analysis through implementation and validation, with specific file references and validation commands.",
+  "session_id": "ad8dffc3-483f-4122-a1ba-b82a9021dd64",
+  "total_cost_usd": 0.84218175,
+  "usage": {
+    "input_tokens": 26514,
+    "cache_creation_input_tokens": 64863,
+    "cache_read_input_tokens": 385558,
+    "output_tokens": 3621,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 64863
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 5899,
+      "outputTokens": 283,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.007313999999999999,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 29134,
+      "outputTokens": 3641,
+      "cacheReadInputTokens": 385558,
+      "cacheCreationInputTokens": 64863,
+      "webSearchRequests": 0,
+      "costUSD": 0.8348677500000001,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "2c3b3b4b-d72f-426a-bb24-448cd0d82213"
+}

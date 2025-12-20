@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "ac4f13bf",
+  "slash_command": "/chore",
+  "args": [
+    "ac4f13bf",
+    "Improve OnboardingStyle carousel interaction to match design mockups at /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/preference/. Current implementation at frontend/components/onboarding/OnboardingStyle.tsx uses basic Embla carousel with fixed 160px cards.\n\n  Required changes:\n  1. CENTER-FOCUS CAROUSEL: Implement center-snap carousel where active/center card is larger and prominent, side cards are smaller/scaled (inspired by 3D card carousel at https://webartdevelopers.com/blog/card-carousel/)\n  2. CARD CONTENT: Add style name (e.g., 'Minimal \u00b7 Timeless') and description text below each card image as shown in design mockups\n  3. VISUAL HIERARCHY: Center card should have larger scale (1.0), side cards should have reduced scale (~0.85) with smooth transition effects\n  4. SMOOTH ANIMATION: Add CSS transforms for perspective/depth effect - use translateZ, scale, and opacity transitions for engaging scroll interaction\n  5. SNAP BEHAVIOR: Change Embla config from dragFree to center-snap alignment so cards snap to center position\n\n  Reference the fashion-styles.json for style names and cardDescription fields. Keep the selected thumbnails feature at top. Ensure mobile-responsive design."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "92962bdf-9c65-4a39-bea1-1689525aa531",
+  "retry_code": "none",
+  "output": "Plan created successfully.\n\n**Plan file created at:** `specs/chore-ac4f13bf-center-focus-style-carousel.md`\n\nThe plan covers the implementation of a center-focus 3D-style carousel for the OnboardingStyle component with:\n\n1. **Embla Configuration Changes** - Center alignment with snap-to-position behavior\n2. **Scroll Progress Tracking** - State management to track which card is centered\n3. **3D Depth Effect** - Scale (1.0 center, ~0.85 sides) and opacity transitions\n4. **Card Content** - Adding style name (e.g., \"Minimal \u00b7 Timeless\") and description text below images\n5. **CSS Animations** - Smooth 400ms transitions for scale/opacity transforms\n6. **Mobile Responsiveness** - Responsive card widths (200-280px based on viewport)\n\nThe plan preserves existing functionality (thumbnails, selection logic, navigation) while matching the design mockups at `onboarding/preference/`.",
+  "plan_path": "specs/chore-ac4f13bf-center-focus-style-carousel.md"
+}

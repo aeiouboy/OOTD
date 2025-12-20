@@ -1,0 +1,7 @@
+/chore 9eb83244 Add persistent image storage for LooksInspiration 
+  generated images. Save generated outfit images to frontend/public/generated-images/ folder
+   with timestamp-based filenames. Update frontend/app/api/generate-image/route.ts to: 1) 
+  Create the generated-images directory if it doesn't exist, 2) Save the base64 image to 
+  disk as PNG file after successful generation, 3) Return both imageBase64 and imageUrl 
+  (public path) in the response. Also add a .gitignore entry for 
+  frontend/public/generated-images/*.png to avoid committing generated images.

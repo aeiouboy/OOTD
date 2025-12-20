@@ -1,0 +1,82 @@
+[
+  {
+    "id": "minimal",
+    "name": "Minimal",
+    "description": "Timeless",
+    "longDescription": "Clean lines, neutral palettes, and quality basics. Embrace simplicity with monochrome pieces and refined silhouettes that never go out of style.",
+    "keywords": ["minimalist", "neutral", "timeless", "clean", "simple", "monochrome", "refined", "quality basics"],
+    "imageUrl": "/images/styles/Group 31.png"
+  },
+  {
+    "id": "luxury",
+    "name": "Luxury",
+    "description": "Elegant",
+    "longDescription": "Sophisticated and polished with premium fabrics and impeccable tailoring. Think classic cuts, luxe materials, and understated glamour that exudes confidence.",
+    "keywords": ["elegant", "sophisticated", "premium", "tailored", "polished", "luxe", "classic", "glamour"],
+    "imageUrl": "/images/styles/Group 32.png"
+  },
+  {
+    "id": "eccentric",
+    "name": "Eccentric",
+    "description": "Creative",
+    "longDescription": "Bold self-expression through unique patterns, vibrant colors, and unexpected combinations. Artistic, playful, and unapologetically individual.",
+    "keywords": ["artistic", "bold", "unique", "playful", "colorful", "experimental", "individual", "creative"],
+    "imageUrl": "/images/styles/Group 33.png"
+  },
+  {
+    "id": "business",
+    "name": "Business",
+    "description": "Refined",
+    "longDescription": "Sharp, structured, and professionally polished. Blazers, tailored trousers, and sophisticated separates that command respect in any boardroom.",
+    "keywords": ["professional", "structured", "sharp", "tailored", "sophisticated", "polished", "corporate", "smart"],
+    "imageUrl": "/images/styles/Group 34.png"
+  },
+  {
+    "id": "vanilla",
+    "name": "Vanilla",
+    "description": "Clean",
+    "longDescription": "Soft, approachable, and effortlessly fresh. Light neutrals, gentle textures, and cozy pieces in cream, beige, and white tones.",
+    "keywords": ["soft", "neutral", "cozy", "fresh", "light", "gentle", "cream", "approachable"],
+    "imageUrl": "/images/styles/Group 35.png"
+  },
+  {
+    "id": "sporty",
+    "name": "Sporty",
+    "description": "Active",
+    "longDescription": "Athletic meets everyday style with functional comfort. Think joggers, sneakers, performance fabrics, and pieces that move with you from gym to street.",
+    "keywords": ["athletic", "functional", "comfortable", "active", "sporty", "performance", "casual", "energetic"],
+    "imageUrl": "/images/styles/Group 36.png"
+  },
+  {
+    "id": "edgy",
+    "name": "Edgy",
+    "description": "Trendy",
+    "longDescription": "Daring and fashion-forward with bold statements and modern edge. Leather, asymmetric cuts, and pieces that push boundaries and turn heads.",
+    "keywords": ["bold", "modern", "daring", "trendy", "fashion-forward", "statement", "edgy", "rebellious"],
+    "imageUrl": "/images/styles/Group 37.png"
+  },
+  {
+    "id": "bohemian",
+    "name": "Bohemian",
+    "description": "Natural",
+    "longDescription": "Free-spirited and relaxed with flowing silhouettes and earthy tones. Natural fabrics, vintage-inspired prints, and effortless boho charm.",
+    "keywords": ["boho", "earthy", "relaxed", "flowing", "natural", "free-spirited", "vintage", "effortless"],
+    "imageUrl": "/images/styles/Group 38.png"
+  },
+  {
+    "id": "classic",
+    "name": "Classic",
+    "description": "Old Money",
+    "longDescription": "Timeless sophistication with quiet luxury appeal. Preppy staples, heritage pieces, and understated elegance that whispers rather than shouts.",
+    "keywords": ["classic", "timeless", "preppy", "heritage", "sophisticated", "quiet luxury", "understated", "refined"],
+    "imageUrl": "/images/styles/Group 39.png"
+  },
+  {
+    "id": "mystery",
+    "name": "Mystery Style",
+    "description": "Random style",
+    "longDescription": "Surprise me! Let the AI discover your unique style through your preferences. Every style journey is different—embrace the unexpected.",
+    "keywords": ["random", "surprise", "diverse", "eclectic", "varied", "exploratory", "adaptive", "personalized"],
+    "imageUrl": "/images/styles/Group 40.png"
+  }
+]

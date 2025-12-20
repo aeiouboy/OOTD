@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 43212,
+  "duration_api_ms": 50447,
+  "num_turns": 6,
+  "result": "Plan created successfully.\n\n**Plan file created:** `/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-edc349f6-add-style-preferences.md`\n\n**Summary:**\n- Added 3 new style preferences (Streetwear/Urban, Romantic/Feminine, Edgy/Bold) to the `styleOptions` array\n- Mystery Style remains as the last option\n- Updated README documentation to reflect 10 styles\n- Includes validation commands for build, lint, and manual testing",
+  "session_id": "54e84413-996a-4277-99c2-117cfae3d460",
+  "total_cost_usd": 0.43768575,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 41229,
+    "cache_read_input_tokens": 110833,
+    "output_tokens": 1827,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 41229
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 9,
+      "outputTokens": 1856,
+      "cacheReadInputTokens": 110833,
+      "cacheCreationInputTokens": 51487,
+      "webSearchRequests": 0,
+      "costUSD": 0.42365525000000004,
+      "contextWindow": 200000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 273,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 10130,
+      "webSearchRequests": 0,
+      "costUSD": 0.0140305,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "5e2d086f-5f57-4a7c-8060-af71aa8487fc"
+}

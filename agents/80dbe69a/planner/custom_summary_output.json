@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "80dbe69a",
+  "slash_command": "/chore",
+  "args": [
+    "80dbe69a",
+    "Remove duplicate text from style cards. The image files in /public/images/styles/ already contain the style name and description text at the bottom of each image. The code in frontend/components/onboarding/OnboardingStyle.tsx ALSO renders an h3 heading with '{style.name} \u00b7 {style.description}' and a p tag with cardDescription. This creates visual duplication. SOLUTION: Remove the h3 element (lines 144-146) and the cardDescription p element (lines 149-152) from the card content since this text is already visible in the images. Keep only the image div. The reference design at /Users/naruechon/Documents/Project/OOTDay2/onboarding/5.1Onboarding-Style.png shows each card should display the image which already contains the text - no additional text elements needed below the image."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "faebd340-c728-4260-a9ba-6511fe869e39",
+  "retry_code": "none",
+  "output": "Perfect! I've created the plan file for removing the duplicate text from style cards.\n\n## Plan Created\n\n\ud83d\udcc4 **Plan file**: `specs/chore-80dbe69a-remove-duplicate-style-card-text.md`\n\n### Summary\n\nThe plan addresses the duplicate text issue in the onboarding style selection cards:\n\n**Problem**: Style images already contain the style name and description text, but the component also renders this same text as separate elements below the image, creating visual duplication.\n\n**Solution**: Remove the redundant `<h3>` and `<p>` elements (lines 144-152) from the card content, keeping only the image div.\n\n**Key Tasks**:\n1. Remove duplicate text elements from the component\n2. Verify the visual layout matches the reference design\n3. Test the component to ensure selection functionality still works\n\nThe plan is ready for implementation using the `/implement` command.",
+  "plan_path": "specs/chore-80dbe69a-remove-duplicate-style-card-text.md"
+}

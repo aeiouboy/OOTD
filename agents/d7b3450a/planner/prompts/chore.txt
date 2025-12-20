@@ -1,0 +1,10 @@
+/chore d7b3450a Fix OnboardingStyle.tsx - the WRONG description was 
+  removed. Current state shows gray placeholder text INSIDE the card (like 'Less is more, clean, 
+  simple, neutral palette...') but the longDescription from fashion-styles.json that should 
+  appear BELOW the red title was removed. REVERSE this: 1) REMOVE the gray description text that 
+  appears INSIDE the card between the image and card border (this is the old styleOptions 
+  description field), 2) ADD BACK the longDescription paragraph that should appear BELOW the red 
+  style title heading. The card structure should be: [Image] -> [Style Title in red like 'Minimal
+   · Timeless'] -> [longDescription paragraph from fashion-styles.json like 'Clean lines, neutral
+   palettes, and quality basics...']. Check the fashion-styles.json file for the correct 
+  longDescription values.

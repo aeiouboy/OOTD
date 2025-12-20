@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "76c3b7fd",
+  "slash_command": "/chore",
+  "args": [
+    "76c3b7fd",
+    "Integrate Thai conversational chat journey into OOTDay Fashion Assistant UI following specs/chat-journey-integration.md. Update system prompt to use casual friendly Thai tone with social proof. Update ChatAssistant to show initial greeting. Enhance outfit cards to display Look title, full Thai descriptions, price in \u0e3f format, and '\u0e14\u0e39\u0e25\u0e38\u0e04' button. Update quick prompts with Thai fashion queries. Files to modify: frontend/lib/config/ai-config.ts, frontend/components/chat/ChatAssistant.tsx, frontend/components/chat/OutfitRecommendationCard.tsx, frontend/components/chat/QuickPrompts.tsx, frontend/lib/services/ai-chat-service.ts"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/tachongrak/Projects/OOTDay_Anti",
+  "success": true,
+  "session_id": "ef27fd12-5be4-44d9-adc3-6b2773fe8789",
+  "retry_code": "none",
+  "output": "The chore plan has been created successfully.\n\n**Plan File Created:** `specs/chore-76c3b7fd-thai-chat-journey-integration.md`\n\nThe plan covers integrating the Thai conversational chat journey into the OOTDay Fashion Assistant UI with these key tasks:\n\n1. **Add Initial Thai Greeting** to `ChatAssistant.tsx` - \"\u0e2d\u0e49\u0e32\u0e22\u0e2e\u0e32\u0e22\u0e22\ud83d\udc4b \u0e01\u0e33\u0e25\u0e31\u0e07\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e44\u0e2b\u0e19\u0e2d\u0e22\u0e39\u0e48\u0e19\u0e49\u0e32\u0e32\"\n2. **Update OutfitRecommendationCard** - Change \"View\" to \"\u0e14\u0e39\u0e25\u0e38\u0e04\", ensure full Thai descriptions display\n3. **Update QuickPrompts to Thai** - Replace English prompts with Thai fashion queries\n4. **Validate System Prompt** - Confirm the existing `system-prompt-v2.ts` (v2.5.0) already includes all required Thai conversational elements\n5. **Verify Outfit Type** - Confirm the existing `title` field supports Look titles\n6. **Test Integration** - Run dev server and validate all Thai UI elements\n\n**Note:** The spec mentioned `frontend/lib/config/ai-config.ts` but this file doesn't exist. The system prompt is already comprehensively implemented in `frontend/lib/prompts/system-prompt-v2.ts` with all the Thai conversational elements, social proof phrases, and Look format requirements.",
+  "plan_path": "specs/chore-76c3b7fd-thai-chat-journey-integration.md"
+}

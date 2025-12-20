@@ -1,0 +1,1160 @@
+[
+  {
+    "type": "system",
+    "subtype": "init",
+    "cwd": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend",
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "tools": [
+      "Task",
+      "Bash",
+      "Glob",
+      "Grep",
+      "ExitPlanMode",
+      "Read",
+      "Edit",
+      "Write",
+      "NotebookEdit",
+      "WebFetch",
+      "TodoWrite",
+      "WebSearch",
+      "BashOutput",
+      "KillShell",
+      "Skill",
+      "SlashCommand",
+      "EnterPlanMode"
+    ],
+    "mcp_servers": [],
+    "model": "claude-sonnet-4-5-20250929",
+    "permissionMode": "bypassPermissions",
+    "slash_commands": [
+      "init_worktree",
+      "feature",
+      "process_tasks",
+      "mark_in_progress",
+      "plan",
+      "prime",
+      "chore",
+      "build",
+      "update_task",
+      "clean_worktree",
+      "implement",
+      "compact",
+      "context",
+      "cost",
+      "init",
+      "pr-comments",
+      "release-notes",
+      "todos",
+      "review",
+      "security-review"
+    ],
+    "apiKeySource": "none",
+    "claude_code_version": "2.0.54",
+    "output_style": "default",
+    "agents": [
+      "general-purpose",
+      "statusline-setup",
+      "Explore",
+      "Plan"
+    ],
+    "skills": [],
+    "plugins": [],
+    "uuid": "4b24788c-b614-4d46-989e-f016653c863c"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01SmCSqhJ64sp2PPidsBiCEK",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "I'll create a plan to complete this chore. Let me first check if the referenced spec file exists and read it to understand the requirements."
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 5717,
+        "cache_read_input_tokens": 14161,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5717,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "6c9e5ce2-18d7-497e-97fd-cbe4f9fea9b8"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01SmCSqhJ64sp2PPidsBiCEK",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01CJv7QLPR29JTQHGYHaVbVi",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-d3a6581a-customer-journey-steps-3-4.md"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 5717,
+        "cache_read_input_tokens": 14161,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5717,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 5,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "af847c61-1dd6-4bde-a238-0ad19bb15789"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01SmCSqhJ64sp2PPidsBiCEK",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01KD49gUNVTAmw9LoazJ1pVF",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/README.md"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 3,
+        "cache_creation_input_tokens": 5717,
+        "cache_read_input_tokens": 14161,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5717,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 185,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "f063be6b-961c-4574-bc53-2aa334072347"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "type": "tool_result",
+          "content": "<tool_use_error>File does not exist.</tool_use_error>",
+          "is_error": true,
+          "tool_use_id": "toolu_01CJv7QLPR29JTQHGYHaVbVi"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "cae538d1-5caa-48f4-a11f-f4549d114598",
+    "tool_use_result": "Error: File does not exist."
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01KD49gUNVTAmw9LoazJ1pVF",
+          "type": "tool_result",
+          "content": "     1\u2192# OOTDay AI Fashion Assistant\n     2\u2192\n     3\u2192*Automatically synced with your [v0.app](https://v0.app) deployments*\n     4\u2192\n     5\u2192[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant)\n     6\u2192[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/4FuxrtD8iIi)\n     7\u2192\n     8\u2192## Overview\n     9\u2192\n    10\u2192This repository will stay in sync with your deployed chats on [v0.app](https://v0.app).\n    11\u2192Any changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).\n    12\u2192\n    13\u2192## Deployment\n    14\u2192\n    15\u2192Your project is live at:\n    16\u2192\n    17\u2192**[https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant](https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant)**\n    18\u2192\n    19\u2192## Build your app\n    20\u2192\n    21\u2192Continue building your app on:\n    22\u2192\n    23\u2192**[https://v0.app/chat/projects/4FuxrtD8iIi](https://v0.app/chat/projects/4FuxrtD8iIi)**\n    24\u2192\n    25\u2192## How It Works\n    26\u2192\n    27\u21921. Create and modify your project using [v0.app](https://v0.app)\n    28\u21922. Deploy your chats from the v0 interface\n    29\u21923. Changes are automatically pushed to this repository\n    30\u21924. Vercel deploys the latest version from this repository\n    31\u2192\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "ed2fedce-0bdf-4817-b2bf-6daa4edf8f93",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/README.md",
+        "content": "# OOTDay AI Fashion Assistant\n\n*Automatically synced with your [v0.app](https://v0.app) deployments*\n\n[![Deployed on Vercel](https://img.shields.io/badge/Deployed%20on-Vercel-black?style=for-the-badge&logo=vercel)](https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant)\n[![Built with v0](https://img.shields.io/badge/Built%20with-v0.app-black?style=for-the-badge)](https://v0.app/chat/projects/4FuxrtD8iIi)\n\n## Overview\n\nThis repository will stay in sync with your deployed chats on [v0.app](https://v0.app).\nAny changes you make to your deployed app will be automatically pushed to this repository from [v0.app](https://v0.app).\n\n## Deployment\n\nYour project is live at:\n\n**[https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant](https://vercel.com/naruechonwo-1125s-projects/v0-ootd-ay-ai-fashion-assistant)**\n\n## Build your app\n\nContinue building your app on:\n\n**[https://v0.app/chat/projects/4FuxrtD8iIi](https://v0.app/chat/projects/4FuxrtD8iIi)**\n\n## How It Works\n\n1. Create and modify your project using [v0.app](https://v0.app)\n2. Deploy your chats from the v0 interface\n3. Changes are automatically pushed to this repository\n4. Vercel deploys the latest version from this repository\n",
+        "numLines": 31,
+        "startLine": 1,
+        "totalLines": 31
+      }
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_012oWMEiJun1999wribWkxQj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Let me search for the referenced spec file and understand the customer journey steps:"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 872,
+        "cache_read_input_tokens": 19878,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 872,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "11918a59-b20e-4c91-8567-4557a75d4bf6"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_012oWMEiJun1999wribWkxQj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01JXGqzg2A3sZi9j9cd5bh1B",
+          "name": "Bash",
+          "input": {
+            "command": "find /Users/naruechon/Documents/Project/OOTDay_Anti -name \"*customer-journey*\" -type f 2>/dev/null | head -20",
+            "description": "Find customer journey related files"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 872,
+        "cache_read_input_tokens": 19878,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 872,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "c86ec29e-c7de-4ea1-8414-3ce08197067f"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_012oWMEiJun1999wribWkxQj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01DZXAM5gMf6NDsTjouBNe67",
+          "name": "Glob",
+          "input": {
+            "pattern": "specs/*.md"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 872,
+        "cache_read_input_tokens": 19878,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 872,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "8ae277b0-5621-4585-8beb-f41e0ae53891"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01DZXAM5gMf6NDsTjouBNe67",
+          "type": "tool_result",
+          "content": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-fd2f91e8-implement-journey-steps-3-4.md"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "4538638b-7540-49ad-8400-fccb23685d3b",
+    "tool_use_result": {
+      "filenames": [
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-fd2f91e8-implement-journey-steps-3-4.md"
+      ],
+      "durationMs": 624,
+      "numFiles": 1,
+      "truncated": false
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01JXGqzg2A3sZi9j9cd5bh1B",
+          "type": "tool_result",
+          "content": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/customer-journey-steps-3-4.md\n/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-d3a6581a-customer-journey-steps-3-4.md",
+          "is_error": false
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "c378ab01-631e-4885-a87b-e2829e8db02b",
+    "tool_use_result": {
+      "stdout": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/customer-journey-steps-3-4.md\n/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-d3a6581a-customer-journey-steps-3-4.md",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01QrfycoBYfugVqk4qeNMUMj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Now let me read the spec files to understand the requirements:"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 74,
+        "cache_creation_input_tokens": 276,
+        "cache_read_input_tokens": 20750,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 276,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "8fa28e53-8225-4c05-a856-37c9c1347186"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01QrfycoBYfugVqk4qeNMUMj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01PrQw87ajrasjaM7XvshDBK",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-d3a6581a-customer-journey-steps-3-4.md"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 74,
+        "cache_creation_input_tokens": 276,
+        "cache_read_input_tokens": 20750,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 276,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "0833c220-f9e4-4bbd-bd9f-f3e08e969ca7"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01QrfycoBYfugVqk4qeNMUMj",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_017LRyLjhYQrDhg4qc9EwjWp",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/customer-journey-steps-3-4.md"
+          }
+        }
+      ],
+      "stop_reason": "tool_use",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 74,
+        "cache_creation_input_tokens": 276,
+        "cache_read_input_tokens": 20750,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 276,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 174,
+        "service_tier": "standard"
+      },
+      "context_management": {
+        "applied_edits": []
+      }
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "ea83698d-983e-4a91-a933-db72999e4e1d"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01PrQw87ajrasjaM7XvshDBK",
+          "type": "tool_result",
+          "content": "     1\u2192# Chore: Implement Customer Journey Steps 3 & 4 - Friend Mode & Looks Inspiration\n     2\u2192\n     3\u2192## Metadata\n     4\u2192adw_id: `d3a6581a`\n     5\u2192prompt: `Implement Customer Journey Steps 3 (Talk with friend) and Step 4 (Looks inspiration) based on specs/customer-journey-steps-3-4.md. Create image generation service using OpenRouter with model google/gemini-2.5-flash-preview-05-20 for outfit visualization. Enhance system prompt for friend-like conversation. Add LooksInspiration component and integrate into chat flow.`\n     6\u2192\n     7\u2192## Chore Description\n     8\u2192\n     9\u2192This chore implements the next phase of the customer journey by enhancing the conversational experience (Step 3: \"Talk with friend\") and adding visual outfit inspiration capabilities (Step 4: \"Looks inspiration\").\n    10\u2192\n    11\u2192**Step 3 Goals:**\n    12\u2192- Enhance system prompt to create a more natural, friend-like conversational experience\n    13\u2192- Use more casual, friendly Thai language patterns\n    14\u2192- Remember user preferences across conversations\n    15\u2192- Provide proactive style suggestions based on context\n    16\u2192\n    17\u2192**Step 4 Goals:**\n    18\u2192- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model\n    19\u2192- Create service layer for outfit visualization\n    20\u2192- Add API endpoint for image generation\n    21\u2192- Build UI component to display generated outfit images\n    22\u2192- Integrate image generation into the chat flow with trigger detection\n    23\u2192\n    24\u2192**Technical Stack:**\n    25\u2192- OpenRouter API with `google/gemini-2.5-flash-preview-05-20` model\n    26\u2192- Next.js 14 API routes\n    27\u2192- React components with TypeScript\n    28\u2192- Existing chat infrastructure and session management\n    29\u2192\n    30\u2192## Relevant Files\n    31\u2192\n    32\u2192### Existing Files (Read and Modify)\n    33\u2192- **frontend/lib/prompts/system-prompt-v3.ts** - Current system prompt that needs friend-mode enhancement\n    34\u2192- **frontend/lib/services/ai-chat-service.ts** - Chat service that needs image generation integration\n    35\u2192- **frontend/components/chat/ChatInterface.tsx** - Main chat component that needs LooksInspiration integration\n    36\u2192- **frontend/app/api/chat/route.ts** - Chat API route that may need modifications for image requests\n    37\u2192- **frontend/.env.local** - Environment variables (needs OPENROUTER_API_KEY if not present)\n    38\u2192- **frontend/package.json** - Dependencies (check if any new packages needed)\n    39\u2192\n    40\u2192### New Files (To be Created)\n    41\u2192\n    42\u2192#### 1. Image Generation Service\n    43\u2192- **frontend/lib/services/image-generation-service.ts** - OpenRouter client for Gemini 2.5 Flash Image model with prompt engineering for fashion/outfit generation\n    44\u2192\n    45\u2192#### 2. API Route\n    46\u2192- **frontend/app/api/generate-image/route.ts** - POST endpoint for image generation requests\n    47\u2192\n    48\u2192#### 3. UI Component\n    49\u2192- **frontend/components/chat/LooksInspiration.tsx** - Component to display generated outfit images with loading/error states\n    50\u2192\n    51\u2192#### 4. Type Definitions\n    52\u2192- **frontend/lib/types/image-types.ts** - TypeScript types for image generation requests/responses\n    53\u2192\n    54\u2192#### 5. Utility Functions\n    55\u2192- **frontend/lib/utils/image-trigger-detector.ts** - Detect when user wants outfit visualization (e.g., \"show me\", \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\")\n    56\u2192\n    57\u2192## Step by Step Tasks\n    58\u2192IMPORTANT: Execute every step in order, top to bottom.\n    59\u2192\n    60\u2192### 1. Create Type Definitions for Image Generation\n    61\u2192- Create `frontend/lib/types/image-types.ts`\n    62\u2192- Define `ImageGenerationRequest` interface with outfit description and style parameters\n    63\u2192- Define `ImageGenerationResponse` interface with image URL/base64 and metadata\n    64\u2192- Define `LooksInspirationProps` interface for the UI component\n    65\u2192- Export all types\n    66\u2192\n    67\u2192### 2. Create Image Trigger Detection Utility\n    68\u2192- Create `frontend/lib/utils/image-trigger-detector.ts`\n    69\u2192- Implement `detectImageRequest(message: string): boolean` function\n    70\u2192- Add Thai and English trigger phrases: \"show me\", \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\", \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\", \"looks inspiration\", \"visualize\", \"\u0e14\u0e39\u0e23\u0e39\u0e1b\"\n    71\u2192- Implement `extractOutfitDescription(message: string, conversationHistory: array): string` function\n    72\u2192- Add unit tests for common patterns\n    73\u2192\n    74\u2192### 3. Create Image Generation Service Layer\n    75\u2192- Create `frontend/lib/services/image-generation-service.ts`\n    76\u2192- Implement `OpenRouterImageClient` class with:\n    77\u2192  - `generateOutfitImage(description: string, options?: object): Promise<ImageGenerationResponse>`\n    78\u2192  - Error handling with fallback messages\n    79\u2192  - Retry logic (max 2 retries)\n    80\u2192  - Timeout handling (30s timeout)\n    81\u2192- Add fashion-specific prompt engineering template:\n    82\u2192  - Professional photography style\n    83\u2192  - Clear outfit composition\n    84\u2192  - Thai fashion aesthetic considerations\n    85\u2192  - Central Group product representation\n    86\u2192- Add rate limiting check (client-side)\n    87\u2192- Add logging for debugging\n    88\u2192\n    89\u2192### 4. Create Image Generation API Route\n    90\u2192- Create `frontend/app/api/generate-image/route.ts`\n    91\u2192- Implement POST handler accepting `{ description: string, style?: object }`\n    92\u2192- Validate OPENROUTER_API_KEY environment variable\n    93\u2192- Call OpenRouter API with model `google/gemini-2.5-flash-preview-05-20`\n    94\u2192- Handle errors gracefully with appropriate status codes\n    95\u2192- Return `{ imageUrl?: string, imageBase64?: string, error?: string }`\n    96\u2192- Add request logging\n    97\u2192- Set appropriate CORS headers\n    98\u2192- Add rate limiting (server-side) - max 10 requests per minute per IP\n    99\u2192\n   100\u2192### 5. Create LooksInspiration UI Component\n   101\u2192- Create `frontend/components/chat/LooksInspiration.tsx`\n   102\u2192- Implement component with props: `{ outfitDescription: string, imageUrl?: string, isLoading?: boolean, error?: string }`\n   103\u2192- Add loading state with skeleton loader animation\n   104\u2192- Add error state with retry button and friendly error message\n   105\u2192- Add success state with:\n   106\u2192  - Image display with zoom capability (click to expand)\n   107\u2192  - Image caption with outfit description\n   108\u2192  - Download button (optional)\n   109\u2192  - \"Generate another\" button\n   110\u2192- Use shadcn/ui components (Dialog, Card, Button, Skeleton)\n   111\u2192- Add responsive design (mobile-first)\n   112\u2192- Add accessibility attributes (alt text, ARIA labels)\n   113\u2192\n   114\u2192### 6. Enhance System Prompt for Friend Mode\n   115\u2192- Update `frontend/lib/prompts/system-prompt-v3.ts`\n   116\u2192- Add new section: \"## FRIEND MODE - CONVERSATIONAL PERSONALITY \ud83d\udcac\"\n   117\u2192- Enhance Thai language guidelines:\n   118\u2192  - Use more casual particles: \"\u0e19\u0e30\", \"\u0e08\u0e49\u0e32\", \"\u0e40\u0e19\u0e2d\u0e30\", \"\u0e25\u0e48\u0e30\"\n   119\u2192  - Add friendly exclamations: \"\u0e40\u0e17\u0e48\u0e21\u0e32\u0e01!\", \"\u0e2a\u0e27\u0e22\u0e2a\u0e38\u0e14\u0e46!\", \"\u0e40\u0e02\u0e49\u0e32\u0e01\u0e31\u0e19\u0e21\u0e32\u0e01\u0e40\u0e25\u0e22!\"\n   120\u2192  - Use first-person naturally: \"\u0e40\u0e23\u0e32\u0e27\u0e48\u0e32...\", \"\u0e40\u0e23\u0e32\u0e21\u0e35\u0e44\u0e2d\u0e40\u0e14\u0e35\u0e22...\"\n   121\u2192- Add conversation memory instructions:\n   122\u2192  - Reference previous preferences naturally\n   123\u2192  - Build on earlier conversation context\n   124\u2192  - Show genuine interest in user's style journey\n   125\u2192- Add proactive suggestion triggers:\n   126\u2192  - When detecting special occasions, suggest complete looks\n   127\u2192  - When colors mentioned, suggest complementary pieces\n   128\u2192  - When budget mentioned, suggest value alternatives\n   129\u2192- Add examples of good vs. bad friend-like responses\n   130\u2192- Maintain all existing v3.0 features (state machine, validation, etc.)\n   131\u2192- Update version to v3.1 with metadata\n   132\u2192\n   133\u2192### 7. Integrate Image Generation into AI Chat Service\n   134\u2192- Update `frontend/lib/services/ai-chat-service.ts`\n   135\u2192- Import image trigger detector utility\n   136\u2192- In `processAIChatRequest` function:\n   137\u2192  - After guardrail check, add image request detection\n   138\u2192  - If image request detected:\n   139\u2192    - Extract outfit description from conversation context\n   140\u2192    - Return special response type: `{ message: string, imageRequest: true, outfitDescription: string }`\n   141\u2192    - Skip normal product recommendation flow\n   142\u2192- Add new response type in `ChatResponse` interface: `imageRequest?: boolean, outfitDescription?: string`\n   143\u2192- Add logging for image request detection\n   144\u2192\n   145\u2192### 8. Update ChatInterface to Handle Image Requests\n   146\u2192- Update `frontend/components/chat/ChatInterface.tsx`\n   147\u2192- Import `LooksInspiration` component\n   148\u2192- In `handleSendMessage` function:\n   149\u2192  - Check API response for `imageRequest` flag\n   150\u2192  - If true, call `/api/generate-image` endpoint\n   151\u2192  - Display `LooksInspiration` component in message thread\n   152\u2192  - Handle loading state during image generation\n   153\u2192  - Handle errors from image generation\n   154\u2192- Add new message type for image responses in chat history\n   155\u2192- Update message rendering to support LooksInspiration blocks\n   156\u2192- Add retry mechanism for failed image generations\n   157\u2192\n   158\u2192### 9. Update ChatMessage Component for Image Display\n   159\u2192- Update `frontend/components/chat/ChatMessage.tsx` (or create if doesn't exist)\n   160\u2192- Add support for rendering `LooksInspiration` component within messages\n   161\u2192- Handle image message type differently from text/outfit recommendations\n   162\u2192- Add proper spacing and styling for image blocks\n   163\u2192- Ensure mobile responsiveness\n   164\u2192\n   165\u2192### 10. Add Environment Variable Configuration\n   166\u2192- Update `frontend/.env.example` with:\n   167\u2192  - `OPENROUTER_API_KEY=your_openrouter_api_key_here`\n   168\u2192  - `NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=true` (feature flag)\n   169\u2192- Document the environment variable in README or inline comments\n   170\u2192\n   171\u2192### 11. Test Image Generation Flow End-to-End\n   172\u2192- Test trigger detection with various Thai and English phrases\n   173\u2192- Test image generation with different outfit descriptions:\n   174\u2192  - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n   175\u2192  - \"Show me a casual weekend outfit\"\n   176\u2192  - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e07\u0e32\u0e19\u0e41\u0e15\u0e48\u0e07\u0e07\u0e32\u0e19\"\n   177\u2192- Test error handling:\n   178\u2192  - Invalid API key\n   179\u2192  - Network timeout\n   180\u2192  - Rate limit exceeded\n   181\u2192- Test loading states and UI transitions\n   182\u2192- Test on mobile and desktop viewports\n   183\u2192- Verify accessibility (keyboard navigation, screen readers)\n   184\u2192\n   185\u2192### 12. Update Documentation and Add Usage Examples\n   186\u2192- Add inline code comments for image generation service\n   187\u2192- Document OpenRouter model usage and pricing implications\n   188\u2192- Add example requests/responses in comments\n   189\u2192- Document trigger phrases for future reference\n   190\u2192- Update any relevant technical documentation\n   191\u2192\n   192\u2192## Validation Commands\n   193\u2192Execute these commands to validate the chore is complete:\n   194\u2192\n   195\u2192- `cd frontend && pnpm install` - Ensure all dependencies are installed\n   196\u2192- `cd frontend && pnpm lint` - Verify no linting errors\n   197\u2192- `cd frontend && pnpm build` - Ensure production build succeeds without errors\n   198\u2192- `cd frontend && pnpm test` - Run unit tests for new utilities (if tests created)\n   199\u2192- **Manual Testing:**\n   200\u2192  - Start dev server: `cd frontend && pnpm dev`\n   201\u2192  - Navigate to chat interface at `http://localhost:3000`\n   202\u2192  - Test friend-mode conversation by asking: \"\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e48\u0e30 \u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\"\n   203\u2192  - Verify friendly, casual Thai responses\n   204\u2192  - Test image generation by saying: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\" or \"show me what this looks like\"\n   205\u2192  - Verify image loads, or error handling works if API key not configured\n   206\u2192  - Test mobile responsiveness in browser DevTools\n   207\u2192  - Test error states by temporarily using invalid API key\n   208\u2192\n   209\u2192## Notes\n   210\u2192\n   211\u2192### OpenRouter API Considerations\n   212\u2192- Model: `google/gemini-2.5-flash-preview-05-20`\n   213\u2192- Pricing: Check OpenRouter pricing page for current rates (likely ~$0.0001/image)\n   214\u2192- Context window: 1M tokens (very large)\n   215\u2192- Capabilities: text-to-image, vision\n   216\u2192- May require special API permissions or model access approval\n   217\u2192\n   218\u2192### Fashion Image Prompt Engineering Tips\n   219\u2192- Use clear descriptive language: \"A professional photograph of a [outfit type]\"\n   220\u2192- Include style keywords: \"Thai contemporary fashion\", \"elegant\", \"casual chic\"\n   221\u2192- Specify composition: \"full body shot\", \"outfit flat lay\", \"styled mannequin\"\n   222\u2192- Add lighting/mood: \"natural lighting\", \"studio photography\", \"soft shadows\"\n   223\u2192- Avoid ambiguity: Be specific about colors, patterns, silhouettes\n   224\u2192\n   225\u2192### Performance Considerations\n   226\u2192- Image generation can take 5-30 seconds\n   227\u2192- Show clear loading indicators to set user expectations\n   228\u2192- Consider caching generated images (future enhancement)\n   229\u2192- Rate limiting is essential to control costs\n   230\u2192- Consider implementing request queue for high traffic\n   231\u2192\n   232\u2192### Future Enhancements (Out of Scope for This Chore)\n   233\u2192- Image history/gallery feature\n   234\u2192- Save favorite generated looks\n   235\u2192- Share generated images on social media\n   236\u2192- Generate multiple variations at once\n   237\u2192- Fine-tune prompts based on user feedback\n   238\u2192- Integration with virtual try-on (Step 5)\n   239\u2192\n   240\u2192### Accessibility Requirements\n   241\u2192- All images must have descriptive alt text\n   242\u2192- Loading states must be announced to screen readers\n   243\u2192- Keyboard navigation must work for all interactive elements\n   244\u2192- Color contrast must meet WCAG AA standards\n   245\u2192- Error messages must be clear and actionable\n   246\u2192\n   247\u2192### Testing Scenarios\n   248\u21921. **Happy Path**: User asks for outfit, then asks \"show me\" \u2192 Image generates successfully\n   249\u21922. **No API Key**: Feature gracefully disabled with helpful message\n   250\u21923. **API Error**: Timeout or error \u2192 Clear error message with retry option\n   251\u21924. **Rate Limited**: Too many requests \u2192 \"Please wait\" message with countdown\n   252\u21925. **Unclear Request**: Vague outfit description \u2192 AI asks clarifying question first\n   253\u21926. **Mobile Usage**: All features work on small screens\n   254\u21927. **Slow Network**: Loading indicators show, no UI freezing\n   255\u2192\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "d5202c0c-d87b-4248-a4b9-f5e7347d32c3",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-d3a6581a-customer-journey-steps-3-4.md",
+        "content": "# Chore: Implement Customer Journey Steps 3 & 4 - Friend Mode & Looks Inspiration\n\n## Metadata\nadw_id: `d3a6581a`\nprompt: `Implement Customer Journey Steps 3 (Talk with friend) and Step 4 (Looks inspiration) based on specs/customer-journey-steps-3-4.md. Create image generation service using OpenRouter with model google/gemini-2.5-flash-preview-05-20 for outfit visualization. Enhance system prompt for friend-like conversation. Add LooksInspiration component and integrate into chat flow.`\n\n## Chore Description\n\nThis chore implements the next phase of the customer journey by enhancing the conversational experience (Step 3: \"Talk with friend\") and adding visual outfit inspiration capabilities (Step 4: \"Looks inspiration\").\n\n**Step 3 Goals:**\n- Enhance system prompt to create a more natural, friend-like conversational experience\n- Use more casual, friendly Thai language patterns\n- Remember user preferences across conversations\n- Provide proactive style suggestions based on context\n\n**Step 4 Goals:**\n- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model\n- Create service layer for outfit visualization\n- Add API endpoint for image generation\n- Build UI component to display generated outfit images\n- Integrate image generation into the chat flow with trigger detection\n\n**Technical Stack:**\n- OpenRouter API with `google/gemini-2.5-flash-preview-05-20` model\n- Next.js 14 API routes\n- React components with TypeScript\n- Existing chat infrastructure and session management\n\n## Relevant Files\n\n### Existing Files (Read and Modify)\n- **frontend/lib/prompts/system-prompt-v3.ts** - Current system prompt that needs friend-mode enhancement\n- **frontend/lib/services/ai-chat-service.ts** - Chat service that needs image generation integration\n- **frontend/components/chat/ChatInterface.tsx** - Main chat component that needs LooksInspiration integration\n- **frontend/app/api/chat/route.ts** - Chat API route that may need modifications for image requests\n- **frontend/.env.local** - Environment variables (needs OPENROUTER_API_KEY if not present)\n- **frontend/package.json** - Dependencies (check if any new packages needed)\n\n### New Files (To be Created)\n\n#### 1. Image Generation Service\n- **frontend/lib/services/image-generation-service.ts** - OpenRouter client for Gemini 2.5 Flash Image model with prompt engineering for fashion/outfit generation\n\n#### 2. API Route\n- **frontend/app/api/generate-image/route.ts** - POST endpoint for image generation requests\n\n#### 3. UI Component\n- **frontend/components/chat/LooksInspiration.tsx** - Component to display generated outfit images with loading/error states\n\n#### 4. Type Definitions\n- **frontend/lib/types/image-types.ts** - TypeScript types for image generation requests/responses\n\n#### 5. Utility Functions\n- **frontend/lib/utils/image-trigger-detector.ts** - Detect when user wants outfit visualization (e.g., \"show me\", \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\")\n\n## Step by Step Tasks\nIMPORTANT: Execute every step in order, top to bottom.\n\n### 1. Create Type Definitions for Image Generation\n- Create `frontend/lib/types/image-types.ts`\n- Define `ImageGenerationRequest` interface with outfit description and style parameters\n- Define `ImageGenerationResponse` interface with image URL/base64 and metadata\n- Define `LooksInspirationProps` interface for the UI component\n- Export all types\n\n### 2. Create Image Trigger Detection Utility\n- Create `frontend/lib/utils/image-trigger-detector.ts`\n- Implement `detectImageRequest(message: string): boolean` function\n- Add Thai and English trigger phrases: \"show me\", \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\", \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\", \"looks inspiration\", \"visualize\", \"\u0e14\u0e39\u0e23\u0e39\u0e1b\"\n- Implement `extractOutfitDescription(message: string, conversationHistory: array): string` function\n- Add unit tests for common patterns\n\n### 3. Create Image Generation Service Layer\n- Create `frontend/lib/services/image-generation-service.ts`\n- Implement `OpenRouterImageClient` class with:\n  - `generateOutfitImage(description: string, options?: object): Promise<ImageGenerationResponse>`\n  - Error handling with fallback messages\n  - Retry logic (max 2 retries)\n  - Timeout handling (30s timeout)\n- Add fashion-specific prompt engineering template:\n  - Professional photography style\n  - Clear outfit composition\n  - Thai fashion aesthetic considerations\n  - Central Group product representation\n- Add rate limiting check (client-side)\n- Add logging for debugging\n\n### 4. Create Image Generation API Route\n- Create `frontend/app/api/generate-image/route.ts`\n- Implement POST handler accepting `{ description: string, style?: object }`\n- Validate OPENROUTER_API_KEY environment variable\n- Call OpenRouter API with model `google/gemini-2.5-flash-preview-05-20`\n- Handle errors gracefully with appropriate status codes\n- Return `{ imageUrl?: string, imageBase64?: string, error?: string }`\n- Add request logging\n- Set appropriate CORS headers\n- Add rate limiting (server-side) - max 10 requests per minute per IP\n\n### 5. Create LooksInspiration UI Component\n- Create `frontend/components/chat/LooksInspiration.tsx`\n- Implement component with props: `{ outfitDescription: string, imageUrl?: string, isLoading?: boolean, error?: string }`\n- Add loading state with skeleton loader animation\n- Add error state with retry button and friendly error message\n- Add success state with:\n  - Image display with zoom capability (click to expand)\n  - Image caption with outfit description\n  - Download button (optional)\n  - \"Generate another\" button\n- Use shadcn/ui components (Dialog, Card, Button, Skeleton)\n- Add responsive design (mobile-first)\n- Add accessibility attributes (alt text, ARIA labels)\n\n### 6. Enhance System Prompt for Friend Mode\n- Update `frontend/lib/prompts/system-prompt-v3.ts`\n- Add new section: \"## FRIEND MODE - CONVERSATIONAL PERSONALITY \ud83d\udcac\"\n- Enhance Thai language guidelines:\n  - Use more casual particles: \"\u0e19\u0e30\", \"\u0e08\u0e49\u0e32\", \"\u0e40\u0e19\u0e2d\u0e30\", \"\u0e25\u0e48\u0e30\"\n  - Add friendly exclamations: \"\u0e40\u0e17\u0e48\u0e21\u0e32\u0e01!\", \"\u0e2a\u0e27\u0e22\u0e2a\u0e38\u0e14\u0e46!\", \"\u0e40\u0e02\u0e49\u0e32\u0e01\u0e31\u0e19\u0e21\u0e32\u0e01\u0e40\u0e25\u0e22!\"\n  - Use first-person naturally: \"\u0e40\u0e23\u0e32\u0e27\u0e48\u0e32...\", \"\u0e40\u0e23\u0e32\u0e21\u0e35\u0e44\u0e2d\u0e40\u0e14\u0e35\u0e22...\"\n- Add conversation memory instructions:\n  - Reference previous preferences naturally\n  - Build on earlier conversation context\n  - Show genuine interest in user's style journey\n- Add proactive suggestion triggers:\n  - When detecting special occasions, suggest complete looks\n  - When colors mentioned, suggest complementary pieces\n  - When budget mentioned, suggest value alternatives\n- Add examples of good vs. bad friend-like responses\n- Maintain all existing v3.0 features (state machine, validation, etc.)\n- Update version to v3.1 with metadata\n\n### 7. Integrate Image Generation into AI Chat Service\n- Update `frontend/lib/services/ai-chat-service.ts`\n- Import image trigger detector utility\n- In `processAIChatRequest` function:\n  - After guardrail check, add image request detection\n  - If image request detected:\n    - Extract outfit description from conversation context\n    - Return special response type: `{ message: string, imageRequest: true, outfitDescription: string }`\n    - Skip normal product recommendation flow\n- Add new response type in `ChatResponse` interface: `imageRequest?: boolean, outfitDescription?: string`\n- Add logging for image request detection\n\n### 8. Update ChatInterface to Handle Image Requests\n- Update `frontend/components/chat/ChatInterface.tsx`\n- Import `LooksInspiration` component\n- In `handleSendMessage` function:\n  - Check API response for `imageRequest` flag\n  - If true, call `/api/generate-image` endpoint\n  - Display `LooksInspiration` component in message thread\n  - Handle loading state during image generation\n  - Handle errors from image generation\n- Add new message type for image responses in chat history\n- Update message rendering to support LooksInspiration blocks\n- Add retry mechanism for failed image generations\n\n### 9. Update ChatMessage Component for Image Display\n- Update `frontend/components/chat/ChatMessage.tsx` (or create if doesn't exist)\n- Add support for rendering `LooksInspiration` component within messages\n- Handle image message type differently from text/outfit recommendations\n- Add proper spacing and styling for image blocks\n- Ensure mobile responsiveness\n\n### 10. Add Environment Variable Configuration\n- Update `frontend/.env.example` with:\n  - `OPENROUTER_API_KEY=your_openrouter_api_key_here`\n  - `NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=true` (feature flag)\n- Document the environment variable in README or inline comments\n\n### 11. Test Image Generation Flow End-to-End\n- Test trigger detection with various Thai and English phrases\n- Test image generation with different outfit descriptions:\n  - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n  - \"Show me a casual weekend outfit\"\n  - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e07\u0e32\u0e19\u0e41\u0e15\u0e48\u0e07\u0e07\u0e32\u0e19\"\n- Test error handling:\n  - Invalid API key\n  - Network timeout\n  - Rate limit exceeded\n- Test loading states and UI transitions\n- Test on mobile and desktop viewports\n- Verify accessibility (keyboard navigation, screen readers)\n\n### 12. Update Documentation and Add Usage Examples\n- Add inline code comments for image generation service\n- Document OpenRouter model usage and pricing implications\n- Add example requests/responses in comments\n- Document trigger phrases for future reference\n- Update any relevant technical documentation\n\n## Validation Commands\nExecute these commands to validate the chore is complete:\n\n- `cd frontend && pnpm install` - Ensure all dependencies are installed\n- `cd frontend && pnpm lint` - Verify no linting errors\n- `cd frontend && pnpm build` - Ensure production build succeeds without errors\n- `cd frontend && pnpm test` - Run unit tests for new utilities (if tests created)\n- **Manual Testing:**\n  - Start dev server: `cd frontend && pnpm dev`\n  - Navigate to chat interface at `http://localhost:3000`\n  - Test friend-mode conversation by asking: \"\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e48\u0e30 \u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\"\n  - Verify friendly, casual Thai responses\n  - Test image generation by saying: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\" or \"show me what this looks like\"\n  - Verify image loads, or error handling works if API key not configured\n  - Test mobile responsiveness in browser DevTools\n  - Test error states by temporarily using invalid API key\n\n## Notes\n\n### OpenRouter API Considerations\n- Model: `google/gemini-2.5-flash-preview-05-20`\n- Pricing: Check OpenRouter pricing page for current rates (likely ~$0.0001/image)\n- Context window: 1M tokens (very large)\n- Capabilities: text-to-image, vision\n- May require special API permissions or model access approval\n\n### Fashion Image Prompt Engineering Tips\n- Use clear descriptive language: \"A professional photograph of a [outfit type]\"\n- Include style keywords: \"Thai contemporary fashion\", \"elegant\", \"casual chic\"\n- Specify composition: \"full body shot\", \"outfit flat lay\", \"styled mannequin\"\n- Add lighting/mood: \"natural lighting\", \"studio photography\", \"soft shadows\"\n- Avoid ambiguity: Be specific about colors, patterns, silhouettes\n\n### Performance Considerations\n- Image generation can take 5-30 seconds\n- Show clear loading indicators to set user expectations\n- Consider caching generated images (future enhancement)\n- Rate limiting is essential to control costs\n- Consider implementing request queue for high traffic\n\n### Future Enhancements (Out of Scope for This Chore)\n- Image history/gallery feature\n- Save favorite generated looks\n- Share generated images on social media\n- Generate multiple variations at once\n- Fine-tune prompts based on user feedback\n- Integration with virtual try-on (Step 5)\n\n### Accessibility Requirements\n- All images must have descriptive alt text\n- Loading states must be announced to screen readers\n- Keyboard navigation must work for all interactive elements\n- Color contrast must meet WCAG AA standards\n- Error messages must be clear and actionable\n\n### Testing Scenarios\n1. **Happy Path**: User asks for outfit, then asks \"show me\" \u2192 Image generates successfully\n2. **No API Key**: Feature gracefully disabled with helpful message\n3. **API Error**: Timeout or error \u2192 Clear error message with retry option\n4. **Rate Limited**: Too many requests \u2192 \"Please wait\" message with countdown\n5. **Unclear Request**: Vague outfit description \u2192 AI asks clarifying question first\n6. **Mobile Usage**: All features work on small screens\n7. **Slow Network**: Loading indicators show, no UI freezing\n",
+        "numLines": 255,
+        "startLine": 1,
+        "totalLines": 255
+      }
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_017LRyLjhYQrDhg4qc9EwjWp",
+          "type": "tool_result",
+          "content": "     1\u2192# Customer Journey Implementation: Steps 3 & 4\n     2\u2192\n     3\u2192## Overview\n     4\u2192\n     5\u2192Implement support for Customer Journey Steps 3 (\"Talk with friend\") and Step 4 (\"Looks inspiration\") with text-to-image generation using the Gemini 2.5 Flash Image model from OpenRouter.\n     6\u2192\n     7\u2192## Customer Journey Context\n     8\u2192\n     9\u2192From the customer journey diagram:\n    10\u21921. **Step 1**: User asks \"Hay friend! What should I wear to office?\"\n    11\u21922. **Step 2**: \"Know you\" - OOTDay learns about user preferences\n    12\u21923. **Step 3**: \"Talk with friend\" - Conversational fashion advice (TARGET)\n    13\u21924. **Step 4**: \"Looks inspiration\" - Visual outfit inspiration (TARGET)\n    14\u21925. **Step 5**: \"Let's try-on\" - Virtual try-on\n    15\u21926. **Step 6**: \"Close the sale\" - Purchase on Central\n    16\u2192\n    17\u2192## Requirements\n    18\u2192\n    19\u2192### Step 3: \"Talk with friend\" Enhancement\n    20\u2192\n    21\u2192Enhance the system prompt to create a more friend-like conversational experience:\n    22\u2192- More casual, friendly Thai language patterns\n    23\u2192- Remember user preferences across conversation\n    24\u2192- Proactive style suggestions based on context\n    25\u2192- Natural flow like chatting with a fashion-savvy friend\n    26\u2192\n    27\u2192### Step 4: \"Looks inspiration\" - Image Generation\n    28\u2192\n    29\u2192Implement text-to-image generation for outfit visualization:\n    30\u2192- Use OpenRouter API with model: `google/gemini-2.5-flash-preview-05-20`\n    31\u2192- Generate outfit inspiration images based on user queries\n    32\u2192- Display generated images in the chat interface\n    33\u2192- Allow users to request \"show me what this looks like\"\n    34\u2192\n    35\u2192## Technical Implementation\n    36\u2192\n    37\u2192### 1. Image Generation Service\n    38\u2192\n    39\u2192Create `/frontend/lib/services/image-generation-service.ts`:\n    40\u2192- OpenRouter client for Gemini 2.5 Flash Image model\n    41\u2192- Prompt engineering for fashion/outfit image generation\n    42\u2192- Error handling and fallback\n    43\u2192\n    44\u2192### 2. Image Generation API Route\n    45\u2192\n    46\u2192Create `/frontend/app/api/generate-image/route.ts`:\n    47\u2192- POST endpoint accepting outfit description\n    48\u2192- Returns generated image URL or base64\n    49\u2192- Rate limiting consideration\n    50\u2192\n    51\u2192### 3. System Prompt Enhancement\n    52\u2192\n    53\u2192Update `/frontend/lib/prompts/system-prompt-v2.ts`:\n    54\u2192- Add \"friend mode\" persona enhancement\n    55\u2192- Include triggers for image generation (e.g., \"show me\", \"visualize\")\n    56\u2192- Natural conversation flow for inspiration requests\n    57\u2192\n    58\u2192### 4. UI Component\n    59\u2192\n    60\u2192Create `/frontend/components/chat/LooksInspiration.tsx`:\n    61\u2192- Display generated outfit images\n    62\u2192- Loading state with skeleton\n    63\u2192- Error state handling\n    64\u2192- Image zoom/expand capability\n    65\u2192\n    66\u2192### 5. Chat Integration\n    67\u2192\n    68\u2192Update `/frontend/components/chat/ChatInterface.tsx`:\n    69\u2192- Detect when user wants outfit visualization\n    70\u2192- Trigger image generation\n    71\u2192- Display results in chat flow\n    72\u2192\n    73\u2192## Model Configuration\n    74\u2192\n    75\u2192```json\n    76\u2192{\n    77\u2192  \"id\": \"google/gemini-2.5-flash-preview-05-20\",\n    78\u2192  \"name\": \"Gemini 2.5 Flash (Image)\",\n    79\u2192  \"provider\": \"Google\",\n    80\u2192  \"capabilities\": [\"text-to-image\", \"vision\"],\n    81\u2192  \"contextWindow\": 1000000\n    82\u2192}\n    83\u2192```\n    84\u2192\n    85\u2192## API Request Format\n    86\u2192\n    87\u2192```typescript\n    88\u2192// OpenRouter request for image generation\n    89\u2192{\n    90\u2192  model: \"google/gemini-2.5-flash-preview-05-20\",\n    91\u2192  messages: [\n    92\u2192    {\n    93\u2192      role: \"user\",\n    94\u2192      content: \"Generate a fashion outfit image: [outfit description]\"\n    95\u2192    }\n    96\u2192  ]\n    97\u2192}\n    98\u2192```\n    99\u2192\n   100\u2192## Success Criteria\n   101\u2192\n   102\u21921. Users can have natural, friend-like conversations about fashion\n   103\u21922. Users can request outfit visualizations with phrases like:\n   104\u2192   - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\" (show me)\n   105\u2192   - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\" (want to see how it looks)\n   106\u2192   - \"Looks inspiration\"\n   107\u21923. Generated images appear in the chat flow\n   108\u21924. Smooth integration with existing chat functionality\n   109\u2192\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "d2c2f211-2f59-471a-8225-1c7d2140d891",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/specs/customer-journey-steps-3-4.md",
+        "content": "# Customer Journey Implementation: Steps 3 & 4\n\n## Overview\n\nImplement support for Customer Journey Steps 3 (\"Talk with friend\") and Step 4 (\"Looks inspiration\") with text-to-image generation using the Gemini 2.5 Flash Image model from OpenRouter.\n\n## Customer Journey Context\n\nFrom the customer journey diagram:\n1. **Step 1**: User asks \"Hay friend! What should I wear to office?\"\n2. **Step 2**: \"Know you\" - OOTDay learns about user preferences\n3. **Step 3**: \"Talk with friend\" - Conversational fashion advice (TARGET)\n4. **Step 4**: \"Looks inspiration\" - Visual outfit inspiration (TARGET)\n5. **Step 5**: \"Let's try-on\" - Virtual try-on\n6. **Step 6**: \"Close the sale\" - Purchase on Central\n\n## Requirements\n\n### Step 3: \"Talk with friend\" Enhancement\n\nEnhance the system prompt to create a more friend-like conversational experience:\n- More casual, friendly Thai language patterns\n- Remember user preferences across conversation\n- Proactive style suggestions based on context\n- Natural flow like chatting with a fashion-savvy friend\n\n### Step 4: \"Looks inspiration\" - Image Generation\n\nImplement text-to-image generation for outfit visualization:\n- Use OpenRouter API with model: `google/gemini-2.5-flash-preview-05-20`\n- Generate outfit inspiration images based on user queries\n- Display generated images in the chat interface\n- Allow users to request \"show me what this looks like\"\n\n## Technical Implementation\n\n### 1. Image Generation Service\n\nCreate `/frontend/lib/services/image-generation-service.ts`:\n- OpenRouter client for Gemini 2.5 Flash Image model\n- Prompt engineering for fashion/outfit image generation\n- Error handling and fallback\n\n### 2. Image Generation API Route\n\nCreate `/frontend/app/api/generate-image/route.ts`:\n- POST endpoint accepting outfit description\n- Returns generated image URL or base64\n- Rate limiting consideration\n\n### 3. System Prompt Enhancement\n\nUpdate `/frontend/lib/prompts/system-prompt-v2.ts`:\n- Add \"friend mode\" persona enhancement\n- Include triggers for image generation (e.g., \"show me\", \"visualize\")\n- Natural conversation flow for inspiration requests\n\n### 4. UI Component\n\nCreate `/frontend/components/chat/LooksInspiration.tsx`:\n- Display generated outfit images\n- Loading state with skeleton\n- Error state handling\n- Image zoom/expand capability\n\n### 5. Chat Integration\n\nUpdate `/frontend/components/chat/ChatInterface.tsx`:\n- Detect when user wants outfit visualization\n- Trigger image generation\n- Display results in chat flow\n\n## Model Configuration\n\n```json\n{\n  \"id\": \"google/gemini-2.5-flash-preview-05-20\",\n  \"name\": \"Gemini 2.5 Flash (Image)\",\n  \"provider\": \"Google\",\n  \"capabilities\": [\"text-to-image\", \"vision\"],\n  \"contextWindow\": 1000000\n}\n```\n\n## API Request Format\n\n```typescript\n// OpenRouter request for image generation\n{\n  model: \"google/gemini-2.5-flash-preview-05-20\",\n  messages: [\n    {\n      role: \"user\",\n      content: \"Generate a fashion outfit image: [outfit description]\"\n    }\n  ]\n}\n```\n\n## Success Criteria\n\n1. Users can have natural, friend-like conversations about fashion\n2. Users can request outfit visualizations with phrases like:\n   - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\" (show me)\n   - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\" (want to see how it looks)\n   - \"Looks inspiration\"\n3. Generated images appear in the chat flow\n4. Smooth integration with existing chat functionality\n",
+        "numLines": 109,
+        "startLine": 1,
+        "totalLines": 109
+      }
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_017q4yACfzFoEUBN4QMEZLDZ",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Perfect! I can see the detailed spec file already exists. Now I need to create a new plan file based on the same chore but for the current execution. Let me explore the codebase structure to understand the current implementation:"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 5820,
+        "cache_read_input_tokens": 21026,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5820,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "3c9666d2-4e3c-46a0-8e00-aff1d5a908cd"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_017q4yACfzFoEUBN4QMEZLDZ",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01DVa9QouuzdN8wu4vfFQ9ns",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/prompts/system-prompt-v3.ts"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 5820,
+        "cache_read_input_tokens": 21026,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5820,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "d49f5e24-aacf-47ac-b309-b1f89c264a44"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_017q4yACfzFoEUBN4QMEZLDZ",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01HUBFLjcrEYXqR4vJ9foQ3h",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/services/ai-chat-service.ts",
+            "limit": 100
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 5820,
+        "cache_read_input_tokens": 21026,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5820,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "325fce15-352e-428f-9dac-81bfe33db047"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_017q4yACfzFoEUBN4QMEZLDZ",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01F2dKqsXau2oSPZySDFBVPG",
+          "name": "Glob",
+          "input": {
+            "pattern": "components/chat/*.tsx"
+          }
+        }
+      ],
+      "stop_reason": "tool_use",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 5820,
+        "cache_read_input_tokens": 21026,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 5820,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 257,
+        "service_tier": "standard"
+      },
+      "context_management": {
+        "applied_edits": []
+      }
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "794778b7-98d1-4cf0-89ee-9d7f45021c64"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01DVa9QouuzdN8wu4vfFQ9ns",
+          "type": "tool_result",
+          "content": "     1\u2192/**\n     2\u2192 * OOTDay Fashion Assistant - System Prompt v3.0\n     3\u2192 *\n     4\u2192 * Major update with STRICT STATE MACHINE enforcement:\n     5\u2192 * - Binary decision: CLARIFY FIRST \u2192 RECOMMEND SECOND (never mix)\n     6\u2192 * - POST-RECOMMENDATION LOCKOUT (critical fix)\n     7\u2192 * - Response validation checkpoints\n     8\u2192 * - Maintains all v2.1 enhancements\n     9\u2192 *\n    10\u2192 * Based on: DialogTemplate14-2.md\n    11\u2192 * Previous Version: v2.1 (Loop Prevention)\n    12\u2192 * Related PRD: 0007-prd-system-prompt-v3-clarification-fix.md\n    13\u2192 *\n    14\u2192 * @version 3.0.0\n    15\u2192 * @lastUpdated 2025-10-16\n    16\u2192 */\n    17\u2192\n    18\u2192export const SYSTEM_PROMPT_V3 = \\`# OOTDay Fashion Assistant - System Prompt v3.0\n    19\u2192\n    20\u2192## CRITICAL: CONVERSATION FLOW STATE MACHINE \ud83d\udd10\n    21\u2192**THIS IS THE MOST IMPORTANT SECTION - READ CAREFULLY!**\n    22\u2192\n    23\u2192You MUST operate in ONE of three EXCLUSIVE modes per response. These modes are mutually exclusive - you CANNOT mix them.\n    24\u2192\n    25\u2192### The Three Exclusive Modes:\n    26\u2192\n    27\u2192**MODE 1: CLARIFICATION** \ud83e\udd14\n    28\u2192- Ask questions ONLY\n    29\u2192- NO product recommendations\n    30\u2192- NO styling tips\n    31\u2192- NO prices or links\n    32\u2192\n    33\u2192**MODE 2: RECOMMENDATION** \ud83d\udecd\ufe0f\n    34\u2192- Show products ONLY\n    35\u2192- NO questions\n    36\u2192- NO clarifications\n    37\u2192- NO confirmations\n    38\u2192\n    39\u2192**MODE 3: REDIRECT** \ud83d\udeab\n    40\u2192- Off-topic handling ONLY\n    41\u2192- NO questions\n    42\u2192- NO products\n    43\u2192\n    44\u2192**CRITICAL RULE: Choose ONE mode. Execute ONLY that mode. STOP.**\n    45\u2192\n    46\u2192---\n    47\u2192\n    48\u2192## STATE 1: CLARIFICATION MODE \ud83e\udd14\n    49\u2192\n    50\u2192### WHEN TO USE:\n    51\u2192- Missing critical information (gender OR occasion for CLOTHS)\n    52\u2192- Haven't asked 2 clarifications yet\n    53\u2192- Haven't provided recommendations yet (hasProvidedRecommendations = false)\n    54\u2192\n    55\u2192### WHAT TO DO:\n    56\u21921. Ask ONE clarifying question in friendly Thai\n    57\u21922. Use appropriate emoji (\ud83d\udc54\ud83d\udc57 for gender, \ud83c\udf89 for occasion, \ud83c\udf34\u2744\ufe0f for destination)\n    58\u21923. Be warm and conversational\n    59\u2192\n    60\u2192### STRICT RULES - WHAT YOU MUST NOT DO:\n    61\u2192\u274c NO product recommendations\n    62\u2192\u274c NO product names or brands\n    63\u2192\u274c NO styling tips\n    64\u2192\u274c NO prices (\ud83d\udcb0)\n    65\u2192\u274c NO links (\ud83d\udd17)\n    66\u2192\u274c NO \"Let me show you...\" or \"Here are some options...\"\n    67\u2192\u274c NO multiple questions in one response\n    68\u2192\n    69\u2192### GOOD EXAMPLE - CLARIFICATION MODE:\n    70\u2192\\`\\`\\`\n    71\u2192User: \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\"\n    72\u2192AI: \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57\"\n    73\u2192\n    74\u2192[STOP HERE - NO PRODUCTS]\n    75\u2192\\`\\`\\`\n    76\u2192**\u2705 CORRECT:** Only question, no products, friendly tone, emoji.\n    77\u2192\n    78\u2192### BAD EXAMPLE - DO NOT DO THIS:\n    79\u2192\\`\\`\\`\n    80\u2192User: \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\"\n    81\u2192AI: \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e27\u0e22\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22...\"\n    82\u2192\n    83\u2192[WRONG - Mixed question with products]\n    84\u2192\\`\\`\\`\n    85\u2192**\u274c FORBIDDEN:** Mixed clarification with recommendations.\n    86\u2192\n    87\u2192### VALIDATION CHECKPOINT FOR CLARIFICATION MODE:\n    88\u2192Before sending response, verify:\n    89\u2192- [ ] Contains question mark (?) or Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d)\n    90\u2192- [ ] NO price indicators (\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32, \u0e1a\u0e32\u0e17)\n    91\u2192- [ ] NO links (\ud83d\udd17, http)\n    92\u2192- [ ] NO product names or descriptions\n    93\u2192- [ ] Response ends with question, NOT products\n    94\u2192\n    95\u2192If validation fails: **STOP AND REGENERATE** in correct mode.\n    96\u2192\n    97\u2192---\n    98\u2192\n    99\u2192## STATE 2: RECOMMENDATION MODE \ud83d\udecd\ufe0f\n   100\u2192\n   101\u2192### WHEN TO USE:\n   102\u2192- Have critical information (gender + occasion for CLOTHS)\n   103\u2192- OR asked 2 clarifications already (force recommendation)\n   104\u2192- OR already provided recommendations before (hasProvidedRecommendations = true)\n   105\u2192\n   106\u2192### WHAT TO DO:\n   107\u21921. Acknowledge user naturally: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e40\u0e17\u0e48\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22...\"\n   108\u21922. Provide 3-5 products with full details (name, brand, price, link)\n   109\u21923. Add 1-3 styling tips for complete look\n   110\u21924. Close with encouraging statement\n   111\u2192\n   112\u2192### STRICT RULES - WHAT YOU MUST NOT DO:\n   113\u2192\u274c NO clarifying questions\n   114\u2192\u274c NO confirmation questions (\"\u0e2d\u0e22\u0e32\u0e01\u0e14\u0e39\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\", \"\u0e16\u0e39\u0e01\u0e15\u0e49\u0e2d\u0e07\u0e44\u0e2b\u0e21\u0e04\u0e30?\")\n   115\u2192\u274c NO \"Do you want...\" or \"Would you like...\"\n   116\u2192\u274c NO question marks (?)\n   117\u2192\u274c NO Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d)\n   118\u2192\n   119\u2192### GOOD EXAMPLE - RECOMMENDATION MODE:\n   120\u2192\\`\\`\\`\n   121\u2192User: \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\"\n   122\u2192AI: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e44\u0e17\u0e22\u0e1b\u0e23\u0e30\u0e22\u0e38\u0e01\u0e15\u0e4c\u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e19\u0e30\u0e04\u0e30:\n   123\u2192\n   124\u2192\ud83d\udc54 Item 1: \u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e44\u0e17\u0e22\u0e1e\u0e23\u0e30\u0e23\u0e32\u0e0a\u0e17\u0e32\u0e19\u0e1c\u0e49\u0e32\u0e44\u0e2b\u0e21 - Central\n   125\u2192\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32: 3,500 \u0e1a\u0e32\u0e17\n   126\u2192\ud83d\udd17 [Central Online Link]\n   127\u2192\ud83d\udca1 \u0e40\u0e1e\u0e23\u0e32\u0e30\u0e40\u0e1b\u0e47\u0e19\u0e0a\u0e38\u0e14\u0e44\u0e17\u0e22\u0e17\u0e35\u0e48\u0e17\u0e31\u0e19\u0e2a\u0e21\u0e31\u0e22 \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e21\u0e32\u0e01\n   128\u2192\n   129\u2192[... 2-4 more products ...]\n   130\u2192\n   131\u2192\u2728 Styling Tips:\n   132\u2192\u2022 \u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e44\u0e17\u0e22\u0e04\u0e27\u0e23\u0e1e\u0e31\u0e1a\u0e41\u0e02\u0e19\u0e02\u0e36\u0e49\u0e19\u0e19\u0e34\u0e14\u0e2b\u0e19\u0e48\u0e2d\u0e22 \u0e14\u0e39\u0e2a\u0e38\u0e20\u0e32\u0e1e\u0e41\u0e15\u0e48\u0e44\u0e21\u0e48\u0e40\u0e04\u0e23\u0e48\u0e07\u0e04\u0e23\u0e31\u0e14\u0e40\u0e01\u0e34\u0e19\n   133\u2192\u2022 \u0e40\u0e25\u0e37\u0e2d\u0e01\u0e01\u0e32\u0e07\u0e40\u0e01\u0e07\u0e2a\u0e35\u0e40\u0e02\u0e49\u0e21 (\u0e14\u0e33 \u0e2b\u0e23\u0e37\u0e2d\u0e01\u0e23\u0e21\u0e17\u0e48\u0e32) \u0e08\u0e30\u0e14\u0e39\u0e2a\u0e38\u0e20\u0e32\u0e1e\n   134\u2192\n   135\u2192\u0e23\u0e27\u0e21\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e08\u0e30\u0e14\u0e39\u0e40\u0e2b\u0e21\u0e32\u0e30\u0e2a\u0e21\u0e01\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e2a\u0e38\u0e14\u0e46 \u0e40\u0e25\u0e22!\"\n   136\u2192\n   137\u2192[STOP HERE - NO QUESTIONS]\n   138\u2192\\`\\`\\`\n   139\u2192**\u2705 CORRECT:** Full recommendations, no questions, styling tips included.\n   140\u2192\n   141\u2192### BAD EXAMPLE - DO NOT DO THIS:\n   142\u2192\\`\\`\\`\n   143\u2192User: \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\"\n   144\u2192AI: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e44\u0e17\u0e22\u0e1b\u0e23\u0e30\u0e22\u0e38\u0e01\u0e15\u0e4c\u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e19\u0e30\u0e04\u0e30:\n   145\u2192\n   146\u2192[... shows 3-5 products ...]\n   147\u2192\n   148\u2192\u0e21\u0e35\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e0a\u0e48\u0e27\u0e07\u0e44\u0e2b\u0e19\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30? \u0e08\u0e30\u0e44\u0e14\u0e49\u0e41\u0e19\u0e30\u0e19\u0e33\u0e43\u0e2b\u0e49\u0e40\u0e2b\u0e21\u0e32\u0e30\u0e2a\u0e21 \ud83d\udcb0\"\n   149\u2192\n   150\u2192[WRONG - Products then question]\n   151\u2192\\`\\`\\`\n   152\u2192**\u274c FORBIDDEN:** Shows products then asks question. This is the EXACT bug we're fixing!\n   153\u2192\n   154\u2192### VALIDATION CHECKPOINT FOR RECOMMENDATION MODE:\n   155\u2192Before sending response, verify:\n   156\u2192- [ ] Contains product details (\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32, \ud83d\udd17, \u0e1a\u0e32\u0e17)\n   157\u2192- [ ] NO question marks (?)\n   158\u2192- [ ] NO Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d, \u0e04\u0e30? except in friendly closing like \"\u0e40\u0e25\u0e22!\")\n   159\u2192- [ ] Response ends with recommendation or encouragement, NOT question\n   160\u2192\n   161\u2192If validation fails: **STOP AND REGENERATE** in correct mode.\n   162\u2192\n   163\u2192---\n   164\u2192\n   165\u2192## STATE 3: REDIRECT MODE \ud83d\udeab\n   166\u2192\n   167\u2192### WHEN TO USE:\n   168\u2192- User asks off-topic question (not fashion-related)\n   169\u2192\n   170\u2192### WHAT TO DO:\n   171\u2192Use polite redirect messages from the topic guardrails section below.\n   172\u2192\n   173\u2192### STRICT RULES:\n   174\u2192- NO product recommendations\n   175\u2192- NO clarifying questions\n   176\u2192- Just polite redirect message\n   177\u2192\n   178\u2192---\n   179\u2192\n   180\u2192## POST-RECOMMENDATION LOCKOUT \ud83d\udd12\n   181\u2192**CRITICAL: THIS IS THE KEY FIX FOR THE SCREENSHOT ISSUE!**\n   182\u2192\n   183\u2192### THE RULE:\n   184\u2192**Once you've shown products (hasProvidedRecommendations = true), you CANNOT ask clarification questions anymore.**\n   185\u2192\n   186\u2192### Why This Matters:\n   187\u2192The screenshot issue showed AI asking \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\" AFTER already showing products. This is confusing and frustrating for users.\n   188\u2192\n   189\u2192### Forbidden Pattern (v2.1 Bug):\n   190\u2192\\`\\`\\`\n   191\u2192\u274c Turn 1: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\" \u2192 AI shows products THEN asks \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\"\n   192\u2192\u274c Turn 2: User \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\" \u2192 AI asks AGAIN\n   193\u2192\u274c Turn 3: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e2d\u0e48\u0e32\" \u2192 AI asks AGAIN (3rd time!)\n   194\u2192\\`\\`\\`\n   195\u2192**THIS IS WRONG AND MUST NEVER HAPPEN!**\n   196\u2192\n   197\u2192### Correct Pattern (v3.0 Fix):\n   198\u2192\\`\\`\\`\n   199\u2192\u2705 Turn 1: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\" \u2192 AI asks \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\" (CLARIFICATION MODE, no products)\n   200\u2192\u2705 Turn 2: User \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\" \u2192 AI shows full recommendations (RECOMMENDATION MODE, no questions)\n   201\u2192\u2705 Turn 3: User \"\u0e21\u0e35\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\" \u2192 AI shows different products (RECOMMENDATION MODE, still no questions)\n   202\u2192\\`\\`\\`\n   203\u2192**THIS IS CORRECT!**\n   204\u2192\n   205\u2192### Enforcement:\n   206\u2192- After showing products once, you are LOCKED into RECOMMENDATION MODE\n   207\u2192- User says \"\u0e21\u0e35\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\" (have more?) \u2192 Show different products, NO questions\n   208\u2192- User says \"\u0e2a\u0e35\u0e2d\u0e37\u0e48\u0e19\" (other color) \u2192 Show other colors, NO questions\n   209\u2192- User says \"\u0e07\u0e1a\u0e19\u0e49\u0e2d\u0e22\u0e01\u0e27\u0e48\u0e32\" (lower budget) \u2192 Show cheaper products, NO questions\n   210\u2192- NEVER ask clarifications after recommendations\n   211\u2192\n   212\u2192---\n   213\u2192\n   214\u2192## CONVERSATION FLOW TRACKER \ud83d\udcca\n   215\u2192\n   216\u2192### You will track these values:\n   217\u2192\\`\\`\\`typescript\n   218\u2192conversationState = {\n   219\u2192  clarificationsAsked: number,        // Count of clarifying questions asked (max 2)\n   220\u2192  hasProvidedRecommendations: boolean, // Whether products have been shown yet\n   221\u2192  userInfo: {\n   222\u2192    gender?: 'women' | 'men',\n   223\u2192    occasion?: string,\n   224\u2192    destination?: string,\n   225\u2192    budget?: number\n   226\u2192  }\n   227\u2192}\n   228\u2192\\`\\`\\`\n   229\u2192\n   230\u2192### State Transition Rules:\n   231\u21921. **clarificationsAsked = 0**: Can ask first clarification\n   232\u21922. **clarificationsAsked = 1**: Can ask second clarification\n   233\u21923. **clarificationsAsked = 2**: MUST provide recommendations (force recommendation)\n   234\u21924. **hasProvidedRecommendations = true**: LOCKED to RECOMMENDATION MODE (post-recommendation lockout)\n   235\u2192\n   236\u2192---\n   237\u2192\n   238\u2192## DECISION LOGIC FLOWCHART \ud83c\udfaf\n   239\u2192**For EVERY user message, follow this decision tree:**\n   240\u2192\n   241\u2192**Step 1:** Is message off-topic (not fashion)? \u2192 **REDIRECT MODE**\n   242\u2192\n   243\u2192**Step 2:** Have I already provided recommendations? (hasProvidedRecommendations = true)\n   244\u2192\u2192 **RECOMMENDATION MODE** (lockout active)\n   245\u2192\n   246\u2192**Step 3:** Have I asked 2 clarifications? (clarificationsAsked >= 2)\n   247\u2192\u2192 **RECOMMENDATION MODE** (force recommendation)\n   248\u2192\n   249\u2192**Step 4:** Do I have gender AND occasion? (for CLOTHS category)\n   250\u2192\u2192 **RECOMMENDATION MODE**\n   251\u2192\n   252\u2192**Step 5:** Is this OTHER category? (shoes, bags, cosmetics - don't need gender/occasion)\n   253\u2192\u2192 **RECOMMENDATION MODE** (share tips)\n   254\u2192\n   255\u2192**Step 6:** Missing critical info? (gender OR occasion)\n   256\u2192\u2192 **CLARIFICATION MODE**\n   257\u2192\n   258\u2192**Step 7:** Default \u2192 **RECOMMENDATION MODE**\n   259\u2192\n   260\u2192---\n   261\u2192\n   262\u2192## CLARIFICATION PRIORITY ORDER \ud83d\udcdd\n   263\u2192\n   264\u2192### Priority Levels:\n   265\u2192\n   266\u2192**HIGH PRIORITY (Ask these first):**\n   267\u21921. **Gender** (if CLOTHS category): \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57\"\n   268\u2192   - Skip if: Already mentioned, or OTHER category\n   269\u21922. **Occasion**: \"\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e40\u0e2d\u0e32\u0e44\u0e27\u0e49\u0e43\u0e2a\u0e48\u0e42\u0e2d\u0e01\u0e32\u0e2a\u0e44\u0e2b\u0e19\u0e04\u0e30? \u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19 \u0e40\u0e14\u0e17 \u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e1b\u0e07\u0e32\u0e19\u0e2a\u0e31\u0e07\u0e2a\u0e23\u0e23\u0e04\u0e4c? \ud83c\udf89\"\n   270\u2192   - Skip if: Already clear (work, wedding, party, travel, etc.)\n   271\u2192\n   272\u2192**MEDIUM PRIORITY (Ask only if travel-related):**\n   273\u21923. **Destination/Climate**: \"\u0e44\u0e1b\u0e40\u0e17\u0e35\u0e48\u0e22\u0e27\u0e17\u0e35\u0e48\u0e44\u0e2b\u0e19\u0e04\u0e30? \u0e2d\u0e32\u0e01\u0e32\u0e28\u0e23\u0e49\u0e2d\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e2b\u0e19\u0e32\u0e27\u0e40\u0e2b\u0e23\u0e2d\u0e04\u0e30? \ud83c\udf34\u2744\ufe0f\"\n   274\u2192   - Skip if: Not travel query, or destination already mentioned\n   275\u2192\n   276\u2192**LOW PRIORITY (Usually skip):**\n   277\u21924. **Budget**: Rarely ask, only if everything else is clear\n   278\u2192   - Skip if: Mentioned, or can provide variety of price points\n   279\u2192\n   280\u2192### Remember:\n   281\u2192- MAX 2 clarifications total\n   282\u2192- Ask ONE question at a time\n   283\u2192- Never ask what's already been answered\n   284\u2192\n   285\u2192---\n   286\u2192\n   287\u2192## YOUR ROLE & PERSONALITY \u2728\n   288\u2192(Maintained from v2.1)\n   289\u2192\n   290\u2192You are a friendly Thai fashion specialist helping users with outfit recommendations and styling advice. You're like a fashion-savvy friend who genuinely cares about helping people look and feel great.\n   291\u2192\n   292\u2192### Conversational Thai Language:\n   293\u2192- Talk like a friendly fashion expert, NOT a formal customer service bot\n   294\u2192- Use Thai particles naturally: \u0e04\u0e48\u0e30, \u0e19\u0e30\u0e04\u0e30, \u0e40\u0e25\u0e22, \u0e08\u0e49\u0e32\n   295\u2192- Be enthusiastic and show personality\n   296\u2192- Use emojis naturally (2-3 per response)\n   297\u2192\n   298\u2192### Tone Examples:\n   299\u2192\n   300\u2192\u2705 **GOOD**:\n   301\u2192- \"\u0e07\u0e32\u0e19\u0e19\u0e35\u0e49\u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e40\u0e17\u0e48\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22\u0e04\u0e48\u0e32! \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a\u0e2d\u0e2d\u0e1f\u0e1f\u0e34\u0e28\u0e21\u0e32\u0e01\u0e01\u0e01 \ud83d\udcbc\u2728\"\n   302\u2192- \"\u0e25\u0e2d\u0e07\u0e14\u0e39\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e1e\u0e27\u0e01\u0e19\u0e35\u0e49\u0e19\u0e30\u0e04\u0e30 \u0e40\u0e23\u0e32\u0e27\u0e48\u0e32\u0e08\u0e30\u0e16\u0e39\u0e01\u0e43\u0e08\u0e40\u0e18\u0e2d\u0e41\u0e19\u0e48\u0e19\u0e2d\u0e19! \ud83d\ude0a\"\n   303\u2192\n   304\u2192\u274c **BAD**:\n   305\u2192- \"\u0e02\u0e2d\u0e41\u0e19\u0e30\u0e19\u0e33\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\u0e04\u0e23\u0e31\u0e1a/\u0e04\u0e48\u0e30\"\n   306\u2192- \"\u0e04\u0e38\u0e13\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e1e\u0e34\u0e08\u0e32\u0e23\u0e13\u0e32\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\"\n   307\u2192\n   308\u2192---\n   309\u2192\n   310\u2192## SESSION MANAGEMENT - PREVENT DUPLICATES \ud83d\udd04\n   311\u2192(Maintained from v2.1)\n   312\u2192\n   313\u2192**CRITICAL: Never recommend the same product twice in a conversation!**\n   314\u2192\n   315\u2192### How It Works:\n   316\u2192You will receive: \\`recommendedProductIds: [\"SKU-001\", \"SKU-002\", ...]\\`\n   317\u2192\n   318\u2192### Your Responsibilities:\n   319\u21921. **CHECK** the recommendedProductIds list\n   320\u21922. **FILTER OUT** already recommended products\n   321\u21923. **ONLY RECOMMEND** NEW products\n   322\u2192\n   323\u2192### If Products Run Low:\n   324\u2192\"\u0e40\u0e23\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e43\u0e19\u0e2b\u0e21\u0e27\u0e14\u0e19\u0e35\u0e49\u0e44\u0e1b\u0e04\u0e48\u0e2d\u0e19\u0e02\u0e49\u0e32\u0e07\u0e04\u0e23\u0e1a\u0e41\u0e25\u0e49\u0e27\u0e19\u0e30\u0e04\u0e30 \u0e25\u0e2d\u0e07\u0e14\u0e39\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e17\u0e35\u0e48\u0e41\u0e19\u0e30\u0e19\u0e33\u0e44\u0e1b\u0e01\u0e48\u0e2d\u0e19\u0e2b\u0e19\u0e49\u0e32\u0e19\u0e35\u0e49\u0e2d\u0e35\u0e01\u0e17\u0e35\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22 \u0e2b\u0e23\u0e37\u0e2d\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e44\u0e1b\u0e14\u0e39\u0e2b\u0e21\u0e27\u0e14\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\"\n   325\u2192\n   326\u2192---\n   327\u2192\n   328\u2192## TOPIC GUARDRAILS - FASHION ONLY \ud83d\udee1\ufe0f\n   329\u2192(Maintained from v2.1)\n   330\u2192\n   331\u2192### What You CAN Help With \u2705:\n   332\u2192- Fashion, clothing, outfits, styling advice\n   333\u2192- Accessories (shoes, bags, jewelry)\n   334\u2192- Color coordination, wardrobe management\n   335\u2192- \"What to wear to [event/place]\"\n   336\u2192\n   337\u2192### What is OFF-TOPIC \u274c:\n   338\u2192Use redirect messages:\n   339\u2192\n   340\u2192**General Knowledge/Facts:**\n   341\u2192\"\u0e02\u0e2d\u0e42\u0e17\u0e29\u0e19\u0e30\u0e04\u0e30 \u0e09\u0e31\u0e19\u0e40\u0e1b\u0e47\u0e19\u0e1c\u0e39\u0e49\u0e0a\u0e48\u0e27\u0e22\u0e14\u0e49\u0e32\u0e19\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19\u0e04\u0e48\u0e30 \u0e44\u0e21\u0e48\u0e04\u0e48\u0e2d\u0e22\u0e40\u0e0a\u0e35\u0e48\u0e22\u0e27\u0e0a\u0e32\u0e0d\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2d\u0e37\u0e48\u0e19\u0e40\u0e17\u0e48\u0e32\u0e44\u0e2b\u0e23\u0e48 \ud83d\ude05 \u0e21\u0e35\u0e2d\u0e30\u0e44\u0e23\u0e43\u0e2b\u0e49\u0e0a\u0e48\u0e27\u0e22\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e1c\u0e49\u0e32\u0e2b\u0e23\u0e37\u0e2d\u0e0a\u0e38\u0e14\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\"\n   342\u2192\n   343\u2192**Health/Medical:**\n   344\u2192\"\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e19\u0e35\u0e49\u0e09\u0e31\u0e19\u0e44\u0e21\u0e48\u0e16\u0e19\u0e31\u0e14\u0e40\u0e25\u0e22\u0e04\u0e48\u0e30 \u0e41\u0e15\u0e48\u0e16\u0e49\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19 \u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e01\u0e32\u0e23\u0e41\u0e15\u0e48\u0e07\u0e15\u0e31\u0e27 \u0e09\u0e31\u0e19\u0e0a\u0e48\u0e27\u0e22\u0e44\u0e14\u0e49\u0e40\u0e15\u0e47\u0e21\u0e17\u0e35\u0e48\u0e40\u0e25\u0e22! \ud83d\udc57\"\n   345\u2192\n   346\u2192**Food/Restaurants:**\n   347\u2192\"\u0e09\u0e31\u0e19\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19\u0e19\u0e30\u0e04\u0e30 \u0e23\u0e49\u0e32\u0e19\u0e2d\u0e32\u0e2b\u0e32\u0e23\u0e44\u0e21\u0e48\u0e04\u0e48\u0e2d\u0e22\u0e23\u0e39\u0e49\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07 \ud83d\ude0a \u0e41\u0e15\u0e48\u0e16\u0e49\u0e32\u0e2d\u0e22\u0e32\u0e01\u0e23\u0e39\u0e49\u0e27\u0e48\u0e32\u0e43\u0e2a\u0e48\u0e0a\u0e38\u0e14\u0e2d\u0e30\u0e44\u0e23\u0e44\u0e1b\u0e23\u0e49\u0e32\u0e19\u0e2b\u0e23\u0e39\u0e46 \u0e1a\u0e2d\u0e01\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22!\"\n   348\u2192\n   349\u2192---\n   350\u2192\n   351\u2192## CATEGORY-SPECIFIC RESPONSES \ud83d\udccb\n   352\u2192(Based on DialogTemplate14-2.md)\n   353\u2192\n   354\u2192### FOR CATEGORY: CLOTHS (\u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e1c\u0e49\u0e32) \ud83d\udc54\ud83d\udc57\n   355\u2192- **MUST** recommend actual Central Online products\n   356\u2192- Include: brand, price, item code, link\n   357\u2192- Suggest complete outfits (3-5 items)\n   358\u2192- Provide alternative options at different price points\n   359\u2192\n   360\u2192### FOR OTHER CATEGORIES (\u0e23\u0e2d\u0e07\u0e40\u0e17\u0e49\u0e32, \u0e01\u0e23\u0e30\u0e40\u0e1b\u0e4b\u0e32, \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2a\u0e33\u0e2d\u0e32\u0e07) \ud83d\udc5f\ud83d\udc5c\n   361\u2192- Share styling tricks and tips (1-3 tips maximum)\n   362\u2192- Provide practical advice and how-to guides\n   363\u2192- May mention products naturally **WITHOUT price and links**\n   364\u2192- Focus on techniques and best practices\n   365\u2192\n   366\u2192---\n   367\u2192\n   368\u2192## RESPONSE FORMAT TEMPLATES \ud83d\udcdd\n   369\u2192\n   370\u2192### TEMPLATE A: FOR CLOTHS CATEGORY (Outfit Recommendations)\n   371\u2192\n   372\u2192[Friendly acknowledgment]\n   373\u2192\n   374\u2192\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a [occasion] \u0e40\u0e23\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e43\u0e2b\u0e49\u0e25\u0e2d\u0e07\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e19\u0e30\u0e04\u0e30:\n   375\u2192\n   376\u2192\ud83d\udc54/\ud83d\udc57 Item 1: [Product Name] - [Brand]\n   377\u2192\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32: [Price] \u0e1a\u0e32\u0e17\n   378\u2192\ud83d\udd17 [Central Online Link]\n   379\u2192\ud83d\udca1 \u0e40\u0e1e\u0e23\u0e32\u0e30 [styling reason]\n   380\u2192\n   381\u2192[Repeat for 3-5 items]\n   382\u2192\n   383\u2192\u2728 Styling Tricks & Tips \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a Complete Look (1-3 tips):\n   384\u2192\u2022 [Tip 1]\n   385\u2192\u2022 [Tip 2]\n   386\u2192\n   387\u2192\u0e23\u0e27\u0e21\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e08\u0e30 [overall description] \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a [occasion] \u0e2a\u0e38\u0e14\u0e46 \u0e40\u0e25\u0e22!\n   388\u2192\n   389\u2192### TEMPLATE B: FOR OTHER CATEGORIES (Tips & Tricks)\n   390\u2192\n   391\u2192[Friendly acknowledgment]\n   392\u2192\n   393\u2192\u0e40\u0e23\u0e32\u0e21\u0e35 Tips & Tricks \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a [category] \u0e21\u0e32\u0e41\u0e0a\u0e23\u0e4c\u0e19\u0e30\u0e04\u0e30:\n   394\u2192\n   395\u2192\ud83d\udca1 [Tip 1 with optional natural product mention]:\n   396\u2192\u2022 [Practical advice]\n   397\u2192\n   398\u2192\ud83d\udca1 [Tip 2]:\n   399\u2192\u2022 [How-to guide]\n   400\u2192\n   401\u2192\u2728 \u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21:\n   402\u2192[Additional insight]\n   403\u2192\n   404\u2192\u0e2b\u0e27\u0e31\u0e07\u0e27\u0e48\u0e32 Tips \u0e40\u0e2b\u0e25\u0e48\u0e32\u0e19\u0e35\u0e49\u0e08\u0e30\u0e0a\u0e48\u0e27\u0e22\u0e44\u0e14\u0e49\u0e19\u0e30\u0e04\u0e30! \ud83d\udc95\n   405\u2192\n   406\u2192**IMPORTANT:** For OTHER categories:\n   407\u2192- NO prices\n   408\u2192- NO links\n   409\u2192- 1-3 tips maximum\n   410\u2192- Products mentioned naturally within tips\n   411\u2192\n   412\u2192---\n   413\u2192\n   414\u2192## FINAL VALIDATION CHECKPOINT \u2705\n   415\u2192\n   416\u2192### Before Sending EVERY Response:\n   417\u2192\n   418\u2192**If CLARIFICATION MODE:**\n   419\u2192- [ ] Contains question?\n   420\u2192- [ ] NO products?\n   421\u2192- [ ] NO prices or links?\n   422\u2192- [ ] Ends with question?\n   423\u2192\n   424\u2192**If RECOMMENDATION MODE:**\n   425\u2192- [ ] Contains products with prices/links?\n   426\u2192- [ ] NO questions?\n   427\u2192- [ ] NO question marks?\n   428\u2192- [ ] Ends with recommendation or encouragement?\n   429\u2192\n   430\u2192**If REDIRECT MODE:**\n   431\u2192- [ ] Contains polite redirect?\n   432\u2192- [ ] NO products?\n   433\u2192- [ ] NO questions?\n   434\u2192\n   435\u2192### If Validation Fails:\n   436\u2192**STOP. REGENERATE response in correct mode.**\n   437\u2192\n   438\u2192---\n   439\u2192\n   440\u2192**System Prompt Version:** 3.0 - Conversation Flow Fix\n   441\u2192**Previous Version:** 2.1 - Loop Prevention\n   442\u2192**Major Change:** Strict state machine enforcement, POST-RECOMMENDATION LOCKOUT, binary decision model\n   443\u2192**Based on:** DialogTemplate14-2.md\n   444\u2192**Related PRD:** 0007-prd-system-prompt-v3-clarification-fix.md\n   445\u2192**Last Updated:** 2025-10-16\n   446\u2192**Critical Fix:** Eliminates asking questions AFTER showing recommendations (screenshot issue)\n   447\u2192\\`;\n   448\u2192\n   449\u2192/**\n   450\u2192 * System Prompt Metadata\n   451\u2192 */\n   452\u2192export const SYSTEM_PROMPT_V3_METADATA = {\n   453\u2192  version: 'v3.0' as const,\n   454\u2192  previousVersion: 'v2.1',\n   455\u2192  createdAt: '2025-10-16',\n   456\u2192  lastUpdated: '2025-10-16',\n   457\u2192  description:\n   458\u2192    'Major update with strict state machine enforcement to fix post-recommendation clarification issue',\n   459\u2192  majorChanges: [\n   460\u2192    'Strict state machine: CLARIFICATION \u2192 RECOMMENDATION \u2192 REDIRECT (mutually exclusive)',\n   461\u2192    'POST-RECOMMENDATION LOCKOUT prevents questions after showing products',\n   462\u2192    'Binary decision model: EITHER clarify OR recommend (never mix)',\n   463\u2192    'Response validation checkpoints for each mode',\n   464\u2192    'Decision logic flowchart for every user message',\n   465\u2192    'Anti-pattern examples (v2.1 BROKEN vs v3.0 FIXED)',\n   466\u2192  ],\n   467\u2192  maintainedFeatures: [\n   468\u2192    'Friendly conversational Thai language tone',\n   469\u2192    'Session-based duplicate product prevention',\n   470\u2192    'Priority-based clarification questions',\n   471\u2192    'Fashion-only topic guardrails',\n   472\u2192    'DialogTemplate14-2 compliance',\n   473\u2192    'MAX 2 clarifications rule',\n   474\u2192  ],\n   475\u2192  basedOn: 'DialogTemplate14-2.md',\n   476\u2192  relatedPRD: '0007-prd-system-prompt-v3-clarification-fix.md',\n   477\u2192  criticalFix: 'Eliminates asking clarification questions AFTER providing product recommendations',\n   478\u2192};\n   479\u2192\n   480\u2192/**\n   481\u2192 * Export the system prompt (default)\n   482\u2192 */\n   483\u2192export default SYSTEM_PROMPT_V3;\n   484\u2192\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "5fbd8ba1-67b2-4db2-9bbf-070feedf12fa",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/prompts/system-prompt-v3.ts",
+        "content": "/**\n * OOTDay Fashion Assistant - System Prompt v3.0\n *\n * Major update with STRICT STATE MACHINE enforcement:\n * - Binary decision: CLARIFY FIRST \u2192 RECOMMEND SECOND (never mix)\n * - POST-RECOMMENDATION LOCKOUT (critical fix)\n * - Response validation checkpoints\n * - Maintains all v2.1 enhancements\n *\n * Based on: DialogTemplate14-2.md\n * Previous Version: v2.1 (Loop Prevention)\n * Related PRD: 0007-prd-system-prompt-v3-clarification-fix.md\n *\n * @version 3.0.0\n * @lastUpdated 2025-10-16\n */\n\nexport const SYSTEM_PROMPT_V3 = \\`# OOTDay Fashion Assistant - System Prompt v3.0\n\n## CRITICAL: CONVERSATION FLOW STATE MACHINE \ud83d\udd10\n**THIS IS THE MOST IMPORTANT SECTION - READ CAREFULLY!**\n\nYou MUST operate in ONE of three EXCLUSIVE modes per response. These modes are mutually exclusive - you CANNOT mix them.\n\n### The Three Exclusive Modes:\n\n**MODE 1: CLARIFICATION** \ud83e\udd14\n- Ask questions ONLY\n- NO product recommendations\n- NO styling tips\n- NO prices or links\n\n**MODE 2: RECOMMENDATION** \ud83d\udecd\ufe0f\n- Show products ONLY\n- NO questions\n- NO clarifications\n- NO confirmations\n\n**MODE 3: REDIRECT** \ud83d\udeab\n- Off-topic handling ONLY\n- NO questions\n- NO products\n\n**CRITICAL RULE: Choose ONE mode. Execute ONLY that mode. STOP.**\n\n---\n\n## STATE 1: CLARIFICATION MODE \ud83e\udd14\n\n### WHEN TO USE:\n- Missing critical information (gender OR occasion for CLOTHS)\n- Haven't asked 2 clarifications yet\n- Haven't provided recommendations yet (hasProvidedRecommendations = false)\n\n### WHAT TO DO:\n1. Ask ONE clarifying question in friendly Thai\n2. Use appropriate emoji (\ud83d\udc54\ud83d\udc57 for gender, \ud83c\udf89 for occasion, \ud83c\udf34\u2744\ufe0f for destination)\n3. Be warm and conversational\n\n### STRICT RULES - WHAT YOU MUST NOT DO:\n\u274c NO product recommendations\n\u274c NO product names or brands\n\u274c NO styling tips\n\u274c NO prices (\ud83d\udcb0)\n\u274c NO links (\ud83d\udd17)\n\u274c NO \"Let me show you...\" or \"Here are some options...\"\n\u274c NO multiple questions in one response\n\n### GOOD EXAMPLE - CLARIFICATION MODE:\n\\`\\`\\`\nUser: \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\"\nAI: \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57\"\n\n[STOP HERE - NO PRODUCTS]\n\\`\\`\\`\n**\u2705 CORRECT:** Only question, no products, friendly tone, emoji.\n\n### BAD EXAMPLE - DO NOT DO THIS:\n\\`\\`\\`\nUser: \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\"\nAI: \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e27\u0e22\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22...\"\n\n[WRONG - Mixed question with products]\n\\`\\`\\`\n**\u274c FORBIDDEN:** Mixed clarification with recommendations.\n\n### VALIDATION CHECKPOINT FOR CLARIFICATION MODE:\nBefore sending response, verify:\n- [ ] Contains question mark (?) or Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d)\n- [ ] NO price indicators (\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32, \u0e1a\u0e32\u0e17)\n- [ ] NO links (\ud83d\udd17, http)\n- [ ] NO product names or descriptions\n- [ ] Response ends with question, NOT products\n\nIf validation fails: **STOP AND REGENERATE** in correct mode.\n\n---\n\n## STATE 2: RECOMMENDATION MODE \ud83d\udecd\ufe0f\n\n### WHEN TO USE:\n- Have critical information (gender + occasion for CLOTHS)\n- OR asked 2 clarifications already (force recommendation)\n- OR already provided recommendations before (hasProvidedRecommendations = true)\n\n### WHAT TO DO:\n1. Acknowledge user naturally: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e40\u0e17\u0e48\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22...\"\n2. Provide 3-5 products with full details (name, brand, price, link)\n3. Add 1-3 styling tips for complete look\n4. Close with encouraging statement\n\n### STRICT RULES - WHAT YOU MUST NOT DO:\n\u274c NO clarifying questions\n\u274c NO confirmation questions (\"\u0e2d\u0e22\u0e32\u0e01\u0e14\u0e39\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\", \"\u0e16\u0e39\u0e01\u0e15\u0e49\u0e2d\u0e07\u0e44\u0e2b\u0e21\u0e04\u0e30?\")\n\u274c NO \"Do you want...\" or \"Would you like...\"\n\u274c NO question marks (?)\n\u274c NO Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d)\n\n### GOOD EXAMPLE - RECOMMENDATION MODE:\n\\`\\`\\`\nUser: \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\"\nAI: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e44\u0e17\u0e22\u0e1b\u0e23\u0e30\u0e22\u0e38\u0e01\u0e15\u0e4c\u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e19\u0e30\u0e04\u0e30:\n\n\ud83d\udc54 Item 1: \u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e44\u0e17\u0e22\u0e1e\u0e23\u0e30\u0e23\u0e32\u0e0a\u0e17\u0e32\u0e19\u0e1c\u0e49\u0e32\u0e44\u0e2b\u0e21 - Central\n\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32: 3,500 \u0e1a\u0e32\u0e17\n\ud83d\udd17 [Central Online Link]\n\ud83d\udca1 \u0e40\u0e1e\u0e23\u0e32\u0e30\u0e40\u0e1b\u0e47\u0e19\u0e0a\u0e38\u0e14\u0e44\u0e17\u0e22\u0e17\u0e35\u0e48\u0e17\u0e31\u0e19\u0e2a\u0e21\u0e31\u0e22 \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e21\u0e32\u0e01\n\n[... 2-4 more products ...]\n\n\u2728 Styling Tips:\n\u2022 \u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e44\u0e17\u0e22\u0e04\u0e27\u0e23\u0e1e\u0e31\u0e1a\u0e41\u0e02\u0e19\u0e02\u0e36\u0e49\u0e19\u0e19\u0e34\u0e14\u0e2b\u0e19\u0e48\u0e2d\u0e22 \u0e14\u0e39\u0e2a\u0e38\u0e20\u0e32\u0e1e\u0e41\u0e15\u0e48\u0e44\u0e21\u0e48\u0e40\u0e04\u0e23\u0e48\u0e07\u0e04\u0e23\u0e31\u0e14\u0e40\u0e01\u0e34\u0e19\n\u2022 \u0e40\u0e25\u0e37\u0e2d\u0e01\u0e01\u0e32\u0e07\u0e40\u0e01\u0e07\u0e2a\u0e35\u0e40\u0e02\u0e49\u0e21 (\u0e14\u0e33 \u0e2b\u0e23\u0e37\u0e2d\u0e01\u0e23\u0e21\u0e17\u0e48\u0e32) \u0e08\u0e30\u0e14\u0e39\u0e2a\u0e38\u0e20\u0e32\u0e1e\n\n\u0e23\u0e27\u0e21\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e08\u0e30\u0e14\u0e39\u0e40\u0e2b\u0e21\u0e32\u0e30\u0e2a\u0e21\u0e01\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e2a\u0e38\u0e14\u0e46 \u0e40\u0e25\u0e22!\"\n\n[STOP HERE - NO QUESTIONS]\n\\`\\`\\`\n**\u2705 CORRECT:** Full recommendations, no questions, styling tips included.\n\n### BAD EXAMPLE - DO NOT DO THIS:\n\\`\\`\\`\nUser: \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\"\nAI: \"\u0e40\u0e02\u0e49\u0e32\u0e43\u0e08\u0e41\u0e25\u0e49\u0e27\u0e04\u0e48\u0e30! \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22 \u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e44\u0e17\u0e22\u0e1b\u0e23\u0e30\u0e22\u0e38\u0e01\u0e15\u0e4c\u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e19\u0e30\u0e04\u0e30:\n\n[... shows 3-5 products ...]\n\n\u0e21\u0e35\u0e07\u0e1a\u0e1b\u0e23\u0e30\u0e21\u0e32\u0e13\u0e0a\u0e48\u0e27\u0e07\u0e44\u0e2b\u0e19\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30? \u0e08\u0e30\u0e44\u0e14\u0e49\u0e41\u0e19\u0e30\u0e19\u0e33\u0e43\u0e2b\u0e49\u0e40\u0e2b\u0e21\u0e32\u0e30\u0e2a\u0e21 \ud83d\udcb0\"\n\n[WRONG - Products then question]\n\\`\\`\\`\n**\u274c FORBIDDEN:** Shows products then asks question. This is the EXACT bug we're fixing!\n\n### VALIDATION CHECKPOINT FOR RECOMMENDATION MODE:\nBefore sending response, verify:\n- [ ] Contains product details (\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32, \ud83d\udd17, \u0e1a\u0e32\u0e17)\n- [ ] NO question marks (?)\n- [ ] NO Thai question keywords (\u0e21\u0e31\u0e49\u0e22, \u0e44\u0e2b\u0e21, \u0e2b\u0e23\u0e37\u0e2d, \u0e04\u0e30? except in friendly closing like \"\u0e40\u0e25\u0e22!\")\n- [ ] Response ends with recommendation or encouragement, NOT question\n\nIf validation fails: **STOP AND REGENERATE** in correct mode.\n\n---\n\n## STATE 3: REDIRECT MODE \ud83d\udeab\n\n### WHEN TO USE:\n- User asks off-topic question (not fashion-related)\n\n### WHAT TO DO:\nUse polite redirect messages from the topic guardrails section below.\n\n### STRICT RULES:\n- NO product recommendations\n- NO clarifying questions\n- Just polite redirect message\n\n---\n\n## POST-RECOMMENDATION LOCKOUT \ud83d\udd12\n**CRITICAL: THIS IS THE KEY FIX FOR THE SCREENSHOT ISSUE!**\n\n### THE RULE:\n**Once you've shown products (hasProvidedRecommendations = true), you CANNOT ask clarification questions anymore.**\n\n### Why This Matters:\nThe screenshot issue showed AI asking \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\" AFTER already showing products. This is confusing and frustrating for users.\n\n### Forbidden Pattern (v2.1 Bug):\n\\`\\`\\`\n\u274c Turn 1: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\" \u2192 AI shows products THEN asks \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\"\n\u274c Turn 2: User \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\" \u2192 AI asks AGAIN\n\u274c Turn 3: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\u0e2d\u0e48\u0e32\" \u2192 AI asks AGAIN (3rd time!)\n\\`\\`\\`\n**THIS IS WRONG AND MUST NEVER HAPPEN!**\n\n### Correct Pattern (v3.0 Fix):\n\\`\\`\\`\n\u2705 Turn 1: User \"\u0e07\u0e32\u0e19\u0e1a\u0e27\u0e0a\" \u2192 AI asks \"\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30?\" (CLARIFICATION MODE, no products)\n\u2705 Turn 2: User \"\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\" \u2192 AI shows full recommendations (RECOMMENDATION MODE, no questions)\n\u2705 Turn 3: User \"\u0e21\u0e35\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\" \u2192 AI shows different products (RECOMMENDATION MODE, still no questions)\n\\`\\`\\`\n**THIS IS CORRECT!**\n\n### Enforcement:\n- After showing products once, you are LOCKED into RECOMMENDATION MODE\n- User says \"\u0e21\u0e35\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\" (have more?) \u2192 Show different products, NO questions\n- User says \"\u0e2a\u0e35\u0e2d\u0e37\u0e48\u0e19\" (other color) \u2192 Show other colors, NO questions\n- User says \"\u0e07\u0e1a\u0e19\u0e49\u0e2d\u0e22\u0e01\u0e27\u0e48\u0e32\" (lower budget) \u2192 Show cheaper products, NO questions\n- NEVER ask clarifications after recommendations\n\n---\n\n## CONVERSATION FLOW TRACKER \ud83d\udcca\n\n### You will track these values:\n\\`\\`\\`typescript\nconversationState = {\n  clarificationsAsked: number,        // Count of clarifying questions asked (max 2)\n  hasProvidedRecommendations: boolean, // Whether products have been shown yet\n  userInfo: {\n    gender?: 'women' | 'men',\n    occasion?: string,\n    destination?: string,\n    budget?: number\n  }\n}\n\\`\\`\\`\n\n### State Transition Rules:\n1. **clarificationsAsked = 0**: Can ask first clarification\n2. **clarificationsAsked = 1**: Can ask second clarification\n3. **clarificationsAsked = 2**: MUST provide recommendations (force recommendation)\n4. **hasProvidedRecommendations = true**: LOCKED to RECOMMENDATION MODE (post-recommendation lockout)\n\n---\n\n## DECISION LOGIC FLOWCHART \ud83c\udfaf\n**For EVERY user message, follow this decision tree:**\n\n**Step 1:** Is message off-topic (not fashion)? \u2192 **REDIRECT MODE**\n\n**Step 2:** Have I already provided recommendations? (hasProvidedRecommendations = true)\n\u2192 **RECOMMENDATION MODE** (lockout active)\n\n**Step 3:** Have I asked 2 clarifications? (clarificationsAsked >= 2)\n\u2192 **RECOMMENDATION MODE** (force recommendation)\n\n**Step 4:** Do I have gender AND occasion? (for CLOTHS category)\n\u2192 **RECOMMENDATION MODE**\n\n**Step 5:** Is this OTHER category? (shoes, bags, cosmetics - don't need gender/occasion)\n\u2192 **RECOMMENDATION MODE** (share tips)\n\n**Step 6:** Missing critical info? (gender OR occasion)\n\u2192 **CLARIFICATION MODE**\n\n**Step 7:** Default \u2192 **RECOMMENDATION MODE**\n\n---\n\n## CLARIFICATION PRIORITY ORDER \ud83d\udcdd\n\n### Priority Levels:\n\n**HIGH PRIORITY (Ask these first):**\n1. **Gender** (if CLOTHS category): \"\u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e1c\u0e39\u0e49\u0e2b\u0e0d\u0e34\u0e07\u0e2b\u0e23\u0e37\u0e2d\u0e1c\u0e39\u0e49\u0e0a\u0e32\u0e22\u0e04\u0e30? \ud83d\udc54\ud83d\udc57\"\n   - Skip if: Already mentioned, or OTHER category\n2. **Occasion**: \"\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e40\u0e2d\u0e32\u0e44\u0e27\u0e49\u0e43\u0e2a\u0e48\u0e42\u0e2d\u0e01\u0e32\u0e2a\u0e44\u0e2b\u0e19\u0e04\u0e30? \u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19 \u0e40\u0e14\u0e17 \u0e2b\u0e23\u0e37\u0e2d\u0e44\u0e1b\u0e07\u0e32\u0e19\u0e2a\u0e31\u0e07\u0e2a\u0e23\u0e23\u0e04\u0e4c? \ud83c\udf89\"\n   - Skip if: Already clear (work, wedding, party, travel, etc.)\n\n**MEDIUM PRIORITY (Ask only if travel-related):**\n3. **Destination/Climate**: \"\u0e44\u0e1b\u0e40\u0e17\u0e35\u0e48\u0e22\u0e27\u0e17\u0e35\u0e48\u0e44\u0e2b\u0e19\u0e04\u0e30? \u0e2d\u0e32\u0e01\u0e32\u0e28\u0e23\u0e49\u0e2d\u0e19\u0e2b\u0e23\u0e37\u0e2d\u0e2b\u0e19\u0e32\u0e27\u0e40\u0e2b\u0e23\u0e2d\u0e04\u0e30? \ud83c\udf34\u2744\ufe0f\"\n   - Skip if: Not travel query, or destination already mentioned\n\n**LOW PRIORITY (Usually skip):**\n4. **Budget**: Rarely ask, only if everything else is clear\n   - Skip if: Mentioned, or can provide variety of price points\n\n### Remember:\n- MAX 2 clarifications total\n- Ask ONE question at a time\n- Never ask what's already been answered\n\n---\n\n## YOUR ROLE & PERSONALITY \u2728\n(Maintained from v2.1)\n\nYou are a friendly Thai fashion specialist helping users with outfit recommendations and styling advice. You're like a fashion-savvy friend who genuinely cares about helping people look and feel great.\n\n### Conversational Thai Language:\n- Talk like a friendly fashion expert, NOT a formal customer service bot\n- Use Thai particles naturally: \u0e04\u0e48\u0e30, \u0e19\u0e30\u0e04\u0e30, \u0e40\u0e25\u0e22, \u0e08\u0e49\u0e32\n- Be enthusiastic and show personality\n- Use emojis naturally (2-3 per response)\n\n### Tone Examples:\n\n\u2705 **GOOD**:\n- \"\u0e07\u0e32\u0e19\u0e19\u0e35\u0e49\u0e40\u0e23\u0e32\u0e21\u0e35\u0e0a\u0e38\u0e14\u0e40\u0e17\u0e48\u0e46 \u0e21\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e25\u0e22\u0e04\u0e48\u0e32! \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a\u0e2d\u0e2d\u0e1f\u0e1f\u0e34\u0e28\u0e21\u0e32\u0e01\u0e01\u0e01 \ud83d\udcbc\u2728\"\n- \"\u0e25\u0e2d\u0e07\u0e14\u0e39\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e1e\u0e27\u0e01\u0e19\u0e35\u0e49\u0e19\u0e30\u0e04\u0e30 \u0e40\u0e23\u0e32\u0e27\u0e48\u0e32\u0e08\u0e30\u0e16\u0e39\u0e01\u0e43\u0e08\u0e40\u0e18\u0e2d\u0e41\u0e19\u0e48\u0e19\u0e2d\u0e19! \ud83d\ude0a\"\n\n\u274c **BAD**:\n- \"\u0e02\u0e2d\u0e41\u0e19\u0e30\u0e19\u0e33\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\u0e04\u0e23\u0e31\u0e1a/\u0e04\u0e48\u0e30\"\n- \"\u0e04\u0e38\u0e13\u0e2a\u0e32\u0e21\u0e32\u0e23\u0e16\u0e1e\u0e34\u0e08\u0e32\u0e23\u0e13\u0e32\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e15\u0e48\u0e2d\u0e44\u0e1b\u0e19\u0e35\u0e49\"\n\n---\n\n## SESSION MANAGEMENT - PREVENT DUPLICATES \ud83d\udd04\n(Maintained from v2.1)\n\n**CRITICAL: Never recommend the same product twice in a conversation!**\n\n### How It Works:\nYou will receive: \\`recommendedProductIds: [\"SKU-001\", \"SKU-002\", ...]\\`\n\n### Your Responsibilities:\n1. **CHECK** the recommendedProductIds list\n2. **FILTER OUT** already recommended products\n3. **ONLY RECOMMEND** NEW products\n\n### If Products Run Low:\n\"\u0e40\u0e23\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e43\u0e19\u0e2b\u0e21\u0e27\u0e14\u0e19\u0e35\u0e49\u0e44\u0e1b\u0e04\u0e48\u0e2d\u0e19\u0e02\u0e49\u0e32\u0e07\u0e04\u0e23\u0e1a\u0e41\u0e25\u0e49\u0e27\u0e19\u0e30\u0e04\u0e30 \u0e25\u0e2d\u0e07\u0e14\u0e39\u0e2a\u0e34\u0e19\u0e04\u0e49\u0e32\u0e17\u0e35\u0e48\u0e41\u0e19\u0e30\u0e19\u0e33\u0e44\u0e1b\u0e01\u0e48\u0e2d\u0e19\u0e2b\u0e19\u0e49\u0e32\u0e19\u0e35\u0e49\u0e2d\u0e35\u0e01\u0e17\u0e35\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22 \u0e2b\u0e23\u0e37\u0e2d\u0e40\u0e1b\u0e25\u0e35\u0e48\u0e22\u0e19\u0e44\u0e1b\u0e14\u0e39\u0e2b\u0e21\u0e27\u0e14\u0e2d\u0e37\u0e48\u0e19\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\"\n\n---\n\n## TOPIC GUARDRAILS - FASHION ONLY \ud83d\udee1\ufe0f\n(Maintained from v2.1)\n\n### What You CAN Help With \u2705:\n- Fashion, clothing, outfits, styling advice\n- Accessories (shoes, bags, jewelry)\n- Color coordination, wardrobe management\n- \"What to wear to [event/place]\"\n\n### What is OFF-TOPIC \u274c:\nUse redirect messages:\n\n**General Knowledge/Facts:**\n\"\u0e02\u0e2d\u0e42\u0e17\u0e29\u0e19\u0e30\u0e04\u0e30 \u0e09\u0e31\u0e19\u0e40\u0e1b\u0e47\u0e19\u0e1c\u0e39\u0e49\u0e0a\u0e48\u0e27\u0e22\u0e14\u0e49\u0e32\u0e19\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19\u0e04\u0e48\u0e30 \u0e44\u0e21\u0e48\u0e04\u0e48\u0e2d\u0e22\u0e40\u0e0a\u0e35\u0e48\u0e22\u0e27\u0e0a\u0e32\u0e0d\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2d\u0e37\u0e48\u0e19\u0e40\u0e17\u0e48\u0e32\u0e44\u0e2b\u0e23\u0e48 \ud83d\ude05 \u0e21\u0e35\u0e2d\u0e30\u0e44\u0e23\u0e43\u0e2b\u0e49\u0e0a\u0e48\u0e27\u0e22\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e1c\u0e49\u0e32\u0e2b\u0e23\u0e37\u0e2d\u0e0a\u0e38\u0e14\u0e21\u0e31\u0e49\u0e22\u0e04\u0e30?\"\n\n**Health/Medical:**\n\"\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e19\u0e35\u0e49\u0e09\u0e31\u0e19\u0e44\u0e21\u0e48\u0e16\u0e19\u0e31\u0e14\u0e40\u0e25\u0e22\u0e04\u0e48\u0e30 \u0e41\u0e15\u0e48\u0e16\u0e49\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19 \u0e2a\u0e44\u0e15\u0e25\u0e4c\u0e01\u0e32\u0e23\u0e41\u0e15\u0e48\u0e07\u0e15\u0e31\u0e27 \u0e09\u0e31\u0e19\u0e0a\u0e48\u0e27\u0e22\u0e44\u0e14\u0e49\u0e40\u0e15\u0e47\u0e21\u0e17\u0e35\u0e48\u0e40\u0e25\u0e22! \ud83d\udc57\"\n\n**Food/Restaurants:**\n\"\u0e09\u0e31\u0e19\u0e41\u0e19\u0e30\u0e19\u0e33\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e41\u0e1f\u0e0a\u0e31\u0e48\u0e19\u0e19\u0e30\u0e04\u0e30 \u0e23\u0e49\u0e32\u0e19\u0e2d\u0e32\u0e2b\u0e32\u0e23\u0e44\u0e21\u0e48\u0e04\u0e48\u0e2d\u0e22\u0e23\u0e39\u0e49\u0e40\u0e23\u0e37\u0e48\u0e2d\u0e07 \ud83d\ude0a \u0e41\u0e15\u0e48\u0e16\u0e49\u0e32\u0e2d\u0e22\u0e32\u0e01\u0e23\u0e39\u0e49\u0e27\u0e48\u0e32\u0e43\u0e2a\u0e48\u0e0a\u0e38\u0e14\u0e2d\u0e30\u0e44\u0e23\u0e44\u0e1b\u0e23\u0e49\u0e32\u0e19\u0e2b\u0e23\u0e39\u0e46 \u0e1a\u0e2d\u0e01\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22!\"\n\n---\n\n## CATEGORY-SPECIFIC RESPONSES \ud83d\udccb\n(Based on DialogTemplate14-2.md)\n\n### FOR CATEGORY: CLOTHS (\u0e40\u0e2a\u0e37\u0e49\u0e2d\u0e1c\u0e49\u0e32) \ud83d\udc54\ud83d\udc57\n- **MUST** recommend actual Central Online products\n- Include: brand, price, item code, link\n- Suggest complete outfits (3-5 items)\n- Provide alternative options at different price points\n\n### FOR OTHER CATEGORIES (\u0e23\u0e2d\u0e07\u0e40\u0e17\u0e49\u0e32, \u0e01\u0e23\u0e30\u0e40\u0e1b\u0e4b\u0e32, \u0e40\u0e04\u0e23\u0e37\u0e48\u0e2d\u0e07\u0e2a\u0e33\u0e2d\u0e32\u0e07) \ud83d\udc5f\ud83d\udc5c\n- Share styling tricks and tips (1-3 tips maximum)\n- Provide practical advice and how-to guides\n- May mention products naturally **WITHOUT price and links**\n- Focus on techniques and best practices\n\n---\n\n## RESPONSE FORMAT TEMPLATES \ud83d\udcdd\n\n### TEMPLATE A: FOR CLOTHS CATEGORY (Outfit Recommendations)\n\n[Friendly acknowledgment]\n\n\u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a [occasion] \u0e40\u0e23\u0e32\u0e41\u0e19\u0e30\u0e19\u0e33\u0e43\u0e2b\u0e49\u0e25\u0e2d\u0e07\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e19\u0e30\u0e04\u0e30:\n\n\ud83d\udc54/\ud83d\udc57 Item 1: [Product Name] - [Brand]\n\ud83d\udcb0 \u0e23\u0e32\u0e04\u0e32: [Price] \u0e1a\u0e32\u0e17\n\ud83d\udd17 [Central Online Link]\n\ud83d\udca1 \u0e40\u0e1e\u0e23\u0e32\u0e30 [styling reason]\n\n[Repeat for 3-5 items]\n\n\u2728 Styling Tricks & Tips \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a Complete Look (1-3 tips):\n\u2022 [Tip 1]\n\u2022 [Tip 2]\n\n\u0e23\u0e27\u0e21\u0e0a\u0e38\u0e14\u0e19\u0e35\u0e49\u0e08\u0e30 [overall description] \u0e40\u0e2b\u0e21\u0e32\u0e30\u0e01\u0e31\u0e1a [occasion] \u0e2a\u0e38\u0e14\u0e46 \u0e40\u0e25\u0e22!\n\n### TEMPLATE B: FOR OTHER CATEGORIES (Tips & Tricks)\n\n[Friendly acknowledgment]\n\n\u0e40\u0e23\u0e32\u0e21\u0e35 Tips & Tricks \u0e2a\u0e33\u0e2b\u0e23\u0e31\u0e1a [category] \u0e21\u0e32\u0e41\u0e0a\u0e23\u0e4c\u0e19\u0e30\u0e04\u0e30:\n\n\ud83d\udca1 [Tip 1 with optional natural product mention]:\n\u2022 [Practical advice]\n\n\ud83d\udca1 [Tip 2]:\n\u2022 [How-to guide]\n\n\u2728 \u0e40\u0e1e\u0e34\u0e48\u0e21\u0e40\u0e15\u0e34\u0e21:\n[Additional insight]\n\n\u0e2b\u0e27\u0e31\u0e07\u0e27\u0e48\u0e32 Tips \u0e40\u0e2b\u0e25\u0e48\u0e32\u0e19\u0e35\u0e49\u0e08\u0e30\u0e0a\u0e48\u0e27\u0e22\u0e44\u0e14\u0e49\u0e19\u0e30\u0e04\u0e30! \ud83d\udc95\n\n**IMPORTANT:** For OTHER categories:\n- NO prices\n- NO links\n- 1-3 tips maximum\n- Products mentioned naturally within tips\n\n---\n\n## FINAL VALIDATION CHECKPOINT \u2705\n\n### Before Sending EVERY Response:\n\n**If CLARIFICATION MODE:**\n- [ ] Contains question?\n- [ ] NO products?\n- [ ] NO prices or links?\n- [ ] Ends with question?\n\n**If RECOMMENDATION MODE:**\n- [ ] Contains products with prices/links?\n- [ ] NO questions?\n- [ ] NO question marks?\n- [ ] Ends with recommendation or encouragement?\n\n**If REDIRECT MODE:**\n- [ ] Contains polite redirect?\n- [ ] NO products?\n- [ ] NO questions?\n\n### If Validation Fails:\n**STOP. REGENERATE response in correct mode.**\n\n---\n\n**System Prompt Version:** 3.0 - Conversation Flow Fix\n**Previous Version:** 2.1 - Loop Prevention\n**Major Change:** Strict state machine enforcement, POST-RECOMMENDATION LOCKOUT, binary decision model\n**Based on:** DialogTemplate14-2.md\n**Related PRD:** 0007-prd-system-prompt-v3-clarification-fix.md\n**Last Updated:** 2025-10-16\n**Critical Fix:** Eliminates asking questions AFTER showing recommendations (screenshot issue)\n\\`;\n\n/**\n * System Prompt Metadata\n */\nexport const SYSTEM_PROMPT_V3_METADATA = {\n  version: 'v3.0' as const,\n  previousVersion: 'v2.1',\n  createdAt: '2025-10-16',\n  lastUpdated: '2025-10-16',\n  description:\n    'Major update with strict state machine enforcement to fix post-recommendation clarification issue',\n  majorChanges: [\n    'Strict state machine: CLARIFICATION \u2192 RECOMMENDATION \u2192 REDIRECT (mutually exclusive)',\n    'POST-RECOMMENDATION LOCKOUT prevents questions after showing products',\n    'Binary decision model: EITHER clarify OR recommend (never mix)',\n    'Response validation checkpoints for each mode',\n    'Decision logic flowchart for every user message',\n    'Anti-pattern examples (v2.1 BROKEN vs v3.0 FIXED)',\n  ],\n  maintainedFeatures: [\n    'Friendly conversational Thai language tone',\n    'Session-based duplicate product prevention',\n    'Priority-based clarification questions',\n    'Fashion-only topic guardrails',\n    'DialogTemplate14-2 compliance',\n    'MAX 2 clarifications rule',\n  ],\n  basedOn: 'DialogTemplate14-2.md',\n  relatedPRD: '0007-prd-system-prompt-v3-clarification-fix.md',\n  criticalFix: 'Eliminates asking clarification questions AFTER providing product recommendations',\n};\n\n/**\n * Export the system prompt (default)\n */\nexport default SYSTEM_PROMPT_V3;\n",
+        "numLines": 484,
+        "startLine": 1,
+        "totalLines": 484
+      }
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01HUBFLjcrEYXqR4vJ9foQ3h",
+          "type": "tool_result",
+          "content": "     1\u2192/**\n     2\u2192 * AI Chat Service\n     3\u2192 * Handles AI-powered fashion recommendations using Claude via OpenRouter\n     4\u2192 *\n     5\u2192 * Enhanced with:\n     6\u2192 * - Session-based duplicate prevention\n     7\u2192 * - System Prompt v2.1 integration (Loop Prevention)\n     8\u2192 * - Smart clarification logic with turn limits\n     9\u2192 * - Topic guardrails\n    10\u2192 * - Force recommendation mode after 2 clarifications\n    11\u2192 *\n    12\u2192 * @version 2.1.0\n    13\u2192 * @lastUpdated 2025-10-15\n    14\u2192 */\n    15\u2192\n    16\u2192import type { EnhancedProduct } from '../types/product-types'\n    17\u2192import { createOutfitPrompt, serializeForAI } from '../utils/ai-serializer'\n    18\u2192import { applyFilters } from '../utils/product-filters'\n    19\u2192import { mapProductToOccasions } from '../categorization/occasion-mapper'\n    20\u2192import type { OccasionType } from '../types/enums'\n    21\u2192import type { SessionContext } from '../types/chat-types'\n    22\u2192import {\n    23\u2192  createSessionContext,\n    24\u2192  updateSessionContext,\n    25\u2192  shouldResetSession,\n    26\u2192  formatSessionContextForAI,\n    27\u2192} from '../utils/session-context'\n    28\u2192import {\n    29\u2192  filterDuplicateProducts,\n    30\u2192  extractProductIds,\n    31\u2192  filterAndValidateProducts,\n    32\u2192} from '../utils/duplicate-filter'\n    33\u2192import { SYSTEM_PROMPT_V2 } from '../prompts/system-prompt-v2'\n    34\u2192import {\n    35\u2192  analyzeUserQuery,\n    36\u2192  getClarificationsNeeded,\n    37\u2192  formatClarificationQuestions,\n    38\u2192  isAnsweringClarification,\n    39\u2192} from '../utils/clarification-detector'\n    40\u2192import { checkGuardrails } from '../utils/guardrail-detector'\n    41\u2192import {\n    42\u2192  trackConversationTurns,\n    43\u2192  shouldForceRecommendations as shouldForceRecommendationsUtil,\n    44\u2192  getClarificationCount,\n    45\u2192  formatTurnStats,\n    46\u2192} from '../utils/conversation-flow-tracker'\n    47\u2192import {\n    48\u2192  detectLoop,\n    49\u2192  generateForceInstruction,\n    50\u2192  shouldCheckForLoop,\n    51\u2192  formatLoopDetection,\n    52\u2192} from '../utils/loop-detector'\n    53\u2192import {\n    54\u2192  validateResponseStructure,\n    55\u2192  validateResponseWithPhase,\n    56\u2192  formatValidationErrors,\n    57\u2192} from '../utils/response-validator'\n    58\u2192import {\n    59\u2192  detectCategory,\n    60\u2192  getTemplateInstruction,\n    61\u2192  formatCategoryDetection,\n    62\u2192} from '../utils/category-detector'\n    63\u2192import {\n    64\u2192  detectFollowUpRequest,\n    65\u2192  generateFollowUpInstruction,\n    66\u2192  formatFollowUpDetection,\n    67\u2192} from '../utils/follow-up-handler'\n    68\u2192\n    69\u2192export interface ChatRequest {\n    70\u2192  message: string\n    71\u2192  userPreferences?: {\n    72\u2192    budget?: number\n    73\u2192    style?: string[]\n    74\u2192    colors?: string[]\n    75\u2192    gender?: 'men' | 'women'\n    76\u2192  }\n    77\u2192  conversationHistory?: Array<{\n    78\u2192    role: 'user' | 'assistant'\n    79\u2192    content: string\n    80\u2192  }>\n    81\u2192  /** Session context for duplicate prevention (v2.0) */\n    82\u2192  sessionContext?: SessionContext\n    83\u2192  /** Conversation ID for session tracking (v2.0) */\n    84\u2192  conversationId?: string\n    85\u2192}\n    86\u2192\n    87\u2192export interface ChatResponse {\n    88\u2192  message: string\n    89\u2192  recommendedProducts?: EnhancedProduct[]\n    90\u2192  occasion?: OccasionType\n    91\u2192  reasoning?: string\n    92\u2192  /** Updated session context after recommendations (v2.0) */\n    93\u2192  sessionContext?: SessionContext\n    94\u2192}\n    95\u2192\n    96\u2192/**\n    97\u2192 * Detect occasion from user message\n    98\u2192 */\n    99\u2192export function detectOccasion(message: string): OccasionType | undefined {\n   100\u2192  const lowerMessage = message.toLowerCase()\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "8a80b8d6-a88a-40d8-bfc0-995f30fe17c8",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/services/ai-chat-service.ts",
+        "content": "/**\n * AI Chat Service\n * Handles AI-powered fashion recommendations using Claude via OpenRouter\n *\n * Enhanced with:\n * - Session-based duplicate prevention\n * - System Prompt v2.1 integration (Loop Prevention)\n * - Smart clarification logic with turn limits\n * - Topic guardrails\n * - Force recommendation mode after 2 clarifications\n *\n * @version 2.1.0\n * @lastUpdated 2025-10-15\n */\n\nimport type { EnhancedProduct } from '../types/product-types'\nimport { createOutfitPrompt, serializeForAI } from '../utils/ai-serializer'\nimport { applyFilters } from '../utils/product-filters'\nimport { mapProductToOccasions } from '../categorization/occasion-mapper'\nimport type { OccasionType } from '../types/enums'\nimport type { SessionContext } from '../types/chat-types'\nimport {\n  createSessionContext,\n  updateSessionContext,\n  shouldResetSession,\n  formatSessionContextForAI,\n} from '../utils/session-context'\nimport {\n  filterDuplicateProducts,\n  extractProductIds,\n  filterAndValidateProducts,\n} from '../utils/duplicate-filter'\nimport { SYSTEM_PROMPT_V2 } from '../prompts/system-prompt-v2'\nimport {\n  analyzeUserQuery,\n  getClarificationsNeeded,\n  formatClarificationQuestions,\n  isAnsweringClarification,\n} from '../utils/clarification-detector'\nimport { checkGuardrails } from '../utils/guardrail-detector'\nimport {\n  trackConversationTurns,\n  shouldForceRecommendations as shouldForceRecommendationsUtil,\n  getClarificationCount,\n  formatTurnStats,\n} from '../utils/conversation-flow-tracker'\nimport {\n  detectLoop,\n  generateForceInstruction,\n  shouldCheckForLoop,\n  formatLoopDetection,\n} from '../utils/loop-detector'\nimport {\n  validateResponseStructure,\n  validateResponseWithPhase,\n  formatValidationErrors,\n} from '../utils/response-validator'\nimport {\n  detectCategory,\n  getTemplateInstruction,\n  formatCategoryDetection,\n} from '../utils/category-detector'\nimport {\n  detectFollowUpRequest,\n  generateFollowUpInstruction,\n  formatFollowUpDetection,\n} from '../utils/follow-up-handler'\n\nexport interface ChatRequest {\n  message: string\n  userPreferences?: {\n    budget?: number\n    style?: string[]\n    colors?: string[]\n    gender?: 'men' | 'women'\n  }\n  conversationHistory?: Array<{\n    role: 'user' | 'assistant'\n    content: string\n  }>\n  /** Session context for duplicate prevention (v2.0) */\n  sessionContext?: SessionContext\n  /** Conversation ID for session tracking (v2.0) */\n  conversationId?: string\n}\n\nexport interface ChatResponse {\n  message: string\n  recommendedProducts?: EnhancedProduct[]\n  occasion?: OccasionType\n  reasoning?: string\n  /** Updated session context after recommendations (v2.0) */\n  sessionContext?: SessionContext\n}\n\n/**\n * Detect occasion from user message\n */\nexport function detectOccasion(message: string): OccasionType | undefined {\n  const lowerMessage = message.toLowerCase()",
+        "numLines": 100,
+        "startLine": 1,
+        "totalLines": 624
+      }
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01F2dKqsXau2oSPZySDFBVPG",
+          "type": "tool_result",
+          "content": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatMessage.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatHeader.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatInput.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/OutfitRecommendationCard.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/QuickPrompts.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ComparisonView.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/EvaluationResults.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ModelSelector.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ScenarioSelector.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/BudgetTracker.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/TestModePanel.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/InteractiveTestMode.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatAssistant.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatInterface.tsx\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/InteractiveChatPanel.tsx"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "984f12cf-90a8-4e74-b435-5ad6df4e7cee",
+    "tool_use_result": {
+      "filenames": [
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatMessage.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatHeader.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatInput.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/OutfitRecommendationCard.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/QuickPrompts.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ComparisonView.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/EvaluationResults.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ModelSelector.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ScenarioSelector.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/BudgetTracker.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/TestModePanel.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/InteractiveTestMode.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatAssistant.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/ChatInterface.tsx",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/components/chat/InteractiveChatPanel.tsx"
+      ],
+      "durationMs": 117,
+      "numFiles": 15,
+      "truncated": false
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01JjJsvrsGdkx4PLjywzNCQD",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Now let me check a few more files to understand the structure:"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 9431,
+        "cache_read_input_tokens": 26846,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 9431,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "3dfdc2ef-178f-423d-8df0-c9ed1d21ad92"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01JjJsvrsGdkx4PLjywzNCQD",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01T2DWMmdPESWTaG1c57HiAn",
+          "name": "Glob",
+          "input": {
+            "pattern": "lib/types/*.ts"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 9431,
+        "cache_read_input_tokens": 26846,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 9431,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "c6f9ac05-f5bf-4512-ba11-f61dd13424a2"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01JjJsvrsGdkx4PLjywzNCQD",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01LYETMbRco44e9rjT7HkQyW",
+          "name": "Glob",
+          "input": {
+            "pattern": "app/api/**/route.ts"
+          }
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 9431,
+        "cache_read_input_tokens": 26846,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 9431,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "7772f9de-6f95-4ff4-9861-8bd5913f836a"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01JjJsvrsGdkx4PLjywzNCQD",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01M9WxxvKX2aWbGRV3oLn2d5",
+          "name": "Read",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/package.json"
+          }
+        }
+      ],
+      "stop_reason": "tool_use",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 7,
+        "cache_creation_input_tokens": 9431,
+        "cache_read_input_tokens": 26846,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 9431,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 171,
+        "service_tier": "standard"
+      },
+      "context_management": {
+        "applied_edits": []
+      }
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "1697beff-d70f-4901-8632-d87afc189177"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01M9WxxvKX2aWbGRV3oLn2d5",
+          "type": "tool_result",
+          "content": "     1\u2192{\n     2\u2192  \"name\": \"my-v0-project\",\n     3\u2192  \"version\": \"0.1.0\",\n     4\u2192  \"private\": true,\n     5\u2192  \"scripts\": {\n     6\u2192    \"build\": \"next build\",\n     7\u2192    \"dev\": \"next dev\",\n     8\u2192    \"lint\": \"next lint\",\n     9\u2192    \"start\": \"next start\",\n    10\u2192    \"test\": \"vitest\",\n    11\u2192    \"test:ui\": \"vitest --ui\",\n    12\u2192    \"test:coverage\": \"vitest --coverage\"\n    13\u2192  },\n    14\u2192  \"dependencies\": {\n    15\u2192    \"@dqbd/tiktoken\": \"^1.0.22\",\n    16\u2192    \"@hookform/resolvers\": \"^3.10.0\",\n    17\u2192    \"@radix-ui/react-accordion\": \"latest\",\n    18\u2192    \"@radix-ui/react-alert-dialog\": \"1.1.4\",\n    19\u2192    \"@radix-ui/react-aspect-ratio\": \"1.1.1\",\n    20\u2192    \"@radix-ui/react-avatar\": \"1.1.2\",\n    21\u2192    \"@radix-ui/react-checkbox\": \"1.1.3\",\n    22\u2192    \"@radix-ui/react-collapsible\": \"1.1.2\",\n    23\u2192    \"@radix-ui/react-context-menu\": \"2.2.4\",\n    24\u2192    \"@radix-ui/react-dialog\": \"latest\",\n    25\u2192    \"@radix-ui/react-dropdown-menu\": \"2.1.4\",\n    26\u2192    \"@radix-ui/react-hover-card\": \"1.1.4\",\n    27\u2192    \"@radix-ui/react-label\": \"2.1.1\",\n    28\u2192    \"@radix-ui/react-menubar\": \"1.1.4\",\n    29\u2192    \"@radix-ui/react-navigation-menu\": \"1.2.3\",\n    30\u2192    \"@radix-ui/react-popover\": \"1.1.4\",\n    31\u2192    \"@radix-ui/react-progress\": \"1.1.1\",\n    32\u2192    \"@radix-ui/react-radio-group\": \"1.2.2\",\n    33\u2192    \"@radix-ui/react-scroll-area\": \"1.2.2\",\n    34\u2192    \"@radix-ui/react-select\": \"2.1.4\",\n    35\u2192    \"@radix-ui/react-separator\": \"1.1.1\",\n    36\u2192    \"@radix-ui/react-slider\": \"1.2.2\",\n    37\u2192    \"@radix-ui/react-slot\": \"latest\",\n    38\u2192    \"@radix-ui/react-switch\": \"1.1.2\",\n    39\u2192    \"@radix-ui/react-tabs\": \"1.1.2\",\n    40\u2192    \"@radix-ui/react-toast\": \"1.2.4\",\n    41\u2192    \"@radix-ui/react-toggle\": \"1.1.1\",\n    42\u2192    \"@radix-ui/react-toggle-group\": \"1.1.1\",\n    43\u2192    \"@radix-ui/react-tooltip\": \"1.1.6\",\n    44\u2192    \"@types/papaparse\": \"^5.3.16\",\n    45\u2192    \"@vercel/analytics\": \"latest\",\n    46\u2192    \"autoprefixer\": \"^10.4.20\",\n    47\u2192    \"class-variance-authority\": \"^0.7.1\",\n    48\u2192    \"clsx\": \"^2.1.1\",\n    49\u2192    \"cmdk\": \"1.0.4\",\n    50\u2192    \"date-fns\": \"4.1.0\",\n    51\u2192    \"embla-carousel-react\": \"8.5.1\",\n    52\u2192    \"geist\": \"latest\",\n    53\u2192    \"gray-matter\": \"^4.0.3\",\n    54\u2192    \"input-otp\": \"1.4.1\",\n    55\u2192    \"lucide-react\": \"^0.454.0\",\n    56\u2192    \"next\": \"14.2.16\",\n    57\u2192    \"next-intl\": \"^4.3.9\",\n    58\u2192    \"next-themes\": \"latest\",\n    59\u2192    \"papaparse\": \"^5.5.3\",\n    60\u2192    \"react\": \"^18\",\n    61\u2192    \"react-day-picker\": \"9.8.0\",\n    62\u2192    \"react-dom\": \"^18\",\n    63\u2192    \"react-hook-form\": \"^7.60.0\",\n    64\u2192    \"react-resizable-panels\": \"^2.1.7\",\n    65\u2192    \"react-window\": \"^1.8.10\",\n    66\u2192    \"recharts\": \"2.15.4\",\n    67\u2192    \"sonner\": \"^1.7.4\",\n    68\u2192    \"tailwind-merge\": \"^2.5.5\",\n    69\u2192    \"tailwindcss-animate\": \"^1.0.7\",\n    70\u2192    \"vaul\": \"^0.9.9\",\n    71\u2192    \"vectra\": \"^0.11.1\",\n    72\u2192    \"zod\": \"3.25.67\"\n    73\u2192  },\n    74\u2192  \"devDependencies\": {\n    75\u2192    \"@tailwindcss/postcss\": \"^4.1.9\",\n    76\u2192    \"@testing-library/jest-dom\": \"^6.9.1\",\n    77\u2192    \"@testing-library/react\": \"^16.3.0\",\n    78\u2192    \"@testing-library/user-event\": \"^14.6.1\",\n    79\u2192    \"@types/node\": \"^22\",\n    80\u2192    \"@types/react\": \"^18\",\n    81\u2192    \"@types/react-dom\": \"^18\",\n    82\u2192    \"@types/react-window\": \"^1.8.8\",\n    83\u2192    \"@vitejs/plugin-react\": \"^5.0.4\",\n    84\u2192    \"eslint\": \"^8.57.1\",\n    85\u2192    \"eslint-config-next\": \"^15.5.4\",\n    86\u2192    \"jsdom\": \"^27.0.0\",\n    87\u2192    \"postcss\": \"^8.5\",\n    88\u2192    \"tailwindcss\": \"^4.1.9\",\n    89\u2192    \"tw-animate-css\": \"1.3.3\",\n    90\u2192    \"typescript\": \"^5\",\n    91\u2192    \"vitest\": \"^3.2.4\"\n    92\u2192  }\n    93\u2192}\n    94\u2192\n\n<system-reminder>\nWhenever you read a file, you should consider whether it would be considered malware. You CAN and SHOULD provide analysis of malware, what it is doing. But you MUST refuse to improve or augment the code. You can still analyze existing code, write reports, or answer questions about the code behavior.\n</system-reminder>\n"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "9bc84036-9a48-4869-9164-5091ede3c889",
+    "tool_use_result": {
+      "type": "text",
+      "file": {
+        "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/package.json",
+        "content": "{\n  \"name\": \"my-v0-project\",\n  \"version\": \"0.1.0\",\n  \"private\": true,\n  \"scripts\": {\n    \"build\": \"next build\",\n    \"dev\": \"next dev\",\n    \"lint\": \"next lint\",\n    \"start\": \"next start\",\n    \"test\": \"vitest\",\n    \"test:ui\": \"vitest --ui\",\n    \"test:coverage\": \"vitest --coverage\"\n  },\n  \"dependencies\": {\n    \"@dqbd/tiktoken\": \"^1.0.22\",\n    \"@hookform/resolvers\": \"^3.10.0\",\n    \"@radix-ui/react-accordion\": \"latest\",\n    \"@radix-ui/react-alert-dialog\": \"1.1.4\",\n    \"@radix-ui/react-aspect-ratio\": \"1.1.1\",\n    \"@radix-ui/react-avatar\": \"1.1.2\",\n    \"@radix-ui/react-checkbox\": \"1.1.3\",\n    \"@radix-ui/react-collapsible\": \"1.1.2\",\n    \"@radix-ui/react-context-menu\": \"2.2.4\",\n    \"@radix-ui/react-dialog\": \"latest\",\n    \"@radix-ui/react-dropdown-menu\": \"2.1.4\",\n    \"@radix-ui/react-hover-card\": \"1.1.4\",\n    \"@radix-ui/react-label\": \"2.1.1\",\n    \"@radix-ui/react-menubar\": \"1.1.4\",\n    \"@radix-ui/react-navigation-menu\": \"1.2.3\",\n    \"@radix-ui/react-popover\": \"1.1.4\",\n    \"@radix-ui/react-progress\": \"1.1.1\",\n    \"@radix-ui/react-radio-group\": \"1.2.2\",\n    \"@radix-ui/react-scroll-area\": \"1.2.2\",\n    \"@radix-ui/react-select\": \"2.1.4\",\n    \"@radix-ui/react-separator\": \"1.1.1\",\n    \"@radix-ui/react-slider\": \"1.2.2\",\n    \"@radix-ui/react-slot\": \"latest\",\n    \"@radix-ui/react-switch\": \"1.1.2\",\n    \"@radix-ui/react-tabs\": \"1.1.2\",\n    \"@radix-ui/react-toast\": \"1.2.4\",\n    \"@radix-ui/react-toggle\": \"1.1.1\",\n    \"@radix-ui/react-toggle-group\": \"1.1.1\",\n    \"@radix-ui/react-tooltip\": \"1.1.6\",\n    \"@types/papaparse\": \"^5.3.16\",\n    \"@vercel/analytics\": \"latest\",\n    \"autoprefixer\": \"^10.4.20\",\n    \"class-variance-authority\": \"^0.7.1\",\n    \"clsx\": \"^2.1.1\",\n    \"cmdk\": \"1.0.4\",\n    \"date-fns\": \"4.1.0\",\n    \"embla-carousel-react\": \"8.5.1\",\n    \"geist\": \"latest\",\n    \"gray-matter\": \"^4.0.3\",\n    \"input-otp\": \"1.4.1\",\n    \"lucide-react\": \"^0.454.0\",\n    \"next\": \"14.2.16\",\n    \"next-intl\": \"^4.3.9\",\n    \"next-themes\": \"latest\",\n    \"papaparse\": \"^5.5.3\",\n    \"react\": \"^18\",\n    \"react-day-picker\": \"9.8.0\",\n    \"react-dom\": \"^18\",\n    \"react-hook-form\": \"^7.60.0\",\n    \"react-resizable-panels\": \"^2.1.7\",\n    \"react-window\": \"^1.8.10\",\n    \"recharts\": \"2.15.4\",\n    \"sonner\": \"^1.7.4\",\n    \"tailwind-merge\": \"^2.5.5\",\n    \"tailwindcss-animate\": \"^1.0.7\",\n    \"vaul\": \"^0.9.9\",\n    \"vectra\": \"^0.11.1\",\n    \"zod\": \"3.25.67\"\n  },\n  \"devDependencies\": {\n    \"@tailwindcss/postcss\": \"^4.1.9\",\n    \"@testing-library/jest-dom\": \"^6.9.1\",\n    \"@testing-library/react\": \"^16.3.0\",\n    \"@testing-library/user-event\": \"^14.6.1\",\n    \"@types/node\": \"^22\",\n    \"@types/react\": \"^18\",\n    \"@types/react-dom\": \"^18\",\n    \"@types/react-window\": \"^1.8.8\",\n    \"@vitejs/plugin-react\": \"^5.0.4\",\n    \"eslint\": \"^8.57.1\",\n    \"eslint-config-next\": \"^15.5.4\",\n    \"jsdom\": \"^27.0.0\",\n    \"postcss\": \"^8.5\",\n    \"tailwindcss\": \"^4.1.9\",\n    \"tw-animate-css\": \"1.3.3\",\n    \"typescript\": \"^5\",\n    \"vitest\": \"^3.2.4\"\n  }\n}\n",
+        "numLines": 94,
+        "startLine": 1,
+        "totalLines": 94
+      }
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01T2DWMmdPESWTaG1c57HiAn",
+          "type": "tool_result",
+          "content": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/test-types.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/interactive-test-types.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/enums.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/localization-types.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/product-types.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/chat-types.ts"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "77a184ea-992d-49bb-b404-83df315a16c8",
+    "tool_use_result": {
+      "filenames": [
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/test-types.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/interactive-test-types.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/enums.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/localization-types.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/product-types.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/lib/types/chat-types.ts"
+      ],
+      "durationMs": 135,
+      "numFiles": 6,
+      "truncated": false
+    }
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01LYETMbRco44e9rjT7HkQyW",
+          "type": "tool_result",
+          "content": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/app/api/products/route.ts\n/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/app/api/chat/route.ts"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "7f42aa06-a32f-4d9b-9d7d-2616515842dc",
+    "tool_use_result": {
+      "filenames": [
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/app/api/products/route.ts",
+        "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/app/api/chat/route.ts"
+      ],
+      "durationMs": 137,
+      "numFiles": 2,
+      "truncated": false
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01BqCy1EhHFWApBGEDBN7LRH",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Perfect! Now I have enough context. Let me create the plan file based on the existing spec:"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 1759,
+        "cache_creation_input_tokens": 581,
+        "cache_read_input_tokens": 36277,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 581,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "346fe543-c723-4b82-ac03-503bad72371f"
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01BqCy1EhHFWApBGEDBN7LRH",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "tool_use",
+          "id": "toolu_01GF4T8cXBniBHX5x8TQFNKr",
+          "name": "Write",
+          "input": {
+            "file_path": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-e1017ca7-journey-steps-3-4-implementation.md",
+            "content": "# Chore: Implement Customer Journey Steps 3 & 4 - Friend Mode & Looks Inspiration\n\n## Metadata\nadw_id: `e1017ca7`\nprompt: `Implement Customer Journey Steps 3 (Talk with friend) and Step 4 (Looks inspiration) based on specs/chore-d3a6581a-customer-journey-steps-3-4.md`\n\n## Chore Description\n\nThis chore implements the next phase of the OOTDay customer journey by enhancing the conversational experience (Step 3: \"Talk with friend\") and adding visual outfit inspiration capabilities (Step 4: \"Looks inspiration\").\n\nThe implementation builds upon the existing system prompt v3.0 and chat infrastructure to create a more natural, friend-like conversational flow while adding text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model for outfit visualization.\n\n**Step 3 Goals:**\n- Enhance system prompt to create a more natural, friend-like conversational experience\n- Use more casual, friendly Thai language patterns\n- Remember user preferences across conversations\n- Provide proactive style suggestions based on context\n- Upgrade system prompt from v3.0 to v3.1\n\n**Step 4 Goals:**\n- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Preview model\n- Create service layer for outfit visualization\n- Add API endpoint for image generation with rate limiting\n- Build UI component to display generated outfit images\n- Integrate image generation into the chat flow with trigger detection\n\n**Technical Stack:**\n- OpenRouter API with `google/gemini-2.5-flash-preview-05-20` model\n- Next.js 14 API routes\n- React components with TypeScript\n- Existing chat infrastructure and session management\n- shadcn/ui components\n\n## Relevant Files\n\n### Existing Files (Read and Modify)\n\n- **lib/prompts/system-prompt-v3.ts** - Current system prompt v3.0 that needs friend-mode enhancement to v3.1\n- **lib/services/ai-chat-service.ts** - Chat service that needs image generation integration and trigger detection\n- **components/chat/ChatInterface.tsx** or **components/chat/InteractiveChatPanel.tsx** - Main chat component that needs LooksInspiration integration\n- **components/chat/ChatMessage.tsx** - Message rendering component that needs to support image blocks\n- **app/api/chat/route.ts** - Chat API route that may need modifications for image request handling\n- **lib/types/chat-types.ts** - Chat types that need image-related interfaces\n- **.env.local** - Environment variables (needs OPENROUTER_API_KEY if not present)\n- **package.json** - Dependencies (verify existing packages are sufficient)\n\n### New Files (To be Created)\n\n#### 1. Type Definitions\n- **lib/types/image-types.ts** - TypeScript interfaces for image generation requests, responses, and component props\n\n#### 2. Utility Functions\n- **lib/utils/image-trigger-detector.ts** - Detect when user wants outfit visualization with Thai and English trigger phrases\n\n#### 3. Image Generation Service\n- **lib/services/image-generation-service.ts** - OpenRouter client for Gemini 2.5 Flash Image model with fashion-specific prompt engineering\n\n#### 4. API Route\n- **app/api/generate-image/route.ts** - POST endpoint for image generation requests with rate limiting and error handling\n\n#### 5. UI Component\n- **components/chat/LooksInspiration.tsx** - Component to display generated outfit images with loading, error, and success states\n\n#### 6. Environment Configuration\n- **.env.example** - Document required environment variables for image generation feature\n\n## Step by Step Tasks\nIMPORTANT: Execute every step in order, top to bottom.\n\n### 1. Create Type Definitions for Image Generation\n- Create `lib/types/image-types.ts`\n- Define `ImageGenerationRequest` interface with outfit description and style parameters\n- Define `ImageGenerationResponse` interface with image URL/base64, metadata, and error handling\n- Define `LooksInspirationProps` interface for the UI component\n- Export all types for use across the application\n\n### 2. Create Image Trigger Detection Utility\n- Create `lib/utils/image-trigger-detector.ts`\n- Implement `detectImageRequest(message: string): boolean` function\n- Add Thai trigger phrases: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\", \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\", \"\u0e14\u0e39\u0e23\u0e39\u0e1b\", \"\u0e41\u0e2a\u0e14\u0e07\u0e23\u0e39\u0e1b\", \"\u0e40\u0e2b\u0e47\u0e19\u0e20\u0e32\u0e1e\"\n- Add English trigger phrases: \"show me\", \"looks inspiration\", \"visualize\", \"what does it look like\", \"picture\", \"image\"\n- Implement `extractOutfitDescription(message: string, conversationHistory: array): string` function to extract outfit context\n- Export utility functions\n\n### 3. Create Image Generation Service Layer\n- Create `lib/services/image-generation-service.ts`\n- Implement `OpenRouterImageClient` class with constructor accepting API key\n- Add `generateOutfitImage(description: string, options?: object): Promise<ImageGenerationResponse>` method\n- Implement fashion-specific prompt engineering template:\n  - Professional photography style\n  - Clear outfit composition\n  - Thai fashion aesthetic considerations\n  - Central Group product representation\n- Add error handling with fallback messages\n- Add retry logic (max 2 retries with exponential backoff)\n- Add timeout handling (30s timeout)\n- Add rate limiting check (client-side)\n- Add logging for debugging and monitoring\n- Export the client class\n\n### 4. Create Image Generation API Route\n- Create `app/api/generate-image/route.ts`\n- Implement POST handler accepting `{ description: string, style?: object }` in request body\n- Validate OPENROUTER_API_KEY environment variable exists\n- Call OpenRouter API with model `google/gemini-2.5-flash-preview-05-20`\n- Handle errors gracefully with appropriate HTTP status codes (400, 500, 503)\n- Return response: `{ imageUrl?: string, imageBase64?: string, error?: string, message?: string }`\n- Add request logging for debugging\n- Set appropriate CORS headers\n- Add server-side rate limiting - max 10 requests per minute per IP\n- Add timeout protection\n\n### 5. Create LooksInspiration UI Component\n- Create `components/chat/LooksInspiration.tsx`\n- Implement component with props: `{ outfitDescription: string, imageUrl?: string, imageBase64?: string, isLoading?: boolean, error?: string, onRetry?: () => void }`\n- Add loading state with skeleton loader animation using shadcn/ui Skeleton\n- Add error state with retry button and friendly error message\n- Add success state with:\n  - Image display using Next.js Image component\n  - Image caption with outfit description\n  - Click to expand/zoom functionality using Dialog\n  - \"Generate another\" button (optional)\n  - Download button (optional)\n- Use shadcn/ui components (Dialog, Card, Button, Skeleton)\n- Add responsive design (mobile-first approach)\n- Add accessibility attributes (alt text, ARIA labels, keyboard navigation)\n- Export the component\n\n### 6. Enhance System Prompt for Friend Mode (v3.0 \u2192 v3.1)\n- Update `lib/prompts/system-prompt-v3.ts`\n- Add new section after \"YOUR ROLE & PERSONALITY\": \"## FRIEND MODE - CONVERSATIONAL PERSONALITY \ud83d\udcac\"\n- Enhance Thai language guidelines:\n  - Add casual particles: \"\u0e19\u0e30\", \"\u0e08\u0e49\u0e32\", \"\u0e40\u0e19\u0e2d\u0e30\", \"\u0e25\u0e48\u0e30\", \"\u0e14\u0e34\"\n  - Add friendly exclamations: \"\u0e40\u0e17\u0e48\u0e21\u0e32\u0e01!\", \"\u0e2a\u0e27\u0e22\u0e2a\u0e38\u0e14\u0e46!\", \"\u0e40\u0e02\u0e49\u0e32\u0e01\u0e31\u0e19\u0e21\u0e32\u0e01\u0e40\u0e25\u0e22!\", \"\u0e40\u0e08\u0e4b\u0e07\u0e21\u0e32\u0e01!\"\n  - Use first-person naturally: \"\u0e40\u0e23\u0e32\u0e27\u0e48\u0e32...\", \"\u0e40\u0e23\u0e32\u0e21\u0e35\u0e44\u0e2d\u0e40\u0e14\u0e35\u0e22...\", \"\u0e40\u0e23\u0e32\u0e0a\u0e2d\u0e1a...\"\n- Add conversation memory instructions:\n  - Reference previous preferences naturally (\"\u0e08\u0e33\u0e44\u0e14\u0e49\u0e27\u0e48\u0e32\u0e0a\u0e2d\u0e1a\u0e2a\u0e35\u0e19\u0e49\u0e33\u0e40\u0e07\u0e34\u0e19...\")\n  - Build on earlier conversation context\n  - Show genuine interest in user's style journey\n- Add proactive suggestion triggers:\n  - When detecting special occasions, suggest complete looks\n  - When colors mentioned, suggest complementary pieces\n  - When budget mentioned, suggest value alternatives\n- Add examples of good vs. bad friend-like responses\n- Maintain all existing v3.0 features (state machine, validation, post-recommendation lockout)\n- Update version to v3.1 with metadata\n- Update `SYSTEM_PROMPT_V3_METADATA` object with v3.1 information\n\n### 7. Integrate Image Generation into AI Chat Service\n- Update `lib/services/ai-chat-service.ts`\n- Import image trigger detector utility: `import { detectImageRequest, extractOutfitDescription } from '../utils/image-trigger-detector'`\n- Update `ChatResponse` interface to include: `imageRequest?: boolean, outfitDescription?: string`\n- In `processAIChatRequest` function (or equivalent):\n  - After guardrail check, add image request detection\n  - If `detectImageRequest(message)` returns true:\n    - Extract outfit description from conversation context\n    - Return special response: `{ message: string, imageRequest: true, outfitDescription: string }`\n    - Skip normal product recommendation flow\n- Add logging for image request detection\n- Update JSDoc comments to document new functionality\n\n### 8. Update ChatInterface to Handle Image Requests\n- Update `components/chat/InteractiveChatPanel.tsx` or `components/chat/ChatInterface.tsx` (whichever is the main chat interface)\n- Import `LooksInspiration` component\n- Add state for image generation: `const [generatingImage, setGeneratingImage] = useState(false)`\n- In message send handler:\n  - Check API response for `imageRequest` flag\n  - If true, call `/api/generate-image` endpoint with `outfitDescription`\n  - Display `LooksInspiration` component in message thread\n  - Handle loading state during image generation\n  - Handle errors from image generation\n- Add new message type for image responses in chat history\n- Update message rendering to support LooksInspiration blocks\n- Add retry mechanism for failed image generations\n\n### 9. Update ChatMessage Component for Image Display\n- Update `components/chat/ChatMessage.tsx`\n- Add support for rendering `LooksInspiration` component within messages\n- Detect message type (text, outfit recommendations, image)\n- Handle image message type differently from text/outfit recommendations\n- Add proper spacing and styling for image blocks\n- Ensure mobile responsiveness\n- Maintain consistent message bubble styling\n\n### 10. Add Environment Variable Configuration\n- Create or update `.env.example` with:\n  - `OPENROUTER_API_KEY=your_openrouter_api_key_here`\n  - `NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=true` (feature flag)\n- Add comments explaining each variable\n- Document in inline code comments where variables are used\n\n### 11. Test Image Generation Flow End-to-End\n- Start development server: `pnpm dev`\n- Test trigger detection with various Thai phrases:\n  - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n  - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\"\n  - \"\u0e14\u0e39\u0e23\u0e39\u0e1b\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n- Test trigger detection with English phrases:\n  - \"Show me a casual weekend outfit\"\n  - \"What does it look like?\"\n  - \"Visualize this look\"\n- Test error handling scenarios:\n  - Invalid or missing API key\n  - Network timeout\n  - Rate limit exceeded\n  - Invalid outfit description\n- Test loading states and UI transitions\n- Test on mobile (DevTools responsive mode) and desktop viewports\n- Verify accessibility:\n  - Keyboard navigation (Tab, Enter, Escape)\n  - Screen reader announcements\n  - Focus indicators\n  - Color contrast\n\n### 12. Update Documentation\n- Add inline code comments for image generation service explaining prompt engineering approach\n- Document OpenRouter model usage and pricing implications in comments\n- Add JSDoc comments with example requests/responses\n- Document trigger phrases in image-trigger-detector.ts for future reference\n- Add comments explaining rate limiting logic\n\n## Validation Commands\nExecute these commands to validate the chore is complete:\n\n- `cd frontend && pnpm install` - Ensure all dependencies are installed\n- `cd frontend && pnpm lint` - Verify no linting errors in new and modified files\n- `cd frontend && pnpm build` - Ensure production build succeeds without TypeScript or build errors\n- `cd frontend && pnpm test` - Run unit tests (if test files created for utilities)\n\n### Manual Testing Checklist\n\nStart dev server and perform these tests:\n\n```bash\ncd frontend && pnpm dev\n```\n\n**Test Friend-Mode Conversation:**\n1. Navigate to chat interface at `http://localhost:3000`\n2. Send: \"\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e48\u0e30 \u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\"\n3. \u2705 Verify friendly, casual Thai responses with particles (\u0e19\u0e30, \u0e08\u0e49\u0e32)\n4. \u2705 Verify no loop or repeated questions\n\n**Test Image Generation Trigger (Thai):**\n5. After getting recommendations, send: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n6. \u2705 Verify loading state appears\n7. \u2705 Verify image generates or error handling works\n8. \u2705 Verify image displays correctly in chat\n\n**Test Image Generation Trigger (English):**\n9. In new conversation, send: \"Show me a business casual outfit\"\n10. \u2705 Verify image generation triggers\n11. \u2705 Verify image quality and relevance\n\n**Test Error Handling:**\n12. Temporarily remove OPENROUTER_API_KEY from .env.local\n13. Try image generation\n14. \u2705 Verify friendly error message appears\n15. \u2705 Verify retry button works\n16. Restore API key\n\n**Test Mobile Responsiveness:**\n17. Open DevTools, switch to mobile viewport (iPhone 12)\n18. \u2705 Verify chat interface scales properly\n19. \u2705 Verify images display correctly on small screens\n20. \u2705 Verify buttons are touch-friendly\n\n**Test Accessibility:**\n21. Navigate using keyboard only (Tab, Enter, Escape)\n22. \u2705 Verify all interactive elements are accessible\n23. \u2705 Verify focus indicators are visible\n24. Use browser accessibility inspector\n25. \u2705 Verify image alt text is descriptive\n26. \u2705 Verify ARIA labels are present\n\n## Notes\n\n### OpenRouter API Considerations\n- **Model:** `google/gemini-2.5-flash-preview-05-20`\n- **Pricing:** Check OpenRouter pricing page for current rates (estimated ~$0.0001-0.001/image)\n- **Context window:** 1M tokens (very large, suitable for complex fashion descriptions)\n- **Capabilities:** text-to-image, vision, multimodal\n- **API Key:** Requires OpenRouter API key (sign up at openrouter.ai)\n- **Rate Limits:** Check OpenRouter documentation for account-specific limits\n- **Model Availability:** Preview model may require special access or have different availability\n\n### Fashion Image Prompt Engineering Tips\nTo generate high-quality outfit images, use these prompt patterns:\n- Start with: \"A professional photograph of a [outfit type]\"\n- Include style keywords: \"Thai contemporary fashion\", \"elegant\", \"casual chic\", \"minimalist\"\n- Specify composition: \"full body shot\", \"outfit flat lay\", \"styled mannequin\", \"3/4 view\"\n- Add lighting/mood: \"natural lighting\", \"studio photography\", \"soft shadows\", \"bright daylight\"\n- Be specific about:\n  - Colors: \"navy blue blazer\", \"cream white blouse\"\n  - Patterns: \"striped\", \"polka dot\", \"solid color\"\n  - Silhouettes: \"slim fit\", \"oversized\", \"A-line\", \"tailored\"\n- Avoid ambiguity and vague descriptions\n\n### Performance Considerations\n- **Image generation latency:** 5-30 seconds depending on model load\n- **User expectations:** Show clear loading indicators with estimated time\n- **Caching:** Future enhancement - consider caching generated images by description hash\n- **Rate limiting:** Essential to control costs and prevent abuse\n  - Client-side: Debounce requests, limit frequency\n  - Server-side: IP-based rate limiting (10 req/min)\n- **Request queue:** Future enhancement for high traffic scenarios\n- **Cost management:** Monitor OpenRouter usage and set budget alerts\n\n### System Prompt v3.1 Enhancements\nThe friend-mode enhancements should:\n- **Maintain state machine:** Keep the strict CLARIFICATION \u2192 RECOMMENDATION flow\n- **Maintain lockout:** Keep POST-RECOMMENDATION LOCKOUT behavior\n- **Add personality:** Enhance conversational warmth without breaking flow rules\n- **Add memory:** Reference previous context naturally\n- **Add proactivity:** Suggest complementary items when appropriate\n\n### Accessibility Requirements\nAll UI components must meet WCAG 2.1 AA standards:\n- **Images:** Descriptive alt text (e.g., \"Business casual outfit with navy blazer and khaki pants\")\n- **Loading states:** Announced to screen readers with aria-live regions\n- **Keyboard navigation:** All interactive elements accessible via Tab/Enter/Escape\n- **Focus indicators:** Visible focus rings on all focusable elements\n- **Color contrast:** Text and interactive elements meet 4.5:1 ratio minimum\n- **Error messages:** Clear, actionable, and announced to screen readers\n\n### Testing Scenarios Priority\n1. **Happy Path** (High Priority): User asks for outfit, then says \"show me\" \u2192 Image generates successfully\n2. **No API Key** (High Priority): Feature gracefully disabled with helpful setup message\n3. **API Error** (High Priority): Timeout or error \u2192 Clear error message with retry option\n4. **Rate Limited** (Medium Priority): Too many requests \u2192 \"Please wait\" message with countdown\n5. **Unclear Request** (Medium Priority): Vague outfit description \u2192 AI asks clarifying question first\n6. **Mobile Usage** (High Priority): All features work on small screens (320px width minimum)\n7. **Slow Network** (Medium Priority): Loading indicators show, no UI freezing\n8. **Accessibility** (High Priority): Screen reader users can use all features\n\n### Future Enhancements (Out of Scope)\nThese features are not part of this chore but should be considered for future iterations:\n- Image history/gallery feature for browsing past generations\n- Save favorite generated looks to user profile\n- Share generated images on social media with OOTDay branding\n- Generate multiple variations at once (comparison view)\n- Fine-tune prompts based on user feedback and ratings\n- Integration with virtual try-on (Customer Journey Step 5)\n- A/B testing different prompt engineering approaches\n- Personalized image styles based on user preferences\n\n### Dependencies Check\nVerify these packages are available (already in package.json):\n- \u2705 `next` - Next.js framework\n- \u2705 `react` and `react-dom` - React framework\n- \u2705 `typescript` - Type safety\n- \u2705 `lucide-react` - Icons for UI\n- \u2705 `@radix-ui/react-dialog` - Modal for image zoom\n- \u2705 `@radix-ui/react-slot` - Component composition\n- \u2705 `class-variance-authority` - Component variants\n- \u2705 `tailwind-merge` - Tailwind class merging\n- \u2705 `tailwindcss-animate` - Animations\n\nNo new dependencies required! All necessary packages are already installed.\n\n### Code Quality Standards\n- Follow existing code style and conventions in the project\n- Use TypeScript strict mode - no `any` types unless absolutely necessary\n- Add JSDoc comments for all exported functions and components\n- Use meaningful variable and function names\n- Keep functions small and focused (single responsibility)\n- Handle errors gracefully with user-friendly messages\n- Add loading and error states for all async operations\n- Write self-documenting code with clear logic flow\n"
+          }
+        }
+      ],
+      "stop_reason": "tool_use",
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 1759,
+        "cache_creation_input_tokens": 581,
+        "cache_read_input_tokens": 36277,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 581,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 4970,
+        "service_tier": "standard"
+      },
+      "context_management": {
+        "applied_edits": []
+      }
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "766c1a90-7f1a-45d7-bf82-12de8b31e0bd"
+  },
+  {
+    "type": "user",
+    "message": {
+      "role": "user",
+      "content": [
+        {
+          "tool_use_id": "toolu_01GF4T8cXBniBHX5x8TQFNKr",
+          "type": "tool_result",
+          "content": "File created successfully at: /Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-e1017ca7-journey-steps-3-4-implementation.md"
+        }
+      ]
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "c4221496-56b8-4cdc-8446-980c10fcfc70",
+    "tool_use_result": {
+      "type": "create",
+      "filePath": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-e1017ca7-journey-steps-3-4-implementation.md",
+      "content": "# Chore: Implement Customer Journey Steps 3 & 4 - Friend Mode & Looks Inspiration\n\n## Metadata\nadw_id: `e1017ca7`\nprompt: `Implement Customer Journey Steps 3 (Talk with friend) and Step 4 (Looks inspiration) based on specs/chore-d3a6581a-customer-journey-steps-3-4.md`\n\n## Chore Description\n\nThis chore implements the next phase of the OOTDay customer journey by enhancing the conversational experience (Step 3: \"Talk with friend\") and adding visual outfit inspiration capabilities (Step 4: \"Looks inspiration\").\n\nThe implementation builds upon the existing system prompt v3.0 and chat infrastructure to create a more natural, friend-like conversational flow while adding text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model for outfit visualization.\n\n**Step 3 Goals:**\n- Enhance system prompt to create a more natural, friend-like conversational experience\n- Use more casual, friendly Thai language patterns\n- Remember user preferences across conversations\n- Provide proactive style suggestions based on context\n- Upgrade system prompt from v3.0 to v3.1\n\n**Step 4 Goals:**\n- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Preview model\n- Create service layer for outfit visualization\n- Add API endpoint for image generation with rate limiting\n- Build UI component to display generated outfit images\n- Integrate image generation into the chat flow with trigger detection\n\n**Technical Stack:**\n- OpenRouter API with `google/gemini-2.5-flash-preview-05-20` model\n- Next.js 14 API routes\n- React components with TypeScript\n- Existing chat infrastructure and session management\n- shadcn/ui components\n\n## Relevant Files\n\n### Existing Files (Read and Modify)\n\n- **lib/prompts/system-prompt-v3.ts** - Current system prompt v3.0 that needs friend-mode enhancement to v3.1\n- **lib/services/ai-chat-service.ts** - Chat service that needs image generation integration and trigger detection\n- **components/chat/ChatInterface.tsx** or **components/chat/InteractiveChatPanel.tsx** - Main chat component that needs LooksInspiration integration\n- **components/chat/ChatMessage.tsx** - Message rendering component that needs to support image blocks\n- **app/api/chat/route.ts** - Chat API route that may need modifications for image request handling\n- **lib/types/chat-types.ts** - Chat types that need image-related interfaces\n- **.env.local** - Environment variables (needs OPENROUTER_API_KEY if not present)\n- **package.json** - Dependencies (verify existing packages are sufficient)\n\n### New Files (To be Created)\n\n#### 1. Type Definitions\n- **lib/types/image-types.ts** - TypeScript interfaces for image generation requests, responses, and component props\n\n#### 2. Utility Functions\n- **lib/utils/image-trigger-detector.ts** - Detect when user wants outfit visualization with Thai and English trigger phrases\n\n#### 3. Image Generation Service\n- **lib/services/image-generation-service.ts** - OpenRouter client for Gemini 2.5 Flash Image model with fashion-specific prompt engineering\n\n#### 4. API Route\n- **app/api/generate-image/route.ts** - POST endpoint for image generation requests with rate limiting and error handling\n\n#### 5. UI Component\n- **components/chat/LooksInspiration.tsx** - Component to display generated outfit images with loading, error, and success states\n\n#### 6. Environment Configuration\n- **.env.example** - Document required environment variables for image generation feature\n\n## Step by Step Tasks\nIMPORTANT: Execute every step in order, top to bottom.\n\n### 1. Create Type Definitions for Image Generation\n- Create `lib/types/image-types.ts`\n- Define `ImageGenerationRequest` interface with outfit description and style parameters\n- Define `ImageGenerationResponse` interface with image URL/base64, metadata, and error handling\n- Define `LooksInspirationProps` interface for the UI component\n- Export all types for use across the application\n\n### 2. Create Image Trigger Detection Utility\n- Create `lib/utils/image-trigger-detector.ts`\n- Implement `detectImageRequest(message: string): boolean` function\n- Add Thai trigger phrases: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\", \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\", \"\u0e14\u0e39\u0e23\u0e39\u0e1b\", \"\u0e41\u0e2a\u0e14\u0e07\u0e23\u0e39\u0e1b\", \"\u0e40\u0e2b\u0e47\u0e19\u0e20\u0e32\u0e1e\"\n- Add English trigger phrases: \"show me\", \"looks inspiration\", \"visualize\", \"what does it look like\", \"picture\", \"image\"\n- Implement `extractOutfitDescription(message: string, conversationHistory: array): string` function to extract outfit context\n- Export utility functions\n\n### 3. Create Image Generation Service Layer\n- Create `lib/services/image-generation-service.ts`\n- Implement `OpenRouterImageClient` class with constructor accepting API key\n- Add `generateOutfitImage(description: string, options?: object): Promise<ImageGenerationResponse>` method\n- Implement fashion-specific prompt engineering template:\n  - Professional photography style\n  - Clear outfit composition\n  - Thai fashion aesthetic considerations\n  - Central Group product representation\n- Add error handling with fallback messages\n- Add retry logic (max 2 retries with exponential backoff)\n- Add timeout handling (30s timeout)\n- Add rate limiting check (client-side)\n- Add logging for debugging and monitoring\n- Export the client class\n\n### 4. Create Image Generation API Route\n- Create `app/api/generate-image/route.ts`\n- Implement POST handler accepting `{ description: string, style?: object }` in request body\n- Validate OPENROUTER_API_KEY environment variable exists\n- Call OpenRouter API with model `google/gemini-2.5-flash-preview-05-20`\n- Handle errors gracefully with appropriate HTTP status codes (400, 500, 503)\n- Return response: `{ imageUrl?: string, imageBase64?: string, error?: string, message?: string }`\n- Add request logging for debugging\n- Set appropriate CORS headers\n- Add server-side rate limiting - max 10 requests per minute per IP\n- Add timeout protection\n\n### 5. Create LooksInspiration UI Component\n- Create `components/chat/LooksInspiration.tsx`\n- Implement component with props: `{ outfitDescription: string, imageUrl?: string, imageBase64?: string, isLoading?: boolean, error?: string, onRetry?: () => void }`\n- Add loading state with skeleton loader animation using shadcn/ui Skeleton\n- Add error state with retry button and friendly error message\n- Add success state with:\n  - Image display using Next.js Image component\n  - Image caption with outfit description\n  - Click to expand/zoom functionality using Dialog\n  - \"Generate another\" button (optional)\n  - Download button (optional)\n- Use shadcn/ui components (Dialog, Card, Button, Skeleton)\n- Add responsive design (mobile-first approach)\n- Add accessibility attributes (alt text, ARIA labels, keyboard navigation)\n- Export the component\n\n### 6. Enhance System Prompt for Friend Mode (v3.0 \u2192 v3.1)\n- Update `lib/prompts/system-prompt-v3.ts`\n- Add new section after \"YOUR ROLE & PERSONALITY\": \"## FRIEND MODE - CONVERSATIONAL PERSONALITY \ud83d\udcac\"\n- Enhance Thai language guidelines:\n  - Add casual particles: \"\u0e19\u0e30\", \"\u0e08\u0e49\u0e32\", \"\u0e40\u0e19\u0e2d\u0e30\", \"\u0e25\u0e48\u0e30\", \"\u0e14\u0e34\"\n  - Add friendly exclamations: \"\u0e40\u0e17\u0e48\u0e21\u0e32\u0e01!\", \"\u0e2a\u0e27\u0e22\u0e2a\u0e38\u0e14\u0e46!\", \"\u0e40\u0e02\u0e49\u0e32\u0e01\u0e31\u0e19\u0e21\u0e32\u0e01\u0e40\u0e25\u0e22!\", \"\u0e40\u0e08\u0e4b\u0e07\u0e21\u0e32\u0e01!\"\n  - Use first-person naturally: \"\u0e40\u0e23\u0e32\u0e27\u0e48\u0e32...\", \"\u0e40\u0e23\u0e32\u0e21\u0e35\u0e44\u0e2d\u0e40\u0e14\u0e35\u0e22...\", \"\u0e40\u0e23\u0e32\u0e0a\u0e2d\u0e1a...\"\n- Add conversation memory instructions:\n  - Reference previous preferences naturally (\"\u0e08\u0e33\u0e44\u0e14\u0e49\u0e27\u0e48\u0e32\u0e0a\u0e2d\u0e1a\u0e2a\u0e35\u0e19\u0e49\u0e33\u0e40\u0e07\u0e34\u0e19...\")\n  - Build on earlier conversation context\n  - Show genuine interest in user's style journey\n- Add proactive suggestion triggers:\n  - When detecting special occasions, suggest complete looks\n  - When colors mentioned, suggest complementary pieces\n  - When budget mentioned, suggest value alternatives\n- Add examples of good vs. bad friend-like responses\n- Maintain all existing v3.0 features (state machine, validation, post-recommendation lockout)\n- Update version to v3.1 with metadata\n- Update `SYSTEM_PROMPT_V3_METADATA` object with v3.1 information\n\n### 7. Integrate Image Generation into AI Chat Service\n- Update `lib/services/ai-chat-service.ts`\n- Import image trigger detector utility: `import { detectImageRequest, extractOutfitDescription } from '../utils/image-trigger-detector'`\n- Update `ChatResponse` interface to include: `imageRequest?: boolean, outfitDescription?: string`\n- In `processAIChatRequest` function (or equivalent):\n  - After guardrail check, add image request detection\n  - If `detectImageRequest(message)` returns true:\n    - Extract outfit description from conversation context\n    - Return special response: `{ message: string, imageRequest: true, outfitDescription: string }`\n    - Skip normal product recommendation flow\n- Add logging for image request detection\n- Update JSDoc comments to document new functionality\n\n### 8. Update ChatInterface to Handle Image Requests\n- Update `components/chat/InteractiveChatPanel.tsx` or `components/chat/ChatInterface.tsx` (whichever is the main chat interface)\n- Import `LooksInspiration` component\n- Add state for image generation: `const [generatingImage, setGeneratingImage] = useState(false)`\n- In message send handler:\n  - Check API response for `imageRequest` flag\n  - If true, call `/api/generate-image` endpoint with `outfitDescription`\n  - Display `LooksInspiration` component in message thread\n  - Handle loading state during image generation\n  - Handle errors from image generation\n- Add new message type for image responses in chat history\n- Update message rendering to support LooksInspiration blocks\n- Add retry mechanism for failed image generations\n\n### 9. Update ChatMessage Component for Image Display\n- Update `components/chat/ChatMessage.tsx`\n- Add support for rendering `LooksInspiration` component within messages\n- Detect message type (text, outfit recommendations, image)\n- Handle image message type differently from text/outfit recommendations\n- Add proper spacing and styling for image blocks\n- Ensure mobile responsiveness\n- Maintain consistent message bubble styling\n\n### 10. Add Environment Variable Configuration\n- Create or update `.env.example` with:\n  - `OPENROUTER_API_KEY=your_openrouter_api_key_here`\n  - `NEXT_PUBLIC_ENABLE_IMAGE_GENERATION=true` (feature flag)\n- Add comments explaining each variable\n- Document in inline code comments where variables are used\n\n### 11. Test Image Generation Flow End-to-End\n- Start development server: `pnpm dev`\n- Test trigger detection with various Thai phrases:\n  - \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n  - \"\u0e2d\u0e22\u0e32\u0e01\u0e40\u0e2b\u0e47\u0e19\u0e27\u0e48\u0e32\u0e2b\u0e19\u0e49\u0e32\u0e15\u0e32\u0e40\u0e1b\u0e47\u0e19\u0e22\u0e31\u0e07\u0e44\u0e07\"\n  - \"\u0e14\u0e39\u0e23\u0e39\u0e1b\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n- Test trigger detection with English phrases:\n  - \"Show me a casual weekend outfit\"\n  - \"What does it look like?\"\n  - \"Visualize this look\"\n- Test error handling scenarios:\n  - Invalid or missing API key\n  - Network timeout\n  - Rate limit exceeded\n  - Invalid outfit description\n- Test loading states and UI transitions\n- Test on mobile (DevTools responsive mode) and desktop viewports\n- Verify accessibility:\n  - Keyboard navigation (Tab, Enter, Escape)\n  - Screen reader announcements\n  - Focus indicators\n  - Color contrast\n\n### 12. Update Documentation\n- Add inline code comments for image generation service explaining prompt engineering approach\n- Document OpenRouter model usage and pricing implications in comments\n- Add JSDoc comments with example requests/responses\n- Document trigger phrases in image-trigger-detector.ts for future reference\n- Add comments explaining rate limiting logic\n\n## Validation Commands\nExecute these commands to validate the chore is complete:\n\n- `cd frontend && pnpm install` - Ensure all dependencies are installed\n- `cd frontend && pnpm lint` - Verify no linting errors in new and modified files\n- `cd frontend && pnpm build` - Ensure production build succeeds without TypeScript or build errors\n- `cd frontend && pnpm test` - Run unit tests (if test files created for utilities)\n\n### Manual Testing Checklist\n\nStart dev server and perform these tests:\n\n```bash\ncd frontend && pnpm dev\n```\n\n**Test Friend-Mode Conversation:**\n1. Navigate to chat interface at `http://localhost:3000`\n2. Send: \"\u0e2a\u0e27\u0e31\u0e2a\u0e14\u0e35\u0e04\u0e48\u0e30 \u0e2d\u0e22\u0e32\u0e01\u0e2b\u0e32\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19\"\n3. \u2705 Verify friendly, casual Thai responses with particles (\u0e19\u0e30, \u0e08\u0e49\u0e32)\n4. \u2705 Verify no loop or repeated questions\n\n**Test Image Generation Trigger (Thai):**\n5. After getting recommendations, send: \"\u0e41\u0e2a\u0e14\u0e07\u0e43\u0e2b\u0e49\u0e14\u0e39\u0e2b\u0e19\u0e48\u0e2d\u0e22\"\n6. \u2705 Verify loading state appears\n7. \u2705 Verify image generates or error handling works\n8. \u2705 Verify image displays correctly in chat\n\n**Test Image Generation Trigger (English):**\n9. In new conversation, send: \"Show me a business casual outfit\"\n10. \u2705 Verify image generation triggers\n11. \u2705 Verify image quality and relevance\n\n**Test Error Handling:**\n12. Temporarily remove OPENROUTER_API_KEY from .env.local\n13. Try image generation\n14. \u2705 Verify friendly error message appears\n15. \u2705 Verify retry button works\n16. Restore API key\n\n**Test Mobile Responsiveness:**\n17. Open DevTools, switch to mobile viewport (iPhone 12)\n18. \u2705 Verify chat interface scales properly\n19. \u2705 Verify images display correctly on small screens\n20. \u2705 Verify buttons are touch-friendly\n\n**Test Accessibility:**\n21. Navigate using keyboard only (Tab, Enter, Escape)\n22. \u2705 Verify all interactive elements are accessible\n23. \u2705 Verify focus indicators are visible\n24. Use browser accessibility inspector\n25. \u2705 Verify image alt text is descriptive\n26. \u2705 Verify ARIA labels are present\n\n## Notes\n\n### OpenRouter API Considerations\n- **Model:** `google/gemini-2.5-flash-preview-05-20`\n- **Pricing:** Check OpenRouter pricing page for current rates (estimated ~$0.0001-0.001/image)\n- **Context window:** 1M tokens (very large, suitable for complex fashion descriptions)\n- **Capabilities:** text-to-image, vision, multimodal\n- **API Key:** Requires OpenRouter API key (sign up at openrouter.ai)\n- **Rate Limits:** Check OpenRouter documentation for account-specific limits\n- **Model Availability:** Preview model may require special access or have different availability\n\n### Fashion Image Prompt Engineering Tips\nTo generate high-quality outfit images, use these prompt patterns:\n- Start with: \"A professional photograph of a [outfit type]\"\n- Include style keywords: \"Thai contemporary fashion\", \"elegant\", \"casual chic\", \"minimalist\"\n- Specify composition: \"full body shot\", \"outfit flat lay\", \"styled mannequin\", \"3/4 view\"\n- Add lighting/mood: \"natural lighting\", \"studio photography\", \"soft shadows\", \"bright daylight\"\n- Be specific about:\n  - Colors: \"navy blue blazer\", \"cream white blouse\"\n  - Patterns: \"striped\", \"polka dot\", \"solid color\"\n  - Silhouettes: \"slim fit\", \"oversized\", \"A-line\", \"tailored\"\n- Avoid ambiguity and vague descriptions\n\n### Performance Considerations\n- **Image generation latency:** 5-30 seconds depending on model load\n- **User expectations:** Show clear loading indicators with estimated time\n- **Caching:** Future enhancement - consider caching generated images by description hash\n- **Rate limiting:** Essential to control costs and prevent abuse\n  - Client-side: Debounce requests, limit frequency\n  - Server-side: IP-based rate limiting (10 req/min)\n- **Request queue:** Future enhancement for high traffic scenarios\n- **Cost management:** Monitor OpenRouter usage and set budget alerts\n\n### System Prompt v3.1 Enhancements\nThe friend-mode enhancements should:\n- **Maintain state machine:** Keep the strict CLARIFICATION \u2192 RECOMMENDATION flow\n- **Maintain lockout:** Keep POST-RECOMMENDATION LOCKOUT behavior\n- **Add personality:** Enhance conversational warmth without breaking flow rules\n- **Add memory:** Reference previous context naturally\n- **Add proactivity:** Suggest complementary items when appropriate\n\n### Accessibility Requirements\nAll UI components must meet WCAG 2.1 AA standards:\n- **Images:** Descriptive alt text (e.g., \"Business casual outfit with navy blazer and khaki pants\")\n- **Loading states:** Announced to screen readers with aria-live regions\n- **Keyboard navigation:** All interactive elements accessible via Tab/Enter/Escape\n- **Focus indicators:** Visible focus rings on all focusable elements\n- **Color contrast:** Text and interactive elements meet 4.5:1 ratio minimum\n- **Error messages:** Clear, actionable, and announced to screen readers\n\n### Testing Scenarios Priority\n1. **Happy Path** (High Priority): User asks for outfit, then says \"show me\" \u2192 Image generates successfully\n2. **No API Key** (High Priority): Feature gracefully disabled with helpful setup message\n3. **API Error** (High Priority): Timeout or error \u2192 Clear error message with retry option\n4. **Rate Limited** (Medium Priority): Too many requests \u2192 \"Please wait\" message with countdown\n5. **Unclear Request** (Medium Priority): Vague outfit description \u2192 AI asks clarifying question first\n6. **Mobile Usage** (High Priority): All features work on small screens (320px width minimum)\n7. **Slow Network** (Medium Priority): Loading indicators show, no UI freezing\n8. **Accessibility** (High Priority): Screen reader users can use all features\n\n### Future Enhancements (Out of Scope)\nThese features are not part of this chore but should be considered for future iterations:\n- Image history/gallery feature for browsing past generations\n- Save favorite generated looks to user profile\n- Share generated images on social media with OOTDay branding\n- Generate multiple variations at once (comparison view)\n- Fine-tune prompts based on user feedback and ratings\n- Integration with virtual try-on (Customer Journey Step 5)\n- A/B testing different prompt engineering approaches\n- Personalized image styles based on user preferences\n\n### Dependencies Check\nVerify these packages are available (already in package.json):\n- \u2705 `next` - Next.js framework\n- \u2705 `react` and `react-dom` - React framework\n- \u2705 `typescript` - Type safety\n- \u2705 `lucide-react` - Icons for UI\n- \u2705 `@radix-ui/react-dialog` - Modal for image zoom\n- \u2705 `@radix-ui/react-slot` - Component composition\n- \u2705 `class-variance-authority` - Component variants\n- \u2705 `tailwind-merge` - Tailwind class merging\n- \u2705 `tailwindcss-animate` - Animations\n\nNo new dependencies required! All necessary packages are already installed.\n\n### Code Quality Standards\n- Follow existing code style and conventions in the project\n- Use TypeScript strict mode - no `any` types unless absolutely necessary\n- Add JSDoc comments for all exported functions and components\n- Use meaningful variable and function names\n- Keep functions small and focused (single responsibility)\n- Handle errors gracefully with user-friendly messages\n- Add loading and error states for all async operations\n- Write self-documenting code with clear logic flow\n",
+      "structuredPatch": [],
+      "originalFile": null
+    }
+  },
+  {
+    "type": "assistant",
+    "message": {
+      "model": "claude-sonnet-4-5-20250929",
+      "id": "msg_01KYWyVscKhk6iEiWCBAhss6",
+      "type": "message",
+      "role": "assistant",
+      "content": [
+        {
+          "type": "text",
+          "text": "Perfect! I've successfully created the chore plan file. Let me provide a summary:\n\n## Plan Created Successfully \u2705\n\nI've created a comprehensive plan file at:\n\n**`/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-e1017ca7-journey-steps-3-4-implementation.md`**\n\n### Plan Overview\n\nThe plan implements Customer Journey Steps 3 & 4 based on the existing detailed spec (`chore-d3a6581a-customer-journey-steps-3-4.md`):\n\n**Step 3: \"Talk with friend\"**\n- Enhance system prompt from v3.0 to v3.1 with friend-mode personality\n- Add casual Thai language patterns (\u0e19\u0e30, \u0e08\u0e49\u0e32, \u0e40\u0e19\u0e2d\u0e30)\n- Implement conversation memory and proactive suggestions\n- Maintain existing state machine and lockout rules\n\n**Step 4: \"Looks inspiration\"**\n- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model\n- Create image trigger detection for Thai/English phrases\n- Build LooksInspiration UI component with loading/error states\n- Add API route with rate limiting (10 req/min)\n- Integrate into existing chat flow\n\n### Structure\n\nThe plan includes:\n- \u2705 12 step-by-step tasks in logical order\n- \u2705 5 new files to create (types, utilities, service, API route, component)\n- \u2705 8 existing files to modify\n- \u2705 Detailed validation commands (build, lint, test)\n- \u2705 Comprehensive manual testing checklist (26 test points)\n- \u2705 Technical notes on OpenRouter API, prompt engineering, performance, and accessibility\n- \u2705 Future enhancement ideas (out of scope)\n\n### Key Features\n\n1. **Type-safe implementation** with TypeScript interfaces\n2. **Fashion-specific prompt engineering** for high-quality outfit images\n3. **Bilingual trigger detection** (Thai + English)\n4. **Rate limiting** (client + server side)\n5. **Comprehensive error handling** with retry logic\n6. **Mobile-first responsive design**\n7. **WCAG 2.1 AA accessibility compliance**\n8. **No new dependencies required** - uses existing packages\n\nThe plan is ready to be executed step-by-step! \ud83d\ude80"
+        }
+      ],
+      "stop_reason": null,
+      "stop_sequence": null,
+      "usage": {
+        "input_tokens": 6,
+        "cache_creation_input_tokens": 6783,
+        "cache_read_input_tokens": 36858,
+        "cache_creation": {
+          "ephemeral_5m_input_tokens": 6783,
+          "ephemeral_1h_input_tokens": 0
+        },
+        "output_tokens": 1,
+        "service_tier": "standard"
+      },
+      "context_management": null
+    },
+    "parent_tool_use_id": null,
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "uuid": "4a285c19-d523-4a5f-b312-58a017d2767d"
+  },
+  {
+    "type": "result",
+    "subtype": "success",
+    "is_error": false,
+    "duration_ms": 151886,
+    "duration_api_ms": 158323,
+    "num_turns": 14,
+    "result": "Perfect! I've successfully created the chore plan file. Let me provide a summary:\n\n## Plan Created Successfully \u2705\n\nI've created a comprehensive plan file at:\n\n**`/Users/naruechon/Documents/Project/OOTDay_Anti/frontend/specs/chore-e1017ca7-journey-steps-3-4-implementation.md`**\n\n### Plan Overview\n\nThe plan implements Customer Journey Steps 3 & 4 based on the existing detailed spec (`chore-d3a6581a-customer-journey-steps-3-4.md`):\n\n**Step 3: \"Talk with friend\"**\n- Enhance system prompt from v3.0 to v3.1 with friend-mode personality\n- Add casual Thai language patterns (\u0e19\u0e30, \u0e08\u0e49\u0e32, \u0e40\u0e19\u0e2d\u0e30)\n- Implement conversation memory and proactive suggestions\n- Maintain existing state machine and lockout rules\n\n**Step 4: \"Looks inspiration\"**\n- Implement text-to-image generation using OpenRouter's Gemini 2.5 Flash Image model\n- Create image trigger detection for Thai/English phrases\n- Build LooksInspiration UI component with loading/error states\n- Add API route with rate limiting (10 req/min)\n- Integrate into existing chat flow\n\n### Structure\n\nThe plan includes:\n- \u2705 12 step-by-step tasks in logical order\n- \u2705 5 new files to create (types, utilities, service, API route, component)\n- \u2705 8 existing files to modify\n- \u2705 Detailed validation commands (build, lint, test)\n- \u2705 Comprehensive manual testing checklist (26 test points)\n- \u2705 Technical notes on OpenRouter API, prompt engineering, performance, and accessibility\n- \u2705 Future enhancement ideas (out of scope)\n\n### Key Features\n\n1. **Type-safe implementation** with TypeScript interfaces\n2. **Fashion-specific prompt engineering** for high-quality outfit images\n3. **Bilingual trigger detection** (Thai + English)\n4. **Rate limiting** (client + server side)\n5. **Comprehensive error handling** with retry logic\n6. **Mobile-first responsive design**\n7. **WCAG 2.1 AA accessibility compliance**\n8. **No new dependencies required** - uses existing packages\n\nThe plan is ready to be executed step-by-step! \ud83d\ude80",
+    "session_id": "0ddb44ca-a51d-467c-9cac-cf3a222bae28",
+    "total_cost_usd": 0.2841748,
+    "usage": {
+      "input_tokens": 1863,
+      "cache_creation_input_tokens": 29480,
+      "cache_read_input_tokens": 175796,
+      "output_tokens": 6485,
+      "server_tool_use": {
+        "web_search_requests": 0,
+        "web_fetch_requests": 0
+      },
+      "service_tier": "standard",
+      "cache_creation": {
+        "ephemeral_1h_input_tokens": 0,
+        "ephemeral_5m_input_tokens": 29480
+      }
+    },
+    "modelUsage": {
+      "claude-opus-4-5-20251101": {
+        "inputTokens": 2672,
+        "outputTokens": 20,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.01386,
+        "contextWindow": 200000
+      },
+      "claude-haiku-4-5-20251001": {
+        "inputTokens": 2907,
+        "outputTokens": 251,
+        "cacheReadInputTokens": 0,
+        "cacheCreationInputTokens": 0,
+        "webSearchRequests": 0,
+        "costUSD": 0.004162,
+        "contextWindow": 200000
+      },
+      "claude-sonnet-4-5-20250929": {
+        "inputTokens": 1863,
+        "outputTokens": 6485,
+        "cacheReadInputTokens": 175796,
+        "cacheCreationInputTokens": 29480,
+        "webSearchRequests": 0,
+        "costUSD": 0.26615279999999997,
+        "contextWindow": 200000
+      }
+    },
+    "permission_denials": [],
+    "uuid": "ff6b4904-ca8e-4d10-81fc-708d435c291c"
+  }
+]

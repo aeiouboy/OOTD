@@ -1,0 +1,1 @@
+/implement specs/chore-e0de3305-persist-chat-assistant-visibility.md

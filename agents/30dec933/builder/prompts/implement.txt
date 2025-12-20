@@ -1,0 +1,1 @@
+/implement specs/chore-30dec933-fix-image-generation-response.md

@@ -1,0 +1,57 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 37291,
+  "duration_api_ms": 43837,
+  "num_turns": 5,
+  "result": "Plan created successfully at:\n\n**`/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-925249ba-update-romantic-style-image.md`**\n\nThe plan details a simple image URL update for the \"Romantic\" style option in the onboarding flow. The change will replace the current image with a more feminine/romantic fashion image that better represents this style aesthetic.",
+  "session_id": "bd2d3c1e-a81a-400d-bae5-365524e57d79",
+  "total_cost_usd": 0.2664261,
+  "usage": {
+    "input_tokens": 22,
+    "cache_creation_input_tokens": 37204,
+    "cache_read_input_tokens": 100607,
+    "output_tokens": 1190,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 37204
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 3,
+      "outputTokens": 26,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 10258,
+      "webSearchRequests": 0,
+      "costUSD": 0.0647775,
+      "contextWindow": 200000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 274,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 10130,
+      "webSearchRequests": 0,
+      "costUSD": 0.0140355,
+      "contextWindow": 200000
+    },
+    "claude-sonnet-4-5-20250929": {
+      "inputTokens": 22,
+      "outputTokens": 1190,
+      "cacheReadInputTokens": 100607,
+      "cacheCreationInputTokens": 37204,
+      "webSearchRequests": 0,
+      "costUSD": 0.1876131,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "e9330a49-0452-4658-bf36-1529f00d144b"
+}

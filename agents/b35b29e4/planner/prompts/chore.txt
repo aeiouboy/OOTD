@@ -1,0 +1,8 @@
+/chore b35b29e4 Analyze and define 10 fashion styles for a style selection 
+  onboarding screen. Each style should have: 1) A style name (e.g., 'Minimal · Timeless'), 2) A 
+  short tagline description (max 10 words), 3) Key characteristics. The styles should cover a 
+  diverse range appealing to fashion-conscious users aged 18-35. Consider styles like: 
+  Minimal/Timeless, Classic/Elegant, Streetwear/Urban, Bohemian/Free-spirit, Sporty/Athleisure, 
+  Edgy/Bold, Romantic/Feminine, Preppy/Smart-casual, Vintage/Retro, and Modern/Trendy. Output as 
+  a JSON array with fields: styleName, tagline, description, keywords. This will be used in a 
+  horizontal scrollable card UI similar to the reference design.

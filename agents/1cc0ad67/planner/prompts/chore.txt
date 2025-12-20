@@ -1,0 +1,15 @@
+/chore 1cc0ad67 Redesign OnboardingStyle.tsx to EXACTLY match reference 
+  design. IMPORTANT: Keep all 10 style cards in a horizontal scrollable carousel. CRITICAL 
+  changes: 1) CARD STRUCTURE - Each card contains ONLY: [Image ~80% height] → [Red title 'Minimal
+   · Timeless'] → [Short gray description]. 2) REMOVE DUPLICATE CONTENT - Currently 
+  titles/descriptions appear both inside AND outside cards. Keep ONLY content INSIDE the white 
+  card, remove everything below/outside card. 3) IMAGE CROPPING - Use object-fit: cover and 
+  object-position: center top to hide baked-in text at bottom of images. 4) CARD STYLING - White 
+  card, subtle shadow, LEFT red vertical border accent line (thin stripe, not full border), 
+  rounded corners. Cards should be narrower and taller. 5) SELECTED THUMBNAILS - Small thumbnails
+   at TOP with red X button overlay. 6) CAROUSEL - Horizontal scroll with embla-carousel, user 
+  can scroll to view and select from ALL 10 styles. 7) Use SHORT description field 
+  (style.description like 'Timeless') combined with name, and show the old-style tagline 'Less is
+   more, clean, simple...' as the gray description text. 8) Ensure all 10 styles from 
+  fashion-styles.json are displayed and selectable. 9) Next button circular red at bottom 
+  center.

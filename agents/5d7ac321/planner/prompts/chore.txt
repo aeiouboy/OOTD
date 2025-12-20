@@ -1,0 +1,6 @@
+/chore 5d7ac321 Fix outfit description extraction for image 
+  generation. Currently the extracted description includes conversation history like 
+  'ไปทำงานค่ะ งานค่ะ ชุดผู้หญิงหรือผู้ชายคะ?' instead of a clean description. Update the image 
+  generation flow in frontend/lib/chat-utils.ts or frontend/app/api/chat/route.ts to extract
+   only the current user request context (occasion, style, gender) and format it as a proper
+   outfit description for image generation, not raw conversation text.

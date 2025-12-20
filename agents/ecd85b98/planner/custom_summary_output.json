@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "ecd85b98",
+  "slash_command": "/chore",
+  "args": [
+    "ecd85b98",
+    "Analyze the OOTDay AI chat implementation to integrate the OOT persona from /Users/naruechon/Documents/Project/OOTDay_Anti/ootday_persona/Persona.md and knowledge base from /Users/naruechon/Documents/Project/OOTDay_Anti/ootday_persona/knowledge_base. Current issues: 1) The system prompt in frontend/lib/prompts/system-prompt-v2.ts uses formal Thai language instead of the bestie personality defined in Persona.md (cheerful, talkative, observant, gentle, chill, fun to talk, friendly, caring, non-judgmental). 2) Missing Thai-English code-switching examples from persona like '\u0e25\u0e38\u0e04\u0e19\u0e35\u0e49 very chic \u0e40\u0e25\u0e22\u0e2d\u0e48\u0e30', '\u0e43\u0e2a\u0e48\u0e2a\u0e1a\u0e32\u0e22\u0e14\u0e35\u0e19\u0e4a\u0e32', '555'. 3) Missing personality phrases: '\u0e27\u0e49\u0e32\u0e27', '\u0e40\u0e01\u0e4b\u0e21\u0e32\u0e01', '\u0e2a\u0e27\u0e22\u0e40\u0e27\u0e48\u0e2d\u0e23\u0e4c', '\u0e41\u0e1a\u0e1a\u0e27\u0e48\u0e32...', '\u0e2d\u0e35\u0e01\u0e41\u0e25\u0e49\u0e27\u0e27'. 4) Knowledge base is not integrated into the AI chat service. 5) Chat dialog examples in /Users/naruechon/Documents/Project/OOTDay_Anti/chat_dialog show expected output format. Fix: Update system-prompt-v2.ts to incorporate full OOT persona with \n  bestie personality, Thai-English code-switching, and integrate knowledge base summaries for fashion expertise. Ensure AI responses match the persona examples in Persona.md sections 'Tone Examples' and 'Sample Conversation Flow'."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "08afa2db-8093-4f81-bd96-2869ed542f50",
+  "retry_code": "none",
+  "output": "Plan created successfully.\n\n**Plan File:** `specs/chore-ecd85b98-oot-persona-knowledge-integration.md`\n\n## Summary\n\nThe plan addresses integrating the OOT (Outfit Of Today) persona and knowledge base into the AI chat system. Key changes:\n\n**8 Step-by-Step Tasks:**\n1. Create OOT Persona Module (`oot-persona.ts`) - exports personality traits, Thai-English code-switching phrases, and tone examples\n2. Create Knowledge Base Summaries Module (`fashion-summaries.ts`) - consolidates fashion expertise for AI context\n3. Update System Prompt v2 - replace formal customer service tone with bestie personality\n4. Update System Prompt v3 - enhance Friend Mode with full persona integration\n5. Integrate Knowledge Base into AI Chat Service - inject relevant fashion knowledge into responses\n6. Update Response Templates - match chat dialog mockup format\n7. Add OOT Boundaries and Emergency Responses - handle sensitive situations gracefully\n8. Validate and Test - ensure compilation and lint pass\n\n**Critical Preservation:** The plan explicitly protects the conversation flow state machine, POST-RECOMMENDATION LOCKOUT, duplicate prevention, and MAX 2 clarifications rule.",
+  "plan_path": "specs/chore-ecd85b98-oot-persona-knowledge-integration.md"
+}

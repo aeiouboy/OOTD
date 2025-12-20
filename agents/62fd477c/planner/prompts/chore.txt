@@ -1,0 +1,26 @@
+/chore 62fd477c Fix the style carousel layout in OnboardingStyle.tsx to 
+  match the mobile-first design in onboarding/5.1Onboarding-Style.png:
+
+  1. Card sizing - Change card dimensions to be taller and narrower (mobile-optimized):
+     - Change card width from flex-[0_0_280px] to flex-[0_0_240px] or similar
+     - Increase card height from h-80 to h-[420px] or auto to accommodate taller images
+     - Change image container from h-48 to h-64 or h-72 to show full character/outfit
+
+  2. Image display - The style card images are portrait-oriented showing full outfits. Ensure:
+     - Image container is taller to show the full character (not cropped)
+     - Keep object-cover but increase height significantly
+     - The image should be the dominant element of the card
+
+  3. Card peek effect - Ensure the carousel shows partial next card:
+     - Add padding to the carousel container so cards don't touch the edges
+     - The rightmost visible card should be partially cut off to hint at more content
+     - Use px-4 or px-6 on the carousel wrapper
+
+  4. Reduce text spacing - Make the text section more compact:
+     - Reduce margin between image and title (mb-4 to mb-2)
+     - Keep title and description close together
+     - Overall card should emphasize the image over text
+
+  5. Mobile responsive - This is primarily a mobile view:
+     - Consider max-w-md or similar constraint on the carousel container
+     - Cards should feel large and immersive on mobile screens

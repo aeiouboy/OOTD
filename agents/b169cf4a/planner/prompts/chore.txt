@@ -1,0 +1,24 @@
+/chore b169cf4a Analyze the Summer 2026 fashion trend report from 
+  '/Users/naruechon/Documents/Project/OOTDay_Anti/archive/knowledge/fashion/summer2026.md' and 
+  integrate it into the OOTDay knowledge base at 
+  '/Users/naruechon/Documents/Project/OOTDay_Anti/ootday_persona/knowledge_base'. 
+
+  Tasks:
+  1. Read and analyze the summer2026.md source file covering: relaxed sophistication narrative, 
+  key silhouettes (trousers, dresses, skirts, tops, denim), fabric/texture (linen, cotton, silk, 
+  knits), color palette (monochrome, color pops, prints), accessories (jewelry, scarves, bags, 
+  hats, footwear), and actionable insights.
+
+  2. Create categorized knowledge base files following existing naming conventions:
+     - 'advanced/11_summer2026_trends.md' - Main trend analysis with silhouettes, fabrics, 
+  colors, accessories
+     - 'summaries/summary_11_summer2026_trends.md' - Condensed summary version
+
+  3. Follow existing knowledge base format patterns from files like '01_fashion_fundamentals.md' 
+  and '10_advanced_styling.md' - use headers, bullet points, tables where appropriate.
+
+  4. Update '00_INDEX.md' and 'COMPLETE_INDEX.md' to include references to the new summer 2026 
+  content.
+
+  5. Ensure Thai context integration where relevant (e.g., how these trends apply to Thai 
+  climate/occasions).

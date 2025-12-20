@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "74e35231",
+  "prompt": "Fix style card description truncation on OnboardingStyle page. Current issues: 1) Description text is cut off/truncated - in frontend/components/onboarding/OnboardingStyle.tsx line 150, remove 'line-clamp-2' class so full description text is visible like the design specs show (e.g., 'Less is more, clean, simple, neutral palette, pieces that last forever' should be fully visible, not truncated), 2) Card content area has fixed height h-[72px] on line 142 - change to min-h-[72px] or h-auto to allow content to expand and show full description text. Reference design from /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/ shows descriptions are fully visible without truncation. Keep card layout consistent but allow text to wrap and display completely.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-74e35231-fix-style-card-description-truncation.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "0b13323d-db54-473e-976b-451737238f22",
+      "agent": "planner",
+      "output_dir": "./agents/74e35231/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "8ef26116-af18-4921-baf6-13e38671457c",
+      "agent": "builder",
+      "output_dir": "./agents/74e35231/builder/"
+    }
+  },
+  "overall_success": true
+}

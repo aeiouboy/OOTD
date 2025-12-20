@@ -1,0 +1,3 @@
+/chore 30dec933 Fix image generation integration in /api/chat/route.ts - The chat API route must return imageRequest: true 
+  and outfitDescription when image trigger is detected by ai-chat-service.ts. Currently the detection works (logs show 'Image generation request 
+  detected') but the response does not include imageRequest flag for ChatInterface to call /api/generate-image endpoint.

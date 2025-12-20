@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "09d4b81b",
+  "slash_command": "/chore",
+  "args": [
+    "09d4b81b",
+    "Fix the OnboardingStyle.tsx component to remove duplicate \n  description display. Currently the style cards show old placeholder descriptions inside the \n  card image area while the correct new descriptions from fashion-styles.json appear below. \n  Either: 1) Remove the inline card description and keep only the bottom description, OR 2) \n  Update both to use the same data source from frontend/lib/data/fashion-styles.json. Ensure \n  consistent display matching the design reference."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "1a9a06ce-7f91-442f-93cb-325eac6a5065",
+  "retry_code": "none",
+  "output": "Plan created successfully! The specification document has been saved to:\n\n**`specs/chore-09d4b81b-remove-duplicate-style-descriptions.md`**\n\n## Summary\n\nThe plan addresses the duplicate description issue by:\n\n1. **Importing fashion-styles.json** as the single source of truth for style data\n2. **Removing the hardcoded styleOptions array** (86 lines of duplicated data)\n3. **Using the imported data throughout the component** for consistent display\n4. **Validating** that the JSON structure matches the TypeScript interface\n\nThis approach ensures that:\n- Style descriptions are consistent across the component\n- Future updates only need to happen in one place (fashion-styles.json)\n- The more detailed, accurate descriptions from the JSON file are displayed\n- No duplicate or conflicting style information exists\n\nThe plan includes specific validation commands and visual checks to confirm the fix works correctly.",
+  "plan_path": "specs/chore-09d4b81b-remove-duplicate-style-descriptions.md"
+}

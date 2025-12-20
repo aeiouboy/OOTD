@@ -1,0 +1,51 @@
+/chore 551f418e Fix style card styling on 'What's your style?' onboarding page to match design specifications.
+
+  ## Issues to Fix
+
+  ### 1. Remove Left Crimson Border on Selected Cards
+  **Current**: Selected cards have a thick 4px left crimson border
+  **Design**: Cards have a subtle rounded border outline around the ENTIRE card (not just left side). Selected state should NOT use left border accent.
+
+  ### 2. Fix Inconsistent Card Heights
+  **Current**: Card heights vary based on description text length - some cards are taller than others
+  **Design**: All cards have CONSISTENT height regardless of description length. Cards should have fixed height with description text truncated if needed.
+
+  ### 3. Fix Style Name Color
+  **Current**: Style name 'Minimal · Timeless' is in CRIMSON color
+  **Design**: Style name 'Minimal · Timeless' is in BLACK/dark text color (not crimson)
+
+  ### 4. Adjust Description Text Styling
+  **Current**: Description uses text-xs (12px), may wrap to multiple lines causing height inconsistency
+  **Design**: Description is gray, centered, and cards maintain consistent height (use line-clamp or fixed height)
+
+  ## Design Reference Images
+  Review these for exact styling:
+  - /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/5.1Onboarding-Style.png
+  - /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/5.4Onboarding-Style.png
+
+  ## Specific CSS Changes Required
+
+  ### Card Container (remove left border, add subtle outline)
+  - Remove: border-l-4, border-l-[var(--onboarding-primary)], border-l-transparent
+  - Add: Subtle rounded border for all cards (e.g., border border-gray-200 or similar)
+  - Selected state: Use different indicator (e.g., slightly darker border, shadow, or scale effect) - NOT left crimson border
+
+  ### Card Height Consistency
+  - Set fixed card height so all cards are uniform
+  - Use min-h-[XXXpx] or fixed aspect ratio for the entire card
+  - Description should use line-clamp-2 to prevent overflow affecting height
+
+  ### Text Styling
+  - Style name: Change from text-[var(--onboarding-primary)] to text-gray-900 or text-black
+  - Keep the 'Name · Description' format but in dark/black color
+  - Description: Keep gray color, ensure line-clamp prevents height variation
+
+  ## Files to Update
+  - frontend/components/onboarding/OnboardingStyle.tsx - Update card styling (lines 148-188)
+
+  ## Expected Result
+  - All 10 style cards have identical heights
+  - No thick left crimson border on cards
+  - Subtle border outline around entire card
+  - Style name in black/dark color (not crimson)
+  - Clean, consistent card appearance matching the Figma mockups

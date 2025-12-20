@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "d7b3450a",
+  "prompt": "Fix OnboardingStyle.tsx - the WRONG description was \n  removed. Current state shows gray placeholder text INSIDE the card (like 'Less is more, clean, \n  simple, neutral palette...') but the longDescription from fashion-styles.json that should \n  appear BELOW the red title was removed. REVERSE this: 1) REMOVE the gray description text that \n  appears INSIDE the card between the image and card border (this is the old styleOptions \n  description field), 2) ADD BACK the longDescription paragraph that should appear BELOW the red \n  style title heading. The card structure should be: [Image] -> [Style Title in red like 'Minimal\n   \u00b7 Timeless'] -> [longDescription paragraph from fashion-styles.json like 'Clean lines, neutral\n   palettes, and quality basics...']. Check the fashion-styles.json file for the correct \n  longDescription values.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-d7b3450a-fix-onboarding-style-description.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "e104f57f-c276-4f8b-b127-5e3c8233fe7f",
+      "agent": "planner",
+      "output_dir": "./agents/d7b3450a/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "68576c64-c90f-4383-b019-475d33f50c95",
+      "agent": "builder",
+      "output_dir": "./agents/d7b3450a/builder/"
+    }
+  },
+  "overall_success": true
+}

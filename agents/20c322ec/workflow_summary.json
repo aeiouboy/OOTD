@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "20c322ec",
+  "prompt": "Fix OnboardingStyle.tsx card layout to match reference \n  EXACTLY. CRITICAL ISSUE: The red title and gray description must be INSIDE the white card, not \n  outside. Reference shows: [White card with red left border containing: Image (cropped to hide \n  text) + Red title 'Minimal \u00b7 Timeless' + Gray description]. Currently the title and description\n   render OUTSIDE the card boundary. Move the title (h3) and description (p) elements INSIDE the \n  card button element, below the image but within the card's white background and border. Also \n  crop images using object-fit: cover with object-position: top and reduce image container height\n   to ~70% to hide the baked-in text at bottom of images. The entire card including image, title,\n   and description should be one cohesive white rounded rectangle with the red left border \n  accent.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-20c322ec-fix-onboarding-style-card-layout.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "aefb0fb6-d8fd-4bc3-b441-ab63be50b389",
+      "agent": "planner",
+      "output_dir": "./agents/20c322ec/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "4d3ce0f7-c1c8-4b14-8d7a-2fb31d6ef18a",
+      "agent": "builder",
+      "output_dir": "./agents/20c322ec/builder/"
+    }
+  },
+  "overall_success": true
+}

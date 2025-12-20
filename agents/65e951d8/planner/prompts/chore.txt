@@ -1,0 +1,9 @@
+/chore 65e951d8 Fix OnboardingStyle.tsx - the style cards still show TWO 
+  descriptions: 1) A gray text description INSIDE the card below the image showing 
+  old/inconsistent data, 2) A description BELOW the card title showing correct data from 
+  fashion-styles.json. Looking at the current screenshot, cards like Minimal and Luxury show 
+  'Less is more, clean, simple...' inside the card which is wrong. The fix should REMOVE the gray
+   description text that appears inside the card (between the image and the card border), keeping
+   ONLY the description that appears below the red style title. The card should show: [Image] -> 
+  [Style Name · Subtitle in red] -> [Description in black]. Remove the intermediate gray 
+  description completely.

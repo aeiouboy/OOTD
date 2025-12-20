@@ -1,0 +1,5 @@
+/chore 068f14a4 Read products/product_master.json and separate products by 
+  category field into two files: 1) products/women_clothing.json containing all products where 
+  category equals 'women_clothing', 2) products/men_clothing.json containing all products where 
+  category equals 'men_clothing'. Preserve the exact same JSON structure and fields for each 
+  product. Output should be formatted JSON arrays with 2-space indentation.

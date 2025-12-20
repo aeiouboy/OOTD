@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 61118,
+  "duration_api_ms": 66834,
+  "num_turns": 12,
+  "result": "Plan created successfully at: `/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-32927976-enhance-chat-dialog-style.md`",
+  "session_id": "570c84b7-b73a-4f17-b9d2-491a20f1ead4",
+  "total_cost_usd": 0.5891619,
+  "usage": {
+    "input_tokens": 66,
+    "cache_creation_input_tokens": 62106,
+    "cache_read_input_tokens": 260362,
+    "output_tokens": 2479,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 62106
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 69,
+      "outputTokens": 2512,
+      "cacheReadInputTokens": 271859,
+      "cacheCreationInputTokens": 62106,
+      "webSearchRequests": 0,
+      "costUSD": 0.587237,
+      "contextWindow": 200000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 157,
+      "cacheReadInputTokens": 11369,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.0019249000000000002,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "c3639283-95c4-4aa1-bf52-eeba32ad40a1"
+}

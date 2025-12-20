@@ -1,0 +1,28 @@
+/chore 32927976 Based on the dialog template at /Users/naruechon/Documents/Project/OOTDay_Anti/chat_dialog1/dl.md, enhance the AI chat system to better match this conversation style.
+
+## Reference Dialog Analysis
+The dialog shows:
+1. **AI Greeting**: Friendly Thai greeting with emoji 'อ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา'
+2. **User Request**: Work-to-evening outfit request 'อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้'
+3. **AI Response**: Trendy, engaging response with 2 LOOKs recommendations including:
+   - Intro text mentioning popularity and stock status
+   - Look 1: Vintage Layer style with description, price (3,550 THB)
+   - Look 2: Feminine Basic Mix with description, price (2,795 THB)
+
+## Implementation Requirements
+
+### 1. Update System Prompt (frontend/lib/prompts/)
+- Ensure the OOT persona matches the friendly, trendy tone from the dialog
+- Add response templates that include stock excitement phrases
+- Include Look naming convention (Look 1, Look 2) with style names
+
+### 2. Enhance Chat Response Format
+- Modify ai-chat-service.ts to format responses with Look cards
+- Include style description for each look
+- Add total price display for each outfit combination
+
+### 3. Update Response Structure
+- Ensure responses include engaging intro text before looks
+- Format each Look with style name, description, price, action
+
+Focus on frontend/lib/prompts/ and frontend/lib/services/ai-chat-service.ts

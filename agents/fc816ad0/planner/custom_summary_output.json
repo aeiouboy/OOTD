@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "fc816ad0",
+  "slash_command": "/chore",
+  "args": [
+    "fc816ad0",
+    "Analyze and fix the OOTDay chat to: 1) Pass user's gender from profile to chat API - ChatAssistant.tsx and ChatInterface.tsx (lines 59-88) must import useUserProfile hook from lib/hooks/useUserProfile.ts and send userPreferences: { gender: profile?.gender } to /api/chat endpoint. Currently userPreferences is accepted by API (app/api/chat/route.ts line 23) but never sent from frontend. 2) Update system prompt (lib/prompts/system-prompt-v2.ts) to skip gender question when userPreferences.gender is provided in the request - add 'USER PREFERENCES CONTEXT' section that says 'If userPreferences.gender is women/men, do NOT ask about gender - use it directly'. 3) Make AI responses match the natural friendly style from chat_dialog examples: Use '\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22\u0e08\u0e49\u0e32!' greeting style, 'Look 1:', 'Look 2:' format for outfit suggestions, casual Thai expressions like '\u0e40\u0e27\u0e48\u0e32\u0e21\u0e32', '\u0e40\u0e19\u0e2d\u0e30', '\u0e08\u0e49\u0e32' instead of formal '\u0e04\u0e48\u0e30'. \n  Reference: /Users/naruechon/Documents/Project/OOTDay_Anti/chat_dialog/Desktop - 1.1.png shows expected dialog format with 'LOOKs' section and natural Thai language."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "59ca576a-37e9-4087-988e-a32a89769a0e",
+  "retry_code": "none",
+  "output": "I've created the chore plan specification.\n\n**Plan file created at:** `specs/chore-fc816ad0-pass-gender-to-chat-api.md`\n\nThe plan addresses all three requirements from the prompt:\n\n1. **Pass user's gender from profile to chat API** - Steps 1-2 add the `useUserProfile` hook to both `ChatAssistant.tsx` and `ChatInterface.tsx` and include `userPreferences.gender` in the API request body.\n\n2. **Update system prompt to skip gender question** - Steps 3-4 add a new \"USER PREFERENCES CONTEXT\" section to the system prompt and update the smart clarification logic to check for pre-filled gender before asking.\n\n3. **Match natural friendly style from chat_dialog examples** - Steps 5-6 update Template A to use \"Look 1:\", \"Look 2:\" format and add casual Thai expressions like \"\u0e44\u0e14\u0e49\u0e40\u0e25\u0e22\u0e08\u0e49\u0e32!\", \"\u0e40\u0e27\u0e48\u0e32\u0e21\u0e32\", \"\u0e40\u0e19\u0e2d\u0e30\", \"\u0e08\u0e49\u0e32\" instead of formal \"\u0e04\u0e48\u0e30\".",
+  "plan_path": "specs/chore-fc816ad0-pass-gender-to-chat-api.md"
+}

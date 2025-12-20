@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "67e8ef0c",
+  "prompt": "Fix OnboardingStyle cards to match exact design from /Users/naruechon/Documents/Project/OOTDay2/onboarding/5.1Onboarding-Style.png through 5.5Onboarding-Style.png. Required changes: 1) REMOVE DUPLICATE LABEL - there's a small gray 'Minimal \u00b7 Timeless' text appearing ABOVE the image that should NOT exist. Remove this duplicate. Only keep ONE style name below the image. In OnboardingStyle.tsx find and remove any element rendering style name above/on the image area. 2) STYLE TITLE COLOR - the style title 'Name \u00b7 Adjective' (like 'Minimal \u00b7 Timeless', 'Luxury \u00b7 Elegant') must be CRIMSON RED color (use var(--onboarding-primary) or #C41E3A), NOT black. The reference design clearly shows red/crimson colored titles. Change the h3 heading text color from text-gray-900 to text-[var(--onboarding-primary)]. 3) FULL DESCRIPTION - remove any line-clamp or truncation. Descriptions must show completely without '...' ellipsis. Card structure should be: [Image with no\n   overlay] -> [Red/Crimson bold title] -> [Gray description text fully visible]. 4) Consistent soft rose border (#E8D5D5) on all cards.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-67e8ef0c-fix-onboarding-style-cards-design.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "64742d30-23a1-44d2-bc00-56271ef1388f",
+      "agent": "planner",
+      "output_dir": "./agents/67e8ef0c/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "5e460440-72f6-4763-abc8-2b93c361f58c",
+      "agent": "builder",
+      "output_dir": "./agents/67e8ef0c/builder/"
+    }
+  },
+  "overall_success": true
+}

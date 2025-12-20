@@ -1,0 +1,1 @@
+/implement specs/chore-14eabb36-fix-style-card-title-color.md

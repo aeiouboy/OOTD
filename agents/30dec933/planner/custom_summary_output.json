@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "30dec933",
+  "slash_command": "/chore",
+  "args": [
+    "30dec933",
+    "Fix image generation integration in /api/chat/route.ts - The chat API route must return imageRequest: true \n  and outfitDescription when image trigger is detected by ai-chat-service.ts. Currently the detection works (logs show 'Image generation request \n  detected') but the response does not include imageRequest flag for ChatInterface to call /api/generate-image endpoint."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend",
+  "success": true,
+  "session_id": "3883d629-d413-4981-b42a-4818835a7e52",
+  "retry_code": "none",
+  "output": "Perfect! I've created the chore plan at:\n\n**`specs/chore-30dec933-fix-image-generation-response.md`**\n\n## Summary\n\nThe plan addresses the critical bug where the chat API route (`/api/chat/route.ts`) is not forwarding the `imageRequest` and `outfitDescription` fields to the frontend, even though `ai-chat-service.ts` correctly detects image generation requests and includes these fields in its response.\n\n**Key findings:**\n- \u2705 `ai-chat-service.ts` correctly detects image requests (lines 311-334)\n- \u2705 `ChatInterface.tsx` expects `imageRequest` and `outfitDescription` (lines 103-104)\n- \u274c `app/api/chat/route.ts` does NOT include these fields in its response (lines 120-126)\n\n**The fix is simple:**\nAdd 2 lines to the API response object in `/api/chat/route.ts`:\n- `imageRequest: response.imageRequest`\n- `outfitDescription: response.outfitDescription`\n\nThe plan includes step-by-step tasks, validation commands, and testing scenarios to ensure the complete image generation flow works end-to-end.",
+  "plan_path": "specs/chore-30dec933-fix-image-generation-response.md"
+}

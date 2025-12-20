@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "14eabb36",
+  "prompt": "Fix remaining style card issues - DUPLICATE LABEL AND TITLE COLOR. In frontend/components/onboarding/OnboardingStyle.tsx: 1) REMOVE DUPLICATE LABEL - There are TWO elements showing 'Minimal \u00b7 Timeless' on each card. One is small gray text appearing BETWEEN the image and the bold title. The other is the bold h3 heading. REMOVE the small gray duplicate text element completely. Find the element that renders '{style.name} \u00b7 {style.description}' as small text above the h3 heading and DELETE it. Only keep ONE title per card (the h3 heading). 2) TITLE COLOR MUST BE CRIMSON RED - Change the h3 heading 'Minimal \u00b7 Timeless' from BLACK to CRIMSON RED. The reference design /Users/naruechon/Documents/Project/OOTDay2/onboarding/5.1Onboarding-Style.png clearly shows titles in crimson/red color. Change className from 'text-gray-900' to 'text-[var(--onboarding-primary)]' for the h3 element. The card structure after fix should be: [Image] -> [CRIMSON RED bold title \n  'Name \u00b7 Adjective'] -> [Gray description]. NO duplicate labels.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-14eabb36-fix-style-card-title-color.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "56239cdf-ceee-4da9-ae8a-bb6e11465182",
+      "agent": "planner",
+      "output_dir": "./agents/14eabb36/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "2f597244-bf2c-489e-9c20-93ca63f49c2b",
+      "agent": "builder",
+      "output_dir": "./agents/14eabb36/builder/"
+    }
+  },
+  "overall_success": true
+}

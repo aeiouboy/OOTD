@@ -1,0 +1,57 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 5517,
+  "duration_api_ms": 12100,
+  "num_turns": 1,
+  "result": "I'll help you implement the plan. However, I notice that the `$ARGUMENTS` placeholder is empty - there's no specific plan provided for me to implement.\n\nCould you please provide the plan you'd like me to implement? For example:\n\n- A specific feature to build\n- A bug to fix\n- A refactoring task\n- Implementation details from a PRD\n- Or any other development task\n\nOnce you provide the plan details, I'll:\n1. Read and analyze the plan carefully\n2. Implement it step by step\n3. Report back with a summary and git diff stats\n\nPlease share what you'd like me to implement!",
+  "session_id": "9c01df6b-bf28-45f1-9c9d-619ea4d1212f",
+  "total_cost_usd": 0.1345845,
+  "usage": {
+    "input_tokens": 3,
+    "cache_creation_input_tokens": 24791,
+    "cache_read_input_tokens": 0,
+    "output_tokens": 141,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 24791
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 3,
+      "outputTokens": 23,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 5070,
+      "webSearchRequests": 0,
+      "costUSD": 0.0322775,
+      "contextWindow": 200000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 222,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 4883,
+      "webSearchRequests": 0,
+      "costUSD": 0.00721675,
+      "contextWindow": 200000
+    },
+    "claude-sonnet-4-5-20250929": {
+      "inputTokens": 3,
+      "outputTokens": 141,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 24791,
+      "webSearchRequests": 0,
+      "costUSD": 0.09509025,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "d8782a76-c8a2-4716-a09d-12ad824890c7"
+}

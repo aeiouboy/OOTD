@@ -1,0 +1,55 @@
+/chore e94c177d Redesign the 'What's your style?' onboarding page in frontend/components/ui/SelectionCarousel.tsx and related components to match the design specifications.
+
+  ## Design Reference Images
+  Review these Figma mockups for exact visual spec:
+  - /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/5.1Onboarding-Style.png through 5.10Onboarding-Style.png
+
+  ## Target Design Requirements
+
+  ### Layout Structure
+  1. Header Section (fixed at top):
+     - Title: 'What's your style?' in crimson (#C41E3A) bold
+     - Subtitle: 'Choose style that sparks you' in dark gray
+     - Selected thumbnails row (60x80px) with pink X remove buttons
+
+  2. Carousel Section (scrollable):
+     - Horizontal scrolling carousel showing 10 style cards
+     - Cards: ~160px wide with rounded corners and white background
+     - Left crimson border accent (4px) when selected
+     - Card content: full-height image (220px), style name in crimson ('Name · Description' format), gray description text below
+
+  3. Footer Section (fixed at bottom):
+     - Circular crimson arrow button (56px diameter) centered
+     - Disabled state: gray when no selection
+
+  ### The 10 Fashion Styles (from specs/fashion-styles-output.json):
+  1. Minimal · Timeless - 'Less is more, clean, simple, neutral palette, pieces that last forever'
+  2. Luxury · Elegant - Premium sophistication
+  3. Eccentric · Creative - 'Highly artistic and individual; uses unique shapes, bold colors, and clashing patterns and playful'
+  4. Business · Refined - 'Smart, structured, and professional'
+  5. Vanilla · Clean - 'Soft neutrals, fresh, and cozy in light tones'
+  6. Sporty · Active - 'Athletic wear, functional, ready for movement and confident'
+  7. Edgy · Trendy - 'Bold, modern, and daring; follows the very latest fashion trends'
+  8. Bohemian · Natural - 'Relaxed, earthy, featuring flowly silhouettes and natural fabrics'
+  9. Classic · Old Money - 'Understated quiet luxury built on timeless, tailored, and preppy pieces'
+  10. Mystery Style 🔮 - 'Random style' (last card, special styling)
+
+  ### Interaction Behavior
+  - Horizontal swipe/scroll through all 10 cards
+  - Tap to select/deselect (multi-select allowed)
+  - Selected cards show crimson left border + thumbnail appears in header row
+  - Tap X on thumbnail to deselect
+  - Arrow button navigates to next step when at least 1 selected
+
+  ### Technical Implementation
+  - Use embla-carousel for smooth horizontal scrolling
+  - Ensure all 10 styles are scrollable (not just visible ones)
+  - Cards should snap to position on scroll
+  - Warm beige background (#F5F0E8 or similar)
+  - Mobile-first responsive design (375px viewport)
+
+  ### Files to Update
+  - frontend/components/ui/SelectionCarousel.tsx - main component
+  - frontend/components/ui/SelectionThumbnail.tsx - thumbnail with remove
+  - frontend/lib/types/selection-types.ts - type definitions if needed
+  - Create/update style data integration from specs/fashion-styles-output.json

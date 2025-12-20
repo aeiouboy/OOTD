@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "34757b43",
+  "slash_command": "/chore",
+  "args": [
+    "34757b43",
+    "Fix the onboarding flow not showing for new users \n  when localStorage is empty. In frontend/app/page.tsx, the issue is that showOnboarding \n  defaults to false and the useEffect check happens after initial render. Fix by: 1) \n  Change initial state to show a loading state or check synchronously, 2) Consider \n  initializing showOnboarding based on a synchronous localStorage check in useState \n  initializer, or 3) Show a loading spinner while isLoadingProfile is true to prevent the\n   main content from flashing before onboarding check completes. The fix should ensure \n  that new users (with no ootday_user_profile in localStorage) always see the onboarding \n  flow on first visit."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "bb645e9a-a8c1-4c68-8128-f8bf76a3bc84",
+  "retry_code": "none",
+  "output": "Perfect! I've created a detailed plan for fixing the onboarding flow issue. The plan is saved at:\n\n**`/Users/naruechon/Documents/Project/OOTDay_Anti/specs/chore-34757b43-fix-onboarding-flow-loading.md`**\n\n## Summary\n\nThe plan addresses the race condition where new users see a flash of the main application before the onboarding flow appears. The root cause is:\n- `showOnboarding` defaults to `false`\n- Profile loading happens asynchronously in `useEffect`\n- The check to show onboarding happens after the initial render\n\n**The fix involves:**\n1. Changing the initial state to default to showing onboarding (`showOnboarding = true`)\n2. Adding proper loading state handling before the profile check completes\n3. Only hiding onboarding after confirming the profile exists and `onboardingCompleted === true`\n4. Implementing a three-state render logic: Loading \u2192 Onboarding \u2192 Main App\n\nThis \"onboarding-first\" approach ensures new users always see the onboarding flow immediately on first visit, providing a professional first impression without any jarring content flashes.",
+  "plan_path": "specs/chore-34757b43-fix-onboarding-flow-loading.md"
+}

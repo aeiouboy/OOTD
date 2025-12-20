@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "6b900df2",
+  "prompt": "Update AI model IDs to use the 09-2025 version. In frontend/lib/services/ai-chat-service.ts, change model from 'google/gemini-2.5-flash-preview-05-20' to 'google/gemini-2.5-flash-preview-09-2025'. In frontend/lib/services/image-generation-service.ts, update to use corresponding image model if available. Keep both model versions in config/models.json for flexibility.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-6b900df2-update-gemini-model-ids.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "1d777c34-6ac5-49ca-bfe5-a850ba64192d",
+      "agent": "planner",
+      "output_dir": "./agents/6b900df2/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "bedffec9-0b6b-4655-933b-8c517904335b",
+      "agent": "builder",
+      "output_dir": "./agents/6b900df2/builder/"
+    }
+  },
+  "overall_success": true
+}

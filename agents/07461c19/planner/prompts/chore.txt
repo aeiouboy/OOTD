@@ -1,0 +1,52 @@
+/chore 07461c19 Implement OOTDay frontend UI theme and styling based on the 
+  brand style guide. 
+
+  ## Color Palette
+  - Primary background: #F5F0EB (cream/beige)
+  - Primary accent: #C41E3A (deep crimson/magenta) - for buttons, headers, product cards
+  - Secondary text: #4A3728 (dark brown)
+  - Card background: #FFFFFF (white)
+  - Decorative accent: #B8860B (gold/bronze)
+
+  ## Typography
+  - Headers: Bold, sentence case with accent color (#C41E3A) for key words
+  - Body text: Clean sans-serif, dark brown (#4A3728)
+  - Button text: White on crimson background, bold
+
+  ## UI Components to Style
+
+  ### Buttons
+  - Primary: Solid #C41E3A background, white text, rounded-lg corners
+  - Secondary: Outlined with #C41E3A border
+  - Circle navigation buttons: Solid #C41E3A with white arrow icons
+
+  ### Cards
+  - Product cards: #C41E3A background, white text, rounded-xl corners
+  - Style selection cards: White/cream background with #C41E3A border on selection
+  - Chat message cards: Rounded corners with subtle shadow
+
+  ### Input Fields
+  - Rounded-lg rectangle with #C41E3A border
+  - Placeholder text in light gray
+
+  ### Chat Interface
+  - AI messages: Left-aligned with crimson avatar icon, white bubble
+  - User messages: Right-aligned, cream/beige (#F5F0EB) bubble
+  - Floating chat panel with rounded-xl corners on luxurious backdrop
+
+  ### Selection States
+  - Selected items: #C41E3A border/outline
+  - Hover states: Lighter crimson tint
+
+  ## Files to Update
+  - Update Tailwind CSS config with custom colors (ootday-crimson, ootday-cream, ootday-brown, 
+  ootday-gold)
+  - Update global styles in styles/ directory
+  - Update component themes in components/ui/ to use new color scheme
+  - Ensure consistency across all existing components
+
+  ## Brand Identity
+  - App name: OOTDay
+  - Tagline: Think outfit. Think OOTDay
+  - Tone: Friendly, approachable (Your BFFs here)
+  - Use emojis sparingly but effectively

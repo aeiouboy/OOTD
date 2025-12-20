@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "9b66d10c",
+  "prompt": "Fix OnboardingStyle carousel center-focus effect to match design mockups at /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/preference/. Current implementation has scale effect but it's too subtle to be noticeable.\n\n  Required fixes:\n  1. INCREASE SCALE CONTRAST: Change scale values from current (1.0 center, 0.85 side) to more dramatic values (1.0 center, 0.7 side cards, 0.55 for cards 2+ positions away). The design mockup shows center card significantly larger than adjacent cards.\n\n  2. ADD PERSPECTIVE WRAPPER: Wrap carousel in a container with CSS perspective (1000px) and add translateZ transforms - center card at translateZ(50px), side cards at translateZ(-50px) for real 3D depth.\n\n  3. ADJUST CARD WIDTHS FOR CENTER PROMINENCE: On mobile (375px), center card should take ~70% of viewport width while side cards peek from edges. Use dynamic width calculation based on selectedIndex, not fixed flex-basis.\n\n  4. ADD SHADOW DEPTH: Center card should have larger shadow (shadow-xl) while side cards have minimal or no shadow (shadow-none) to enhance depth perception.\n\n  5. SMOOTH INTERPOLATION: Use CSS transforms with will-change:transform for GPU acceleration. Calculate scale/opacity/translateZ values smoothly based on scroll position, not just discrete selectedIndex.\n\n  Reference design: onboarding/preference/5.1Onboarding-Style.png shows center 'Minimal' card taking ~70% width with adjacent cards clearly smaller and faded at edges.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-9b66d10c-fix-carousel-center-focus-effect.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "55f4afaa-d661-421b-99fa-07baa3714083",
+      "agent": "planner",
+      "output_dir": "./agents/9b66d10c/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "ee94c788-ef8f-43fc-b56f-001e5005bc42",
+      "agent": "builder",
+      "output_dir": "./agents/9b66d10c/builder/"
+    }
+  },
+  "overall_success": true
+}

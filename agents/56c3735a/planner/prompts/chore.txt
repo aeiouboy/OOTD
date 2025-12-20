@@ -1,0 +1,14 @@
+/chore 56c3735a Analyze reference designs at 
+  /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/ 
+  (5.1-5.10Onboarding-Style.png) and fix OnboardingStyle.tsx to match EXACTLY. Key issues to fix:
+   1) CARD DESIGN - Image should fill ~75% of card height, title and description at bottom INSIDE
+   the white card. Card has thin LEFT border accent in red/pink (not full border around card). 2)
+   IMAGE - Must crop to hide any baked-in text. Use object-fit: cover, object-position: top, and 
+  set fixed height to show only the model figure. 3) TITLE - Red 'Minimal · Timeless' style title
+   centered below image, inside card. 4) DESCRIPTION - Gray text centered below title, inside 
+  card. Each style should show its UNIQUE description (not same text for all). Reference shows 
+  Eccentric has 'Highly artistic and individual; uses unique shapes, bold colors, and clashing 
+  patterns and playful'. 5) CARD DIMENSIONS - Cards should be narrower and taller, 
+  mobile-friendly proportions like in reference. 6) SELECTED STATE - When selected, card shows 
+  left red border accent. 7) THUMBNAILS - Selected styles appear as small thumbnails at top with 
+  X button. Ensure all 10 styles scrollable in carousel.

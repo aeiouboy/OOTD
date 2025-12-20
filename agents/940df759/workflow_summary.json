@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "940df759",
+  "prompt": "Fix remaining style card issues: 1) BORDER COLOR INCONSISTENCY - 'Business \u00b7 Refined' card and some others have darker/gray border instead of soft rose. Ensure ALL cards use the SAME soft rose border color (#E8D5D5 unselected, #D4B5B5 selected). Check frontend/app/globals.css that --onboarding-card-border is #E8D5D5 (not gray or darker). In OnboardingStyle.tsx ensure border class applies consistently to all cards without any conditional that could override it. 2) DESCRIPTION TRUNCATION - text is cut off with ellipsis. The reference design from /Users/naruechon/Documents/Project/OOTDay_Anti/onboarding/Style/preference/ shows FULL descriptions visible. Remove line-clamp or increase card content height to h-[100px] or h-auto with min-h-[80px] to accommodate longest descriptions. Priority: full text visibility over strict uniform height - cards can have slight height variation if needed to show complete descriptions. 3) Verify CSS variable \n  --onboarding-card-border exists and equals #E8D5D5 (soft rose), not any red/crimson/gray value.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-940df759-fix-style-card-border-description.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "7f8b18b6-b5d9-4b2c-83e8-1f235cd4e294",
+      "agent": "planner",
+      "output_dir": "./agents/940df759/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "b14087b1-a0da-4251-ac8e-c9284dcaceee",
+      "agent": "builder",
+      "output_dir": "./agents/940df759/builder/"
+    }
+  },
+  "overall_success": true
+}

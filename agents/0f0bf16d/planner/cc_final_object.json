@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 53955,
+  "duration_api_ms": 84702,
+  "num_turns": 10,
+  "result": "Plan created at: `specs/chore-0f0bf16d-update-onboarding-style-design.md`",
+  "session_id": "0d81a16a-267e-4252-a227-7d7e59c09c77",
+  "total_cost_usd": 0.51011875,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 41137,
+    "cache_read_input_tokens": 106379,
+    "output_tokens": 2351,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 41137
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 3,
+      "outputTokens": 200,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 10130,
+      "webSearchRequests": 0,
+      "costUSD": 0.0136655,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 9,
+      "outputTokens": 4880,
+      "cacheReadInputTokens": 106379,
+      "cacheCreationInputTokens": 51395,
+      "webSearchRequests": 0,
+      "costUSD": 0.49645324999999996,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "fef4ce0d-1829-41ef-a216-f03658aeacf6"
+}

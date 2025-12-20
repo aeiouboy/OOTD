@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "62fd477c",
+  "prompt": "Fix the style carousel layout in OnboardingStyle.tsx to \n  match the mobile-first design in onboarding/5.1Onboarding-Style.png:\n\n  1. Card sizing - Change card dimensions to be taller and narrower (mobile-optimized):\n     - Change card width from flex-[0_0_280px] to flex-[0_0_240px] or similar\n     - Increase card height from h-80 to h-[420px] or auto to accommodate taller images\n     - Change image container from h-48 to h-64 or h-72 to show full character/outfit\n\n  2. Image display - The style card images are portrait-oriented showing full outfits. Ensure:\n     - Image container is taller to show the full character (not cropped)\n     - Keep object-cover but increase height significantly\n     - The image should be the dominant element of the card\n\n  3. Card peek effect - Ensure the carousel shows partial next card:\n     - Add padding to the carousel container so cards don't touch the edges\n     - The rightmost visible card should be partially cut off to hint at more content\n     - Use px-4 or px-6 on the carousel wrapper\n\n  4. Reduce text spacing - Make the text section more compact:\n     - Reduce margin between image and title (mb-4 to mb-2)\n     - Keep title and description close together\n     - Overall card should emphasize the image over text\n\n  5. Mobile responsive - This is primarily a mobile view:\n     - Consider max-w-md or similar constraint on the carousel container\n     - Cards should feel large and immersive on mobile screens",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-62fd477c-fix-style-carousel-layout.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "c76d03bb-9d56-45ad-b1bc-13e1e4e36ce2",
+      "agent": "planner",
+      "output_dir": "./agents/62fd477c/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "3f250579-4d08-44f1-8447-ddabc658095e",
+      "agent": "builder",
+      "output_dir": "./agents/62fd477c/builder/"
+    }
+  },
+  "overall_success": true
+}

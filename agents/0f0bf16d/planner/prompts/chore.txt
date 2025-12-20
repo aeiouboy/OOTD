@@ -1,0 +1,40 @@
+/chore 0f0bf16d Update OnboardingStyle.tsx to match the design in 
+  onboarding/5.1Onboarding-Style.png:
+
+  1. Copy style card images from 'onboarding/Style/' to 'frontend/public/images/styles/' (create 
+  directory if needed).
+
+  2. Update styleOptions array with local images and longer descriptions:
+     - minimal: name='Minimal', description='Timeless', longDescription='Less is more, clean, 
+  simple, neutral palette, pieces that last forever', imageUrl='/images/styles/Group 31.png'
+     - luxury: name='Luxury', description='Elegant', longDescription='Less is more, clean, 
+  simple, neutral palette, pieces that last forever', imageUrl='/images/styles/Group 32.png'
+     - eccentric: name='Eccentric', description='Creative', longDescription='Highly artistic and 
+  individual; uses unique shapes, bold colors, and clashing patterns and playful', 
+  imageUrl='/images/styles/Group 33.png'
+     - business: name='Business', description='Refined', longDescription='Smart, structured, and 
+  professional', imageUrl='/images/styles/Group 34.png'
+     - vanilla: name='Vanilla', description='Clean', longDescription='Soft neutrals, fresh, and 
+  cozy in light tones', imageUrl='/images/styles/Group 35.png'
+     - sporty: name='Sporty', description='Active', longDescription='Athletic wear, functional, 
+  ready for movement and confident', imageUrl='/images/styles/Group 36.png'
+     - edgy: name='Edgy', description='Trendy', longDescription='Bold, modern, and daring; 
+  follows the very latest fashion trends', imageUrl='/images/styles/Group 37.png'
+     - bohemian: name='Bohemian', description='Natural', longDescription='Relaxed, earthy, 
+  featuring flowly silhouettes and natural fabrics', imageUrl='/images/styles/Group 38.png'
+     - classic: name='Classic', description='Old Money', longDescription='Understated quiet 
+  luxury built on timeless, tailored, and preppy pieces', imageUrl='/images/styles/Group 39.png'
+     - mystery: name='Mystery Style', description='Random style', longDescription='Random style',
+   imageUrl='/images/styles/Group 40.png'
+
+  3. Update StylePreference type in lib/types/user-profile-types.ts to add optional 
+  longDescription field.
+
+  4. Update selected styles display: Replace the text pills at the top with small thumbnail 
+  images (showing the style card images with X button overlay for removal). Use a horizontal 
+  scrollable row of ~60px square thumbnails.
+
+  5. Update style card rendering to show title as 'Name · Description' format (e.g., 'Minimal · 
+  Timeless') and display longDescription below it in smaller gray text.
+
+  6. Remove emoji fallback for Mystery Style since it now has a proper image.

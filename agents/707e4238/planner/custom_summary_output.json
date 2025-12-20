@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "707e4238",
+  "slash_command": "/chore",
+  "args": [
+    "707e4238",
+    "Fix duplicate style name display on 'What's your style?' onboarding page.\n\n  ## Problem\n  The source style images in frontend/public/images/styles/ (Group 31.png through Group 40.png) have style names and descriptions BAKED INTO the image at the bottom. The OnboardingStyle component also renders this text programmatically below the image, causing duplicate display.\n\n  ## Design Reference\n  Review onboarding/Style/preference/5.1Onboarding-Style.png - the design shows CLEAN images without text overlay, with only ONE set of text labels below the image.\n\n  ## Required Fix\n  Crop the images more aggressively to hide the baked-in text at the bottom. The current implementation uses:\n  - Image height: 220px\n  - object-cover object-top positioning\n\n  But the baked-in text at the bottom of the images is still visible. Need to either:\n\n  ### Option 1 (Preferred): CSS Cropping\n  - Reduce visible image height or use clip-path to hide bottom ~60px where baked-in text appears\n  - Adjust the image container to crop more from bottom while keeping top visible\n  - Could use aspect-ratio with overflow-hidden and negative margin-bottom on the image\n\n  ### Option 2: Image Replacement\n  - If CSS cropping doesn't work well, the images need to be replaced with versions without baked-in text\n\n  ## Files to Update\n  - frontend/components/onboarding/OnboardingStyle.tsx - adjust image cropping in the carousel cards (lines 156-171)\n\n  ## Validation\n  After fix, each style card should show:\n  1. Model/outfit image only (NO text visible in image)\n  2. Style name 'Name \u00b7 Description' in crimson below image (ONE TIME ONLY)\n  3. Gray description text below that\n\n  Test by running: cd frontend && npm run dev\n  Navigate through onboarding to 'What's your style?' page and verify no duplicate labels appear."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "success": true,
+  "session_id": "da2b7864-150a-494f-a63d-ee4a80b87c15",
+  "retry_code": "none",
+  "output": "Plan file created at:\n\n**`specs/chore-707e4238-fix-duplicate-style-name-display.md`**\n\nThe plan details the CSS cropping approach to hide the baked-in text at the bottom of the style images. The key technique uses:\n- A fixed aspect ratio container (`aspect-[3/4]`) with `overflow-hidden`\n- An absolutely positioned image at 120% height with `object-cover object-top`\n- This causes the bottom 20% of the image (containing the baked-in text) to overflow and be clipped",
+  "plan_path": "specs/chore-707e4238-fix-duplicate-style-name-display.md"
+}

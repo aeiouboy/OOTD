@@ -1,0 +1,22 @@
+# Central Group Product Scraping System Requirements
+# Python 3.9+
+
+# Core scraping framework
+crawl4ai>=0.7.4
+playwright>=1.40.0
+
+# Async support
+asyncio
+aiofiles
+aiohttp
+
+# Data handling
+beautifulsoup4
+lxml
+
+# Utilities
+uuid
+python-dotenv
+
+# Logging and monitoring
+rich

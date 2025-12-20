@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "09d4b81b",
+  "prompt": "Fix the OnboardingStyle.tsx component to remove duplicate \n  description display. Currently the style cards show old placeholder descriptions inside the \n  card image area while the correct new descriptions from fashion-styles.json appear below. \n  Either: 1) Remove the inline card description and keep only the bottom description, OR 2) \n  Update both to use the same data source from frontend/lib/data/fashion-styles.json. Ensure \n  consistent display matching the design reference.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti",
+  "plan_path": "specs/chore-09d4b81b-remove-duplicate-style-descriptions.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "1a9a06ce-7f91-442f-93cb-325eac6a5065",
+      "agent": "planner",
+      "output_dir": "./agents/09d4b81b/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "3cc594e8-cfae-4901-8930-6f4998a243de",
+      "agent": "builder",
+      "output_dir": "./agents/09d4b81b/builder/"
+    }
+  },
+  "overall_success": true
+}

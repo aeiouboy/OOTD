@@ -1,0 +1,1 @@
+/chore e0de3305 Fix chat history loss by persisting ChatAssistant visibility in page.tsx for both Desktop and Mobile layouts

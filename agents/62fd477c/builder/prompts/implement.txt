@@ -1,0 +1,1 @@
+/implement specs/chore-62fd477c-fix-style-carousel-layout.md

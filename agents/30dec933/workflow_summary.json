@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "30dec933",
+  "prompt": "Fix image generation integration in /api/chat/route.ts - The chat API route must return imageRequest: true \n  and outfitDescription when image trigger is detected by ai-chat-service.ts. Currently the detection works (logs show 'Image generation request \n  detected') but the response does not include imageRequest flag for ChatInterface to call /api/generate-image endpoint.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/Documents/Project/OOTDay_Anti/frontend",
+  "plan_path": "specs/chore-30dec933-fix-image-generation-response.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "3883d629-d413-4981-b42a-4818835a7e52",
+      "agent": "planner",
+      "output_dir": "./agents/30dec933/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "a4f77509-cfab-462b-b4f1-c29081c3d3dc",
+      "agent": "builder",
+      "output_dir": "./agents/30dec933/builder/"
+    }
+  },
+  "overall_success": true
+}

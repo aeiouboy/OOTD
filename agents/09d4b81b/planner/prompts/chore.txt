@@ -1,0 +1,6 @@
+/chore 09d4b81b Fix the OnboardingStyle.tsx component to remove duplicate 
+  description display. Currently the style cards show old placeholder descriptions inside the 
+  card image area while the correct new descriptions from fashion-styles.json appear below. 
+  Either: 1) Remove the inline card description and keep only the bottom description, OR 2) 
+  Update both to use the same data source from frontend/lib/data/fashion-styles.json. Ensure 
+  consistent display matching the design reference.
