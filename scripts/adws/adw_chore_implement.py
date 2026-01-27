@@ -216,6 +216,7 @@ def main(
 
         # Save chore phase summary
         chore_output_dir = f"./agents/{adw_id}/{planner_name}"
+        os.makedirs(chore_output_dir, exist_ok=True)
         chore_summary_path = f"{chore_output_dir}/{SUMMARY_JSON}"
 
         with open(chore_summary_path, "w") as f:
@@ -348,6 +349,7 @@ def main(
 
         # Save implement phase summary
         implement_output_dir = f"./agents/{adw_id}/{builder_name}"
+        os.makedirs(implement_output_dir, exist_ok=True)
         implement_summary_path = f"{implement_output_dir}/{SUMMARY_JSON}"
 
         with open(implement_summary_path, "w") as f:

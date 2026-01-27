@@ -69,7 +69,7 @@ export function OnboardingName({ onNext, onBack }: OnboardingNameProps) {
           </div>
 
           {/* Next Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Button
               onClick={handleNext}
               disabled={!name.trim()}

@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "0bcc5a52",
+  "prompt": "Fix Women's Fashion image to show full image without cropping on OnboardingDepartment page. In apps/web/components/onboarding/OnboardingDepartment.tsx line 50: Change className from 'w-full h-64 object-cover' to 'w-full h-auto object-contain' to display the full image. Also update width/height props to larger values (width={400} height={534}) to maintain quality while letting CSS handle the actual display size. The image should show the complete flat lay (vest, pants, bag, sandals) without any cropping.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-0bcc5a52-fix-womens-fashion-image-display.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "5221e277-b09e-46e5-9711-891f9a767b6b",
+      "agent": "planner",
+      "output_dir": "./agents/0bcc5a52/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "22468eea-4c8d-4ca8-bf0b-9277207f6fe3",
+      "agent": "builder",
+      "output_dir": "./agents/0bcc5a52/builder/"
+    }
+  },
+  "overall_success": true
+}

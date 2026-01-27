@@ -1,0 +1,50 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 132359,
+  "duration_api_ms": 134276,
+  "num_turns": 24,
+  "result": "## Summary\n\nI've implemented the fix for mock product images to match product descriptions per the spec. Here's what was done:\n\n**Changes Made:**\n- **SF001 \"SFERA Women Blazer Suit\"** (line 114): Changed `imageUrl` from `/professional-business-outfit.jpg` (showing men's suits with ties) to `/central-blazer.png` (showing women's navy blazer)\n- **outfit-1 \"Professional Business Look\"** (line 269): Changed `imageUrl` from `/professional-business-outfit.jpg` to `/central-blazer.png`\n- **outfit-sfera \"SFERA Executive Suit\"** (line 309): Changed `imageUrl` from `/professional-business-outfit.jpg` to `/central-blazer.png`\n\n**Verification:**\n- Verified all remaining women's product images (CG004, CG005, CG007, SF003, SF004) display appropriate women's clothing\n- Confirmed no references to `/professional-business-outfit.jpg` remain in mock-data.ts\n- Confirmed `/central-blazer.png` now appears in 4 locations (CG006, SF001, outfit-1, outfit-sfera)\n- ESLint passes with no errors\n- TypeScript compilation errors are from third-party `@vitejs/plugin-react` dependency (pre-existing, unrelated to changes)\n\n**Git diff statistics:**\n```\n apps/web/lib/mock-data.ts | 47 ++++++++++++++++++++---------------------------\n 1 file changed, 20 insertions(+), 27 deletions(-)\n```\n\nNote: The diff shows additional changes that were already in the working tree from prior work (CG003 removal, SH001/SH002 updates, outfit array index adjustments). The changes I made in this implementation are specifically the 3 image URL fixes from `/professional-business-outfit.jpg` to `/central-blazer.png`.",
+  "session_id": "74bc8a58-fee8-495b-931c-5232f1aa84d5",
+  "total_cost_usd": 0.9211117500000002,
+  "usage": {
+    "input_tokens": 1424,
+    "cache_creation_input_tokens": 31729,
+    "cache_read_input_tokens": 1168117,
+    "output_tokens": 4845,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 31729
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 8682,
+      "outputTokens": 364,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.010502,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 1424,
+      "outputTokens": 4845,
+      "cacheReadInputTokens": 1168117,
+      "cacheCreationInputTokens": 31729,
+      "webSearchRequests": 0,
+      "costUSD": 0.91060975,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "4f2a20cc-a985-45ce-9adf-ccbf9ee6ae9f"
+}

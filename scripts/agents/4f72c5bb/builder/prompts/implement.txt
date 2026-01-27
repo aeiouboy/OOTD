@@ -1,0 +1,1 @@
+/implement specs/chore-4f72c5bb-remove-welcome-logo-background.md

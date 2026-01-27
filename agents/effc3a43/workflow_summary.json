@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "effc3a43",
+  "prompt": "Fix outfit product list not reflecting  \n  visual consistency replacements:                                                    \n                                                                                      \n  ## Current Issue                                                                    \n  The flat-lay AI image shows correct feminine heels, but 'Items in this outfit'      \n  section still displays product with masculine oxford shoes thumbnail (see           \n  screenshot: Formal Heels product shows brogue/oxford thumbnail but flat-lay shows   \n  stiletto heels).                                                                    \n                                                                                      \n  ## Root Cause Analysis                                                              \n  The visual consistency validation and replacement logic exists in:                  \n  - apps/web/lib/utils/product-visual-validator.ts (findVisuallyConsistentReplacement)\n  - apps/web/components/chat/ChatAssistant.tsx (applyProductReplacements)             \n                                                                                      \n  But the replacement is ONLY applied during flat-lay generation in ChatAssistant. The\n   OutfitDetail component receives the ORIGINAL outfit items, not the replaced ones.  \n                                                                                      \n  ## Files to Fix                                                                     \n                                                                                      \n  ### apps/web/components/outfit/OutfitDetail.tsx                                     \n  - Add visual consistency validation on component mount/update                       \n  - Replace visually inconsistent products with consistent alternatives               \n  - Display the corrected items list that matches the flat-lay image                  \n                                                                                      \n  ### apps/web/lib/hooks/useFlatLayGeneration.ts                                      \n  - Ensure productReplacements map is properly returned and accessible                \n  - Add callback to notify parent component of replacements made                      \n                                                                                      \n  ### apps/web/components/chat/ChatAssistant.tsx                                      \n  - Ensure outfit.items is updated with replacements BEFORE passing to OutfitDetail   \n  - Store replaced outfit in message state, not just the flat-lay image               \n                                                                                      \n  ## Expected Behavior                                                                \n  BEFORE: Flat-lay shows heels, product list shows oxford shoes (mismatch)            \n  AFTER: Both flat-lay AND product list show the SAME feminine heels product          \n                                                                                      \n  ## Key Requirement                                                                  \n  The 'Items in this outfit' section MUST display the same products that appear in the\n   flat-lay image. If a visually inconsistent product was replaced for flat-lay       \n  generation, that replacement must also be reflected in the product list display.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-effc3a43-fix-outfit-product-list-visual-consistency.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "2dfc9dcc-cd8e-4493-a442-87e2a058cf88",
+      "agent": "planner",
+      "output_dir": "./agents/effc3a43/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "400ba66d-789f-4155-b8f7-eace9648cc2d",
+      "agent": "builder",
+      "output_dir": "./agents/effc3a43/builder/"
+    }
+  },
+  "overall_success": true
+}

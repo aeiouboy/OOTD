@@ -32,12 +32,20 @@ export function LooksInspiration({
   onRetry,
   onGenerateAnother,
   onDownload,
+  displayMode = 'portrait',
+  recommendedItems,
+  headerTitle,
 }: LooksInspirationProps) {
   const [isZoomOpen, setIsZoomOpen] = useState(false);
   const [imageError, setImageError] = useState(false);
 
   // Determine image source (prefer URL over base64)
   const imageSrc = imageUrl || imageBase64;
+
+  // Determine aspect ratio based on display mode
+  const isFlatLay = displayMode === 'flat-lay';
+  const aspectClass = isFlatLay ? 'aspect-square' : 'aspect-[3/4]';
+  const itemCount = recommendedItems?.length || 0;
 
   /**
    * Handles image download
@@ -76,7 +84,7 @@ export function LooksInspiration({
               <Loader2 className="w-4 h-4 animate-spin" aria-hidden="true" />
               <span>กำลังสร้างภาพชุดของคุณ...</span>
             </div>
-            <Skeleton className="w-full h-64 rounded-lg" />
+            <Skeleton className={`w-full rounded-lg ${isFlatLay ? 'aspect-square' : 'h-64'}`} />
             <div className="space-y-2">
               <Skeleton className="h-4 w-3/4" />
               <Skeleton className="h-4 w-1/2" />
@@ -130,15 +138,34 @@ export function LooksInspiration({
     <>
       <Card className="max-w-md mx-auto my-4 overflow-hidden">
         <CardContent className="p-0">
+          {/* LOOKs Header for flat-lay mode */}
+          {isFlatLay && (
+            <div className="px-4 pt-4 pb-2">
+              <div className="flex items-center justify-between">
+                <div>
+                  <h3 className="text-lg font-bold text-gray-900">
+                    {headerTitle || 'LOOKs'}
+                  </h3>
+                  <p className="text-xs text-gray-500">Outfit Inspiration by OOTDay</p>
+                </div>
+                {itemCount > 0 && (
+                  <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                    {itemCount} ชิ้น
+                  </span>
+                )}
+              </div>
+            </div>
+          )}
+
           {/* Image Display */}
           <div className="relative group">
-            <div className="relative w-full aspect-[3/4] bg-gray-100">
+            <div className={`relative w-full ${aspectClass} bg-gray-100`}>
               {!imageError ? (
                 <Image
                   src={imageSrc}
                   alt={`Outfit visualization: ${outfitDescription}`}
                   fill
-                  className="object-cover"
+                  className={isFlatLay ? 'object-contain' : 'object-cover'}
                   sizes="(max-width: 768px) 100vw, 500px"
                   onError={() => setImageError(true)}
                   priority
@@ -164,10 +191,14 @@ export function LooksInspiration({
 
           {/* Image Caption and Actions */}
           <div className="p-4 space-y-3">
-            {/* Caption */}
+            {/* Caption - show different style for flat-lay */}
             <div>
-              <p className="text-sm font-medium text-gray-900">Looks Inspiration 💫</p>
-              <p className="text-xs text-gray-600 mt-1">{outfitDescription}</p>
+              {!isFlatLay && (
+                <p className="text-sm font-medium text-gray-900">Looks Inspiration 💫</p>
+              )}
+              <p className={`text-xs text-gray-600 ${!isFlatLay ? 'mt-1' : ''}`}>
+                {outfitDescription}
+              </p>
             </div>
 
             {/* Action Buttons */}
@@ -212,7 +243,7 @@ export function LooksInspiration({
           </DialogHeader>
 
           <div className="relative w-full">
-            <div className="relative w-full aspect-[3/4] max-h-[80vh] bg-gray-100 rounded-lg overflow-hidden">
+            <div className={`relative w-full ${isFlatLay ? 'aspect-square' : 'aspect-[3/4]'} max-h-[80vh] bg-gray-100 rounded-lg overflow-hidden`}>
               {!imageError ? (
                 <Image
                   src={imageSrc}
@@ -231,6 +262,18 @@ export function LooksInspiration({
 
             {/* Caption in Dialog */}
             <div className="mt-4">
+              {isFlatLay && (
+                <div className="flex items-center gap-2 mb-2">
+                  <span className="text-lg font-bold text-gray-900">
+                    {headerTitle || 'LOOKs'}
+                  </span>
+                  {itemCount > 0 && (
+                    <span className="px-2 py-1 bg-primary/10 text-primary text-xs font-medium rounded-full">
+                      {itemCount} ชิ้น
+                    </span>
+                  )}
+                </div>
+              )}
               <p className="text-sm font-medium text-gray-900">{outfitDescription}</p>
             </div>
           </div>

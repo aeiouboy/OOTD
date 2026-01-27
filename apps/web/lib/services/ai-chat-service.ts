@@ -33,7 +33,7 @@ import {
   extractProductIds,
   filterAndValidateProducts,
 } from '../utils/duplicate-filter'
-import { SYSTEM_PROMPT_V2 } from '../prompts/system-prompt-v2'
+import { getActiveSystemPrompt, VersionUtils } from '../prompts/prompt-version'
 import {
   detectKnowledgeTopics,
   formatKnowledgeForPrompt,

@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 437577,
+  "duration_api_ms": 450485,
+  "num_turns": 39,
+  "result": "## Summary\n\nI've successfully implemented the fix for try-on outfit consistency with dual image reference support.\n\n### Work Completed:\n\n- **Updated `TryOnLooksRequest` interface** (`apps/web/lib/services/fitting-model-service.ts`): Added `flatLayImageUrl` and `flatLayImageBase64` optional fields for passing the flat-lay image\n\n- **Updated `ImageGenerationRequest` type** (`apps/web/lib/types/image-types.ts`): Added `secondaryReferenceImage` field and new `'try-on-dual'` generation type\n\n- **Created `buildDualReferenceTryOnPrompt()` function** (`apps/web/lib/services/fitting-model-service.ts`): New prompt template that explicitly references TWO images - IMAGE 1 for face/body matching and IMAGE 2 for exact outfit replication\n\n- **Created `generateTryOnWithDualReference()` method** (`apps/web/lib/services/image-generation-service.ts`): New method in `OpenRouterImageClient` that sends multimodal requests with two images (fitting model + flat-lay)\n\n- **Updated `generateTryOnLooks()` function** (`apps/web/lib/services/fitting-model-service.ts`): Now detects if flat-lay image is available, fetches it, and switches to dual-reference mode automatically with graceful fallback\n\n- **Updated API route** (`apps/web/app/api/generate-image/route.ts`): Added validation for `secondaryReferenceImage`, handling for `'try-on-dual'` generation type, and background removal support\n\n- **Updated `OutfitRecommendationCard` component** (`apps/web/components/chat/OutfitRecommendationCard.tsx`): Both `handleTryOn()` and `handleRegenerate()` now pass `flatLayImageUrl` and `flatLayImageBase64` from the outfit prop\n\n### Files Changed (git diff --stat):\n```\n apps/web/app/api/generate-image/route.ts           | 188 ++++++-\n apps/web/components/chat/OutfitRecommendationCard.tsx | 320 +++++++++++-\n apps/web/lib/services/image-generation-service.ts  | 568 ++++++++++++++++++++-\n apps/web/lib/types/image-types.ts                  |  61 +++\n apps/web/lib/services/fitting-model-service.ts     | 424 (untracked file - new additions)\n```\n\n**Total: ~1,500+ lines changed/added across 5 files**",
+  "session_id": "3d12bc52-ea0b-44be-94fc-25ad29f3c58b",
+  "total_cost_usd": 2.4267997500000007,
+  "usage": {
+    "input_tokens": 38,
+    "cache_creation_input_tokens": 85817,
+    "cache_read_input_tokens": 2787867,
+    "output_tokens": 17486,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 85817
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 16540,
+      "outputTokens": 670,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 5052,
+      "webSearchRequests": 0,
+      "costUSD": 0.026204999999999992,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 41,
+      "outputTokens": 17509,
+      "cacheReadInputTokens": 2787867,
+      "cacheCreationInputTokens": 90997,
+      "webSearchRequests": 0,
+      "costUSD": 2.40059475,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "34af9dbb-0af7-4eb0-abbd-4fe5354d9443"
+}

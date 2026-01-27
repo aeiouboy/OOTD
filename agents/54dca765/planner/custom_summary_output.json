@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "54dca765",
+  "slash_command": "/chore",
+  "args": [
+    "54dca765",
+    "Fix outfit data consistency and similar outfits display in the outfit detail modal. There are two issues: 1) When clicking '\u0e14\u0e39\u0e25\u0e38\u0e04' (View Look) button on a chat outfit card, the items displayed in 'Items in this outfit' section don't match the outfit shown in chat - they appear to be placeholder/random items (e.g., chat shows 'Central Dress & Shoes' but detail shows 'Floral Summer Dress', 'Leather Oxford Shoes', 'Leather Belt'). The outfit detail modal should display the EXACT same products that were used to generate the outfit in the chat session. Trace the data flow from OutfitCard click -> outfit detail modal and ensure the correct outfit.items array is passed and rendered. 2) The 'Similar outfits' section at the bottom of the outfit detail modal displays individual product images instead of flat-lay outfit images. It should display flat-lay images consistent with how outfits appear in the chat session and main grid. Update the SimilarOutfits\n   component to use the outfit's imageUrl (flat-lay) instead of showing individual product thumbnails. Check components/outfit/OutfitDetailModal.tsx, components/outfit/OutfitCard.tsx, and any related outfit rendering components."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "0eec4677-a44e-4d92-8ff0-38a38db6f535",
+  "retry_code": "none",
+  "output": "Plan file created at: `specs/chore-54dca765-fix-outfit-data-consistency-detail-modal.md`\n\nThe plan covers:\n\n1. **Issue 1 Analysis** - Traced the data flow from `OutfitRecommendationCard` \u2192 `ChatAssistant` \u2192 `page.tsx` \u2192 `useOutfitDiscovery` \u2192 `OutfitDetail`. The outfit should preserve its items through this chain, but the plan includes investigation steps with console logging to identify where data inconsistency occurs.\n\n2. **Issue 2 Analysis** - The `SimilarOutfits` component already correctly uses `outfit.imageUrl` (lines 26-34 in `SimilarOutfits.tsx`). The issue is that similar outfits come from `filteredOutfits` (discovery grid) which may not have `imageUrl`/`flatLayImageUrl` populated.\n\n3. **7 Step-by-Step Tasks**:\n   - Investigate data flow with debug logging\n   - Debug similar outfits data source  \n   - Fix outfit items preservation\n   - Enhance similar outfits for chat context\n   - Update SimilarOutfits fallback handling\n   - Validate the complete fix\n   - Clean up debug code",
+  "plan_path": "specs/chore-54dca765-fix-outfit-data-consistency-detail-modal.md"
+}

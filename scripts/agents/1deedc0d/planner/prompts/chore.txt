@@ -1,0 +1,30 @@
+/chore 1deedc0d Remove separate LOOKs generation message after flat-lay image is displayed in outfit card.
+
+  CURRENT BUG:
+  After flat-lay image is successfully generated and displayed in the outfit recommendation card, the separate message 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨' still appears below the card. This message should be removed once the flat-lay is shown in the card.
+
+  EXPECTED BEHAVIOR:
+  - Show 'กำลังสร้างภาพ LOOKs...' message ONLY while the flat-lay image is generating
+  - Once flat-lay generation completes and image appears in the card, REMOVE this separate message
+  - The flat-lay image in the card is sufficient - no need for duplicate/redundant messages
+
+  CURRENT FLOW (buggy):
+  1. User requests outfit → Card shows 'กำลังสร้างภาพ LOOKs...' skeleton
+  2. Separate message appears: 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨'
+  3. Flat-lay generates → Card shows flat-lay image
+  4. BUG: Separate message STILL shows 'กำลังสร้างภาพ LOOKs...' (should be removed)
+
+  EXPECTED FLOW:
+  1. User requests outfit → Card shows 'กำลังสร้างภาพ LOOKs...' skeleton
+  2. Show separate acknowledgment message while loading (optional)
+  3. Flat-lay generates → Card shows flat-lay image
+  4. Remove the separate acknowledgment message OR change it to completion message
+
+  FIX REQUIRED:
+  In apps/web/components/chat/ChatAssistant.tsx:
+  1. After flat-lay generation succeeds and outfit card is updated with image
+  2. Remove or filter out the 'กำลังสร้างภาพ LOOKs...' message from messages array
+  3. OR: Don't add the separate acknowledgment message at all since the card itself shows loading state
+
+  FILES TO MODIFY:
+  - apps/web/components/chat/ChatAssistant.tsx (remove redundant LOOKs message after generation completes)

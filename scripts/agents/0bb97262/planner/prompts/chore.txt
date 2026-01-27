@@ -1,0 +1,25 @@
+/chore 0bb97262 Enhance Similar Outfits cards in SimilarOutfits.tsx to match the chat OutfitRecommendationCard.tsx design with action buttons. Changes needed:
+
+  1. **Add item count display**: Show 'X ชิ้น' (X items) below the title, similar to OutfitRecommendationCard line 207-209.
+
+  2. **Add action buttons row** at bottom of each card with 4 buttons:
+     - 'ดูลุค' button with Eye icon - calls existing onSelect(outfit) to view outfit detail
+     - 'ลองใส่' button with Shirt icon - opens try-on modal (integrate with fitting-model-service)
+     - Heart icon button - toggle like state (local state for now)
+     - Share icon button - placeholder for share functionality
+
+  3. **Integrate Try-On Modal**: Import and use the Dialog components and implement handleTryOn similar to OutfitRecommendationCard.tsx lines 67-116. Use generateTryOnLooks from fitting-model-service.ts with user's fittingModelUrl from useUserProfile hook.
+
+  4. **Update card layout**:
+     - Keep existing image section with AI flat-lay generation
+     - Add item count: '{outfit.items.length} ชิ้น'
+     - Add action buttons row using flex layout with gap-1.5
+     - Use Button component with size='sm' variant='ghost'
+     - Import icons: Eye, Shirt, Heart, Share2, Loader2, RefreshCw, AlertCircle from lucide-react
+
+  5. **Reference files**:
+     - OutfitRecommendationCard.tsx for action buttons design (lines 216-260) and try-on modal (lines 264-350)
+     - fitting-model-service.ts for generateTryOnLooks function
+     - useUserProfile hook for getting user's fittingModelUrl
+
+  6. **Styling**: Match the compact card style - use smaller buttons (h-8, text-xs) appropriate for the 2-column grid layout.

@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "a63f80c0",
+  "prompt": "Add Women's Fashion image to the 'What's your vibe?' onboarding page. 1) Copy 'data/assets/onboarding/image 35.png' to 'apps/web/public/images/onboarding/womens-fashion.png' (URL-encode the space in source filename). 2) In apps/web/components/onboarding/OnboardingDepartment.tsx: Import next/image, replace the placeholder div (lines 43-49 with bg-gradient and text) with an actual Image component using src='/images/onboarding/womens-fashion.png', maintain the h-64 height with object-cover, add alt='Women Fashion Flat Lay'. Keep the 'Selected' badge overlay intact.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-a63f80c0-add-womens-fashion-image.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "87d62d2c-8bdd-43ce-be99-d5c54179fb1d",
+      "agent": "planner",
+      "output_dir": "./agents/a63f80c0/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "21144a83-5b70-4be2-9b87-f25548fac35b",
+      "agent": "builder",
+      "output_dir": "./agents/a63f80c0/builder/"
+    }
+  },
+  "overall_success": true
+}

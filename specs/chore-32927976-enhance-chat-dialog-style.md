@@ -7,7 +7,7 @@ prompt: `Based on the dialog template at /Users/naruechon/Documents/Project/OOTD
 ## Chore Description
 Enhance the OOTDay AI chat system to match the conversation style shown in the reference dialog template (`chat_dialog1/dl.md`). The dialog demonstrates:
 
-1. **Personalized Thai Greeting**: AI uses friendly greeting with user's name and emoji "อ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
+1. **Personalized Thai Greeting**: AI uses friendly greeting with user's name and emoji "ฮ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
 2. **Work-to-Evening Outfit Request**: User asks for versatile outfit for work and evening social
 3. **Engaging Intro Response**: AI responds with stock excitement phrases like "ต้องชุดนี้เลยกำลังมาแรง สาวๆ ออฟฟิศหากันให้ควัก stock sold out ไปหลายรอบ"
 4. **LOOKs Format**: Outfit recommendations organized as Look 1, Look 2, etc. with style names (e.g., "Vintage Layer Office Look", "Feminine Basic Mix")
@@ -85,7 +85,7 @@ Execute these commands to validate the chore is complete:
 ### Key Dialog Template Elements to Match
 From `chat_dialog1/dl.md`:
 ```
-AI Greeting: "อ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
+AI Greeting: "ฮ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
 Intro: "ต้องชุดนี้เลยกำลังมาแรง สาวๆ ออฟฟิศหากันให้ควัก stock sold out ไปหลายรอบ"
 Look Format: "Look 1: Vintage Layer Office Look" with style description and total price
 ```

@@ -3,7 +3,7 @@
  * Assigns style attributes to products
  */
 
-import type { StyleTag, PatternType, MaterialType } from '../types/enums'
+import type { StyleTag, PatternType, MaterialType, AestheticCategory, SilhouetteType } from '../types/enums'
 
 /**
  * Assign style tags based on product attributes (Task 4.6)
@@ -117,6 +117,76 @@ export function assignStyleTags(name: string, description?: string): StyleTag[] 
     tags.add('preppy')
   }
 
+  // Pinterest 2026 Aesthetics
+
+  // Clean girl aesthetic
+  if (
+    text.includes('minimal') ||
+    text.includes('neutral') ||
+    text.includes('soft') ||
+    text.includes('fresh') ||
+    (text.includes('light') && text.includes('tone'))
+  ) {
+    tags.add('clean-girl')
+  }
+
+  // Scandinavian minimal aesthetic
+  if (
+    text.includes('scandinavian') ||
+    (text.includes('simple') && text.includes('clean')) ||
+    (text.includes('neutral') && text.includes('palette')) ||
+    text.includes('quality basics')
+  ) {
+    tags.add('scandinavian-minimal')
+  }
+
+  // Street style aesthetic
+  if (
+    text.includes('oversized') ||
+    text.includes('baggy') ||
+    text.includes('urban') ||
+    text.includes('layered') ||
+    text.includes('chunky') ||
+    text.includes('street')
+  ) {
+    tags.add('street-style')
+  }
+
+  // Corporate chic aesthetic
+  if (
+    text.includes('structured') ||
+    text.includes('tailored') ||
+    (text.includes('wide-leg') || text.includes('wide leg')) ||
+    text.includes('blazer') ||
+    (text.includes('professional') && text.includes('chic'))
+  ) {
+    tags.add('corporate-chic')
+  }
+
+  // Quiet luxury aesthetic
+  if (
+    text.includes('understated') ||
+    text.includes('premium') ||
+    text.includes('timeless') ||
+    (text.includes('refined') && !text.includes('edgy')) ||
+    text.includes('cashmere') ||
+    text.includes('quiet luxury')
+  ) {
+    tags.add('quiet-luxury')
+  }
+
+  // Y2K revival aesthetic
+  if (
+    text.includes('low-rise') ||
+    text.includes('colorful') ||
+    text.includes('playful') ||
+    text.includes('platform') ||
+    text.includes('retro') ||
+    text.includes('y2k')
+  ) {
+    tags.add('y2k-revival')
+  }
+
   // Default to classic if no tags found
   if (tags.size === 0) {
     tags.add('classic')
@@ -163,6 +233,108 @@ export function detectMaterial(text: string): MaterialType | undefined {
 }
 
 /**
+ * Detect silhouette type from product (Pinterest 2026 trends)
+ */
+export function detectSilhouette(name: string, description?: string): SilhouetteType | undefined {
+  const text = `${name} ${description || ''}`.toLowerCase()
+
+  if (text.includes('wide-leg') || text.includes('wide leg') || text.includes('palazzo')) return 'wide-leg'
+  if (text.includes('baggy') || text.includes('loose') || text.includes('relaxed') || text.includes('boyfriend')) return 'baggy'
+  if (text.includes('fitted') || text.includes('slim') || text.includes('tailored') || text.includes('skinny')) return 'fitted'
+  if (text.includes('high-waisted') || text.includes('high waist') || text.includes('high rise')) return 'high-waisted'
+  if (text.includes('oversized') || text.includes('slouchy')) return 'oversized'
+
+  return undefined
+}
+
+/**
+ * Detect aesthetic category from product (Pinterest 2026 trends)
+ */
+export function detectAesthetic(name: string, description?: string): AestheticCategory | null {
+  const text = `${name} ${description || ''}`.toLowerCase()
+
+  // Clean girl aesthetic
+  if (
+    (text.includes('minimal') && (text.includes('neutral') || text.includes('soft'))) ||
+    (text.includes('fresh') && text.includes('light'))
+  ) {
+    return 'clean-girl'
+  }
+
+  // Scandinavian minimal aesthetic
+  if (
+    text.includes('scandinavian') ||
+    (text.includes('simple') && text.includes('clean lines')) ||
+    text.includes('quality basics')
+  ) {
+    return 'scandinavian-minimal'
+  }
+
+  // Street style aesthetic
+  if (
+    (text.includes('oversized') && (text.includes('urban') || text.includes('layered'))) ||
+    (text.includes('baggy') && text.includes('street')) ||
+    text.includes('chunky sneakers')
+  ) {
+    return 'street-style'
+  }
+
+  // Corporate chic aesthetic
+  if (
+    (text.includes('structured') && text.includes('professional')) ||
+    (text.includes('tailored') && text.includes('blazer')) ||
+    (text.includes('wide-leg') && text.includes('trousers'))
+  ) {
+    return 'corporate-chic'
+  }
+
+  // Quiet luxury aesthetic
+  if (
+    text.includes('quiet luxury') ||
+    (text.includes('understated') && text.includes('premium')) ||
+    (text.includes('cashmere') && text.includes('timeless'))
+  ) {
+    return 'quiet-luxury'
+  }
+
+  // Minimalist office aesthetic
+  if (
+    (text.includes('minimalist') && text.includes('office')) ||
+    (text.includes('clean') && text.includes('professional'))
+  ) {
+    return 'minimalist-office'
+  }
+
+  // Dark academia aesthetic
+  if (
+    text.includes('dark academia') ||
+    (text.includes('vintage') && text.includes('scholarly')) ||
+    (text.includes('tweed') && text.includes('brown'))
+  ) {
+    return 'dark-academia'
+  }
+
+  // Casual chic aesthetic
+  if (
+    text.includes('casual chic') ||
+    (text.includes('effortless') && text.includes('polished'))
+  ) {
+    return 'casual-chic'
+  }
+
+  // Y2K revival aesthetic
+  if (
+    text.includes('y2k') ||
+    (text.includes('low-rise') && text.includes('platform')) ||
+    text.includes('retro revival')
+  ) {
+    return 'y2k-revival'
+  }
+
+  return null
+}
+
+/**
  * Comprehensive style analysis
  */
 export interface StyleAnalysis {
@@ -170,6 +342,8 @@ export interface StyleAnalysis {
   pattern?: PatternType
   material?: MaterialType
   vibe: string
+  aesthetic?: AestheticCategory
+  silhouette?: SilhouetteType
 }
 
 /**
@@ -179,6 +353,8 @@ export function analyzeProductStyle(name: string, description?: string): StyleAn
   const tags = assignStyleTags(name, description)
   const pattern = detectPattern(name)
   const material = detectMaterial(`${name} ${description || ''}`)
+  const aesthetic = detectAesthetic(name, description) || undefined
+  const silhouette = detectSilhouette(name, description)
 
   // Determine overall vibe
   let vibe = 'neutral'
@@ -187,10 +363,19 @@ export function analyzeProductStyle(name: string, description?: string): StyleAn
   else if (tags.includes('trendy') || tags.includes('edgy')) vibe = 'bold'
   else if (tags.includes('classic')) vibe = 'timeless'
 
+  // Enhance vibe with 2026 aesthetics
+  if (aesthetic) {
+    if (aesthetic === 'corporate-chic' || aesthetic === 'quiet-luxury') vibe = 'sophisticated'
+    else if (aesthetic === 'street-style' || aesthetic === 'y2k-revival') vibe = 'bold'
+    else if (aesthetic === 'clean-girl' || aesthetic === 'scandinavian-minimal') vibe = 'relaxed'
+  }
+
   return {
     tags,
     pattern,
     material,
     vibe,
+    aesthetic,
+    silhouette,
   }
 }

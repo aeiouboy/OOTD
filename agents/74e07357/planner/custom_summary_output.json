@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "74e07357",
+  "slash_command": "/chore",
+  "args": [
+    "74e07357",
+    "Investigate and fix inconsistent outfit recommendation image format in                \n  LooksInspiration component. Issue: Some outfit cards display mannequin-style images instead of flat-lay format. Expected behavior \n  per data/personas/prompt_gen/looks.md: 'flat-lay image with each item individually placed and separated, styled in an elegant     \n  composition on a white background'. Root cause analysis needed: 1) Check apps/web/components/chat/LooksInspiration.tsx to         \n  understand how outfit images are displayed 2) Check apps/web/components/chat/OutfitRecommendationCard.tsx for image source logic  \n  3) Trace the image generation flow from apps/web/lib/services/image-generation-service.ts 4) Identify why some outfits use        \n  mannequin images vs flat-lay format 5) Ensure all outfit recommendations consistently use AI-generated flat-lay images or         \n  FlatLayComposite fallback, never mannequin product images"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "405eced2-75dd-4076-b097-8adac4d54437",
+  "retry_code": "none",
+  "output": "The specification document has been created at:\n\n**`/Users/naruechon/OOTD/specs/chore-74e07357-fix-inconsistent-outfit-image-format.md`**\n\n## Summary of the Investigation\n\nThe root cause of the inconsistent outfit image format is in **`OutfitRecommendationCard.tsx`** at lines 55-58:\n\n```typescript\nconst flatLayImage = outfit.flatLayImageUrl || outfit.flatLayImageBase64\nconst fallbackImage = outfit.imageUrl  // <-- This is mannequin-style!\nconst displayImage = flatLayImage || fallbackImage\n```\n\nWhen AI flat-lay generation fails or is unavailable, the component falls back to `outfit.imageUrl`, which is a mannequin-style product thumbnail from the catalog. This violates the specification in `looks.md` that requires all outfit recommendations to display as flat-lay compositions.\n\nThe fix involves:\n1. Using `FlatLayComposite` as an intermediate fallback instead of raw product thumbnails\n2. The fallback priority becomes: AI flat-lay \u2192 CSS FlatLayComposite \u2192 (never mannequin images)",
+  "plan_path": "specs/chore-74e07357-fix-inconsistent-outfit-image-format.md"
+}

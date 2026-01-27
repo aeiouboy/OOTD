@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "f674315b",
+  "slash_command": "/chore",
+  "args": [
+    "f674315b",
+    "Fix mock product data to use correct    \n  women footwear images. The mock data in apps/web/lib/mock-data.ts has three footwear\n   products all using the same masculine oxford shoe image                            \n  (/black-leather-oxford-shoes.jpg):                                                  \n                                                                                      \n  1. CG003 (line 42-52): \"Leather Oxford Shoes\" - This is a masculine style shoe,     \n  should be REMOVED or replaced with women heels product                              \n  2. SH001 (line 203-214): \"Formal Heels\" - Name says heels but uses masculine oxford \n  image. Fix imageUrl to point to women heels image                                   \n  3. SH002 (line 216-227): \"Classic Pumps\" - Name says pumps but uses masculine oxford\n   image. Fix imageUrl to point to women pumps image                                  \n                                                                                      \n  Required changes:                                                                   \n  1. Remove CG003 \"Leather Oxford Shoes\" entirely - masculine style shouldnt be in    \n  women catalog                                                                       \n  2. Update SH001 \"Formal Heels\" imageUrl to use a proper women stiletto heels image  \n  (create placeholder if needed like /formal-heels.png)                               \n  3. Update SH002 \"Classic Pumps\" imageUrl to use a proper women pumps image (create  \n  placeholder if needed like /classic-pumps.png)                                      \n  4. Add proper visualDescription to SH001 and SH002 describing feminine footwear     \n  (e.g., \"Elegant black stiletto heels with pointed toe, formal womens footwear\")     \n  5. Update mockOutfits that reference mockProducts[2] (which is CG003) to use        \n  appropriate women footwear instead                                                  \n                                                                                      \n  Also update any outfit that uses these products to ensure consistency. The product  \n  catalog should ONLY contain proper women products since onboarding selected women   \n  department."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "ec53f9cb-b02c-4936-8701-3b862f896781",
+  "retry_code": "none",
+  "output": "Plan file created at: **`specs/chore-f674315b-fix-mock-footwear-images.md`**\n\nThe plan addresses:\n1. Removing the masculine CG003 \"Leather Oxford Shoes\" product entirely\n2. Updating SH001 \"Formal Heels\" with proper placeholder image, visual description, and subcategory\n3. Updating SH002 \"Classic Pumps\" with proper placeholder image, visual description, and subcategory\n4. Fixing all mockOutfits array index references that break after removing CG003\n5. Validation commands to ensure the changes are complete and correct",
+  "plan_path": "specs/chore-f674315b-fix-mock-footwear-images.md"
+}

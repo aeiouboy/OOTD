@@ -56,6 +56,7 @@ export function useUserProfile() {
       ageRange: updates.ageRange ?? profile?.ageRange ?? '<20',
       stylePreferences: updates.stylePreferences ?? profile?.stylePreferences ?? [],
       userPhoto: updates.userPhoto ?? profile?.userPhoto,
+      fittingModelUrl: updates.fittingModelUrl ?? profile?.fittingModelUrl,
       onboardingCompleted: updates.onboardingCompleted ?? profile?.onboardingCompleted ?? false,
       createdAt: profile?.createdAt ?? new Date().toISOString(),
     };

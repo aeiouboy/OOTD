@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "715c7f14",
+  "prompt": "Fix outfit try-on alignment issue where \n  the model fitting image does not match the flat-lay outfit recommendation.          \n                                                                                      \n  ## Problem                                                                          \n  When clicking '\u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48' (try-on) button on a flat-lay outfit recommendation, the     \n  generated model try-on image shows a DIFFERENT outfit than the one in the flat-lay. \n                                                                                      \n  Example from screenshots:                                                           \n  - Flat-lay 1: Navy blue top + black wide-leg pants + heels (\u0e3f7,700)                 \n  - Flat-lay 2: Black suit/blazer + black pants (\u0e3f5,796)                              \n  - But try-on images are SWAPPED or show wrong outfit combinations                   \n                                                                                      \n  ## Files to Investigate                                                             \n  1. apps/web/components/outfit/SimilarOutfits.tsx - Try-on button handler            \n  2. apps/web/components/outfit/OutfitDetail.tsx - Try-on functionality               \n  3. apps/web/lib/services/image-generation-service.ts - Try-on image generation      \n  4. apps/web/lib/services/fitting-model-service.ts - Fitting model service           \n  5. apps/web/app/api/generate-image/route.ts - Image generation API                  \n                                                                                      \n  ## Expected Behavior                                                                \n  When user clicks try-on on a specific flat-lay outfit:                              \n  1. The EXACT items from that flat-lay should be used for try-on generation          \n  2. The model should wear ALL items from the selected outfit                         \n  3. The outfit ID/items must be passed correctly to the try-on generation            \n                                                                                      \n  ## Root Cause Analysis Needed                                                       \n  - Check if outfit ID is correctly passed from flat-lay card to try-on function      \n  - Check if items array is correctly extracted from the selected outfit              \n  - Check if the try-on prompt includes all items from the correct outfit             \n  - Verify the outfit data flow from click -> API -> image generation",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-715c7f14-fix-try-on-outfit-alignment.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "5e5a1d1c-3d77-4eab-a921-0825391dbc06",
+      "agent": "planner",
+      "output_dir": "./agents/715c7f14/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "0a64aed9-b37e-43af-a243-f8d989ccad0d",
+      "agent": "builder",
+      "output_dir": "./agents/715c7f14/builder/"
+    }
+  },
+  "overall_success": true
+}

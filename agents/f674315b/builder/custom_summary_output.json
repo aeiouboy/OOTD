@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "f674315b",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-f674315b-fix-mock-footwear-images.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "f96fa8a4-52c4-4b18-a4dc-cfeef50047bc",
+  "retry_code": "none",
+  "output": "## Report\n\n### Work Completed\n- **Removed CG003 masculine \"Leather Oxford Shoes\" product** from the women's catalog in `apps/web/lib/mock-data.ts`\n- **Updated SH001 \"Formal Heels\" product**:\n  - Changed `imageUrl` from masculine oxford shoes to `/placeholder.svg?height=400&width=400&text=Formal+Heels`\n  - Added `visualDescription`: \"Elegant black stiletto heels with pointed toe, formal women's footwear, 3-inch heel\"\n  - Added `subCategory`: \"Heels\"\n  - Added `occasion`: [\"work\", \"formal\"]\n- **Updated SH002 \"Classic Pumps\" product**:\n  - Changed `imageUrl` from masculine oxford shoes to `/placeholder.svg?height=400&width=400&text=Classic+Pumps`\n  - Added `visualDescription`: \"Classic nude pumps with rounded toe, versatile women's footwear, 2.5-inch heel\"\n  - Added `subCategory`: \"Pumps\"\n  - Added `occasion`: [\"work\", \"formal\", \"casual\"]\n- **Updated mockOutfits array references** to use correct indices after CG003 removal:\n  - `outfit-1` now uses `mockProducts.find(p => p.sku === \"SH001\")!` for women's heels instead of masculine oxfords\n  - All other outfits updated to use correct shifted indices\n- **All validations passed**: No oxford shoe references remain, CG003 removed, ESLint clean for mock-data.ts\n\n### Git diff statistics\n```\napps/web/lib/mock-data.ts | 41 +++++++++++++++++------------------------\n1 file changed, 17 insertions(+), 24 deletions(-)\n```"
+}

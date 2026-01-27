@@ -1,0 +1,49 @@
+/chore f8e793e0 Fix mismatch between outfit flat lay image
+   and product items list in outfit recommendation:                                     
+                                                                                        
+  ## Issue Analysis                                                                     
+  The outfit flat lay image shows different items than what appears in the 'Items in    
+  this outfit' product list:                                                            
+  - Flat lay shows: Navy blazer, black heels (pointed-toe pumps), black trousers, belt  
+  - Product list shows: Blazer (correct), Suit Pants (correct), Belt (correct), 'Formal 
+  Heels' but thumbnail shows OXFORD SHOES (incorrect)                                   
+                                                                                        
+  The product thumbnail for footwear doesn't match what's rendered in the flat lay      
+  visualization.                                                                        
+                                                                                        
+  ## Root Cause Investigation                                                           
+  1. The flat lay image is AI-generated based on outfit description                     
+  2. The product list items come from actual product data                               
+  3. There's a disconnect - the AI generates feminine heels but the linked product is   
+  masculine oxford shoes                                                                
+  4. The product matching logic may be selecting wrong footwear products                
+                                                                                        
+  ## Fix Requirements                                                                   
+                                                                                        
+  ### 1. Ensure Product-to-Image Consistency                                            
+  - The flat lay image generation prompt should use actual product names/descriptions   
+  - OR the product list should only show items that match what's in the flat lay        
+                                                                                        
+  ### 2. Fix Footwear Product Matching                                                  
+  - When selecting footwear for women's outfits, validate the product image shows       
+  women's footwear                                                                      
+  - Add product image validation or stricter keyword matching                           
+  - Ensure 'Formal Heels' product actually contains heels, not oxfords                  
+                                                                                        
+  ### 3. Investigate Data Flow                                                          
+  - Check how outfit items are passed to flat lay generation                            
+  (image-generation-service.ts)                                                         
+  - Check how product items are selected for the outfit (OutfitDetail.tsx,              
+  OutfitProductList.tsx)                                                                
+  - Ensure same products are used for both image generation and product list display    
+                                                                                        
+  ### 4. Files to Check                                                                 
+  - apps/web/components/outfit/OutfitDetail.tsx - Displays outfit with items            
+  - apps/web/components/outfit/OutfitProductList.tsx - Product list component           
+  - apps/web/lib/services/image-generation-service.ts - Flat lay generation             
+  - apps/web/lib/outfit-generator.ts - Product selection logic                          
+                                                                                        
+  ### 5. Expected Behavior                                                              
+  - If flat lay shows heels, product list must show heels                               
+  - If product data has oxfords, flat lay should show oxfords                           
+  - Perfect 1:1 match between visualization and purchasable items

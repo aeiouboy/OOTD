@@ -1,0 +1,67 @@
+/chore 7cd250ac Enhance outfit recommendation to use user preferences from onboarding session for personalized styling:
+
+## Onboarding Data Analysis
+
+The onboarding flow captures 6 key user preferences:
+1. **Name** - User's name for personalization
+2. **Fashion Department** - Men/Women/Unisex preference  
+3. **Age** - Age group affects style recommendations
+4. **Styles** - Selected style preferences (minimal, casual, elegant, etc.)
+5. **Photo** - User's uploaded photo for fitting model
+6. **Summary** - Profile summary with fitting model generation
+
+## Current State
+- Onboarding components exist in apps/web/components/onboarding/
+- User profile hook exists at apps/web/lib/hooks/useUserProfile.ts
+- Outfit generator does NOT currently use user preferences for recommendations
+
+## Implementation Requirements
+
+### 1. Enhance User Profile Integration
+- Read user preferences from useUserProfile hook in outfit generation
+- Map user's selected styles to AestheticCategory from Pinterest 2026 trends
+- Use age group to adjust formality and trend recommendations
+- Filter products by user's fashion department (men/women)
+
+### 2. Style Preference Mapping
+Map onboarding style selections to Pinterest 2026 aesthetics:
+- 'minimal' → 'clean-girl', 'scandinavian-minimal'
+- 'casual' → 'casual-chic', 'street-style'
+- 'elegant' → 'quiet-luxury', 'corporate-chic'
+- 'trendy' → 'y2k-revival', 'street-style'
+- 'classic' → 'minimalist-office', 'corporate-chic'
+- 'bohemian' → 'casual-chic'
+
+### 3. Age-Based Recommendations
+Adjust recommendations based on age:
+- 15-25: Trend-forward, Y2K, street style, casual
+- 25-35: Balanced mix of trends and classics, corporate chic
+- 35-45: Quiet luxury, minimalist office, elegant
+- 45+: Classic, timeless, sophisticated
+
+### 4. Department-Based Filtering
+- Filter products by gender matching user's department selection
+- Ensure outfit combinations are appropriate for selected department
+
+### 5. Knowledge Base Integration
+- Use fashion knowledge from data/personas/knowledge_base/ for styling rules
+- Apply color theory from 08_color_theory.md
+- Use occasion guidelines from 04_occasions_dress_codes.md
+- Apply advanced styling from 10_advanced_styling.md
+
+### 6. Files to Modify
+- apps/web/lib/outfit-generator.ts - Add user preference parameters
+- apps/web/lib/enhanced-outfit-generator.ts - Integrate user profile
+- apps/web/lib/styling/outfit-combination-rules.ts - Add preference-based filtering
+- apps/web/lib/styling/pinterest-2026-trends.ts - Add style mapping functions
+- apps/web/lib/hooks/useUserProfile.ts - Ensure profile data is accessible
+- apps/web/components/chat/ChatAssistant.tsx - Pass user preferences to generator
+
+### 7. Expected Behavior
+When generating outfit recommendations:
+1. Get user profile from useUserProfile hook
+2. Map user's style preferences to aesthetics
+3. Filter products by department (gender)
+4. Apply age-appropriate trend rules
+5. Generate outfit with personalized title using user's name
+6. Describe outfit in context of user's style preferences

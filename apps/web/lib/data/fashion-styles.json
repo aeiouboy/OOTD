@@ -6,7 +6,7 @@
     "cardDescription": "Less is more, clean, simple, neutral palette, pieces that last forever",
     "longDescription": "Clean lines, neutral palettes, and quality basics. Embrace simplicity with monochrome pieces and refined silhouettes that never go out of style.",
     "keywords": ["minimalist", "neutral", "timeless", "clean", "simple", "monochrome", "refined", "quality basics"],
-    "imageUrl": "/images/styles/Group 31.png"
+    "imageUrl": "/images/styles/preference/Minimal%20%C2%B7%20Timeless.png"
   },
   {
     "id": "luxury",
@@ -15,7 +15,7 @@
     "cardDescription": "Sophisticated and polished with premium fabrics and impeccable tailoring",
     "longDescription": "Sophisticated and polished with premium fabrics and impeccable tailoring. Think classic cuts, luxe materials, and understated glamour that exudes confidence.",
     "keywords": ["elegant", "sophisticated", "premium", "tailored", "polished", "luxe", "classic", "glamour"],
-    "imageUrl": "/images/styles/Group 32.png"
+    "imageUrl": "/images/styles/preference/Luxury%20%C2%B7%20Elegant.png"
   },
   {
     "id": "eccentric",
@@ -24,7 +24,7 @@
     "cardDescription": "Highly artistic and individual; uses unique shapes, bold colors, and clashing patterns and playful",
     "longDescription": "Bold self-expression through unique patterns, vibrant colors, and unexpected combinations. Artistic, playful, and unapologetically individual.",
     "keywords": ["artistic", "bold", "unique", "playful", "colorful", "experimental", "individual", "creative"],
-    "imageUrl": "/images/styles/Group 33.png"
+    "imageUrl": "/images/styles/preference/Eccentric%20%C2%B7%20Creative.png"
   },
   {
     "id": "business",
@@ -33,7 +33,7 @@
     "cardDescription": "Smart, structured, and professional",
     "longDescription": "Sharp, structured, and professionally polished. Blazers, tailored trousers, and sophisticated separates that command respect in any boardroom.",
     "keywords": ["professional", "structured", "sharp", "tailored", "sophisticated", "polished", "corporate", "smart"],
-    "imageUrl": "/images/styles/Group 34.png"
+    "imageUrl": "/images/styles/preference/Business%20%C2%B7%20Refined.png"
   },
   {
     "id": "vanilla",
@@ -42,7 +42,7 @@
     "cardDescription": "Soft neutrals, fresh, and cozy in light tones",
     "longDescription": "Soft, approachable, and effortlessly fresh. Light neutrals, gentle textures, and cozy pieces in cream, beige, and white tones.",
     "keywords": ["soft", "neutral", "cozy", "fresh", "light", "gentle", "cream", "approachable"],
-    "imageUrl": "/images/styles/Group 35.png"
+    "imageUrl": "/images/styles/preference/Vanilla%20%C2%B7%20Clean.png"
   },
   {
     "id": "sporty",
@@ -51,7 +51,7 @@
     "cardDescription": "Athletic wear, functional, ready for movement and confident",
     "longDescription": "Athletic meets everyday style with functional comfort. Think joggers, sneakers, performance fabrics, and pieces that move with you from gym to street.",
     "keywords": ["athletic", "functional", "comfortable", "active", "sporty", "performance", "casual", "energetic"],
-    "imageUrl": "/images/styles/Group 36.png"
+    "imageUrl": "/images/styles/preference/Sporty%20%C2%B7%20Active.png"
   },
   {
     "id": "edgy",
@@ -60,7 +60,7 @@
     "cardDescription": "Bold, modern, and daring; follows the very latest fashion trends",
     "longDescription": "Daring and fashion-forward with bold statements and modern edge. Leather, asymmetric cuts, and pieces that push boundaries and turn heads.",
     "keywords": ["bold", "modern", "daring", "trendy", "fashion-forward", "statement", "edgy", "rebellious"],
-    "imageUrl": "/images/styles/Group 37.png"
+    "imageUrl": "/images/styles/preference/Edgy%20%C2%B7%20Trendy.png"
   },
   {
     "id": "bohemian",
@@ -69,7 +69,7 @@
     "cardDescription": "Relaxed, earthy, featuring flowly silhouettes and natural fabrics",
     "longDescription": "Free-spirited and relaxed with flowing silhouettes and earthy tones. Natural fabrics, vintage-inspired prints, and effortless boho charm.",
     "keywords": ["boho", "earthy", "relaxed", "flowing", "natural", "free-spirited", "vintage", "effortless"],
-    "imageUrl": "/images/styles/Group 38.png"
+    "imageUrl": "/images/styles/preference/Bohemian%20%C2%B7%20Natural.png"
   },
   {
     "id": "classic",
@@ -78,7 +78,7 @@
     "cardDescription": "Understated 'quiet luxury' built on timeless, tailored, and preppy pieces",
     "longDescription": "Timeless sophistication with quiet luxury appeal. Preppy staples, heritage pieces, and understated elegance that whispers rather than shouts.",
     "keywords": ["classic", "timeless", "preppy", "heritage", "sophisticated", "quiet luxury", "understated", "refined"],
-    "imageUrl": "/images/styles/Group 39.png"
+    "imageUrl": "/images/styles/preference/Classic%20%C2%B7%20Old%20Money.png"
   },
   {
     "id": "mystery",
@@ -87,6 +87,6 @@
     "cardDescription": "Random style",
     "longDescription": "Surprise me! Let the AI discover your unique style through your preferences. Every style journey is different—embrace the unexpected.",
     "keywords": ["random", "surprise", "diverse", "eclectic", "varied", "exploratory", "adaptive", "personalized"],
-    "imageUrl": "/images/styles/Group 40.png"
+    "imageUrl": "/images/styles/preference/Mystery%20Style%20%F0%9F%8E%B2.png"
   }
 ]

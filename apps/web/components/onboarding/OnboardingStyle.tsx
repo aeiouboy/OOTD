@@ -101,7 +101,6 @@ export function OnboardingStyle({ onNext, onBack }: OnboardingStyleProps) {
                       : 'border-gray-200 hover:border-gray-300 hover:shadow-md active:scale-[0.98]'
                     }
                     focus:outline-none focus:ring-2 focus:ring-[var(--onboarding-primary)]/50
-                    min-h-[180px] sm:min-h-[220px]
                   `}
                   style={{ touchAction: 'manipulation' }}
                 >
@@ -113,14 +112,14 @@ export function OnboardingStyle({ onNext, onBack }: OnboardingStyleProps) {
                   )}
 
                   {/* Style Image - 60% of card height */}
-                  <div className="relative w-full h-[110px] sm:h-[140px] overflow-hidden">
+                  <div className="relative w-full aspect-[175/306] overflow-hidden">
                     {style.imageUrl && !failedImages.has(style.id) ? (
                       <img
                         src={style.imageUrl}
                         alt={`${style.name} style`}
                         loading="lazy"
                         onError={() => handleImageError(style.id)}
-                        className="absolute inset-0 w-full h-full object-cover object-top"
+                        className="absolute inset-0 w-full h-full object-cover"
                       />
                     ) : (
                       <div className="absolute inset-0 bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">

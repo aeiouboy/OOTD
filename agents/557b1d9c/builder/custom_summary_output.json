@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "557b1d9c",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-557b1d9c-fix-tryon-outfit-consistency.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "3e64a35a-86de-48c8-8a34-3d4802caeeea",
+  "retry_code": "none",
+  "output": "The file is completely new (untracked). Let me provide the summary:\n\n## Summary\n\nI've successfully implemented the chore to fix try-on outfit consistency:\n\n- **Replaced `buildDualReferenceTryOnPrompt()` function** in `apps/web/lib/services/fitting-model-service.ts` (lines 245-297) with a transfer-focused prompt template adapted from `complete_looks.md`\n\n- **Key changes made:**\n  - Added `MANDATORY TRANSFER CHECKLIST` with checkmarks for every clothing category (top, bottom/dress, outerwear, footwear, accessories)\n  - Added `REALISM REQUIREMENTS` section to preserve face/skin/hair/body from IMAGE 1 (person)\n  - Added `REJECT IF MISSING` criteria with rejection indicators (\u274c) for missing items\n  - Added explicit \"100% of items from IMAGE 2 must be present\" in OUTPUT SPECIFICATIONS\n  - Maintained `COMPOSITION` section with 85% frame fill requirement\n  - Removed old language patterns: \"CRITICAL\", \"pixel-by-pixel\", \"EXACT\", \"REPLICATE EXACTLY\"\n  - Correctly adapted image order: IMAGE 1 = person (fitting model), IMAGE 2 = outfit (flat-lay) to match the existing API call order\n\n- **Verified API call order unchanged:**\n  - `referenceImage: fittingModelBase64` (IMAGE 1 = person) \u2713\n  - `secondaryReferenceImage: flatLayBase64` (IMAGE 2 = outfit) \u2713\n\n- **Validation:**\n  - TypeScript compiles without errors \u2713\n  - No lint errors in the modified file \u2713\n\n**Files changed:**\n```\napps/web/lib/services/fitting-model-service.ts | 1 file changed\n```\nThe function was rewritten from 36 lines to 52 lines (net +16 lines), improving clarity with structured sections for transfer checklist, realism requirements, composition, background, lighting, rejection criteria, and output specifications."
+}

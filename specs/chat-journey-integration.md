@@ -15,7 +15,7 @@ Integrate the conversational chat journey from `/chat_dialog1/dl.md` into the OO
 
 **Step 1: Warm Greeting (AI-initiated)**
 ```
-Message: "อ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
+Message: "ฮ้ายฮายยแป้ง👋 กำลังหาชุดไปไหนอยู่น้าา"
 Translation: "Heyyy Pang 👋 What outfit are you looking for?"
 Tone: Casual, friendly, warm (สนิท/close friend style)
 ```
@@ -101,7 +101,7 @@ You: "ต้องชุดนี้เลยกำลังมาแรง ส�
 **Changes**:
 1. **Welcome Message**: Add default greeting when chat loads
    ```typescript
-   const initialGreeting = "อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา";
+   const initialGreeting = "ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา";
    ```
 
 2. **Outfit Card Display**: Ensure outfit cards show:
@@ -160,7 +160,7 @@ useEffect(() => {
   if (messages.length === 0) {
     const greeting: ChatMessage = {
       id: 'greeting-1',
-      content: 'อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
+      content: 'ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
       sender: 'assistant',
       timestamp: new Date(),
     };
@@ -199,7 +199,7 @@ const quickPrompts = [
 
 ### Test 1: Initial Load
 - Open chat
-- Verify greeting appears: "อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
+- Verify greeting appears: "ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
 
 ### Test 2: Work-to-Social Request
 - User: "อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้"

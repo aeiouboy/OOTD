@@ -1,5 +1,5 @@
+import Image from 'next/image';
 import { Button } from '@/components/ui/button';
-import { Sparkles } from 'lucide-react';
 
 interface OnboardingWelcomeProps {
   onNext: () => void;
@@ -10,19 +10,19 @@ export function OnboardingWelcome({ onNext }: OnboardingWelcomeProps) {
     <div className="flex flex-col items-center justify-center min-h-screen bg-[var(--onboarding-bg)] p-6">
       <div className="flex flex-col items-center max-w-md w-full space-y-8">
         {/* Logo */}
-        <div className="flex items-center justify-center w-16 h-16 bg-[var(--onboarding-primary)] rounded-full">
-          <Sparkles className="w-8 h-8 text-white" />
-        </div>
-
-        {/* Illustration Placeholder */}
-        <div className="w-full h-64 bg-gradient-to-br from-pink-200 to-purple-200 rounded-2xl flex items-center justify-center">
-          <p className="text-sm text-gray-600">Two Women Illustration</p>
-        </div>
+        <Image
+          src="/images/onboarding/welcome-hero.png"
+          alt="OOTDay Logo"
+          width={320}
+          height={423}
+          priority
+          className="rounded-2xl"
+        />
 
         {/* Welcome Text */}
         <div className="text-center space-y-2">
           <h1 className="text-3xl font-bold text-gray-900">
-            Hi FRIEND!<br />Welcome to OOTDay
+            Hi FRIEND!
           </h1>
           <p className="text-xl text-gray-600">
             Think outfit. Think OOTDay

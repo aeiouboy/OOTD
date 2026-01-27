@@ -1,0 +1,22 @@
+/chore 7e35490c Add missing fashion attribute        
+  matching utilities to apps/web/lib/outfit-generator.ts as specified in           
+  specs/chore-1b20493d-integrate-enhanced-mock-products.md. Implement the following
+   functions:                                                                      
+                                                                                   
+  1. areColorTonesCompatible(tone1: ColorTone, tone2: ColorTone): boolean - neutral
+   matches all, warm/cool only match same or neutral                               
+  2. isFormalityCompatible(level1: FormalityLevel, level2: FormalityLevel): boolean
+   - within ±2 tolerance                                                           
+  3. validatePairingCompatibility(product1: EnhancedMockProduct, product2:         
+  EnhancedMockProduct): boolean - check pairingCategories includes subCategory     
+  4. calculateStyleOverlap(tags1: StyleTag[], tags2: StyleTag[]): number - return  
+  0-1 overlap percentage                                                           
+  5. scoreEnhancedProductForOutfit(product: EnhancedMockProduct, context:          
+  EnhancedOutfitContext): number - weighted scoring (aesthetic 25%, formality 25%, 
+  colorTone 20%, styleTags 15%, pairing 15%)                                       
+  6. validateEnhancedOutfit(items: EnhancedMockProduct[]): EnhancedValidationResult
+   - check colorTone, formalityLevel, styleTag overlap, pairingCategories          
+                                                                                   
+  Import EnhancedMockProduct and ColorTone from ./mock-data02. Add                 
+  EnhancedOutfitContext and EnhancedValidationResult interfaces. Export all new    
+  functions.

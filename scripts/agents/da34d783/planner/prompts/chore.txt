@@ -1,0 +1,9 @@
+/chore da34d783 Fix image generation service configuration issue. The OPENROUTER_API_KEY environment variable is missing which causes the error 'Image generation service is not configured'.
+
+  Steps:
+  1. Update .env.sample at project root to include OPENROUTER_API_KEY with documentation comment explaining it's required for AI image generation feature
+  2. Check if apps/web has its own .env.example or similar - if so, add OPENROUTER_API_KEY there too
+  3. Update apps/web/next.config.mjs to ensure OPENROUTER_API_KEY is available as server-side environment variable if needed
+  4. Optionally improve the error message in apps/web/app/api/generate-image/route.ts to be more user-friendly in Thai, e.g. 'ขออภัยค่ะ ระบบสร้างภาพยังไม่พร้อมใช้งานในขณะนี้ กรุณาลองใหม่ภายหลังนะคะ'
+
+  Note: The actual API key value needs to be configured by the user in their .env file - this chore just ensures the configuration structure is in place.

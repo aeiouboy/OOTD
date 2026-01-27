@@ -79,7 +79,7 @@ export function OnboardingAge({ onNext, onBack }: OnboardingAgeProps) {
           </div>
 
           {/* Next Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Button
               onClick={handleNext}
               disabled={!selectedAge}

@@ -1,0 +1,35 @@
+/chore 28306648 Add fitting model try-on looks feature to outfit recommendation card.
+
+  CURRENT STATE:
+  - Outfit recommendation card shows flat-lay image (items laid out on white background)
+  - User has a fitting model generated during onboarding (stored in user profile)
+  - fitting-model-service.ts exists but only generates base model in standard outfit
+
+  REQUIRED FEATURE:
+  After showing flat-lay image, add a 'ลองใส่' (Try On) button that generates and shows the outfit WORN on the user's fitting model.
+
+  IMPLEMENTATION:
+  1. Add new function generateTryOnLooks() in fitting-model-service.ts that:
+     - Takes user's fitting model image (from profile) as reference
+     - Takes recommended outfit items (dress, shoes, accessories)
+     - Generates image of the model WEARING those items
+     - Uses same face-matching prompt pattern as existing fitting model generation
+
+  2. Update OutfitRecommendationCard.tsx to:
+     - Add 'ลองใส่' button next to 'ดูลุค' button
+     - When clicked, show loading skeleton
+     - Call generateTryOnLooks() with user's fitting model and outfit items
+     - Display generated try-on image in a modal or expanded view
+
+  3. Create prompt template based on data/personas/prompt_gen/fitting_model.md:
+     - Reference image = user's fitting model from onboarding
+     - Outfit = recommended items (dress name, shoes, accessories)
+     - Generate model wearing the actual recommended outfit
+
+  4. Store try-on image URL in outfit object for caching
+
+  RELEVANT FILES:
+  - apps/web/lib/services/fitting-model-service.ts
+  - apps/web/components/chat/OutfitRecommendationCard.tsx
+  - apps/web/lib/hooks/useUserProfile.ts (to get user's fitting model)
+  - data/personas/prompt_gen/fitting_model.md (prompt reference)

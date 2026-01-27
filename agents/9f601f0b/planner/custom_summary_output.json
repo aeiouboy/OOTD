@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "9f601f0b",
+  "slash_command": "/chore",
+  "args": [
+    "9f601f0b",
+    "Fix localStorage cache quota exceeded error in useFlatLayGeneration.ts. When setCachedImage fails with QuotaExceededError, implement cache eviction: 1) Get all flat-lay cache keys, 2) Sort by timestamp (oldest first), 3) Remove oldest entries until there is enough space, 4) Retry the setItem. Add a try-catch with eviction logic in setCachedImage function."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "279b888f-4eb7-4b00-b1dd-8ad563306350",
+  "retry_code": "none",
+  "output": "Plan created successfully! The specification has been saved to:\n\n**`specs/chore-9f601f0b-fix-localstorage-quota-exceeded.md`**\n\nThe plan includes:\n\n1. **Implementation of cache eviction helper** - A new `evictOldestCacheEntries` function that removes old entries based on timestamp\n2. **Enhanced error handling in setCachedImage** - Catches `QuotaExceededError` and implements progressive eviction with retries\n3. **Detailed logging** - Tracks eviction progress and outcomes for debugging\n4. **Edge case handling** - Handles corrupted cache, oversized images, and full localStorage\n\nThe plan is ready for implementation using the `/implement` skill or manual development.",
+  "plan_path": "specs/chore-9f601f0b-fix-localstorage-quota-exceeded.md"
+}

@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "13b868e7",
+  "slash_command": "/chore",
+  "args": [
+    "13b868e7",
+    "Fix Women's Fashion image quality by reducing display size to avoid excessive upscaling. The source image is 143x191 pixels but currently displayed at 400x534 causing blur. In apps/web/components/onboarding/OnboardingDepartment.tsx: Change Image width from 400 to 286 and height from 534 to 382 (2x native resolution for retina displays). This prevents quality loss from upscaling a small source image. Also add 'quality={100}' prop to the Image component to ensure maximum quality."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "b052e1c3-6311-4cb1-9275-e051785d8064",
+  "retry_code": "none",
+  "output": "Perfect! I've created the chore plan at:\n\n**`specs/chore-13b868e7-fix-womens-fashion-image-quality.md`**\n\nThe plan documents the image quality issue caused by excessive upscaling (143x191 native image displayed at 400x534) and provides a clear solution:\n\n1. Reduce Image component dimensions to 286x382 (exactly 2x native resolution for retina displays)\n2. Add `quality={100}` prop to prevent Next.js compression\n\nThis will eliminate the blur while maintaining sharp rendering on high-DPI screens. The plan includes validation steps to ensure the build succeeds and visual quality improves.",
+  "plan_path": "specs/chore-13b868e7-fix-womens-fashion-image-quality.md"
+}

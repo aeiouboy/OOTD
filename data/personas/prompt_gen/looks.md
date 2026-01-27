@@ -1,0 +1,1 @@
+Put it as an accurate flat-lay image with each item individually placed and separated, styled in an elegant composition on a white background.

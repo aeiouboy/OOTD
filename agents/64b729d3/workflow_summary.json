@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "64b729d3",
+  "prompt": "Implement flat-lay Looks Inspiration that displays recommended fashion items from OOTDay Stylist chat session.\n\n  EXPECTED RESULT: When OOTDay Stylist recommends an outfit (e.g., 'Dress \u0e41\u0e25\u0e30 Leather Oxford Shoes'), the Looks Inspiration should generate a flat-lay image showing those EXACT recommended items individually placed and separated on a white background. Users can view all recommended items in the total look before clicking '\u0e14\u0e39\u0e25\u0e38\u0e04' for item details.\n\n  EXAMPLE FLOW:\n  1. User asks: '\u0e2d\u0e22\u0e32\u0e01\u0e44\u0e14\u0e49\u0e0a\u0e38\u0e14\u0e44\u0e1b\u0e17\u0e33\u0e07\u0e32\u0e19' (I want work outfit)\n  2. OOTDay Stylist recommends: Dress + Leather Oxford Shoes (3 \u0e0a\u0e34\u0e49\u0e19, \u0e3f6,670)\n  3. System generates flat-lay image showing the recommended dress, shoes, and accessories laid out separately\n  4. User sees complete look visualization before clicking for purchase details\n\n  CURRENT STATE:\n  - apps/web/components/chat/LooksInspiration.tsx uses 3:4 portrait aspect ratio for model photos\n  - apps/web/lib/services/image-generation-service.ts defaults to 'full-body model shoot' composition\n  - data/personas/prompt_gen/looks.md specifies: 'Put it as an accurate flat-lay image with each item individually placed and separated, styled in an elegant composition on a white background.'\n\n  REQUIREMENTS:\n  1. Create generateFlatLayImage() method in image-generation-service.ts that:\n     - Takes array of recommended product items (name, category, color) from chat recommendation\n     - Builds prompt using looks.md format: 'accurate flat-lay image with each item individually placed and separated'\n     - Lists each recommended item explicitly in the prompt for accurate generation\n\n  2. Update LooksInspiration.tsx:\n     - Change aspect ratio from 3:4 to 1:1 (square) for flat-lay display\n     - Add 'LOOKs' header with 'Outfit Inspiration by OOTDay' subtitle\n     - Accept recommendedItems prop to display item count\n\n  3. Update ChatAssistant.tsx integration:\n     - After outfit recommendation message, extract recommended product items\n     - Pass recommended items to flat-lay image generation\n     - Display LooksInspiration with generated flat-lay showing those specific items\n\n  4. Prompt template for flat-lay generation:\n     'Generate an accurate flat-lay fashion image with the following items individually placed and separated, styled in an elegant composition on a white background:\n     - [Item 1: e.g., Navy blue button-front dress]\n     - [Item 2: e.g., Black leather oxford shoes]\n     - [Item 3: e.g., Brown leather handbag]\n     Each item should be clearly visible and properly sized relative to each other.'\n\n  FILES TO MODIFY:\n  - apps/web/lib/services/image-generation-service.ts (add generateFlatLayImage method)\n  - apps/web/components/chat/LooksInspiration.tsx (layout + props)\n  - apps/web/components/chat/ChatAssistant.tsx (integration)\n  - apps/web/lib/types/image-types.ts (FlatLayRequest type)",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-64b729d3-flat-lay-looks-inspiration.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "f4265c91-bf32-484e-9067-3aa067670939",
+      "agent": "planner",
+      "output_dir": "./agents/64b729d3/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "0eb81c4b-7bd1-4681-a15e-f213bf21469c",
+      "agent": "builder",
+      "output_dir": "./agents/64b729d3/builder/"
+    }
+  },
+  "overall_success": true
+}

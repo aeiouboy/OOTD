@@ -5,6 +5,13 @@ export * from './types/enums'
 export * from './types/localization-types'
 export * from './types/product-types'
 
+// Re-export FlatLayItem from image-types for use in ChatMessage
+import type { FlatLayItem } from './types/image-types'
+export type { FlatLayItem }
+
+// Re-export EnhancedMockProduct and ColorTone from mock-data02.ts for enhanced outfit generation
+export type { EnhancedMockProduct, ColorTone } from './mock-data02'
+
 // Legacy interfaces maintained for backward compatibility
 // These will gradually be replaced by EnhancedProduct
 export interface OutfitRequest {
@@ -30,6 +37,24 @@ export interface Outfit {
   totalPrice: number
   items: Product[]
   imageUrl?: string
+  /** Flat-lay image URL for outfit visualization (v5.0) */
+  flatLayImageUrl?: string
+  /** Flat-lay image as base64 fallback (v5.0) */
+  flatLayImageBase64?: string
+  /** Flag indicating flat-lay image is being generated (v5.0) */
+  isGeneratingFlatLay?: boolean
+  /** Try-on image URL for fitting model visualization (v6.0) */
+  tryOnImageUrl?: string
+  /** Try-on image as base64 fallback (v6.0) */
+  tryOnImageBase64?: string
+  /** Flag indicating try-on image is being generated (v6.0) */
+  isGeneratingTryOn?: boolean
+  /** Pinterest 2026 aesthetic category (v7.0) */
+  aesthetic?: import('./types/enums').AestheticCategory
+  /** Trending color palette (v7.0) */
+  colorPalette?: import('./types/enums').ColorPalette
+  /** Layering style (v7.0) */
+  layeringStyle?: import('./types/enums').LayeringStyle
 }
 
 /**
@@ -65,6 +90,10 @@ export interface ChatMessage {
   imageBase64?: string
   /** Outfit description used for image generation (v3.1) */
   outfitDescription?: string
+  /** Image display mode: 'portrait' (3:4) or 'flat-lay' (1:1 square) (v4.0) */
+  displayMode?: 'portrait' | 'flat-lay'
+  /** Recommended items for flat-lay display (v4.0) */
+  recommendedItems?: FlatLayItem[]
 }
 
 export interface ConversationStarter {
