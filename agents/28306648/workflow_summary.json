@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "28306648",
+  "prompt": "Add fitting model try-on looks feature to outfit recommendation card.\n\n  CURRENT STATE:\n  - Outfit recommendation card shows flat-lay image (items laid out on white background)\n  - User has a fitting model generated during onboarding (stored in user profile)\n  - fitting-model-service.ts exists but only generates base model in standard outfit\n\n  REQUIRED FEATURE:\n  After showing flat-lay image, add a '\u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48' (Try On) button that generates and shows the outfit WORN on the user's fitting model.\n\n  IMPLEMENTATION:\n  1. Add new function generateTryOnLooks() in fitting-model-service.ts that:\n     - Takes user's fitting model image (from profile) as reference\n     - Takes recommended outfit items (dress, shoes, accessories)\n     - Generates image of the model WEARING those items\n     - Uses same face-matching prompt pattern as existing fitting model generation\n\n  2. Update OutfitRecommendationCard.tsx to:\n     - Add '\u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48' button next to '\u0e14\u0e39\u0e25\u0e38\u0e04' button\n     - When clicked, show loading skeleton\n     - Call generateTryOnLooks() with user's fitting model and outfit items\n     - Display generated try-on image in a modal or expanded view\n\n  3. Create prompt template based on data/personas/prompt_gen/fitting_model.md:\n     - Reference image = user's fitting model from onboarding\n     - Outfit = recommended items (dress name, shoes, accessories)\n     - Generate model wearing the actual recommended outfit\n\n  4. Store try-on image URL in outfit object for caching\n\n  RELEVANT FILES:\n  - apps/web/lib/services/fitting-model-service.ts\n  - apps/web/components/chat/OutfitRecommendationCard.tsx\n  - apps/web/lib/hooks/useUserProfile.ts (to get user's fitting model)\n  - data/personas/prompt_gen/fitting_model.md (prompt reference)",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-28306648-fitting-model-try-on-looks.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "fb84bfa3-2c3a-469d-9c4c-4a3377003491",
+      "agent": "planner",
+      "output_dir": "./agents/28306648/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "9f84f3c8-7ffc-4530-bae8-87b136db9b1e",
+      "agent": "builder",
+      "output_dir": "./agents/28306648/builder/"
+    }
+  },
+  "overall_success": true
+}

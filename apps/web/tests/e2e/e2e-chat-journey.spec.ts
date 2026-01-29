@@ -32,7 +32,7 @@ test.describe('Chat Journey E2E', () => {
     test('should display correct initial greeting and handle chat flow', async ({ page }) => {
         // 1. Verify Initial Greeting
         // Look for the specific Thai greeting text
-        const greeting = page.locator('text=อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา');
+        const greeting = page.locator('text=ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา');
         await expect(greeting).toBeVisible({ timeout: 10000 });
         console.log('✅ Initial greeting verified');
 

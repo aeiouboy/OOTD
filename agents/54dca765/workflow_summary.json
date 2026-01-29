@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "54dca765",
+  "prompt": "Fix outfit data consistency and similar outfits display in the outfit detail modal. There are two issues: 1) When clicking '\u0e14\u0e39\u0e25\u0e38\u0e04' (View Look) button on a chat outfit card, the items displayed in 'Items in this outfit' section don't match the outfit shown in chat - they appear to be placeholder/random items (e.g., chat shows 'Central Dress & Shoes' but detail shows 'Floral Summer Dress', 'Leather Oxford Shoes', 'Leather Belt'). The outfit detail modal should display the EXACT same products that were used to generate the outfit in the chat session. Trace the data flow from OutfitCard click -> outfit detail modal and ensure the correct outfit.items array is passed and rendered. 2) The 'Similar outfits' section at the bottom of the outfit detail modal displays individual product images instead of flat-lay outfit images. It should display flat-lay images consistent with how outfits appear in the chat session and main grid. Update the SimilarOutfits\n   component to use the outfit's imageUrl (flat-lay) instead of showing individual product thumbnails. Check components/outfit/OutfitDetailModal.tsx, components/outfit/OutfitCard.tsx, and any related outfit rendering components.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-54dca765-fix-outfit-data-consistency-detail-modal.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "0eec4677-a44e-4d92-8ff0-38a38db6f535",
+      "agent": "planner",
+      "output_dir": "./agents/54dca765/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "08bb52e8-4667-4db1-9686-dbd753f12b2e",
+      "agent": "builder",
+      "output_dir": "./agents/54dca765/builder/"
+    }
+  },
+  "overall_success": true
+}

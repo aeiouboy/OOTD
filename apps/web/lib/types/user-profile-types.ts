@@ -28,6 +28,7 @@ export interface UserProfile {
   ageRange: AgeRange;
   stylePreferences: StylePreference[];
   userPhoto?: string; // Base64 encoded image or undefined for mystery avatar
+  fittingModelUrl?: string; // URL to AI-generated fitting model image
   onboardingCompleted: boolean;
   createdAt: string; // ISO date string
 }

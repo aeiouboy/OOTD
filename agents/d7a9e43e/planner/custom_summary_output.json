@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "d7a9e43e",
+  "slash_command": "/chore",
+  "args": [
+    "d7a9e43e",
+    "Fix Similar Outfits AI flat-lay generation issues in SimilarOutfits.tsx and useFlatLayGeneration.ts. Current problems: 1) Click on Similar Outfit cards feels unresponsive - the wrapper div with ref blocks proper click feedback, should move ref to a different element or use a better pattern. 2) CSS composite shows as initial placeholder instead of loading skeleton - change initial state to show loading skeleton immediately when card is visible, not CSS composite. 3) Retry queue mechanism broken - hasAttemptedRef prevents cards from retrying when concurrent limit is reached. Fix: track queue position properly, use a global queue array instead of setTimeout retries. 4) Cache not persisting across outfit changes - when user clicks different outfit, generation restarts. Fix: check localStorage cache BEFORE showing placeholder. 5) Add visual loading feedback - show shimmer/pulse animation on cards waiting in queue. 6) Increase\n  MAX_CONCURRENT_GENERATIONS from 2 to 3 to speed up generation. Key files: apps/web/components/outfit/SimilarOutfits.tsx (fix wrapper div pattern, improve click handling), apps/web/lib/hooks/useFlatLayGeneration.ts (fix retry queue, improve cache check timing, increase concurrent limit)."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "b8b7b6ab-d0c2-49a9-add9-f3616b558204",
+  "retry_code": "none",
+  "output": "Plan created at: **specs/chore-d7a9e43e-fix-similar-outfits-flat-lay-generation.md**\n\nThe plan addresses all 6 issues:\n1. Click responsiveness - move ref to non-blocking element\n2. Initial placeholder - show loading skeleton instead of CSS composite\n3. Broken retry queue - implement proper global queue array\n4. Cache persistence - synchronous cache check on initial render\n5. Visual feedback - shimmer animation for queued cards\n6. Concurrent limit - increase from 2 to 3",
+  "plan_path": "specs/chore-d7a9e43e-fix-similar-outfits-flat-lay-generation.md"
+}

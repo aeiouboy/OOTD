@@ -1,0 +1,50 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 146234,
+  "duration_api_ms": 154961,
+  "num_turns": 17,
+  "result": "## Summary\n\nI've implemented the chore to enrich mock products with comprehensive fashion attributes:\n\n### Work Completed:\n- **Created `apps/web/lib/mock-data02.ts`** with:\n  - `ColorTone` type (`'warm' | 'cool' | 'neutral'`)\n  - `EnhancedMockProduct` interface extending the base `Product` type with 14 fashion attributes\n  - `enhancedMockProducts` array containing all 14 products with enriched data\n\n- **Enriched all 14 products** (CG001-CG008, SF001-SF004, LO001, SH001-SH002) with:\n  - `styleTags` - Style classifications (classic, minimalist, corporate-chic, etc.)\n  - `seasonType` - Seasonal suitability (all-season, hot-season, cool-season)\n  - `formalityLevel` - 1-10 formality scale\n  - `fitType` - Fit classification (regular, tailored, slim, etc.)\n  - `patternType` - Pattern type (solid, floral, print, etc.)\n  - `materialType` - Material composition (cotton, polyester, leather, etc.)\n  - `colorTone` - Color temperature (warm, cool, neutral)\n  - `aesthetic` - Pinterest 2026 aesthetic category\n  - `colorPalette` - Trending color palette\n  - `outfitRole` - Item role in outfit (top, bottom, dress, footwear, etc.)\n  - `brandTier` - Brand positioning (budget, mid-range)\n  - `pairingCategories` - Compatible product categories for outfit matching\n  - `layeringStyle` - Layering style (fitted, structured, relaxed)\n  - `silhouetteType` - Silhouette classification\n\n- **Validated TypeScript compilation** - No type errors\n\n### Files Changed:\n```\napps/web/lib/mock-data02.ts | 508 +++++++++++++++++++++++++++++++++++++++++++\n1 file changed, 508 insertions(+)\n```",
+  "session_id": "5b01b9f8-f610-4689-abb6-154524be048c",
+  "total_cost_usd": 1.2009954999999997,
+  "usage": {
+    "input_tokens": 17,
+    "cache_creation_input_tokens": 66868,
+    "cache_read_input_tokens": 1061415,
+    "output_tokens": 9322,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 66868
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 16808,
+      "outputTokens": 484,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.019227999999999995,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 17,
+      "outputTokens": 9322,
+      "cacheReadInputTokens": 1061415,
+      "cacheCreationInputTokens": 66868,
+      "webSearchRequests": 0,
+      "costUSD": 1.1817674999999999,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "418e7da7-0a16-48d1-8034-5b7ee9f8976a"
+}

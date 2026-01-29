@@ -1,0 +1,1 @@
+/implement specs/chore-74e07357-fix-inconsistent-outfit-image-format.md

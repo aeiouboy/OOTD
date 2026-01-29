@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "0bb97262",
+  "slash_command": "/chore",
+  "args": [
+    "0bb97262",
+    "Enhance Similar Outfits cards in SimilarOutfits.tsx to match the chat OutfitRecommendationCard.tsx design with action buttons. Changes needed:\n\n  1. **Add item count display**: Show 'X \u0e0a\u0e34\u0e49\u0e19' (X items) below the title, similar to OutfitRecommendationCard line 207-209.\n\n  2. **Add action buttons row** at bottom of each card with 4 buttons:\n     - '\u0e14\u0e39\u0e25\u0e38\u0e04' button with Eye icon - calls existing onSelect(outfit) to view outfit detail\n     - '\u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48' button with Shirt icon - opens try-on modal (integrate with fitting-model-service)\n     - Heart icon button - toggle like state (local state for now)\n     - Share icon button - placeholder for share functionality\n\n  3. **Integrate Try-On Modal**: Import and use the Dialog components and implement handleTryOn similar to OutfitRecommendationCard.tsx lines 67-116. Use generateTryOnLooks from fitting-model-service.ts with user's fittingModelUrl from useUserProfile hook.\n\n  4. **Update card layout**:\n     - Keep existing image section with AI flat-lay generation\n     - Add item count: '{outfit.items.length} \u0e0a\u0e34\u0e49\u0e19'\n     - Add action buttons row using flex layout with gap-1.5\n     - Use Button component with size='sm' variant='ghost'\n     - Import icons: Eye, Shirt, Heart, Share2, Loader2, RefreshCw, AlertCircle from lucide-react\n\n  5. **Reference files**:\n     - OutfitRecommendationCard.tsx for action buttons design (lines 216-260) and try-on modal (lines 264-350)\n     - fitting-model-service.ts for generateTryOnLooks function\n     - useUserProfile hook for getting user's fittingModelUrl\n\n  6. **Styling**: Match the compact card style - use smaller buttons (h-8, text-xs) appropriate for the 2-column grid layout."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "fc1caf40-9f01-46c9-b56b-69e8f41e76e2",
+  "retry_code": "none",
+  "output": "Plan file created successfully.\n\n**Plan file created:** `/Users/naruechon/OOTD/specs/chore-0bb97262-enhance-similar-outfits-action-buttons.md`\n\nThe plan includes 9 step-by-step tasks to enhance the SimilarOutfits cards:\n\n1. **Add Required Imports** - Button, Dialog components, useUserProfile hook, generateTryOnLooks service, and lucide icons\n2. **Add State Variables** - Like state, try-on modal state, generation loading state, image URLs, error state\n3. **Implement handleTryOn Function** - Async function to generate try-on image using fitting-model-service\n4. **Implement handleRegenerate Function** - Allow users to regenerate try-on image\n5. **Update Card Content Layout** - Add item count display (X \u0e0a\u0e34\u0e49\u0e19)\n6. **Add Action Buttons Row** - \u0e14\u0e39\u0e25\u0e38\u0e04, \u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48, Heart, Share buttons with compact sizing\n7. **Add Try-On Modal** - Full dialog with loading, error, and success states\n8. **Update Card Click Behavior** - Use stopPropagation on buttons\n9. **Wrap Return with Fragment** - Support returning Card + Dialog",
+  "plan_path": "specs/chore-0bb97262-enhance-similar-outfits-action-buttons.md"
+}

@@ -5,6 +5,7 @@
 
 import { NextRequest, NextResponse } from 'next/server'
 import type { EnhancedProduct } from '@/lib/types/product-types'
+import type { UserProfile } from '@/lib/types/user-profile-types'
 import { loadProductsServerSide } from '@/lib/server-product-loader'
 import {
   processAIChatRequest,
@@ -71,11 +72,35 @@ export async function POST(request: NextRequest) {
         conversationId, // v2.0: Include conversation ID
       }
 
-      response = getFallbackRecommendations(chatRequest, products)
+      const fallbackResponse = getFallbackRecommendations(chatRequest, products)
+
+      // Ensure imageRequest is set for flat-lay generation even in fallback mode
+      response = {
+        ...fallbackResponse,
+        imageRequest: (fallbackResponse.recommendedProducts?.length ?? 0) > 0,
+        outfitDescription: `Fashion outfit for ${fallbackResponse.occasion || 'general wear'}`,
+      }
     }
 
-    // Generate outfits from recommended products
-    const outfits = generateOutfitsFromQuery(response.recommendedProducts || products, message, 5)
+    // Convert userPreferences to UserProfile if available
+    const userProfile: UserProfile | null = userPreferences ? {
+      userName: userPreferences.userName || '',
+      gender: 'women', // Currently fixed to women
+      ageRange: userPreferences.ageRange || '20-29',
+      stylePreferences: userPreferences.stylePreferences || [],
+      userPhoto: userPreferences.userPhoto,
+      fittingModelUrl: userPreferences.fittingModelUrl,
+      onboardingCompleted: userPreferences.onboardingCompleted || false,
+      createdAt: userPreferences.createdAt || new Date().toISOString(),
+    } : null
+
+    // Generate outfits from recommended products with user profile
+    const outfits = generateOutfitsFromQuery(
+      response.recommendedProducts || products,
+      message,
+      5,
+      userProfile
+    )
 
     console.log(`[Chat API] Generated ${outfits.length} outfits`)
     console.log(`[Chat API] imageRequest: ${response.imageRequest}, outfitDescription: ${response.outfitDescription ? 'yes' : 'no'}`)

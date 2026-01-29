@@ -9,7 +9,7 @@
  * - Rate limiting awareness
  */
 
-import type { ImageGenerationRequest, ImageGenerationResponse } from '../types/image-types';
+import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest, FlatLayItem } from '../types/image-types';
 
 /**
  * OpenRouter API configuration
@@ -51,6 +51,14 @@ export class OpenRouterImageClient {
     }
     this.apiKey = apiKey;
   }
+
+  /**
+   * Configuration for fitting model generation
+   */
+  private static readonly FITTING_MODEL_CONFIG = {
+    /** Extended timeout for fitting model generation (60 seconds) */
+    timeout: 60000,
+  };
 
   /**
    * Generates an outfit image from description using Gemini 2.5 Flash Preview
@@ -119,6 +127,672 @@ export class OpenRouterImageClient {
       error: 'GENERATION_FAILED',
       message: 'Unable to generate image. Please try again later.',
     };
+  }
+
+  /**
+   * Generates a fitting model image using a reference image for face-matching.
+   * Uses OpenRouter's multimodal content format to pass the reference image.
+   *
+   * @param prompt - Fitting model generation prompt with style requirements
+   * @param referenceImageBase64 - Base64 encoded reference image (with data URL prefix)
+   * @returns Promise resolving to image generation response
+   *
+   * @example
+   * const client = new OpenRouterImageClient(apiKey);
+   * const response = await client.generateFittingModelImage(
+   *   "Create a photorealistic fitting model...",
+   *   "data:image/jpeg;base64,/9j/4AAQ..."
+   * );
+   */
+  async generateFittingModelImage(
+    prompt: string,
+    referenceImageBase64: string
+  ): Promise<ImageGenerationResponse> {
+    // Validate inputs
+    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+      return {
+        success: false,
+        error: 'INVALID_PROMPT',
+        message: 'Fitting model prompt is required',
+      };
+    }
+
+    if (!referenceImageBase64 || typeof referenceImageBase64 !== 'string' || referenceImageBase64.trim() === '') {
+      return {
+        success: false,
+        error: 'INVALID_REFERENCE_IMAGE',
+        message: 'Reference image is required for fitting model generation',
+      };
+    }
+
+    if (!referenceImageBase64.startsWith('data:image/')) {
+      return {
+        success: false,
+        error: 'INVALID_REFERENCE_IMAGE_FORMAT',
+        message: 'Reference image must be a base64 data URL (e.g., data:image/jpeg;base64,...)',
+      };
+    }
+
+    // Check client-side rate limiting
+    if (!this.checkRateLimit()) {
+      return {
+        success: false,
+        error: 'RATE_LIMITED',
+        message: 'Too many requests. Please wait a moment before trying again.',
+      };
+    }
+
+    // Attempt generation with retries
+    let lastError: Error | null = null;
+
+    for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          // Exponential backoff delay
+          const delay = OPENROUTER_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+          await this.sleep(delay);
+          console.log(`[ImageGen] Fitting model retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
+        }
+
+        const result = await this.makeFittingModelRequest(prompt, referenceImageBase64);
+        return result;
+      } catch (error) {
+        lastError = error as Error;
+        console.error(`[ImageGen] Fitting model attempt ${attempt + 1} failed:`, error);
+
+        // Don't retry on certain errors
+        if (this.isNonRetryableError(error)) {
+          break;
+        }
+      }
+    }
+
+    // All retries failed
+    return {
+      success: false,
+      error: 'GENERATION_FAILED',
+      message: 'Unable to generate fitting model image. Please try again later.',
+    };
+  }
+
+  /**
+   * Generates a flat-lay image showing recommended items individually placed on a white background.
+   *
+   * @param request - Flat-lay request containing items to display
+   * @returns Promise resolving to image generation response
+   *
+   * @example
+   * const client = new OpenRouterImageClient(apiKey);
+   * const response = await client.generateFlatLayImage({
+   *   items: [
+   *     { name: 'Navy blue button-front dress', category: 'Dress', color: 'navy blue' },
+   *     { name: 'Black leather oxford shoes', category: 'Shoes', color: 'black' }
+   *   ],
+   *   occasionContext: 'work outfit'
+   * });
+   */
+  async generateFlatLayImage(
+    request: FlatLayRequest
+  ): Promise<ImageGenerationResponse> {
+    // Validate inputs
+    if (!request.items || !Array.isArray(request.items) || request.items.length === 0) {
+      return {
+        success: false,
+        error: 'INVALID_ITEMS',
+        message: 'At least one item is required for flat-lay generation',
+      };
+    }
+
+    // Check client-side rate limiting
+    if (!this.checkRateLimit()) {
+      return {
+        success: false,
+        error: 'RATE_LIMITED',
+        message: 'Too many requests. Please wait a moment before trying again.',
+      };
+    }
+
+    // Attempt generation with retries
+    for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          // Exponential backoff delay
+          const delay = OPENROUTER_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+          await this.sleep(delay);
+          console.log(`[ImageGen] Flat-lay retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
+        }
+
+        const prompt = this.buildFlatLayPrompt(request.items, request.occasionContext);
+        const result = await this.makeFlatLayRequest(prompt);
+        return result;
+      } catch (error) {
+        console.error(`[ImageGen] Flat-lay attempt ${attempt + 1} failed:`, error);
+
+        // Don't retry on certain errors
+        if (this.isNonRetryableError(error)) {
+          break;
+        }
+      }
+    }
+
+    // All retries failed
+    return {
+      success: false,
+      error: 'GENERATION_FAILED',
+      message: 'Unable to generate flat-lay image. Please try again later.',
+    };
+  }
+
+  /**
+   * Builds the flat-lay prompt from item array
+   * Based on the format from data/personas/prompt_gen/looks.md
+   *
+   * IMPORTANT: Uses generic item descriptions (category + color) instead of full product names
+   * to prevent the AI from rendering product names/SKUs as text labels on the image.
+   *
+   * @private
+   */
+  private buildFlatLayPrompt(items: FlatLayItem[], occasionContext?: string): string {
+    // Build item descriptions using ONLY category and color - never include product names/SKUs
+    // This prevents the AI from rendering text labels on the generated image
+    const itemDescriptions = items.map((item) => {
+      // Use visualDescription if provided (should be a clean visual description without product names)
+      if (item.visualDescription && !this.containsProductNameOrSku(item.visualDescription)) {
+        return `- ${item.category}: ${item.visualDescription}`;
+      }
+
+      // Otherwise, create a clean generic description from category and color only
+      const colorInfo = item.color ? `${item.color} ` : '';
+      const cleanCategory = this.cleanCategoryForPrompt(item.category);
+      return `- ${cleanCategory}: ${colorInfo}${cleanCategory.toLowerCase()}`;
+    }).join('\n');
+
+    // Build occasion context if provided
+    const contextLine = occasionContext
+      ? `\nOCCASION CONTEXT: ${occasionContext}\n`
+      : '';
+
+    // Count items for the prompt
+    const itemCount = items.length;
+
+    const prompt = `
+Generate a flat-lay fashion photograph showing exactly ONE complete outfit composed of ${itemCount} items laid flat on a pure white background.
+
+THIS IS A SINGLE OUTFIT - NOT MULTIPLE OUTFITS:
+The following ${itemCount} items are parts of ONE coordinated outfit that should be worn together:
+
+${itemDescriptions}
+${contextLine}
+CRITICAL REQUIREMENTS:
+- Generate exactly ONE outfit using ALL ${itemCount} items listed above
+- DO NOT create multiple outfit combinations or capsule wardrobe layouts
+- DO NOT show alternative styling options or multiple looks
+- Show only the ${itemCount} items listed - no additional items
+- Each item should be clearly visible and properly sized relative to each other
+- Items should be laid out in an organized, aesthetically pleasing flat-lay arrangement
+- Pure white background with no text or overlays
+- Professional product photography quality
+- Sharp focus on all items
+- Accurate color representation
+- High-end fashion editorial style
+- Items should not overlap significantly
+- DO NOT include any text, labels, product names, brand names, or watermarks
+
+COMPOSITION:
+- Square format (1:1 aspect ratio)
+- Flat-lay perspective (top-down view)
+- Balanced spacing between the ${itemCount} items
+- Elegant, minimalist styling typical of fashion e-commerce
+- NO TEXT OR LABELS ANYWHERE IN THE IMAGE
+`.trim();
+
+    return prompt;
+  }
+
+  /**
+   * Checks if a string contains what looks like a product name or SKU
+   * Product names often contain brand names, SKU codes, or marketing text
+   *
+   * @private
+   */
+  private containsProductNameOrSku(text: string): boolean {
+    // Check for SKU-like patterns (alphanumeric codes)
+    const skuPattern = /[A-Z]{2,}[0-9]{4,}|[0-9]{8,}/i;
+    if (skuPattern.test(text)) return true;
+
+    // Check for common product name indicators
+    const productNameIndicators = [
+      /\b(online exclusive|limited edition|new arrival)\b/i,
+      /\b(korea|korean|japan|japanese)\b/i, // Region markers often in product names
+      /[A-Z][a-z]+[A-Z]/, // CamelCase brand names
+      /\b\w{10,}\b/, // Very long words (likely brand names or codes)
+    ];
+
+    return productNameIndicators.some(pattern => pattern.test(text));
+  }
+
+  /**
+   * Cleans category name for use in prompt
+   * Normalizes categories to simple, clean fashion terms
+   *
+   * @private
+   */
+  private cleanCategoryForPrompt(category: string): string {
+    // Map common category variations to clean terms
+    const categoryMap: Record<string, string> = {
+      'dress': 'Dress',
+      'dresses': 'Dress',
+      'top': 'Top',
+      'tops': 'Top',
+      'blouse': 'Blouse',
+      'blouses': 'Blouse',
+      'shirt': 'Shirt',
+      'shirts': 'Shirt',
+      'pants': 'Pants',
+      'trousers': 'Pants',
+      'skirt': 'Skirt',
+      'skirts': 'Skirt',
+      'jacket': 'Jacket',
+      'jackets': 'Jacket',
+      'blazer': 'Blazer',
+      'blazers': 'Blazer',
+      'coat': 'Coat',
+      'coats': 'Coat',
+      'sweater': 'Sweater',
+      'sweaters': 'Sweater',
+      'cardigan': 'Cardigan',
+      'cardigans': 'Cardigan',
+      'shoes': 'Shoes',
+      'shoe': 'Shoes',
+      'footwear': 'Shoes',
+      'heels': 'Heels',
+      'sneakers': 'Sneakers',
+      'sandals': 'Sandals',
+      'boots': 'Boots',
+      'bag': 'Bag',
+      'bags': 'Bag',
+      'handbag': 'Handbag',
+      'handbags': 'Handbag',
+      'accessory': 'Accessory',
+      'accessories': 'Accessory',
+      'jewelry': 'Jewelry',
+      'watch': 'Watch',
+      'watches': 'Watch',
+      'belt': 'Belt',
+      'belts': 'Belt',
+      'scarf': 'Scarf',
+      'scarves': 'Scarf',
+      'hat': 'Hat',
+      'hats': 'Hat',
+      'leggings': 'Leggings',
+      'shorts': 'Shorts',
+      'jeans': 'Jeans',
+      'jumpsuit': 'Jumpsuit',
+      'romper': 'Romper',
+    };
+
+    const lowerCategory = category.toLowerCase().trim();
+    return categoryMap[lowerCategory] || category;
+  }
+
+  /**
+   * Makes API request to OpenRouter for flat-lay generation
+   *
+   * @private
+   */
+  private async makeFlatLayRequest(prompt: string): Promise<ImageGenerationResponse> {
+    // Build request body
+    const requestBody = {
+      model: OPENROUTER_CONFIG.model,
+      messages: [
+        {
+          role: 'user',
+          content: prompt,
+        },
+      ],
+      modalities: ['text', 'image'], // Required for image generation
+      max_tokens: 4096,
+    };
+
+    console.log('[ImageGen] Sending flat-lay request to OpenRouter:', {
+      model: requestBody.model,
+      promptLength: prompt.length,
+    });
+
+    // Create abort controller for timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(() => controller.abort(), OPENROUTER_CONFIG.timeout);
+
+    try {
+      const response = await fetch(`${OPENROUTER_CONFIG.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+          'HTTP-Referer': 'https://ootday.com',
+          'X-Title': 'OOTDay Fashion Assistant',
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${errorData.error?.message || response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      // Parse response and extract image
+      const imageData = this.parseImageResponse(data);
+
+      return {
+        success: true,
+        imageBase64: imageData.base64,
+        imageUrl: imageData.url,
+        metadata: {
+          model: OPENROUTER_CONFIG.model,
+          generatedAt: new Date().toISOString(),
+          prompt: prompt,
+        },
+        message: 'Flat-lay image generated successfully',
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout - flat-lay generation took too long');
+        }
+        throw error;
+      }
+
+      throw new Error('Unknown error during flat-lay generation');
+    }
+  }
+
+  /**
+   * Generates a try-on image using dual image references:
+   * - IMAGE 1 (fitting model): Used to match the person's face and body exactly
+   * - IMAGE 2 (flat-lay): Used to show the exact outfit items the model must wear
+   *
+   * @param prompt - Try-on generation prompt with dual image instructions
+   * @param fittingModelBase64 - Base64 encoded fitting model image (with data URL prefix)
+   * @param flatLayBase64 - Base64 encoded flat-lay outfit image (with data URL prefix)
+   * @returns Promise resolving to image generation response
+   */
+  async generateTryOnWithDualReference(
+    prompt: string,
+    fittingModelBase64: string,
+    flatLayBase64: string
+  ): Promise<ImageGenerationResponse> {
+    // Validate inputs
+    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+      return {
+        success: false,
+        error: 'INVALID_PROMPT',
+        message: 'Try-on prompt is required',
+      };
+    }
+
+    if (!fittingModelBase64 || !fittingModelBase64.startsWith('data:image/')) {
+      return {
+        success: false,
+        error: 'INVALID_FITTING_MODEL_IMAGE',
+        message: 'Fitting model image must be a base64 data URL',
+      };
+    }
+
+    if (!flatLayBase64 || !flatLayBase64.startsWith('data:image/')) {
+      return {
+        success: false,
+        error: 'INVALID_FLAT_LAY_IMAGE',
+        message: 'Flat-lay image must be a base64 data URL',
+      };
+    }
+
+    // Check client-side rate limiting
+    if (!this.checkRateLimit()) {
+      return {
+        success: false,
+        error: 'RATE_LIMITED',
+        message: 'Too many requests. Please wait a moment before trying again.',
+      };
+    }
+
+    // Attempt generation with retries
+    for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          const delay = OPENROUTER_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+          await this.sleep(delay);
+          console.log(`[ImageGen] Dual reference try-on retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
+        }
+
+        const result = await this.makeDualReferenceRequest(prompt, fittingModelBase64, flatLayBase64);
+        return result;
+      } catch (error) {
+        console.error(`[ImageGen] Dual reference try-on attempt ${attempt + 1} failed:`, error);
+
+        if (this.isNonRetryableError(error)) {
+          break;
+        }
+      }
+    }
+
+    return {
+      success: false,
+      error: 'GENERATION_FAILED',
+      message: 'Unable to generate try-on image. Please try again later.',
+    };
+  }
+
+  /**
+   * Makes multimodal API request with TWO reference images for try-on generation
+   *
+   * @private
+   */
+  private async makeDualReferenceRequest(
+    prompt: string,
+    fittingModelBase64: string,
+    flatLayBase64: string
+  ): Promise<ImageGenerationResponse> {
+    // Build multimodal request body with text + 2 images
+    // Order: text first, then images (IMAGE 1 = fitting model, IMAGE 2 = flat-lay)
+    const requestBody = {
+      model: OPENROUTER_CONFIG.model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt,
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: fittingModelBase64,
+              },
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: flatLayBase64,
+              },
+            },
+          ],
+        },
+      ],
+      modalities: ['text', 'image'],
+      max_tokens: 4096,
+    };
+
+    console.log('[ImageGen] Sending dual reference try-on request to OpenRouter:', {
+      model: requestBody.model,
+      promptLength: prompt.length,
+      hasFittingModelImage: true,
+      hasFlatLayImage: true,
+    });
+
+    // Create abort controller with extended timeout
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      OpenRouterImageClient.FITTING_MODEL_CONFIG.timeout
+    );
+
+    try {
+      const response = await fetch(`${OPENROUTER_CONFIG.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+          'HTTP-Referer': 'https://ootday.com',
+          'X-Title': 'OOTDay Fashion Assistant',
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${errorData.error?.message || response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+      const imageData = this.parseImageResponse(data);
+
+      return {
+        success: true,
+        imageBase64: imageData.base64,
+        imageUrl: imageData.url,
+        metadata: {
+          model: OPENROUTER_CONFIG.model,
+          generatedAt: new Date().toISOString(),
+          prompt: prompt,
+        },
+        message: 'Dual reference try-on image generated successfully',
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout - dual reference try-on generation took too long');
+        }
+        throw error;
+      }
+
+      throw new Error('Unknown error during dual reference try-on generation');
+    }
+  }
+
+  /**
+   * Makes multimodal API request to OpenRouter for fitting model generation
+   *
+   * @private
+   */
+  private async makeFittingModelRequest(
+    prompt: string,
+    referenceImageBase64: string
+  ): Promise<ImageGenerationResponse> {
+    // Build multimodal request body with text + image content
+    // OpenRouter expects text first, then images (per documentation)
+    const requestBody = {
+      model: OPENROUTER_CONFIG.model,
+      messages: [
+        {
+          role: 'user',
+          content: [
+            {
+              type: 'text',
+              text: prompt,
+            },
+            {
+              type: 'image_url',
+              image_url: {
+                url: referenceImageBase64,
+              },
+            },
+          ],
+        },
+      ],
+      modalities: ['text', 'image'], // Required for image generation output
+      max_tokens: 4096,
+    };
+
+    console.log('[ImageGen] Sending fitting model request to OpenRouter:', {
+      model: requestBody.model,
+      promptLength: prompt.length,
+      hasReferenceImage: true,
+    });
+
+    // Create abort controller with extended timeout for fitting model
+    const controller = new AbortController();
+    const timeoutId = setTimeout(
+      () => controller.abort(),
+      OpenRouterImageClient.FITTING_MODEL_CONFIG.timeout
+    );
+
+    try {
+      const response = await fetch(`${OPENROUTER_CONFIG.baseUrl}/chat/completions`, {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+          Authorization: `Bearer ${this.apiKey}`,
+          'HTTP-Referer': 'https://ootday.com',
+          'X-Title': 'OOTDay Fashion Assistant',
+        },
+        body: JSON.stringify(requestBody),
+        signal: controller.signal,
+      });
+
+      clearTimeout(timeoutId);
+
+      if (!response.ok) {
+        const errorData = await response.json().catch(() => ({}));
+        throw new Error(
+          `OpenRouter API error: ${response.status} - ${errorData.error?.message || response.statusText}`
+        );
+      }
+
+      const data = await response.json();
+
+      // Parse response and extract image using existing method
+      const imageData = this.parseImageResponse(data);
+
+      return {
+        success: true,
+        imageBase64: imageData.base64,
+        imageUrl: imageData.url,
+        metadata: {
+          model: OPENROUTER_CONFIG.model,
+          generatedAt: new Date().toISOString(),
+          prompt: prompt,
+        },
+        message: 'Fitting model image generated successfully',
+      };
+    } catch (error) {
+      clearTimeout(timeoutId);
+
+      if (error instanceof Error) {
+        if (error.name === 'AbortError') {
+          throw new Error('Request timeout - fitting model generation took too long');
+        }
+        throw error;
+      }
+
+      throw new Error('Unknown error during fitting model generation');
+    }
   }
 
   /**

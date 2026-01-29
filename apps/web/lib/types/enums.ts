@@ -48,6 +48,12 @@ export type StyleTag =
   | 'elegant'
   | 'edgy'
   | 'preppy'
+  | 'clean-girl'
+  | 'scandinavian-minimal'
+  | 'street-style'
+  | 'corporate-chic'
+  | 'quiet-luxury'
+  | 'y2k-revival'
 
 // Pattern Types
 export type PatternType =
@@ -75,6 +81,26 @@ export type OutfitRole =
   | 'accessory'
   | 'bag'
   | 'complete-outfit'
+
+// Women's Footwear Categories (Pinterest 2026 Corporate Chic)
+// Used for gender-appropriate footwear validation in work outfits
+export type WomensFootwearCategory =
+  | 'heels'           // Pumps, stilettos, block heels
+  | 'loafers'         // Pointed-toe loafers, women's loafers
+  | 'mules'           // Heeled or flat mules (backless)
+  | 'flats'           // Ballet flats, pointed-toe flats
+  | 'slingbacks'      // Slingback heels
+  | 'sneakers'        // Women's sneakers
+  | 'sandals'         // Women's sandals
+  | 'boots'           // Ankle boots, knee boots
+
+// Masculine Footwear Styles (to be excluded from women's outfits)
+export type MasculineFootwearStyle =
+  | 'oxford'          // Oxford dress shoes (lace-up, masculine)
+  | 'derby'           // Derby shoes (men's dress style)
+  | 'brogue'          // Brogues (wingtip, perforated)
+  | 'wingtip'         // Wingtip dress shoes
+  | 'mens-dress'      // Generic men's dress shoes
 
 // Currency
 export type Currency = 'THB' | 'USD' | 'EUR'
@@ -123,3 +149,32 @@ export interface TagStructure {
   category: TagCategory
   value: string
 }
+
+// Pinterest 2026 Aesthetic Categories
+export type AestheticCategory =
+  | 'clean-girl'
+  | 'scandinavian-minimal'
+  | 'street-style'
+  | 'casual-chic'
+  | 'y2k-revival'
+  | 'corporate-chic'
+  | 'quiet-luxury'
+  | 'minimalist-office'
+  | 'dark-academia'
+
+// Trending Color Palettes
+export type ColorPalette =
+  | 'neutral-earth-tones'
+  | 'monochromatic-beige'
+  | 'monochromatic-brown'
+  | 'monochromatic-blue'
+  | 'monochromatic-black'
+  | 'work-olive-black'
+  | 'work-brown-cream'
+  | 'all-black-texture'
+
+// Layering Styles
+export type LayeringStyle = 'oversized' | 'fitted' | 'structured' | 'relaxed'
+
+// Silhouette Types
+export type SilhouetteType = 'wide-leg' | 'baggy' | 'fitted' | 'high-waisted' | 'oversized'

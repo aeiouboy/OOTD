@@ -69,15 +69,64 @@ export function filterBySeason(products: EnhancedProduct[], seasons: string[]): 
 }
 
 /**
- * Filter by gender
+ * Check if a product is women's appropriate footwear (for EnhancedProduct)
+ * Excludes masculine footwear styles like oxford shoes, derby shoes, brogues
+ */
+export function isWomensFootwearEnhanced(product: EnhancedProduct): boolean {
+  const nameEn = (product.name.en || '').toLowerCase()
+  const nameTh = (product.name.th || '').toLowerCase()
+  const descEn = (product.description?.en || '').toLowerCase()
+  const descTh = (product.description?.th || '').toLowerCase()
+  const combined = `${nameEn} ${nameTh} ${descEn} ${descTh}`
+
+  // Masculine footwear keywords (to exclude)
+  const masculineFootwear = [
+    'oxford shoe', 'derby shoe', 'brogue',
+    'wingtip', 'men\'s dress shoe',
+    'men\'s oxford', 'men\'s derby',
+    'men\'s loafer', 'men loafer'
+  ]
+
+  // Check if it's masculine footwear (should be excluded)
+  const isMasculine = masculineFootwear.some(keyword => combined.includes(keyword))
+  if (isMasculine) {
+    console.debug(`[Enhanced Footwear Filter] Excluded masculine footwear:`, product.name.en || product.name.th)
+    return false
+  }
+
+  return true
+}
+
+/**
+ * Filter by gender with strict validation
+ *
+ * For women's products:
+ * - Gender must be 'women' or 'unisex'
+ * - For footwear, must NOT include masculine styles (oxford shoes, derby, brogue)
+ *
+ * For men's products:
+ * - Gender must be 'men' or 'unisex'
  */
 export function filterByGender(products: EnhancedProduct[], gender: Gender | Gender[]): EnhancedProduct[] {
   const targetGenders = Array.isArray(gender) ? gender : [gender]
 
   return products.filter((product) => {
     const productGender = product.classification?.gender
+    const isFootwear = product.classification?.role === 'footwear'
+
     // Include unisex for any gender filter
-    return (productGender && targetGenders.includes(productGender)) || productGender === 'unisex'
+    const matchesGender = (productGender && targetGenders.includes(productGender)) || productGender === 'unisex'
+
+    if (!matchesGender) {
+      return false
+    }
+
+    // Additional validation for women's footwear
+    if (targetGenders.includes('women') && isFootwear) {
+      return isWomensFootwearEnhanced(product)
+    }
+
+    return true
   })
 }
 

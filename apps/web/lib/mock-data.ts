@@ -1,15 +1,29 @@
 import type { Outfit, Product, ConversationStarter, ChatMessage } from "./types"
 import { generateOutfitsFromQuery } from "./outfit-generator"
+import { enhancedMockProducts } from "./mock-data02"
 
 /**
  * Product Catalog
  *
- * Products are now loaded from Central Group CSV files via API
- * This array will be populated at runtime by fetching from /api/products
+ * Now using enhancedMockProducts from mock-data02.ts which includes
+ * comprehensive fashion attributes for better outfit matching:
+ * - Style aesthetics (styleTags, aesthetic, colorPalette)
+ * - Physical characteristics (fitType, patternType, materialType, silhouetteType)
+ * - Seasonal suitability (seasonType)
+ * - Formality levels (formalityLevel)
+ * - Outfit composition (outfitRole, pairingCategories, layeringStyle)
+ * - Brand positioning (brandTier)
+ * - Color characteristics (colorTone)
  *
- * For fallback/testing, a few mock products are kept below
+ * Products can also be loaded from Central Group CSV files via API
  */
-export let mockProducts: Product[] = [
+export let mockProducts: Product[] = enhancedMockProducts as Product[]
+
+/**
+ * Legacy mock products for backward compatibility (deprecated)
+ * @deprecated Use enhancedMockProducts from mock-data02.ts instead
+ */
+export const legacyMockProducts: Product[] = [
   {
     sku: "CG001",
     name: "Classic White Button Shirt",
@@ -36,19 +50,6 @@ export let mockProducts: Product[] = [
     colors: ["Black", "Navy"],
     category: "Women",
     occasion: ["work", "formal"],
-  },
-  {
-    sku: "CG003",
-    name: "Leather Oxford Shoes",
-    brand: "Central",
-    price: 2490,
-    imageUrl: "/black-leather-oxford-shoes.jpg",
-    availability: "in_stock",
-    storeLocations: ["Central World", "Central Bangna"],
-    onlineUrl: "https://central.co.th/product/cg003",
-    sizes: ["39", "40", "41", "42", "43"],
-    colors: ["Black", "Brown"],
-    category: "Women",
   },
   {
     sku: "CG004",
@@ -124,7 +125,7 @@ export let mockProducts: Product[] = [
     name: "SFERA Women Blazer Suit",
     brand: "SFERA",
     price: 995,
-    imageUrl: "/professional-business-outfit.jpg",
+    imageUrl: "/central-blazer.png",
     availability: "in_stock",
     storeLocations: ["Central World"],
     onlineUrl: "https://www.central.co.th/th/sfera-women-blazer-suit-grcds54525030892",
@@ -204,26 +205,32 @@ export let mockProducts: Product[] = [
     name: "Formal Heels",
     brand: "SFERA",
     price: 2030,
-    imageUrl: "/black-leather-oxford-shoes.jpg",
+    imageUrl: "/placeholder.svg?height=400&width=400&text=Formal+Heels",
     availability: "in_stock",
     storeLocations: ["Central World"],
     onlineUrl: "https://central.co.th/shoes",
     sizes: ["36", "37", "38"],
     colors: ["Black"],
     category: "Women",
+    subCategory: "Heels",
+    visualDescription: "Elegant black stiletto heels with pointed toe, formal women's footwear, 3-inch heel",
+    occasion: ["work", "formal"],
   },
   {
     sku: "SH002",
     name: "Classic Pumps",
     brand: "LOLITA",
     price: 2090,
-    imageUrl: "/black-leather-oxford-shoes.jpg",
+    imageUrl: "/placeholder.svg?height=400&width=400&text=Classic+Pumps",
     availability: "in_stock",
     storeLocations: ["Central Chidlom"],
     onlineUrl: "https://central.co.th/shoes",
     sizes: ["36", "37", "38"],
     colors: ["Nude"],
     category: "Women",
+    subCategory: "Pumps",
+    visualDescription: "Classic nude pumps with rounded toe, versatile women's footwear, 2.5-inch heel",
+    occasion: ["work", "formal", "casual"],
   },
 ]
 
@@ -271,16 +278,16 @@ export const mockOutfits: Outfit[] = [
     id: "outfit-1",
     title: "Professional Business Look",
     description: "Perfect for important meetings and presentations",
-    totalPrice: 5670,
-    items: [mockProducts[0], mockProducts[1], mockProducts[2]],
-    imageUrl: "/professional-business-outfit.jpg",
+    totalPrice: 5210,
+    items: [mockProducts[0], mockProducts[1], mockProducts.find(p => p.sku === "SH001")!],
+    imageUrl: "/central-blazer.png",
   },
   {
     id: "outfit-2",
     title: "Casual Weekend Style",
     description: "Comfortable and stylish for weekend outings",
-    totalPrice: 2980,
-    items: [mockProducts[3], mockProducts[6]],
+    totalPrice: 2080,
+    items: [mockProducts[2], mockProducts[5]],
     imageUrl: "/casual-weekend-outfit.png",
   },
   {
@@ -288,23 +295,23 @@ export const mockOutfits: Outfit[] = [
     title: "Summer Date Night",
     description: "Elegant and romantic for special occasions",
     totalPrice: 1590,
-    items: [mockProducts[4]],
+    items: [mockProducts[3]],
     imageUrl: "/summer-date-night-dress.jpg",
   },
   {
     id: "outfit-4",
     title: "Smart Casual Office",
     description: "Professional yet comfortable for modern workplaces",
-    totalPrice: 4280,
-    items: [mockProducts[5], mockProducts[6]],
+    totalPrice: 3380,
+    items: [mockProducts[4], mockProducts[5]],
     imageUrl: "/placeholder.svg?height=400&width=320&text=Smart+Casual+Office",
   },
   {
     id: "outfit-5",
     title: "Evening Elegance",
     description: "Sophisticated look for dinner parties and events",
-    totalPrice: 5080,
-    items: [mockProducts[5], mockProducts[1], mockProducts[7]],
+    totalPrice: 4670,
+    items: [mockProducts[4], mockProducts[1], mockProducts[6]],
     imageUrl: "/placeholder.svg?height=400&width=320&text=Evening+Elegance",
   },
   {
@@ -313,7 +320,7 @@ export const mockOutfits: Outfit[] = [
     description: "ลุคทำงานแบบมืออาชีพ เรียบหรู ดูน่าเชื่อถือ เหมาะกับการประชุมสำคัญ",
     totalPrice: 2876,
     items: [mockProducts.find(p => p.sku === "SF001") || mockProducts[0], mockProducts.find(p => p.sku === "SF002") || mockProducts[2]],
-    imageUrl: "/professional-business-outfit.jpg",
+    imageUrl: "/central-blazer.png",
   },
   {
     id: "outfit-lolita",
@@ -401,8 +408,11 @@ export const getMockOutfitResponse = (query: string): ChatMessage => {
   // Generate outfits from real product catalog
   const generatedOutfits = generateOutfitsFromQuery(mockProducts, query)
 
-  // Fallback to mock outfits if generation fails
-  let relevantOutfits: Outfit[] = generatedOutfits.length > 0 ? generatedOutfits : mockOutfits.slice(0, 3)
+  // Limit to max 2 outfits to avoid overwhelming the user
+  // Only use fallback mock outfits if generation completely fails
+  let relevantOutfits: Outfit[] = generatedOutfits.length > 0
+    ? generatedOutfits.slice(0, 2)
+    : mockOutfits.slice(0, 2)
 
 
 
@@ -436,7 +446,10 @@ export const getMockOutfitResponse = (query: string): ChatMessage => {
     lowerQuery.includes("dinner") ||
     lowerQuery.includes("romantic") ||
     lowerQuery.includes("เดท") ||
-    lowerQuery.includes("ดินเนอร์")
+    lowerQuery.includes("ดินเนอร์") ||
+    lowerQuery.includes("กินข้าว") ||
+    lowerQuery.includes("ทานข้าว") ||
+    lowerQuery.includes("ร้านอาหาร")
   ) {
     responseCategory = "date"
   } else if (

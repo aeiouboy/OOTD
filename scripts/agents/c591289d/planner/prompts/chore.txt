@@ -1,0 +1,14 @@
+/chore c591289d Fix undefined product name in             
+  OutfitValidator console warnings:                                                     
+                                                                                        
+  ## Issue                                                                              
+  Console warnings show 'product: undefined' instead of actual product name:            
+  `[OutfitValidator] Gender warning for top: {product: undefined, category: men,       
+  reason: men category in women's outfit}`                                             
+                                                                                        
+  ## Location                                                                           
+  apps/web/lib/styling/outfit-combination-rules.ts lines 223, 346, 355                  
+                                                                                        
+  ## Fix                                                                                
+  Ensure product.name or product.sku is passed to the warning message instead of        
+  undefined. Check the validateOutfitComposition function and related logging calls.

@@ -7,11 +7,13 @@
  * Related PRD: 0006-prd-system-prompt-enhancement-guardrails.md
  * Task: 6.3-6.4 - Environment flag and loader utility
  *
- * @version 1.0.0
+ * @version 2.0.0
  * @created 2025-10-14
+ * @updated 2025-01-27 - Added v4 support
  */
 
 import { SYSTEM_PROMPT_V2 } from './system-prompt-v2';
+import { SYSTEM_PROMPT_V4 } from './system-prompt-v4';
 
 /**
  * System prompt versions available
@@ -19,6 +21,7 @@ import { SYSTEM_PROMPT_V2 } from './system-prompt-v2';
 export enum SystemPromptVersion {
   V1 = 'v1',
   V2 = 'v2',
+  V4 = 'v4',
 }
 
 /**
@@ -42,7 +45,7 @@ For OTHER categories (รองเท้า, กระเป๋า, etc.):
  * Gets the system prompt version from environment
  *
  * Environment variable: NEXT_PUBLIC_SYSTEM_PROMPT_VERSION
- * Defaults to 'v2'
+ * Defaults to 'v4'
  *
  * @returns System prompt version to use
  */
@@ -54,9 +57,11 @@ export function getSystemPromptVersion(): SystemPromptVersion {
       return SystemPromptVersion.V1;
     case 'v2':
       return SystemPromptVersion.V2;
+    case 'v4':
+      return SystemPromptVersion.V4;
     default:
-      // Default to v2 (latest)
-      return SystemPromptVersion.V2;
+      // Default to v4 (latest)
+      return SystemPromptVersion.V4;
   }
 }
 
@@ -78,9 +83,13 @@ export function loadSystemPrompt(version?: SystemPromptVersion): string {
       console.log('[System Prompt] Using v2.0 (enhanced)');
       return SYSTEM_PROMPT_V2;
 
+    case SystemPromptVersion.V4:
+      console.log('[System Prompt] Using v4.0 (conversation-aligned)');
+      return SYSTEM_PROMPT_V4;
+
     default:
-      console.warn(`[System Prompt] Unknown version: ${promptVersion}, defaulting to v2.0`);
-      return SYSTEM_PROMPT_V2;
+      console.warn(`[System Prompt] Unknown version: ${promptVersion}, defaulting to v4.0`);
+      return SYSTEM_PROMPT_V4;
   }
 }
 
@@ -119,9 +128,27 @@ export function getSystemPromptMetadata(version?: SystemPromptVersion): {
         description: 'Enhanced system prompt with v2.0 features',
       };
 
+    case SystemPromptVersion.V4:
+      return {
+        version: SystemPromptVersion.V4,
+        features: [
+          'Context sufficiency check',
+          'Maximum 1 clarification (reduced from 2)',
+          'Always 2 looks minimum',
+          'Mandatory style names in headers',
+          'Find Similar feature support',
+          'Post-recommendation follow-ups',
+          'Keep current outfit card design',
+          'OOT Persona with Thai-English code-switching',
+          'Session-based duplicate prevention',
+          'Topic guardrails',
+        ],
+        description: 'Conversation-aligned system prompt with context sufficiency and 2 looks minimum',
+      };
+
     default:
       return {
-        version: SystemPromptVersion.V2,
+        version: SystemPromptVersion.V4,
         features: [],
         description: 'Unknown version',
       };
@@ -146,10 +173,10 @@ export function validatePromptConfig(): {
     errors.push('OpenRouter API key not configured (OPENROUTER_API_KEY or NEXT_PUBLIC_OPENROUTER_API_KEY)');
   }
 
-  // Check prompt version (optional, defaults to v2)
+  // Check prompt version (optional, defaults to v4)
   const version = process.env.NEXT_PUBLIC_SYSTEM_PROMPT_VERSION;
-  if (version && version !== 'v1' && version !== 'v2') {
-    warnings.push(`Invalid NEXT_PUBLIC_SYSTEM_PROMPT_VERSION: "${version}". Defaulting to v2.`);
+  if (version && version !== 'v1' && version !== 'v2' && version !== 'v4') {
+    warnings.push(`Invalid NEXT_PUBLIC_SYSTEM_PROMPT_VERSION: "${version}". Defaulting to v4.`);
   }
 
   return {

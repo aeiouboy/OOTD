@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "7eb752eb",
+  "prompt": "Generate AI flat-lay images for Similar Outfits section instead of using CSS composite. Currently Similar Outfits in SimilarOutfits.tsx uses FlatLayComposite (CSS-based) which shows overlapping product images. The user wants REAL AI-generated flat-lay images like the chat session displays - showing all items artfully arranged together in ONE cohesive image on white background. The chat session already generates flat-lay images using the generateFlatLayImage() method in lib/services/image-generation-service.ts with the prompt format from data/personas/prompt_gen/looks.md: 'Put it as an accurate flat-lay image with each item individually placed and separated, styled in an elegant composition on a white background.' Solution: 1) In SimilarOutfits.tsx, when rendering similar outfits that don't have flatLayImageUrl or flatLayImageBase64, trigger async flat-lay image generation using the existing API at /api/generate-image with action: 'flat-lay'. \n  2) Create a new component or modify SimilarOutfits to: a) Show a loading skeleton/placeholder while generating, b) Call the generate-image API with the outfit items (name, category, color, visualDescription), c) Store the generated base64 image in local state or update the outfit object, d) Display the generated flat-lay image once ready. 3) Consider caching strategy - could store generated images in localStorage or outfit state to avoid re-generation. 4) The flat-lay generation should happen lazily (on viewport visibility or on demand) to minimize API calls. Reference files: apps/web/lib/services/image-generation-service.ts for generateFlatLayImage() method, apps/web/app/api/generate-image/route.ts for API endpoint that handles 'flat-lay' action, apps/web/components/chat/OutfitRecommendationCard.tsx for how chat generates flat-lay images. The goal is for Similar Outfits to look like the chat session outfit cards with professional AI-generated flat-lay images showing dress + shoes + \n  accessories artfully arranged together.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-7eb752eb-ai-flat-lay-similar-outfits.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "dd67f328-cbc6-4275-a76e-6ad05bca0847",
+      "agent": "planner",
+      "output_dir": "./agents/7eb752eb/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "afb44479-562c-48ca-bf64-2677df9acf6c",
+      "agent": "builder",
+      "output_dir": "./agents/7eb752eb/builder/"
+    }
+  },
+  "overall_success": true
+}

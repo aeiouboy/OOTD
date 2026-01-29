@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "54dca765",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-54dca765-fix-outfit-data-consistency-detail-modal.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "08bb52e8-4667-4db1-9686-dbd753f12b2e",
+  "retry_code": "none",
+  "output": "## Summary\n\nI've implemented the fixes for the outfit data consistency and similar outfits display issues in the detail modal:\n\n### Changes Made\n\n**1. `apps/web/components/outfit/OutfitDetail.tsx`** (lines 68-78)\n- Updated the outfit preview image to prioritize flat-lay images from chat (`flatLayImageUrl` or `flatLayImageBase64`) over the generic `imageUrl`\n- Added dynamic `object-contain` class for flat-lay images to display them properly (vs `object-cover` for regular images)\n\n**2. `apps/web/components/outfit/SimilarOutfits.tsx`** (entire file restructured)\n- Added `getOutfitDisplayImage()` helper function that prioritizes flat-lay images (flatLayImageUrl \u2192 flatLayImageBase64 \u2192 imageUrl)\n- Added `ProductThumbnailGrid` component as a fallback when no outfit image is available - displays a 2x2 grid of product thumbnails from the outfit items\n- Updated the main `SimilarOutfits` component to use the new image priority logic and fallback grid\n- Added dynamic `object-contain` class for flat-lay images\n\n### Why This Fixes the Issues\n\n**Issue 1 (Outfit Items Consistency):** The data flow was verified to be correct - the outfit items are preserved when passing through `onViewOutfit` \u2192 `selectOutfit` \u2192 `OutfitDetail`. The visual issue was that the outfit preview image wasn't showing the flat-lay image generated in chat; it was using the generic `imageUrl` instead of `flatLayImageUrl`. Now it prioritizes the flat-lay images.\n\n**Issue 2 (Similar Outfits Display):** Discovery outfits from `allOutfits` often don't have `imageUrl` populated, causing gray placeholders. The fix adds:\n- Priority to show flat-lay images when available\n- A product thumbnail grid fallback when no outfit image exists\n\n### Files Changed\n\n```\napps/web/components/outfit/OutfitDetail.tsx    |  8 ++-\napps/web/components/outfit/SimilarOutfits.tsx  | 95 ++++++++++++++++++++++-----\n2 files changed, 86 insertions(+), 17 deletions(-)\n```\n\n### Validation\n\n- ESLint: 0 errors, 3 warnings (pre-existing img element warnings)\n- TypeScript: No errors in modified files\n- Build: Pre-existing encoder.json error unrelated to these changes"
+}

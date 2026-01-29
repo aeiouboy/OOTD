@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 83208,
+  "duration_api_ms": 94119,
+  "num_turns": 7,
+  "result": "Plan file created successfully.\n\n**Plan file created:** `/Users/naruechon/OOTD/specs/chore-0bb97262-enhance-similar-outfits-action-buttons.md`\n\nThe plan includes 9 step-by-step tasks to enhance the SimilarOutfits cards:\n\n1. **Add Required Imports** - Button, Dialog components, useUserProfile hook, generateTryOnLooks service, and lucide icons\n2. **Add State Variables** - Like state, try-on modal state, generation loading state, image URLs, error state\n3. **Implement handleTryOn Function** - Async function to generate try-on image using fitting-model-service\n4. **Implement handleRegenerate Function** - Allow users to regenerate try-on image\n5. **Update Card Content Layout** - Add item count display (X \u0e0a\u0e34\u0e49\u0e19)\n6. **Add Action Buttons Row** - \u0e14\u0e39\u0e25\u0e38\u0e04, \u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48, Heart, Share buttons with compact sizing\n7. **Add Try-On Modal** - Full dialog with loading, error, and success states\n8. **Update Card Click Behavior** - Use stopPropagation on buttons\n9. **Wrap Return with Fragment** - Support returning Card + Dialog",
+  "session_id": "fc1caf40-9f01-46c9-b56b-69e8f41e76e2",
+  "total_cost_usd": 0.5895155,
+  "usage": {
+    "input_tokens": 6,
+    "cache_creation_input_tokens": 57920,
+    "cache_read_input_tokens": 145248,
+    "output_tokens": 3640,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 57920
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 149,
+      "outputTokens": 394,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 8047,
+      "webSearchRequests": 0,
+      "costUSD": 0.012177750000000001,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 9,
+      "outputTokens": 3663,
+      "cacheReadInputTokens": 145248,
+      "cacheCreationInputTokens": 66095,
+      "webSearchRequests": 0,
+      "costUSD": 0.57733775,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "409a7cd5-8da3-43cb-abce-4433843aad4b"
+}

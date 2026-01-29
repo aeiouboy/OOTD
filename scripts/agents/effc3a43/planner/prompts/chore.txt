@@ -1,0 +1,40 @@
+/chore effc3a43 Fix outfit product list not reflecting  
+  visual consistency replacements:                                                    
+                                                                                      
+  ## Current Issue                                                                    
+  The flat-lay AI image shows correct feminine heels, but 'Items in this outfit'      
+  section still displays product with masculine oxford shoes thumbnail (see           
+  screenshot: Formal Heels product shows brogue/oxford thumbnail but flat-lay shows   
+  stiletto heels).                                                                    
+                                                                                      
+  ## Root Cause Analysis                                                              
+  The visual consistency validation and replacement logic exists in:                  
+  - apps/web/lib/utils/product-visual-validator.ts (findVisuallyConsistentReplacement)
+  - apps/web/components/chat/ChatAssistant.tsx (applyProductReplacements)             
+                                                                                      
+  But the replacement is ONLY applied during flat-lay generation in ChatAssistant. The
+   OutfitDetail component receives the ORIGINAL outfit items, not the replaced ones.  
+                                                                                      
+  ## Files to Fix                                                                     
+                                                                                      
+  ### apps/web/components/outfit/OutfitDetail.tsx                                     
+  - Add visual consistency validation on component mount/update                       
+  - Replace visually inconsistent products with consistent alternatives               
+  - Display the corrected items list that matches the flat-lay image                  
+                                                                                      
+  ### apps/web/lib/hooks/useFlatLayGeneration.ts                                      
+  - Ensure productReplacements map is properly returned and accessible                
+  - Add callback to notify parent component of replacements made                      
+                                                                                      
+  ### apps/web/components/chat/ChatAssistant.tsx                                      
+  - Ensure outfit.items is updated with replacements BEFORE passing to OutfitDetail   
+  - Store replaced outfit in message state, not just the flat-lay image               
+                                                                                      
+  ## Expected Behavior                                                                
+  BEFORE: Flat-lay shows heels, product list shows oxford shoes (mismatch)            
+  AFTER: Both flat-lay AND product list show the SAME feminine heels product          
+                                                                                      
+  ## Key Requirement                                                                  
+  The 'Items in this outfit' section MUST display the same products that appear in the
+   flat-lay image. If a visually inconsistent product was replaced for flat-lay       
+  generation, that replacement must also be reflected in the product list display.

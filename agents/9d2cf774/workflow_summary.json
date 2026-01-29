@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "9d2cf774",
+  "prompt": "Fix mock product images to match product\n   descriptions. Root cause: visual mismatch between AI-generated flat-lay (based on  \n  text) and product thumbnails (from imageUrl).                                       \n                                                                                      \n  CRITICAL ISSUE in apps/web/lib/mock-data.ts:                                        \n  1. SF001 \"SFERA Women Blazer Suit\" (line 110-121) uses imageUrl                     \n  \"/professional-business-outfit.jpg\" which shows a MENS SUIT WITH RED TIE -          \n  completely wrong for a womens product!                                              \n                                                                                      \n  Required fixes:                                                                     \n  1. Change SF001 imageUrl from \"/professional-business-outfit.jpg\" to                \n  \"/central-blazer.png\" (existing women blazer image)                                 \n  2. Add visualDescription to SF001: \"Women black tailored blazer suit jacket,        \n  professional business attire\"                                                       \n  3. Check SF002 \"SFERA Women Suit Pants\" - ensure imageUrl shows womens pants not    \n  mens                                                                                \n  4. Review all mock products to ensure imageUrl matches the product name and gender  \n                                                                                      \n  Also update mockOutfits:                                                            \n  - outfit-sfera (line 303-309) uses the same wrong image                             \n  \"/professional-business-outfit.jpg\" - update to use appropriate women business      \n  outfit imageThe flat-lay AI correctly generates women clothing from text            \n  descriptions, but product thumbnails show wrong images causing the mismatch users   \n  see in \"Items in this outfit\" section.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-9d2cf774-fix-mock-product-images-gender-mismatch.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "deaf8e3f-3733-453a-98bc-06fc4ec14a18",
+      "agent": "planner",
+      "output_dir": "./agents/9d2cf774/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "74bc8a58-fee8-495b-931c-5232f1aa84d5",
+      "agent": "builder",
+      "output_dir": "./agents/9d2cf774/builder/"
+    }
+  },
+  "overall_success": true
+}

@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "16a6349c",
+  "slash_command": "/chore",
+  "args": [
+    "16a6349c",
+    "Analyze apps/web/lib/mock-data.ts and\n   create a new file apps/web/lib/mock-data02.ts that enriches all mockProducts    \n  with comprehensive fashion attributes for outfit recommendation. For each        \n  product, analyze its name, category, subCategory, visualDescription, and occasion\n   to infer and add the following attributes using types from lib/types/enums.ts:  \n                                                                                   \n  1. styleTags: StyleTag[] - e.g. ['minimalist', 'corporate-chic', 'quiet-luxury'] \n  2. seasonType: SeasonType - weather/season suitability                           \n  3. formalityLevel: FormalityLevel (1-10) - 1=very casual, 10=black tie           \n  4. fitType: FitType - silhouette fit                                             \n  5. patternType: PatternType - pattern/print type                                 \n  6. materialType: MaterialType - primary fabric                                   \n  7. colorTone: 'warm' | 'cool' | 'neutral' - color theory                         \n  8. aesthetic: AestheticCategory - Pinterest 2026 aesthetic                       \n  9. colorPalette: ColorPalette - trending palette match                           \n  10. outfitRole: OutfitRole - item's role in outfit composition                   \n  11. brandTier: BrandTier - brand positioning                                     \n  12. pairingCategories: string[] - subCategories this pairs well with (e.g. Blazer\n   pairs with ['Pants', 'Skirt', 'Blouse'])                                        \n  13. layeringStyle: LayeringStyle - how it layers                                 \n  14. silhouetteType: SilhouetteType - silhouette category                         \n                                                                                   \n  Create EnhancedMockProduct interface extending Product with these attributes.    \n  Export enriched mockProducts02 array. Use fashion domain knowledge to accurately \n  infer attributes - e.g. 'Blazer Jacket' should have                              \n  styleTags:['corporate-chic','classic'], formalityLevel:7, outfitRole:'outerwear',\n   pairingCategories:['Pants','Skirt','Blouse','Dress']. Keep all original         \n  mockProducts data intact, only add new attributes."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "dfc36d49-4939-44bc-96fe-77118f75f723",
+  "retry_code": "none",
+  "output": "The plan has been created successfully.\n\n**Plan file created:** `specs/chore-16a6349c-enrich-mock-products-fashion-attributes.md`\n\nThe plan contains:\n- **17 step-by-step tasks** covering interface definition and all 14 product enrichments\n- **Detailed attribute mappings** for each product based on fashion domain knowledge\n- **Type-safe enum references** from `lib/types/enums.ts`\n- **Validation commands** for TypeScript compilation and linting\n- **Notes** on color palette mapping, brand tier assessment, formality scale, and material inference",
+  "plan_path": "specs/chore-16a6349c-enrich-mock-products-fashion-attributes.md"
+}

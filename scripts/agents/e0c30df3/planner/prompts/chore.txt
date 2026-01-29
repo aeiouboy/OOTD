@@ -1,0 +1,20 @@
+/chore e0c30df3 Update the OnboardingStyle component to use new style preference images. 
+
+  Task:
+  1. Copy images from data/assets/onboarding/preference/ to apps/web/public/images/styles/preference/ (create folder if needed)
+
+  2. Update apps/web/lib/data/fashion-styles.json imageUrl fields to point to the new images in /images/styles/preference/. Match by style name:
+     - minimal -> Minimal · Timeless.png
+     - luxury -> Luxury · Elegant.png  
+     - eccentric -> Eccentric · Creative.png
+     - business -> Business · Refined.png
+     - vanilla -> Vanilla · Clean.png
+     - sporty -> Sporty · Active.png
+     - edgy -> Edgy · Trendy.png
+     - bohemian -> Bohemian · Natural.png
+     - classic -> Classic · Old Money.png
+     - mystery -> Mystery Style ��.png
+
+  3. URL-encode special characters in paths (spaces, middle dot, emoji) so browser loads them correctly.
+
+  4. Verify images exist and paths are valid.

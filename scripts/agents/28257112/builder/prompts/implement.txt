@@ -1,0 +1,1 @@
+/implement specs/chore-28257112-reduce-womens-fashion-image-size.md

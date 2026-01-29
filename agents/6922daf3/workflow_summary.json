@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "6922daf3",
+  "prompt": "Add auto-crop post-processing to try-on images to ensure model fills the frame. In apps/web/app/api/generate-image/route.ts, after the background removal step (line 425-434), add a new post-processing step that: 1) Creates a Python script scripts/image_processing/auto_crop_subject.py that uses PIL/Pillow to detect the bounding box of non-transparent pixels in a PNG image and crops to that bounding box with 3% padding on all sides, then resizes to maintain aspect ratio 2) Calls this script after removeBackgroundFromFile() for fitting-model, try-on, and try-on-dual generation types 3) The script should take input_path and output_path as arguments, similar to remove_bg_rembg.py 4) Add error handling that falls back to the uncropped image if cropping fails. This ensures the model fills 90%+ of the frame regardless of what the AI generates.",
+  "model": "sonnet",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-6922daf3-auto-crop-subject-try-on-images.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "5e828feb-b20f-4183-be64-821f1b326133",
+      "agent": "planner",
+      "output_dir": "./agents/6922daf3/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "d57e9bfb-c51d-4ddb-8269-6cd43af2762c",
+      "agent": "builder",
+      "output_dir": "./agents/6922daf3/builder/"
+    }
+  },
+  "overall_success": true
+}

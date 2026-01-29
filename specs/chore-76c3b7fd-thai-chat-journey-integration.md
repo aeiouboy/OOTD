@@ -9,7 +9,7 @@ Integrate the Thai conversational chat journey from the chat dialog reference (`
 
 1. **System Prompt Enhancement**: The system prompt (`frontend/lib/prompts/system-prompt-v2.ts`) already has comprehensive Thai conversational tone with social proof phrases like "กำลังมาแรง", "stock sold out", "สาวๆ หากันให้ควัก". The current implementation is already aligned with the spec. Minor validation may be needed.
 
-2. **Initial Greeting in ChatAssistant**: Add an automatic initial greeting message when the chat loads: "อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา" to create a warm, friendly opening.
+2. **Initial Greeting in ChatAssistant**: Add an automatic initial greeting message when the chat loads: "ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา" to create a warm, friendly opening.
 
 3. **Enhanced Outfit Recommendation Cards**: Update the `OutfitRecommendationCard` component to display:
    - Look title/style name (e.g., "Vintage Layer Office Look")
@@ -28,7 +28,7 @@ Use these files to complete the chore:
 
 - **`frontend/components/chat/ChatAssistant.tsx`** (lines 26-306)
   - Add initial greeting message when chat loads (useEffect with empty messages check)
-  - The greeting should be: "อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
+  - The greeting should be: "ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
   - Currently shows English placeholder text on line 260-263
 
 - **`frontend/components/chat/OutfitRecommendationCard.tsx`** (lines 1-78)
@@ -71,7 +71,7 @@ IMPORTANT: Execute every step in order, top to bottom.
   ```typescript
   const greeting: ChatMessageType = {
     id: 'greeting-initial',
-    content: 'อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
+    content: 'ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
     sender: 'assistant',
     timestamp: new Date(),
   }
@@ -119,7 +119,7 @@ IMPORTANT: Execute every step in order, top to bottom.
 - Run the development server: `cd frontend && pnpm dev`
 - Open the chat interface
 - Verify:
-  - Initial greeting appears: "อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
+  - Initial greeting appears: "ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา"
   - Quick prompts show Thai labels
   - Outfit cards display Look title, full description, ฿ price, and "ดูลุค" button
   - Chat responses use casual Thai tone with social proof
@@ -129,7 +129,7 @@ Execute these commands to validate the chore is complete:
 
 - `cd /Users/tachongrak/Projects/OOTDay_Anti/frontend && pnpm lint` - Ensure no linting errors
 - `cd /Users/tachongrak/Projects/OOTDay_Anti/frontend && pnpm build` - Verify the build passes
-- `grep -n "อ้ายฮายย" frontend/components/chat/ChatAssistant.tsx` - Confirm Thai greeting is added
+- `grep -n "ฮ้ายฮายย" frontend/components/chat/ChatAssistant.tsx` - Confirm Thai greeting is added
 - `grep -n "ดูลุค" frontend/components/chat/OutfitRecommendationCard.tsx` - Confirm Thai button text
 - `grep -n "ชุดไปทำงาน" frontend/components/chat/QuickPrompts.tsx` - Confirm Thai quick prompts
 - Manual test: Run `pnpm dev` and verify the chat UI displays Thai greeting on load

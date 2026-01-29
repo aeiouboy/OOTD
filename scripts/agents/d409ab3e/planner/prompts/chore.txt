@@ -1,0 +1,36 @@
+/chore d409ab3e Complete integration of visual           
+  consistency validation to ensure flat-lay images match product list:                  
+                                                                                        
+  ## Current State                                                                      
+  - product-visual-validator.ts was created with detection functions                    
+  - useFlatLayGeneration.ts logs warnings but does NOT replace mismatched products      
+  - Outfit generator filters products but flat-lay generation may still use mismatched  
+  items                                                                                 
+                                                                                        
+  ## Missing Integration                                                                
+                                                                                        
+  ### 1. Replace Mismatched Products Before Flat-Lay Generation                         
+  In useFlatLayGeneration.ts:                                                           
+  - When a product fails visual consistency check, find a replacement product           
+  - OR exclude the product from flat-lay generation entirely                            
+  - Ensure flat-lay prompt only contains products that will match their thumbnails      
+                                                                                        
+  ### 2. Synchronize Product List with Flat-Lay                                         
+  In OutfitDetail.tsx or ChatAssistant.tsx:                                             
+  - Ensure the same products used for flat-lay are displayed in product list            
+  - If a product is replaced for visual consistency, update the outfit.items array      
+                                                                                        
+  ### 3. Add Product Replacement Strategy                                               
+  Create function findVisuallyConsistentReplacement(product, allProducts):              
+  - Find similar product in same category with consistent visuals                       
+  - Match price range, color, occasion                                                  
+  - Return replacement or null if no suitable match                                     
+                                                                                        
+  ### 4. Files to Modify                                                                
+  - apps/web/lib/hooks/useFlatLayGeneration.ts - Add replacement logic                  
+  - apps/web/components/chat/ChatAssistant.tsx - Sync product list with flat-lay        
+  - apps/web/lib/utils/product-visual-validator.ts - Add replacement finder function    
+                                                                                        
+  ### 5. Expected Behavior                                                              
+  Before: Flat-lay shows heels, product list shows oxford shoes (mismatch)              
+  After: Both flat-lay and product list show the SAME feminine heels

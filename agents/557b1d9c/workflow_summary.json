@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "557b1d9c",
+  "prompt": "Fix try-on outfit consistency using the complete_looks.md prompt template while keeping existing image order. Current setup: IMAGE 1 = fitting model (person), IMAGE 2 = flat-lay (outfit). Problem: outfit keeps changing on regeneration. Solution: Replace buildDualReferenceTryOnPrompt() in apps/web/lib/services/fitting-model-service.ts with adapted prompt from data/personas/prompt_gen/complete_looks.md. The new prompt must: 1) Say 'Apply ALL fashion items from IMAGE 2 onto the person in IMAGE 1' 2) Include MANDATORY TRANSFER CHECKLIST for every item (top, bottom/dress, footwear, accessories) 3) Include REALISM REQUIREMENTS (preserve face/skin/hair/body from IMAGE 1, match lighting, natural shadows) 4) Include REJECT IF MISSING criteria (any clothing item from IMAGE 2, any accessories, person still wearing original outfit) 5) Specify 100% of items from IMAGE 2 must be present 6) Remove old CRITICAL/pixel-by-pixel language and use the \n  transfer-focused approach instead. Keep COMPOSITION section for model size (85% frame fill). Do NOT change image order in API calls.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-557b1d9c-fix-tryon-outfit-consistency.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "6622882e-94ac-4861-b0d3-83b5015fec0a",
+      "agent": "planner",
+      "output_dir": "./agents/557b1d9c/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "3e64a35a-86de-48c8-8a34-3d4802caeeea",
+      "agent": "builder",
+      "output_dir": "./agents/557b1d9c/builder/"
+    }
+  },
+  "overall_success": true
+}

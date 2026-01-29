@@ -1,0 +1,48 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 116584,
+  "duration_api_ms": 126513,
+  "num_turns": 15,
+  "result": "Plan created successfully.\n\n**Plan file created:** `specs/chore-28306648-fitting-model-try-on-looks.md`\n\nThe plan covers:\n1. **Type extensions** - Adding try-on fields to Outfit interface and image types\n2. **Service function** - New `generateTryOnLooks()` in fitting-model-service.ts with prompt template\n3. **API route update** - Handling 'try-on' generationType with reference image\n4. **Component update** - '\u0e25\u0e2d\u0e07\u0e43\u0e2a\u0e48' button, loading states, and modal display in OutfitRecommendationCard\n5. **Modal UI** - Dialog for displaying generated try-on image\n6. **Error handling** - Edge cases for no fitting model, generation failures, rate limiting",
+  "session_id": "fb84bfa3-2c3a-469d-9c4c-4a3377003491",
+  "total_cost_usd": 0.730986,
+  "usage": {
+    "input_tokens": 1819,
+    "cache_creation_input_tokens": 64262,
+    "cache_read_input_tokens": 392669,
+    "output_tokens": 3397,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 0,
+      "ephemeral_5m_input_tokens": 64262
+    }
+  },
+  "modelUsage": {
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 149,
+      "outputTokens": 333,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 4772,
+      "webSearchRequests": 0,
+      "costUSD": 0.0077789999999999995,
+      "contextWindow": 200000
+    },
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 1822,
+      "outputTokens": 3420,
+      "cacheReadInputTokens": 392669,
+      "cacheCreationInputTokens": 69162,
+      "webSearchRequests": 0,
+      "costUSD": 0.723207,
+      "contextWindow": 200000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "1604666c-b719-4cb6-b9a9-cf2af51a162d"
+}

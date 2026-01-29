@@ -1,6 +1,7 @@
 import { Button } from '@/components/ui/button';
 import { ArrowRight, ChevronLeft } from 'lucide-react';
 import { OnboardingProgress } from './OnboardingProgress';
+import Image from 'next/image';
 
 interface OnboardingDepartmentProps {
   onNext: () => void;
@@ -39,23 +40,27 @@ export function OnboardingDepartment({ onNext, onBack }: OnboardingDepartmentPro
 
           {/* Department Card */}
           <div className="space-y-4">
-            <div className="relative rounded-2xl overflow-hidden border-4 border-[var(--onboarding-primary)] cursor-pointer">
-              {/* Women's Fashion Flat Lay Image Placeholder */}
-              <div className="w-full h-64 bg-gradient-to-br from-pink-100 via-rose-100 to-red-100 flex items-center justify-center">
-                <div className="text-center">
-                  <p className="text-lg font-semibold text-gray-700">Women&apos;s Fashion</p>
-                  <p className="text-sm text-gray-500 mt-2">Flat lay image</p>
+            <div className="flex justify-center">
+              <div className="relative rounded-2xl overflow-hidden border-4 border-[var(--onboarding-primary)] cursor-pointer inline-block">
+                {/* Women's Fashion Flat Lay Image */}
+                <Image
+                  src="/images/onboarding/womens-fashion.jpg"
+                  alt="Women's Fashion"
+                  width={260}
+                  height={348}
+                  quality={100}
+                  className="block"
+                />
+                {/* Selected Badge */}
+                <div className="absolute top-4 right-4 bg-[var(--onboarding-primary)] text-white px-4 py-2 rounded-full text-sm font-semibold">
+                  Selected
                 </div>
-              </div>
-              {/* Selected Badge */}
-              <div className="absolute top-4 right-4 bg-[var(--onboarding-primary)] text-white px-4 py-2 rounded-full text-sm font-semibold">
-                Selected
               </div>
             </div>
           </div>
 
           {/* Next Button */}
-          <div className="flex justify-end">
+          <div className="flex justify-center">
             <Button
               onClick={onNext}
               className="w-14 h-14 rounded-full bg-[var(--onboarding-primary)] hover:bg-[var(--onboarding-primary-hover)] text-white"

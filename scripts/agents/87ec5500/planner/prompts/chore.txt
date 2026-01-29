@@ -1,0 +1,37 @@
+/chore 87ec5500 Replace outfit recommendation card thumbnail with flat-lay LOOKs image showing all recommended items, keeping ดูลุค button.
+
+  CURRENT BEHAVIOR:
+  - Outfit recommendation card shows single product thumbnail (just dress on mannequin)
+  - Card has: product image, 'SFERA Dress & Shoes', '3 ชิ้น', '฿6,670', and buttons (ดูลุค, heart, share)
+  - Separate Looks Inspiration appears below as different message
+
+  EXPECTED BEHAVIOR:
+  - Outfit recommendation card displays flat-lay image showing ALL items (dress + shoes + accessories) laid out together
+  - Keep same card structure with title, item count, price
+  - Keep 'ดูลุค' button, heart button, share button at bottom
+  - Keep message 'กำลังสร้างภาพ Looks Inspire จากสินค้าที่แนะนำสักครู่นะคะ... 🎨' while generating
+  - Remove the separate Looks Inspiration component that appears below - flat-lay is now the card image
+
+  CARD STRUCTURE (keep same, just change image):
+  ┌─────────────────────────────────┐
+  │ [FLAT-LAY IMAGE showing all    │
+  │  items laid out on white bg]   │
+  ├─────────────────────────────────┤
+  │ SFERA Dress & Shoes            │
+  │ 3 ชิ้น                          │
+  │ ฿6,670                         │
+  │ [👁 ดูลุค] [♡] [share]          │
+  └─────────────────────────────────┘
+
+  IMPLEMENTATION:
+  1. In ChatAssistant.tsx: Generate flat-lay image when outfit recommendation is ready
+  2. Pass flat-lay imageUrl/imageBase64 to outfit recommendation card instead of first product thumbnail
+  3. Update OutfitRecommendationCard.tsx to use flatLayImageUrl prop when available, fallback to product image
+  4. Remove separate LooksInspiration message below card - the flat-lay IS the card image now
+  5. Show loading skeleton in card image area while 'กำลังสร้างภาพ Looks Inspire...' is generating
+  6. Keep all card buttons (ดูลุค, heart, share) functional
+
+  FILES TO MODIFY:
+  - apps/web/components/chat/OutfitRecommendationCard.tsx (use flat-lay image, keep buttons)
+  - apps/web/components/chat/ChatAssistant.tsx (generate flat-lay for card, remove separate LooksInspiration)
+  - apps/web/lib/types/chat-types.ts (add flatLayImageUrl to ChatMessage if needed)

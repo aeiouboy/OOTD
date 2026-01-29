@@ -6,9 +6,20 @@
 
 import type { EnhancedProduct } from './types/product-types'
 import type { OccasionType, Gender, OutfitRole } from './types/enums'
+import type { Product } from './types'
+import type { UserProfile } from './types/user-profile-types'
 import { mapProductToOccasions } from './categorization/occasion-mapper'
 import { getProductName, getProductPrice, getProductImageUrl } from './utils/product-utils'
 import { filterByGender, filterByOccasion } from './utils/product-filters'
+import {
+  validateOutfitComposition,
+  deduplicateOutfitCategories,
+} from './styling/outfit-combination-rules'
+import {
+  getUserPreferenceContext,
+  personalizeOutfitTitle,
+  type UserPreferenceContext,
+} from './utils/user-preference-mapper'
 
 export interface EnhancedOutfit {
   id: string
@@ -68,7 +79,28 @@ function randomPick<T>(items: T[]): T | undefined {
 }
 
 /**
+ * Convert EnhancedProduct to Product for validation
+ */
+function toProduct(enhanced: EnhancedProduct): Product {
+  const status = enhanced.availability?.status || 'in_stock'
+  // Map AvailabilityStatus to Product availability type
+  const availability: 'in_stock' | 'low_stock' | 'out_of_stock' =
+    status === 'pre_order' ? 'in_stock' : status
+
+  return {
+    sku: enhanced.id,
+    name: getProductName(enhanced),
+    brand: enhanced.brand,
+    price: getProductPrice(enhanced),
+    imageUrl: getProductImageUrl(enhanced) || '',
+    availability,
+    visualDescription: enhanced.description?.th || enhanced.description?.en || '',
+  }
+}
+
+/**
  * Generate a single outfit from categorized products
+ * Enhanced with user preference personalization
  */
 export function generateEnhancedOutfit(
   categorized: CategorizedEnhancedProducts,
@@ -77,9 +109,14 @@ export function generateEnhancedOutfit(
     gender?: Gender
     maxPrice?: number
     formalityLevel?: number
+    userProfile?: UserProfile | null
   } = {}
 ): EnhancedOutfit | null {
-  const { occasion, gender, maxPrice, formalityLevel } = options
+  const { occasion, gender, maxPrice, formalityLevel, userProfile } = options
+
+  // Get user preference context if profile exists
+  const userContext: UserPreferenceContext | null = userProfile ? getUserPreferenceContext(userProfile) : null
+
   const products: EnhancedProduct[] = []
 
   // Strategy 1: Dress-based outfit (common for women)
@@ -97,6 +134,19 @@ export function generateEnhancedOutfit(
         const accessory = randomPick([...categorized.accessory, ...categorized.bag])
         if (accessory) products.push(accessory)
       }
+    }
+
+    // Validate dress-based outfit composition
+    const dressValidation = validateOutfitComposition(products.map(toProduct))
+    if (!dressValidation.isValid) {
+      const deduplicated = deduplicateOutfitCategories(products.map(toProduct), { occasion })
+      products.length = 0
+      products.push(...deduplicated.map(p => {
+        // Map back to EnhancedProduct by finding the original
+        const original = [dress, ...categorized.footwear, ...categorized.accessory, ...categorized.bag]
+          .find(ep => ep && ep.id === p.sku)
+        return original!
+      }).filter(Boolean))
     }
   }
   // Strategy 2: Top + Bottom outfit
@@ -122,11 +172,39 @@ export function generateEnhancedOutfit(
       const accessory = randomPick(categorized.accessory)
       if (accessory) products.push(accessory)
     }
+
+    // Validate top+bottom outfit composition
+    const topBottomValidation = validateOutfitComposition(products.map(toProduct))
+    if (!topBottomValidation.isValid) {
+      const deduplicated = deduplicateOutfitCategories(products.map(toProduct), { occasion })
+      products.length = 0
+      products.push(...deduplicated.map(p => {
+        // Map back to EnhancedProduct by finding the original
+        const original = [...categorized.top, ...categorized.bottom, ...categorized.outerwear,
+          ...categorized.footwear, ...categorized.accessory, ...categorized.bag]
+          .find(ep => ep && ep.id === p.sku)
+        return original!
+      }).filter(Boolean))
+    }
   }
 
   // Need at least 2 products to make an outfit
   if (products.length < 2) {
     return null
+  }
+
+  // Final validation before creating outfit object
+  const finalValidation = validateOutfitComposition(products.map(toProduct))
+  if (!finalValidation.isValid) {
+    console.warn('[EnhancedOutfitGenerator] Invalid composition detected:', finalValidation.issues)
+    const deduplicated = deduplicateOutfitCategories(products.map(toProduct), { occasion })
+    products.length = 0
+    products.push(...deduplicated.map(p => {
+      // Map back to EnhancedProduct by finding the original
+      const allProducts = Object.values(categorized).flat()
+      const original = allProducts.find(ep => ep && ep.id === p.sku)
+      return original!
+    }).filter(Boolean))
   }
 
   // Calculate total price
@@ -142,12 +220,15 @@ export function generateEnhancedOutfit(
     products.reduce((sum, p) => sum + (p.style?.formalityLevel || 5), 0) / products.length
 
   // Generate title and description
-  const title = generateOutfitTitle(products, occasion)
+  const baseTitle = generateOutfitTitle(products, occasion)
+  const personalizedTitle = userContext?.userName
+    ? personalizeOutfitTitle(baseTitle, userContext.userName)
+    : baseTitle
   const description = generateOutfitDescription(products, occasion, avgFormality)
 
   return {
     id: `outfit-${Date.now()}-${Math.random().toString(36).substr(2, 9)}`,
-    title,
+    title: personalizedTitle,
     description,
     totalPrice,
     products,
@@ -179,7 +260,7 @@ function generateOutfitTitle(products: EnhancedProduct[], occasion?: OccasionTyp
   }
 
   // Fallback to brand-based title
-  const brands = [...new Set(products.map((p) => p.brand))].filter(Boolean)
+  const brands = Array.from(new Set(products.map((p) => p.brand))).filter(Boolean)
   if (brands.length > 0) {
     return `${brands[0]} Ensemble`
   }
@@ -260,6 +341,7 @@ function generateOutfitDescription(
 
 /**
  * Generate multiple outfits
+ * Enhanced with user preference personalization
  */
 export function generateEnhancedOutfits(
   products: EnhancedProduct[],
@@ -270,16 +352,23 @@ export function generateEnhancedOutfits(
     maxPrice?: number
     minFormality?: number
     maxFormality?: number
+    userProfile?: UserProfile | null
   } = {}
 ): EnhancedOutfit[] {
-  const { count = 5, occasion, gender, maxPrice, minFormality, maxFormality } = options
+  const { count = 5, occasion, gender, maxPrice, minFormality, maxFormality, userProfile } = options
+
+  // Get user preference context if profile exists
+  const userContext = userProfile ? getUserPreferenceContext(userProfile) : null
+
+  // Use gender from user profile if available
+  const targetGender = userProfile?.gender || gender
 
   // Filter products
   let filtered = [...products]
 
   // Filter by gender
-  if (gender) {
-    filtered = filterByGender(filtered, gender)
+  if (targetGender) {
+    filtered = filterByGender(filtered, targetGender)
   }
 
   // Filter by occasion
@@ -317,9 +406,10 @@ export function generateEnhancedOutfits(
   while (outfits.length < count && attempts < maxAttempts) {
     const outfit = generateEnhancedOutfit(categorized, {
       occasion,
-      gender,
+      gender: targetGender,
       maxPrice,
       formalityLevel: minFormality,
+      userProfile,
     })
 
     if (outfit) {
@@ -343,11 +433,13 @@ export function generateEnhancedOutfits(
 
 /**
  * Generate outfits from user query
+ * Enhanced with user preference personalization
  */
 export function generateOutfitsFromQuery(
   products: EnhancedProduct[],
   query: string,
-  count: number = 5
+  count: number = 5,
+  userProfile?: UserProfile | null
 ): EnhancedOutfit[] {
   const lowerQuery = query.toLowerCase()
 
@@ -373,8 +465,8 @@ export function generateOutfitsFromQuery(
     occasion = 'party'
   }
 
-  // Detect gender
-  let gender: Gender | undefined
+  // Detect gender (default to user profile gender if available)
+  let gender: Gender | undefined = userProfile?.gender
   if (lowerQuery.includes('women') || lowerQuery.includes('ผู้หญิง')) {
     gender = 'women'
   } else if (lowerQuery.includes('men') || lowerQuery.includes('ผู้ชาย')) {
@@ -390,5 +482,6 @@ export function generateOutfitsFromQuery(
     occasion,
     gender,
     maxPrice,
+    userProfile,
   })
 }

@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "4308e361",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-4308e361-enhance-image-api-reference-images.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "82e01ef3-43df-4ae8-a49e-43836fbd0d8e",
+  "retry_code": "none",
+  "output": "## Summary\n\nI have implemented the enhancement for the image generation API to support reference images for fitting model face-matching. Here's what was done:\n\n### Work Completed:\n\n- **Updated `ImageGenerationRequest` type** (`apps/web/lib/types/image-types.ts`):\n  - Added `referenceImage?: string` field with JSDoc documentation for base64 data URL\n  - Added `generationType?: 'outfit' | 'fitting-model'` field to distinguish generation types\n\n- **Added `generateFittingModelImage` method** (`apps/web/lib/services/image-generation-service.ts`):\n  - New method using OpenRouter's multimodal content format with `type: 'image_url'`\n  - Extended 60-second timeout for fitting model generation\n  - Proper validation of prompt and reference image (must be base64 data URL)\n  - Retry logic with exponential backoff (reuses existing patterns)\n  - Text-first content array order per OpenRouter documentation\n\n- **Updated API route** (`apps/web/app/api/generate-image/route.ts`):\n  - Extracts `referenceImage` and `generationType` from request body\n  - Validates `referenceImage` when `generationType` is 'fitting-model' (must be non-empty, start with 'data:image/')\n  - Routes to `generateFittingModelImage()` for fitting-model type, otherwise uses existing `generateOutfitImage()`\n  - Increased description length limit to 3000 chars for fitting-model generation\n\n- **Updated `fitting-model-service.ts`** (`apps/web/lib/services/fitting-model-service.ts`):\n  - Removed base64 text embedding from prompt (no more `REFERENCE IMAGE:` section with embedded base64)\n  - Now passes `referenceImage` and `generationType: 'fitting-model'` as separate API fields\n  - Mystery mode (`generateDefaultFittingModel()`) remains unchanged\n\n### Files Changed:\n```\napps/web/lib/types/image-types.ts              |  12 +\napps/web/lib/services/image-generation-service.ts | 193 ++\napps/web/app/api/generate-image/route.ts       |  50 +-\napps/web/lib/services/fitting-model-service.ts |   8 - (net)\n```\n\nTotal: ~255 lines added/modified across 4 files."
+}

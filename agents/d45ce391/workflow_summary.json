@@ -1,0 +1,23 @@
+{
+  "workflow": "chore_implement",
+  "adw_id": "d45ce391",
+  "prompt": "Fix OnboardingStyle card layout to show full style images without cropping. The new style images are 175x306px (portrait 1:1.75 ratio) but currently only the top portion shows due to fixed height container with object-cover.\n\n  File to modify: apps/web/components/onboarding/OnboardingStyle.tsx\n\n  Current issue in the image container (around line 116):\n  - Fixed height: h-[110px] sm:h-[140px]\n  - object-cover object-top crops the image\n\n  Solution: Change the image section to use aspect-ratio instead of fixed height to display the full portrait image. Update the styling:\n  1. Remove the fixed height from the image container div\n  2. Use aspect-[175/306] or aspect-[7/12] to maintain the portrait ratio\n  3. Keep object-cover to fill the aspect ratio container properly\n  4. Optionally adjust the overall card min-height if needed for consistent layout\n\n  The goal is to show the full body fashion images (not just head/shoulders) while maintaining a clean grid layout. The text section below the image should still be visible with style name, description, and card description.",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "plan_path": "specs/chore-d45ce391-fix-onboarding-style-card-image-layout.md",
+  "phases": {
+    "planning": {
+      "success": true,
+      "session_id": "8be51c5a-092d-4e6d-b7c5-fa4c4a3cbd9c",
+      "agent": "planner",
+      "output_dir": "./agents/d45ce391/planner/"
+    },
+    "implementation": {
+      "success": true,
+      "session_id": "d5b4d311-8829-4872-a880-4262dd2b8bc2",
+      "agent": "builder",
+      "output_dir": "./agents/d45ce391/builder/"
+    }
+  },
+  "overall_success": true
+}

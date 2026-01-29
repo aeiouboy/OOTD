@@ -21,6 +21,7 @@ export function ChatMessage({ message }: ChatMessageProps) {
   }
 
   // Render image message (v3.1 - Customer Journey Step 4)
+  // v4.0: Updated to pass displayMode and recommendedItems for flat-lay support
   if (hasImage && !isUser) {
     return (
       <div className="flex justify-start mb-3">
@@ -35,6 +36,8 @@ export function ChatMessage({ message }: ChatMessageProps) {
               imageUrl={message.imageUrl}
               imageBase64={message.imageBase64}
               isLoading={false}
+              displayMode={message.displayMode || 'portrait'}
+              recommendedItems={message.recommendedItems}
             />
           </div>
         </div>

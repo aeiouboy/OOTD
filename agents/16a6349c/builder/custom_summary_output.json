@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "16a6349c",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-16a6349c-enrich-mock-products-fashion-attributes.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "5b01b9f8-f610-4689-abb6-154524be048c",
+  "retry_code": "none",
+  "output": "## Summary\n\nI've implemented the chore to enrich mock products with comprehensive fashion attributes:\n\n### Work Completed:\n- **Created `apps/web/lib/mock-data02.ts`** with:\n  - `ColorTone` type (`'warm' | 'cool' | 'neutral'`)\n  - `EnhancedMockProduct` interface extending the base `Product` type with 14 fashion attributes\n  - `enhancedMockProducts` array containing all 14 products with enriched data\n\n- **Enriched all 14 products** (CG001-CG008, SF001-SF004, LO001, SH001-SH002) with:\n  - `styleTags` - Style classifications (classic, minimalist, corporate-chic, etc.)\n  - `seasonType` - Seasonal suitability (all-season, hot-season, cool-season)\n  - `formalityLevel` - 1-10 formality scale\n  - `fitType` - Fit classification (regular, tailored, slim, etc.)\n  - `patternType` - Pattern type (solid, floral, print, etc.)\n  - `materialType` - Material composition (cotton, polyester, leather, etc.)\n  - `colorTone` - Color temperature (warm, cool, neutral)\n  - `aesthetic` - Pinterest 2026 aesthetic category\n  - `colorPalette` - Trending color palette\n  - `outfitRole` - Item role in outfit (top, bottom, dress, footwear, etc.)\n  - `brandTier` - Brand positioning (budget, mid-range)\n  - `pairingCategories` - Compatible product categories for outfit matching\n  - `layeringStyle` - Layering style (fitted, structured, relaxed)\n  - `silhouetteType` - Silhouette classification\n\n- **Validated TypeScript compilation** - No type errors\n\n### Files Changed:\n```\napps/web/lib/mock-data02.ts | 508 +++++++++++++++++++++++++++++++++++++++++++\n1 file changed, 508 insertions(+)\n```"
+}

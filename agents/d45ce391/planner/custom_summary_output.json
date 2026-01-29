@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "d45ce391",
+  "slash_command": "/chore",
+  "args": [
+    "d45ce391",
+    "Fix OnboardingStyle card layout to show full style images without cropping. The new style images are 175x306px (portrait 1:1.75 ratio) but currently only the top portion shows due to fixed height container with object-cover.\n\n  File to modify: apps/web/components/onboarding/OnboardingStyle.tsx\n\n  Current issue in the image container (around line 116):\n  - Fixed height: h-[110px] sm:h-[140px]\n  - object-cover object-top crops the image\n\n  Solution: Change the image section to use aspect-ratio instead of fixed height to display the full portrait image. Update the styling:\n  1. Remove the fixed height from the image container div\n  2. Use aspect-[175/306] or aspect-[7/12] to maintain the portrait ratio\n  3. Keep object-cover to fill the aspect ratio container properly\n  4. Optionally adjust the overall card min-height if needed for consistent layout\n\n  The goal is to show the full body fashion images (not just head/shoulders) while maintaining a clean grid layout. The text section below the image should still be visible with style name, description, and card description."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "8be51c5a-092d-4e6d-b7c5-fa4c4a3cbd9c",
+  "retry_code": "none",
+  "output": "Plan created at: `specs/chore-d45ce391-fix-onboarding-style-card-image-layout.md`\n\nThe plan details how to fix the OnboardingStyle card layout by:\n\n1. Replacing fixed height (`h-[110px] sm:h-[140px]`) with aspect-ratio (`aspect-[175/306]`)\n2. Removing `object-top` from the image since full image will display\n3. Removing `min-h-*` constraints from the card container\n4. Keeping the gradient overlay for text contrast",
+  "plan_path": "specs/chore-d45ce391-fix-onboarding-style-card-image-layout.md"
+}

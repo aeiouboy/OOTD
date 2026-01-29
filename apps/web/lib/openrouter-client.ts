@@ -6,7 +6,7 @@
 import { OpenRouterResponse, OpenRouterError, TokenUsage } from './types/test-types';
 import type { ProductContext } from './utils/product-context-serializer';
 import { formatProductContextForPrompt } from './utils/product-context-serializer';
-import { SYSTEM_PROMPT_V2 } from './prompts/system-prompt-v2';
+import { getActiveSystemPrompt, VersionUtils } from './prompts/prompt-version';
 
 export interface Message {
   role: 'user' | 'assistant' | 'system';

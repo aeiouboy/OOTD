@@ -1,7 +1,7 @@
 'use client'
 
-import { useState, useEffect } from 'react'
-import { ChatHeader } from './ChatHeader'
+import { useState, useEffect, useCallback } from 'react'
+import { ChatHeader, ChatStatus } from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
 import { QuickPrompts } from './QuickPrompts'
@@ -11,7 +11,11 @@ import { Button } from '@/components/ui/button'
 import { PanelSizeControls } from '@/components/layout/PanelSizeControls'
 import { useResizablePanelContext } from '@/components/layout/ResizablePanel'
 import { Beaker } from 'lucide-react'
-import type { ChatMessage as ChatMessageType, Outfit } from '@/lib/types'
+import type { ChatMessage as ChatMessageType, Outfit, FlatLayItem, Product } from '@/lib/types'
+import {
+  findReplacementsForInconsistentProducts,
+  validateProductVisualConsistency,
+} from '@/lib/utils/product-visual-validator'
 import type { TestResult } from '@/lib/types/test-types'
 import { getMockOutfitResponse } from '@/lib/mock-data'
 import { exportResultsBoth } from '@/lib/test-result-exporter'
@@ -39,12 +43,15 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
   const [generatingImage, setGeneratingImage] = useState(false)
   const [imageGenerationError, setImageGenerationError] = useState<string | null>(null)
 
+  // v8.0: All products for visual consistency replacement lookup
+  const [allProducts, setAllProducts] = useState<Product[]>([])
+
   // v3.2: Initialize with Thai greeting message
   useEffect(() => {
     if (messages.length === 0) {
       const greeting: ChatMessageType = {
         id: 'greeting-initial',
-        content: 'อ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
+        content: 'ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
         sender: 'assistant',
         timestamp: new Date(),
       }
@@ -65,6 +72,32 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
   const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE === 'true'
 
+  /**
+   * v8.0: Apply product replacements to an outfit for visual consistency
+   * Creates a new outfit with items array where mismatched items are replaced
+   * Recalculates totalPrice based on replacement prices
+   */
+  const applyProductReplacements = useCallback((
+    outfit: Outfit,
+    replacements: Map<string, Product>
+  ): Outfit => {
+    if (replacements.size === 0) return outfit
+
+    const updatedItems = outfit.items.map(item => {
+      const replacement = replacements.get(item.sku)
+      return replacement || item
+    })
+
+    // Recalculate total price
+    const newTotalPrice = updatedItems.reduce((sum, item) => sum + (item.price || 0), 0)
+
+    return {
+      ...outfit,
+      items: updatedItems,
+      totalPrice: newTotalPrice,
+    }
+  }, [])
+
   const handleTestComplete = (result: TestResult) => {
     console.log('Test completed:', result)
   }
@@ -72,6 +105,210 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
   const handleExportResults = (results: TestResult[]) => {
     exportResultsBoth(results)
   }
+
+  // v9.0: Clear chat handler for enhanced header
+  const handleClearChat = useCallback(() => {
+    // Reset to initial greeting
+    const greeting: ChatMessageType = {
+      id: 'greeting-initial',
+      content: 'ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา',
+      sender: 'assistant',
+      timestamp: new Date(),
+    }
+    setMessages([greeting])
+    // Reset session context
+    setSessionContext(createSessionContext())
+  }, [])
+
+  // v9.0: Compute chat status based on current state
+  const getChatStatus = useCallback((): ChatStatus => {
+    if (isTyping) return 'typing'
+    if (generatingImage) return 'generating'
+    return 'online'
+  }, [isTyping, generatingImage])
+
+  /**
+   * v5.0: Generate flat-lay image for an outfit and update the message
+   * v8.0: Enhanced with visual consistency validation and product replacement
+   *
+   * This function:
+   * 1. Validates visual consistency between product text and thumbnails
+   * 2. Replaces visually inconsistent products with consistent alternatives
+   * 3. Generates flat-lay image using the corrected products
+   * 4. Updates both the flat-lay image AND the product list in the message
+   */
+  const generateFlatLayForOutfit = useCallback(async (
+    outfit: Outfit,
+    messageId: string,
+    productCatalog?: Product[]
+  ) => {
+    console.log(`[Chat] Generating flat-lay for outfit ${outfit.id}...`)
+
+    // v8.0: Check for visual inconsistencies and find replacements if catalog provided
+    let effectiveOutfit = outfit
+    let replacementsMade = new Map<string, Product>()
+
+    if (productCatalog && productCatalog.length > 0) {
+      const replacementResult = findReplacementsForInconsistentProducts(
+        outfit.items,
+        productCatalog,
+        { targetGender: 'women' }
+      )
+
+      if (replacementResult.replacements.size > 0) {
+        console.log(
+          `[Chat] Replacing ${replacementResult.replacements.size} visually inconsistent products in outfit ${outfit.id}:`,
+          Array.from(replacementResult.replacements.entries()).map(([origSku, replacement]) => ({
+            original: origSku,
+            replacement: replacement.sku,
+            name: replacement.name,
+          }))
+        )
+
+        // Apply replacements to create the effective outfit
+        effectiveOutfit = applyProductReplacements(outfit, replacementResult.replacements)
+        replacementsMade = replacementResult.replacements
+
+        // Update the message with corrected product list BEFORE generating flat-lay
+        // This ensures the product thumbnails shown match the flat-lay image
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.id === messageId && msg.outfits) {
+              return {
+                ...msg,
+                outfits: msg.outfits.map((o) =>
+                  o.id === outfit.id
+                    ? {
+                        ...o,
+                        items: effectiveOutfit.items,
+                        totalPrice: effectiveOutfit.totalPrice,
+                      }
+                    : o
+                ),
+              }
+            }
+            return msg
+          })
+        )
+      }
+
+      if (replacementResult.unreplaceableSkus.length > 0) {
+        console.warn(
+          `[Chat] ${replacementResult.unreplaceableSkus.length} items in outfit ${outfit.id} have visual mismatches but no replacement found:`,
+          replacementResult.unreplaceableSkus
+        )
+      }
+    }
+
+    // Extract FlatLayItem array from effective outfit items (with replacements applied)
+    const flatLayItems: FlatLayItem[] = effectiveOutfit.items.slice(0, 5).map((item: Product) => ({
+      name: item.name,
+      category: item.subCategory || item.category || 'Item',
+      color: item.colors?.[0],
+      visualDescription: item.visualDescription,
+    }))
+    const occasionContext = outfit.description
+
+    if (flatLayItems.length === 0) {
+      console.log('[Chat] No items to generate flat-lay for')
+      return
+    }
+
+    try {
+      const imageResponse = await fetch('/api/generate-image', {
+        method: 'POST',
+        headers: {
+          'Content-Type': 'application/json',
+        },
+        body: JSON.stringify({
+          description: outfit.description || 'LOOKs Inspiration',
+          generationType: 'flat-lay',
+          flatLayItems,
+          occasionContext,
+        }),
+      })
+
+      const imageData = await imageResponse.json()
+
+      if (imageData.success && (imageData.imageUrl || imageData.imageBase64)) {
+        console.log(`[Chat] Flat-lay generated successfully for outfit ${outfit.id}`)
+
+        // Update the message's outfit with the flat-lay image
+        // Note: Product items were already updated above if replacements were made
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.id === messageId && msg.outfits) {
+              return {
+                ...msg,
+                outfits: msg.outfits.map((o) =>
+                  o.id === outfit.id
+                    ? {
+                        ...o,
+                        flatLayImageUrl: imageData.imageUrl,
+                        flatLayImageBase64: imageData.imageBase64,
+                        isGeneratingFlatLay: false,
+                        // Ensure items are the effective items (with replacements)
+                        items: effectiveOutfit.items,
+                        totalPrice: effectiveOutfit.totalPrice,
+                      }
+                    : o
+                ),
+              }
+            }
+            return msg
+          })
+        )
+      } else {
+        console.error('[Chat] Flat-lay generation failed:', imageData.message)
+        // Mark as not generating (will show fallback thumbnail)
+        // Still apply any product replacements even if image generation failed
+        setMessages((prev) =>
+          prev.map((msg) => {
+            if (msg.id === messageId && msg.outfits) {
+              return {
+                ...msg,
+                outfits: msg.outfits.map((o) =>
+                  o.id === outfit.id
+                    ? {
+                        ...o,
+                        isGeneratingFlatLay: false,
+                        items: effectiveOutfit.items,
+                        totalPrice: effectiveOutfit.totalPrice,
+                      }
+                    : o
+                ),
+              }
+            }
+            return msg
+          })
+        )
+      }
+    } catch (error) {
+      console.error('[Chat] Flat-lay generation error:', error)
+      // Mark as not generating on error
+      // Still apply any product replacements even if image generation failed
+      setMessages((prev) =>
+        prev.map((msg) => {
+          if (msg.id === messageId && msg.outfits) {
+            return {
+              ...msg,
+              outfits: msg.outfits.map((o) =>
+                o.id === outfit.id
+                  ? {
+                      ...o,
+                      isGeneratingFlatLay: false,
+                      items: effectiveOutfit.items,
+                      totalPrice: effectiveOutfit.totalPrice,
+                    }
+                  : o
+              ),
+            }
+          }
+          return msg
+        })
+      )
+    }
+  }, [applyProductReplacements])
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return
@@ -123,170 +360,116 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         console.log(`[Chat] Session updated: ${data.sessionContext.recommendedProductIds?.length || 0} total products recommended`)
       }
 
-      // Create AI response message (normal flow)
+      // v8.0: Collect all products from outfits for visual consistency replacement lookup
+      const outfitProducts: Product[] = (data.outfits || []).flatMap((o: Outfit) => o.items || [])
+      if (outfitProducts.length > 0) {
+        setAllProducts(prev => {
+          // Merge with existing products, avoiding duplicates by SKU
+          const existingSkus = new Set(prev.map(p => p.sku))
+          const newProducts = outfitProducts.filter((p: Product) => !existingSkus.has(p.sku))
+          return [...prev, ...newProducts]
+        })
+      }
+
+      // v5.0: Mark outfits as generating flat-lay if we have image request
+      const outfitsWithLoading = (data.outfits || []).map((outfit: Outfit) => ({
+        ...outfit,
+        isGeneratingFlatLay: data.imageRequest && outfit.items.length > 0,
+      }))
+
+      // Create AI response message
+      const messageId = `ai-${Date.now()}`
       const aiResponse: ChatMessageType = {
-        id: `ai-${Date.now()}`,
+        id: messageId,
         content: data.message || 'สวัสดีค่ะ! นี่คือคำแนะนำสำหรับคุณ',
         sender: 'assistant',
         timestamp: new Date(),
-        outfits: data.outfits || [],
+        outfits: outfitsWithLoading,
       }
 
       setMessages((prev) => [...prev, aiResponse])
       setIsTyping(false)
 
-      // v3.1: Check if this is an image generation request (Auto or Manual)
-      if (data.imageRequest && data.outfitDescription) {
-        console.log('[Chat] Image request detected, generating image...')
+      // v5.0: Generate flat-lay images for each outfit (embedded in card, no separate message)
+      if (data.imageRequest && outfitsWithLoading.length > 0) {
+        console.log('[Chat] Image request detected, generating flat-lay for outfit cards...')
 
-        // Add AI acknowledgment message for auto-generation (UX Feedback)
+        // Add AI acknowledgment message for generation
         const acknowledgmentMessage: ChatMessageType = {
           id: `ai-ack-${Date.now()}`,
-          content: 'กำลังสร้างภาพ Looks Inspire จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
+          content: 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
           sender: 'assistant',
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, acknowledgmentMessage])
 
-        // Generate image
         setGeneratingImage(true)
         setImageGenerationError(null)
 
-        try {
-          const imageResponse = await fetch('/api/generate-image', {
-            method: 'POST',
-            headers: {
-              'Content-Type': 'application/json',
-            },
-            body: JSON.stringify({
-              description: data.outfitDescription,
-            }),
-          })
-
-          const imageData = await imageResponse.json()
-
-          if (imageData.success && (imageData.imageUrl || imageData.imageBase64)) {
-            // Determine UI Description (Thai)
-            const uiDescription = (data.outfits && data.outfits.length > 0)
-              ? data.outfits[0].description
-              : "ภาพตัวอย่าง Looks Inspire จากชุดที่แนะนำ ✨";
-
-            const imageMessage: ChatMessageType = {
-              id: `ai-image-${Date.now()}`,
-              content: 'นี่คือภาพชุดที่เราคิด! ✨',
-              sender: 'assistant',
-              timestamp: new Date(),
-              imageUrl: imageData.imageUrl,
-              imageBase64: imageData.imageBase64,
-              outfitDescription: uiDescription, // Use Thai Description for UI
-            }
-            setMessages((prev) => [...prev, imageMessage])
-          } else {
-            // Image generation failed
-            setImageGenerationError(imageData.message || 'ไม่สามารถสร้างภาพได้ กรุณาลองใหม่อีกครั้ง')
-
-            // Only show error message if it was an explicit request (optional, here we show small error)
-            const errorMessage: ChatMessageType = {
-              id: `ai-error-${Date.now()}`,
-              content: `ขออภัยค่ะ ${imageData.message || 'ไม่สามารถสร้างภาพได้ กรุณาลองใหม่อีกครั้ง'} 😊`,
-              sender: 'assistant',
-              timestamp: new Date(),
-            }
-            setMessages((prev) => [...prev, errorMessage])
+        // Generate flat-lay for each outfit, passing allProducts for visual consistency replacement
+        for (const outfit of outfitsWithLoading) {
+          if (outfit.items.length > 0) {
+            await generateFlatLayForOutfit(outfit, messageId, allProducts)
           }
-        } catch (error) {
-          console.error('[Chat] Image generation error:', error)
-          setImageGenerationError('เกิดข้อผิดพลาดในการสร้างภาพ')
-
-          const errorMessage: ChatMessageType = {
-            id: `ai-error-${Date.now()}`,
-            content: 'ขออภัยค่ะ เกิดข้อผิดพลาดในการสร้างภาพ ลองใหม่อีกครั้งได้นะคะ 😊',
-            sender: 'assistant',
-            timestamp: new Date(),
-          }
-          setMessages((prev) => [...prev, errorMessage])
-        } finally {
-          setGeneratingImage(false)
         }
+
+        // Remove the acknowledgment message now that flat-lay images are shown in cards
+        setMessages((prev) => prev.filter((msg) =>
+          msg.content !== 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨'
+        ))
+
+        setGeneratingImage(false)
       }
     } catch (error) {
       console.error('Chat error:', error)
 
       // Fallback to mock response on error
       const aiResponse = getMockOutfitResponse(content)
-      setMessages((prev) => [...prev, aiResponse])
+      const messageId = `ai-mock-${Date.now()}`
+
+      // v5.0: Mark mock outfits as generating flat-lay
+      const mockOutfitsWithLoading = (aiResponse.outfits || []).map((outfit: Outfit) => ({
+        ...outfit,
+        isGeneratingFlatLay: outfit.items.length > 0,
+      }))
+
+      const mockMessage: ChatMessageType = {
+        ...aiResponse,
+        id: messageId,
+        outfits: mockOutfitsWithLoading,
+      }
+
+      setMessages((prev) => [...prev, mockMessage])
       setIsTyping(false)
 
-      // v3.2: Auto-trigger image generation for Mock/Fallback responses
-      if (aiResponse.outfits && aiResponse.outfits.length > 0) {
-        console.log('[Chat] Fallback: Auto-generating image for mock response...')
+      // v5.0: Auto-generate flat-lay for mock responses
+      if (mockOutfitsWithLoading.length > 0) {
+        console.log('[Chat] Fallback: Auto-generating flat-lay for mock response...')
 
         // Add acknowledgement
         const acknowledgmentMessage: ChatMessageType = {
           id: `ai-ack-${Date.now()}`,
-          content: 'กำลังสร้างภาพ Looks Inspire จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
+          content: 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
           sender: 'assistant',
           timestamp: new Date(),
         }
         setMessages((prev) => [...prev, acknowledgmentMessage])
 
-        // Trigger generation
         setGeneratingImage(true)
         setImageGenerationError(null)
 
-        try {
-          // Generate description from the first outfit/products
-          const distinctProducts = aiResponse.outfits[0].items.slice(0, 3)
-          const productDesc = distinctProducts.map(p => (p as any).visualDescription || p.name).join(', ')
-          const desc = `Fashion outfit usage: ${productDesc}. Style: Professional fashion model.`
-
-          const imageResponse = await fetch('/api/generate-image', {
-            method: 'POST',
-            headers: { 'Content-Type': 'application/json' },
-            body: JSON.stringify({ description: desc }),
-          })
-
-          const imageData = await imageResponse.json()
-
-          // Determine UI Description (Thai) from fallback response
-          const uiDescription = (aiResponse.outfits && aiResponse.outfits.length > 0)
-            ? aiResponse.outfits[0].description
-            : "ภาพตัวอย่าง Looks Inspire จากชุดที่แนะนำ ✨";
-
-          if (imageData.success && (imageData.imageUrl || imageData.imageBase64)) {
-            const imageMessage: ChatMessageType = {
-              id: `ai-image-${Date.now()}`,
-              content: 'นี่คือภาพชุดที่เราคิด! ✨',
-              sender: 'assistant',
-              timestamp: new Date(),
-              imageUrl: imageData.imageUrl,
-              imageBase64: imageData.imageBase64,
-              outfitDescription: uiDescription, // Use Thai Description for UI
-            }
-            setMessages((prev) => [...prev, imageMessage])
-          } else {
-            setImageGenerationError(imageData.message || 'Image generation failed')
-            const errorMessage: ChatMessageType = {
-              id: `ai-error-${Date.now()}`,
-              content: `ขออภัยค่ะ ${imageData.message || 'ไม่สามารถสร้างภาพได้ (Mock Mode)'} 😊`,
-              sender: 'assistant',
-              timestamp: new Date(),
-            }
-            setMessages((prev) => [...prev, errorMessage])
+        for (const outfit of mockOutfitsWithLoading) {
+          if (outfit.items.length > 0) {
+            await generateFlatLayForOutfit(outfit, messageId, allProducts)
           }
-        } catch (err) {
-          console.error('Fallback Image Gen Error:', err)
-          setImageGenerationError('Failed to generate image')
-          const errorMessage: ChatMessageType = {
-            id: `ai-error-${Date.now()}`,
-            content: 'ขออภัยค่ะ ไม่สามารถเชื่อมต่อกับบริการสร้างภาพได้',
-            sender: 'assistant',
-            timestamp: new Date(),
-          }
-          setMessages((prev) => [...prev, errorMessage])
-        } finally {
-          setGeneratingImage(false)
         }
+
+        // Remove the acknowledgment message now that flat-lay images are shown in cards
+        setMessages((prev) => prev.filter((msg) =>
+          msg.content !== 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨'
+        ))
+
+        setGeneratingImage(false)
       }
     }
   }
@@ -337,7 +520,12 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         </div>
       )}
 
-      {!testMode && <ChatHeader />}
+      {!testMode && (
+        <ChatHeader
+          status={getChatStatus()}
+          onClearChat={handleClearChat}
+        />
+      )}
 
       {/* Messages Area */}
       {!testMode && (
@@ -354,7 +542,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
             <div key={message.id}>
               <ChatMessage message={message} />
 
-              {/* Outfit recommendations */}
+              {/* Outfit recommendations with embedded flat-lay images */}
               {message.outfits && message.outfits.length > 0 && (
                 <div className="ml-10 mt-2 space-y-2">
                   {message.outfits.map((outfit) => (

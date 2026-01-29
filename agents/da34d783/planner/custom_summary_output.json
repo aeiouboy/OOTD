@@ -1,0 +1,17 @@
+{
+  "phase": "planning",
+  "adw_id": "da34d783",
+  "slash_command": "/chore",
+  "args": [
+    "da34d783",
+    "Fix image generation service configuration issue. The OPENROUTER_API_KEY environment variable is missing which causes the error 'Image generation service is not configured'.\n\n  Steps:\n  1. Update .env.sample at project root to include OPENROUTER_API_KEY with documentation comment explaining it's required for AI image generation feature\n  2. Check if apps/web has its own .env.example or similar - if so, add OPENROUTER_API_KEY there too\n  3. Update apps/web/next.config.mjs to ensure OPENROUTER_API_KEY is available as server-side environment variable if needed\n  4. Optionally improve the error message in apps/web/app/api/generate-image/route.ts to be more user-friendly in Thai, e.g. '\u0e02\u0e2d\u0e2d\u0e20\u0e31\u0e22\u0e04\u0e48\u0e30 \u0e23\u0e30\u0e1a\u0e1a\u0e2a\u0e23\u0e49\u0e32\u0e07\u0e20\u0e32\u0e1e\u0e22\u0e31\u0e07\u0e44\u0e21\u0e48\u0e1e\u0e23\u0e49\u0e2d\u0e21\u0e43\u0e0a\u0e49\u0e07\u0e32\u0e19\u0e43\u0e19\u0e02\u0e13\u0e30\u0e19\u0e35\u0e49 \u0e01\u0e23\u0e38\u0e13\u0e32\u0e25\u0e2d\u0e07\u0e43\u0e2b\u0e21\u0e48\u0e20\u0e32\u0e22\u0e2b\u0e25\u0e31\u0e07\u0e19\u0e30\u0e04\u0e30'\n\n  Note: The actual API key value needs to be configured by the user in their .env file - this chore just ensures the configuration structure is in place."
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/chore.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "f5fa29e0-12ef-4bb6-b29c-7ca37ebc5296",
+  "retry_code": "none",
+  "output": "Plan created at: **`specs/chore-da34d783-fix-image-generation-env-config.md`**\n\n### Summary\nThe plan addresses the missing `OPENROUTER_API_KEY` configuration with 3 tasks:\n\n1. **Update `.env.sample`** - Add the `OPENROUTER_API_KEY` variable with documentation\n2. **Update error message** - Change the English error to a user-friendly Thai message\n3. **Validate** - Run linting and verify changes\n\n**Key findings from research:**\n- The project uses a single `.env.sample` at the root (no `apps/web/.env.example`)\n- `next.config.mjs` doesn't need changes - server-side env vars work automatically\n- The API route already handles the missing key at `route.ts:192-202`",
+  "plan_path": "specs/chore-da34d783-fix-image-generation-env-config.md"
+}

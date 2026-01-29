@@ -13,9 +13,11 @@
 
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenRouterImageClient } from '@/lib/services/image-generation-service';
-import type { ImageGenerationRequest } from '@/lib/types/image-types';
+import { generateHybridFlatLayWithFallback } from '@/lib/services/hybrid-flat-lay-service';
+import type { ImageGenerationRequest, FlatLayItem, BackgroundStyle, UserAesthetic } from '@/lib/types/image-types';
 import fs from 'fs';
 import path from 'path';
+import { spawn } from 'child_process';
 
 /**
  * Rate limiting configuration
@@ -97,6 +99,86 @@ function ensureDirectoryExists(dirPath: string): void {
 function generateImageFilename(): string {
   const timestamp = Date.now();
   return `outfit-${timestamp}.png`;
+}
+
+/**
+ * Removes background from an image file using rembg Python script
+ *
+ * @param inputPath - Absolute path to the input image
+ * @param outputPath - Absolute path to save the output image
+ * @returns Promise that resolves to true on success, false on failure
+ */
+async function removeBackgroundFromFile(inputPath: string, outputPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const scriptPath = path.join(process.cwd(), '..', '..', 'scripts', 'image_processing', 'remove_bg_rembg.py');
+
+    console.log('[API] Running background removal:', { inputPath, outputPath, scriptPath });
+
+    const python = spawn('python3', [scriptPath, inputPath, outputPath]);
+
+    let stderr = '';
+
+    python.stderr.on('data', (data) => {
+      stderr += data.toString();
+      console.log('[API] Background removal:', data.toString().trim());
+    });
+
+    python.on('close', (code) => {
+      if (code === 0) {
+        console.log('[API] Background removal completed successfully');
+        resolve(true);
+      } else {
+        console.error('[API] Background removal failed with code:', code);
+        console.error('[API] stderr:', stderr);
+        resolve(false);
+      }
+    });
+
+    python.on('error', (err) => {
+      console.error('[API] Failed to spawn background removal process:', err);
+      resolve(false);
+    });
+  });
+}
+
+/**
+ * Auto-crops image to the bounding box of non-transparent pixels with padding
+ *
+ * @param inputPath - Absolute path to the input image
+ * @param outputPath - Absolute path to save the output image
+ * @returns Promise that resolves to true on success, false on failure
+ */
+async function autoCropSubject(inputPath: string, outputPath: string): Promise<boolean> {
+  return new Promise((resolve) => {
+    const scriptPath = path.join(process.cwd(), '..', '..', 'scripts', 'image_processing', 'auto_crop_subject.py');
+
+    console.log('[API] Running auto-crop:', { inputPath, outputPath, scriptPath });
+
+    const python = spawn('python3', [scriptPath, inputPath, outputPath]);
+
+    let stderr = '';
+
+    python.stderr.on('data', (data) => {
+      stderr += data.toString();
+      console.log('[API] Auto-crop:', data.toString().trim());
+    });
+
+    python.on('close', (code) => {
+      if (code === 0) {
+        console.log('[API] Auto-crop completed successfully');
+        resolve(true);
+      } else {
+        console.error('[API] Auto-crop failed with code:', code);
+        console.error('[API] stderr:', stderr);
+        resolve(false);
+      }
+    });
+
+    python.on('error', (err) => {
+      console.error('[API] Failed to spawn auto-crop process:', err);
+      resolve(false);
+    });
+  });
 }
 
 /**
@@ -219,9 +301,22 @@ export async function POST(request: NextRequest) {
     }
 
     // Validate request body
-    const { description, style } = body;
+    const { description, style, referenceImage, secondaryReferenceImage, generationType, flatLayItems, occasionContext, backgroundStyle, userAesthetic } = body;
 
-    if (!description || typeof description !== 'string' || description.trim() === '') {
+    // Flat-lay and hybrid-flat-lay generation require items instead of description
+    if (generationType === 'flat-lay' || generationType === 'hybrid-flat-lay') {
+      if (!flatLayItems || !Array.isArray(flatLayItems) || flatLayItems.length === 0) {
+        console.error('[API] Missing or invalid items for flat-lay generation');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'INVALID_ITEMS',
+            message: 'At least one item is required for flat-lay generation',
+          },
+          { status: 400 }
+        );
+      }
+    } else if (!description || typeof description !== 'string' || description.trim() === '') {
       console.error('[API] Missing or invalid description');
       return NextResponse.json(
         {
@@ -233,28 +328,148 @@ export async function POST(request: NextRequest) {
       );
     }
 
-    // Validate description length
-    if (description.length > 1000) {
-      console.error('[API] Description too long:', description.length);
+    // Validate description length (3000 chars for fitting-model, 1000 for outfit)
+    // Skip validation for flat-lay and hybrid-flat-lay since they use items instead of description
+    if (generationType !== 'flat-lay' && generationType !== 'hybrid-flat-lay') {
+      const maxDescriptionLength = (generationType === 'fitting-model' || generationType === 'try-on' || generationType === 'try-on-dual') ? 3000 : 1000;
+      if (description && description.length > maxDescriptionLength) {
+        console.error('[API] Description too long:', description.length);
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'DESCRIPTION_TOO_LONG',
+            message: `Description is too long. Please keep it under ${maxDescriptionLength} characters.`,
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate referenceImage format when provided with fitting-model, try-on, or try-on-dual generation
+    if ((generationType === 'fitting-model' || generationType === 'try-on' || generationType === 'try-on-dual') && referenceImage) {
+      if (typeof referenceImage !== 'string' || referenceImage.trim() === '') {
+        console.error('[API] Invalid reference image for', generationType, 'generation');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'INVALID_REFERENCE_IMAGE',
+            message: 'Reference image must be a valid string',
+          },
+          { status: 400 }
+        );
+      }
+
+      if (!referenceImage.startsWith('data:image/')) {
+        console.error('[API] Invalid reference image format');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'INVALID_REFERENCE_IMAGE_FORMAT',
+            message: 'Reference image must be a base64 data URL (e.g., data:image/jpeg;base64,...)',
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    // Validate that try-on and try-on-dual generation require a reference image
+    if ((generationType === 'try-on' || generationType === 'try-on-dual') && !referenceImage) {
+      console.error('[API] Missing reference image for', generationType, 'generation');
       return NextResponse.json(
         {
           success: false,
-          error: 'DESCRIPTION_TOO_LONG',
-          message: 'Outfit description is too long. Please keep it under 1000 characters.',
+          error: 'MISSING_REFERENCE_IMAGE',
+          message: 'Reference image (fitting model) is required for try-on generation',
         },
         { status: 400 }
       );
     }
 
-    console.log('[API] Generating image for description:', {
-      descriptionLength: description.length,
+    // Validate secondaryReferenceImage format when provided (required for try-on-dual)
+    if (generationType === 'try-on-dual') {
+      if (!secondaryReferenceImage) {
+        console.error('[API] Missing secondary reference image for try-on-dual generation');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'MISSING_SECONDARY_REFERENCE_IMAGE',
+            message: 'Secondary reference image (flat-lay) is required for try-on-dual generation',
+          },
+          { status: 400 }
+        );
+      }
+
+      if (typeof secondaryReferenceImage !== 'string' || !secondaryReferenceImage.startsWith('data:image/')) {
+        console.error('[API] Invalid secondary reference image format');
+        return NextResponse.json(
+          {
+            success: false,
+            error: 'INVALID_SECONDARY_REFERENCE_IMAGE_FORMAT',
+            message: 'Secondary reference image must be a base64 data URL (e.g., data:image/jpeg;base64,...)',
+          },
+          { status: 400 }
+        );
+      }
+    }
+
+    console.log('[API] Generating image:', {
+      descriptionLength: description?.length || 0,
       style: style || 'default',
+      generationType: generationType || 'outfit',
+      hasReferenceImage: !!referenceImage,
+      hasSecondaryReferenceImage: !!secondaryReferenceImage,
+      flatLayItemCount: flatLayItems?.length || 0,
+      backgroundStyle: backgroundStyle || 'auto',
+      userAesthetic: userAesthetic || 'none',
     });
 
     // Create image client and generate image
     const imageClient = new OpenRouterImageClient(apiKey);
 
-    const result = await imageClient.generateOutfitImage(description, style);
+    // Route to appropriate generation method based on generationType
+    let result;
+    if (generationType === 'hybrid-flat-lay' && flatLayItems) {
+      // Hybrid flat-lay: AI background + real product images
+      const hybridResult = await generateHybridFlatLayWithFallback(
+        {
+          items: flatLayItems,
+          backgroundStyle: backgroundStyle as BackgroundStyle | undefined,
+          userAesthetic: userAesthetic as UserAesthetic | undefined,
+          occasionContext: occasionContext,
+        },
+        apiKey
+      );
+
+      // Convert hybrid response to standard ImageGenerationResponse format
+      result = {
+        success: hybridResult.success,
+        imageBase64: hybridResult.imageBase64,
+        imageUrl: hybridResult.imageUrl,
+        error: hybridResult.error,
+        message: hybridResult.message,
+        metadata: {
+          model: 'hybrid-flat-lay',
+          generatedAt: new Date().toISOString(),
+          prompt: `Hybrid flat-lay with ${hybridResult.processedProducts.length} products`,
+        },
+      };
+    } else if (generationType === 'flat-lay' && flatLayItems) {
+      result = await imageClient.generateFlatLayImage({
+        items: flatLayItems,
+        occasionContext: occasionContext,
+        totalItems: flatLayItems.length,
+      });
+    } else if (generationType === 'fitting-model' && referenceImage) {
+      result = await imageClient.generateFittingModelImage(description, referenceImage);
+    } else if (generationType === 'try-on-dual' && referenceImage && secondaryReferenceImage) {
+      // Try-on with dual reference: fitting model (IMAGE 1) + flat-lay (IMAGE 2)
+      result = await imageClient.generateTryOnWithDualReference(description, referenceImage, secondaryReferenceImage);
+    } else if (generationType === 'try-on' && referenceImage) {
+      // Try-on with single reference: fitting model only (fallback mode)
+      result = await imageClient.generateFittingModelImage(description, referenceImage);
+    } else {
+      result = await imageClient.generateOutfitImage(description, style);
+    }
 
     const duration = Date.now() - startTime;
     console.log('[API] Image generation completed in', duration, 'ms', {
@@ -269,6 +484,36 @@ export async function POST(request: NextRequest) {
         try {
           const filename = generateImageFilename();
           const imageUrl = saveBase64Image(result.imageBase64, filename);
+          const publicDir = path.join(process.cwd(), 'public', 'generated-images');
+          const filePath = path.join(publicDir, filename);
+
+          // Apply background removal for fitting-model, try-on, and try-on-dual images
+          if (generationType === 'fitting-model' || generationType === 'try-on' || generationType === 'try-on-dual') {
+            console.log('[API] Applying background removal for', generationType);
+            const bgRemovalSuccess = await removeBackgroundFromFile(filePath, filePath);
+
+            if (bgRemovalSuccess) {
+              // Re-read the processed image and update base64
+              const processedImageBuffer = fs.readFileSync(filePath);
+              result.imageBase64 = `data:image/png;base64,${processedImageBuffer.toString('base64')}`;
+              console.log('[API] Background removed successfully');
+
+              // Apply auto-crop to ensure model fills the frame
+              console.log('[API] Applying auto-crop for', generationType);
+              const autoCropSuccess = await autoCropSubject(filePath, filePath);
+
+              if (autoCropSuccess) {
+                // Re-read the cropped image and update base64
+                const croppedImageBuffer = fs.readFileSync(filePath);
+                result.imageBase64 = `data:image/png;base64,${croppedImageBuffer.toString('base64')}`;
+                console.log('[API] Auto-crop completed successfully');
+              } else {
+                console.warn('[API] Auto-crop failed, using image with background removed');
+              }
+            } else {
+              console.warn('[API] Background removal failed, using original image');
+            }
+          }
 
           // Add imageUrl to the result
           result.imageUrl = imageUrl;

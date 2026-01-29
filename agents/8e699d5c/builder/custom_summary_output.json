@@ -1,0 +1,15 @@
+{
+  "phase": "implementation",
+  "adw_id": "8e699d5c",
+  "slash_command": "/implement",
+  "args": [
+    "specs/chore-8e699d5c-fix-tryon-outfit-consistency.md"
+  ],
+  "path_to_slash_command_prompt": ".claude/commands/implement.md",
+  "model": "opus",
+  "working_dir": "/Users/naruechon/OOTD",
+  "success": true,
+  "session_id": "3d12bc52-ea0b-44be-94fc-25ad29f3c58b",
+  "retry_code": "none",
+  "output": "## Summary\n\nI've successfully implemented the fix for try-on outfit consistency with dual image reference support.\n\n### Work Completed:\n\n- **Updated `TryOnLooksRequest` interface** (`apps/web/lib/services/fitting-model-service.ts`): Added `flatLayImageUrl` and `flatLayImageBase64` optional fields for passing the flat-lay image\n\n- **Updated `ImageGenerationRequest` type** (`apps/web/lib/types/image-types.ts`): Added `secondaryReferenceImage` field and new `'try-on-dual'` generation type\n\n- **Created `buildDualReferenceTryOnPrompt()` function** (`apps/web/lib/services/fitting-model-service.ts`): New prompt template that explicitly references TWO images - IMAGE 1 for face/body matching and IMAGE 2 for exact outfit replication\n\n- **Created `generateTryOnWithDualReference()` method** (`apps/web/lib/services/image-generation-service.ts`): New method in `OpenRouterImageClient` that sends multimodal requests with two images (fitting model + flat-lay)\n\n- **Updated `generateTryOnLooks()` function** (`apps/web/lib/services/fitting-model-service.ts`): Now detects if flat-lay image is available, fetches it, and switches to dual-reference mode automatically with graceful fallback\n\n- **Updated API route** (`apps/web/app/api/generate-image/route.ts`): Added validation for `secondaryReferenceImage`, handling for `'try-on-dual'` generation type, and background removal support\n\n- **Updated `OutfitRecommendationCard` component** (`apps/web/components/chat/OutfitRecommendationCard.tsx`): Both `handleTryOn()` and `handleRegenerate()` now pass `flatLayImageUrl` and `flatLayImageBase64` from the outfit prop\n\n### Files Changed (git diff --stat):\n```\n apps/web/app/api/generate-image/route.ts           | 188 ++++++-\n apps/web/components/chat/OutfitRecommendationCard.tsx | 320 +++++++++++-\n apps/web/lib/services/image-generation-service.ts  | 568 ++++++++++++++++++++-\n apps/web/lib/types/image-types.ts                  |  61 +++\n apps/web/lib/services/fitting-model-service.ts     | 424 (untracked file - new additions)\n```\n\n**Total: ~1,500+ lines changed/added across 5 files**"
+}
