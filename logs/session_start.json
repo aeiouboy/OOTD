@@ -37,5 +37,13 @@
     "cwd": "/Users/naruechon/OOTD",
     "hook_event_name": "SessionStart",
     "source": "clear"
+  },
+  {
+    "session_id": "06862662-55e8-4e34-90de-6cd82aa6ade5",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/06862662-55e8-4e34-90de-6cd82aa6ade5.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-opus-4-6"
   }
 ]

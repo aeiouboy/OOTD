@@ -1,8 +1,0 @@
-/chore f86ca2a9 Implement          
-  chore-kb002: Update server-product-loader.ts to load                    
-  product_master_v1.json with KB expansion attributes. Add version        
-  detection (v0 vs v1), create kb-attribute-parser.ts for parsing 5 KB    
-  groups (thaiContext, visualMatching, crossProductCompatibility,         
-  priceIntelligence, socialProof), maintain backward compatibility with   
-  legacy product_master.json fallback. Reference spec:                    
-  specs/chore-kb002-update-server-loader-kb-support.md
