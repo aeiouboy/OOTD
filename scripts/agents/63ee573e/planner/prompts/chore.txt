@@ -1,0 +1,18 @@
+/chore 63ee573e Add missing KB attributes to
+   mock-data04.ts:                                                        
+                                                                          
+  1. thaiContext: Add 'cnySuitable' field (boolean or 'yes'|'no'|'maybe') 
+     - For red/gold items: true                                           
+     - For black/white/blue items: false                                  
+     - Reference: KB Section 12 (Chinese New Year in February)            
+                                                                          
+  2. visualMatching: Add 'silhouetteFit' field ('fitted'|'semi-fitted'|'re
+  laxed'|'oversized'|'boxy'|'structured'|'fluid')                         
+     - Reference: KB Section 15 - Fit Classifications                     
+                                                                          
+  3. visualMatching: Add 'silhouetteVolume' field ('low'|'medium'|'high') 
+     - Reference: KB Section 15 - Volume Level                            
+                                                                          
+  Update TypeScript interface in apps/web/lib/types/thai-context-types.ts 
+  and apps/web/lib/types/ai-matching-types.ts accordingly.                
+  Update all 14 products with appropriate values.

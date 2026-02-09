@@ -18,10 +18,23 @@
 
 import type { EnhancedProduct } from '../types/product-types'
 import { createOutfitPrompt, serializeForAI } from '../utils/ai-serializer'
-import { applyFilters } from '../utils/product-filters'
+import { applyFilters, filterByThaiOccasion, filterByMonthSuitability } from '../utils/product-filters'
 import { mapProductToOccasions } from '../categorization/occasion-mapper'
 import type { OccasionType } from '../types/enums'
 import type { SessionContext } from '../types/chat-types'
+// KB003: Import Thai cultural matcher for occasion detection
+import {
+  detectThaiOccasion as detectThaiOccasionFromMatcher,
+  type ThaiOccasion,
+} from '../matching/thai-cultural-matcher'
+import {
+  calculateOutfitCostPerWear,
+  getOutfitCostPerWearTier,
+} from '../matching/price-intelligence-optimizer'
+import {
+  getTrendingProducts,
+  getOutfitHashtags,
+} from '../matching/social-proof-ranker'
 import {
   createSessionContext,
   updateSessionContext,
@@ -283,12 +296,22 @@ function useKeywordFallback(message: string): RAGRetrievalResult {
 }
 
 /**
+ * KB003: Detect Thai cultural occasion from message
+ * Supports both Thai and English keywords
+ */
+export function detectThaiOccasionFromMessage(message: string): ThaiOccasion | null {
+  return detectThaiOccasionFromMatcher(message)
+}
+
+/**
  * Filter products based on user request
+ * KB003: Enhanced with Thai occasion and month-based filtering
  */
 export function filterProductsForRequest(
   products: EnhancedProduct[],
   request: ChatRequest,
-  occasion?: OccasionType
+  occasion?: OccasionType,
+  thaiOccasion?: ThaiOccasion | null
 ): EnhancedProduct[] {
   const { message, userPreferences } = request
 
@@ -303,6 +326,22 @@ export function filterProductsForRequest(
     priceRange: budget ? { min: 0, max: budget } : undefined,
     availability: ['in_stock', 'low_stock'],
   })
+
+  // KB003: Apply Thai occasion filter if detected
+  if (thaiOccasion) {
+    const thaiFiltered = filterByThaiOccasion(filtered, thaiOccasion)
+    if (thaiFiltered.length >= 3) {
+      filtered = thaiFiltered
+      console.log(`[AI Chat] Applied Thai occasion filter (${thaiOccasion}): ${filtered.length} products`)
+    }
+  }
+
+  // KB003: Apply month suitability filter
+  const currentMonth = new Date().getMonth()
+  const monthFiltered = filterByMonthSuitability(filtered, currentMonth, 5)
+  if (monthFiltered.length >= 3) {
+    filtered = monthFiltered
+  }
 
   // If no results and we have an occasion, try without occasion filter
   if (filtered.length === 0 && occasion) {
@@ -543,8 +582,14 @@ export async function processAIChatRequest(
     // Detect occasion from message
     const occasion = detectOccasion(request.message)
 
-    // Filter products based on request
-    let filteredProducts = filterProductsForRequest(availableProducts, request, occasion)
+    // KB003: Detect Thai cultural occasion
+    const thaiOccasion = detectThaiOccasionFromMessage(request.message)
+    if (thaiOccasion) {
+      console.log(`[AI Chat] KB003: Detected Thai occasion: ${thaiOccasion}`)
+    }
+
+    // Filter products based on request (with Thai occasion)
+    let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion)
 
     // Apply duplicate prevention - filter out already recommended products
     const { products: uniqueProducts, hasSufficientProducts: sufficient, message: insufficientMessage } = filterAndValidateProducts(
@@ -760,6 +805,19 @@ MANDATORY: Fix all errors listed above and provide a complete ${expectedTemplate
 
     // Products to recommend (top 6)
     const recommendedProducts = filteredProducts.slice(0, 6)
+
+    // KB003: Calculate cost-per-wear for recommended products
+    if (recommendedProducts.length > 0) {
+      const avgCostPerWear = calculateOutfitCostPerWear(recommendedProducts)
+      const cpwTier = getOutfitCostPerWearTier(recommendedProducts)
+      console.log(`[AI Chat] KB003: Cost-per-wear: ฿${avgCostPerWear.toFixed(0)}/wear (${cpwTier} tier)`)
+
+      // Get trending hashtags for social proof context
+      const hashtags = getOutfitHashtags(recommendedProducts)
+      if (hashtags.length > 0) {
+        console.log(`[AI Chat] KB003: Trending hashtags: ${hashtags.slice(0, 5).join(', ')}`)
+      }
+    }
 
     // Update session context with newly recommended products
     const newProductIds = extractProductIds(recommendedProducts)

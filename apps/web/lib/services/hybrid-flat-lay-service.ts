@@ -288,8 +288,16 @@ export async function generateHybridFlatLay(
     const duration = Date.now() - startTime;
     console.error(`[HybridFlatLay] Failed after ${duration}ms:`, error);
 
-    response.error = error instanceof Error ? error.message : 'Unknown error';
-    response.message = 'Failed to generate hybrid flat-lay. Please try again.';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    response.error = errorMessage;
+    // Preserve connection error details for better debugging
+    const isConnectionError = errorMessage.toLowerCase().includes('connection') ||
+      errorMessage.toLowerCase().includes('network') ||
+      errorMessage.toLowerCase().includes('fetch');
+
+    response.message = isConnectionError
+      ? `Connection error: ${errorMessage}`
+      : 'Failed to generate hybrid flat-lay. Please try again.';
   }
 
   return response;
@@ -350,6 +358,8 @@ export async function generateHybridFlatLayWithFallback(
   // Both attempts failed
   return {
     ...result,
-    message: 'Both hybrid and AI-only generation failed. Please try again.',
+    message: result.error?.toLowerCase().includes('connection')
+      ? result.message // Keep the connection error message from the hybrid attempt
+      : 'Both hybrid and AI-only generation failed. Please try again.',
   };
 }

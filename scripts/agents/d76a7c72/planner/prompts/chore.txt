@@ -1,0 +1,21 @@
+/chore d76a7c72 Fix TypeScript enum value   
+  mismatches in mock-data04.ts. The following replacements are needed     
+  across all 14 products:                                                 
+                                                                          
+  1. SongkranSuitability: Change 'no' to 'neither'                        
+  2. CoverageType: Change 'not-applicable' to 'exposed' (for              
+  accessories/shoes), change 'not-covered' to 'exposed'                   
+  3. TextureType: Change 'smooth' to 'matte', change 'structured' to      
+  'textured'                                                              
+  4. WeddingAppropriateType: Change 'not-appropriate' to 'none', change   
+  'conservative' to 'morning'                                             
+  5. LayerCompatibility: Change 'relaxed' to 'loose'                      
+  6. OutfitCompleteness: Change 'complete' to 'standalone', change        
+  'needs-bottom-and-top' to 'needs-both', change 'accessory' to           
+  'needs-accessories', change 'footwear' to 'needs-accessories'           
+  7. OutfitRoleType: Change 'neutral' to 'supporting'                     
+                                                                          
+  File: apps/web/lib/mock-data04.ts                                       
+  Validate with: npx tsc --noEmit --skipLibCheck lib/mock-data04.ts       
+                                                                          
+  Reference enum definitions in: apps/web/lib/types/enums.ts

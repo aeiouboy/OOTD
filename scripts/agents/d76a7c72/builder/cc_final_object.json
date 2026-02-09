@@ -1,0 +1,50 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 275472,
+  "duration_api_ms": 279526,
+  "num_turns": 109,
+  "result": "## Report\n\n### Summary of Work Completed\n\n- **Fixed SongkranSuitability values**: Replaced 9 occurrences of `'no'` \u2192 `'neither'`\n- **Fixed CoverageType shoulders**: Replaced 8 `'not-applicable'` and 1 `'not-covered'` \u2192 `'exposed'`\n- **Fixed CoverageType knees**: Replaced 6 `'not-applicable'` \u2192 `'exposed'` (3 were already fixed with shoulders fix)\n- **Fixed TextureType values**: Replaced 5 `'smooth'` \u2192 `'matte'` and 3 `'structured'` \u2192 `'textured'`\n- **Fixed WeddingAppropriateType values**: Replaced 2 `'not-appropriate'` \u2192 `'none'` and 2 `'conservative'` \u2192 `'morning'`\n- **Fixed LayerCompatibility values**: Replaced 7 occurrences of `'relaxed'` \u2192 `'loose'` within layerCompatibility arrays (preserving 'relaxed' in other contexts)\n- **Fixed OutfitCompleteness values**: Replaced 2 `'complete'` \u2192 `'standalone'`, 2 `'needs-bottom-and-top'` \u2192 `'needs-both'`, 1 `'accessory'` \u2192 `'needs-accessories'`, 2 `'footwear'` \u2192 `'needs-accessories'`\n- **Fixed OutfitRoleType values**: Replaced 1 `'neutral'` \u2192 `'supporting'`\n- **Validated TypeScript compilation**: `npx tsc --noEmit --skipLibCheck` passes with no errors\n- **All validation grep commands return 0**: Confirmed all invalid enum values removed\n\n### Files Changed\n\n```\napps/web/lib/mock-data04.ts | 3335 lines (untracked new file with all enum fixes applied)\n```",
+  "session_id": "c83ac424-17d3-40bb-a9d4-a25a1c81d405",
+  "total_cost_usd": 1.9848002499999995,
+  "usage": {
+    "input_tokens": 36,
+    "cache_creation_input_tokens": 64091,
+    "cache_read_input_tokens": 2155615,
+    "output_tokens": 19731,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 64091,
+      "ephemeral_5m_input_tokens": 0
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 36,
+      "outputTokens": 19731,
+      "cacheReadInputTokens": 2155615,
+      "cacheCreationInputTokens": 64091,
+      "webSearchRequests": 0,
+      "costUSD": 1.9718312500000004,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    },
+    "claude-haiku-4-5-20251001": {
+      "inputTokens": 9544,
+      "outputTokens": 685,
+      "cacheReadInputTokens": 0,
+      "cacheCreationInputTokens": 0,
+      "webSearchRequests": 0,
+      "costUSD": 0.012968999999999998,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "551d5280-6831-4991-8829-ebda6683e3ee"
+}

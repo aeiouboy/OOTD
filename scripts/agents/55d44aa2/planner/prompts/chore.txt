@@ -1,0 +1,34 @@
+/chore 55d44aa2 Continue scraping Session 1 (products 0-249)  
+  for women's clothing catalog using Firecrawl MCP.                                                                     
+                                                                                                                        
+  STATUS: 5/1247 products completed (indices 0-4). Need to scrape remaining products 5-249 for Session 1.               
+                                                                                                                        
+  INFRASTRUCTURE READY (in scripts/classification/):                                                                    
+  - incremental_scraper.py: Progress tracking with record_scraped_item(index, product, attrs, success)                  
+  - markdown_parser.py: Extracts attributes via parse_product_page_markdown(markdown)                                   
+  - batch_scraper.py: Batch coordination system                                                                         
+  - women_clothing_v1.json: Source catalog in ../../data/products/                                                      
+  - scraping_progress.json: Current state tracking                                                                      
+                                                                                                                        
+  SCRAPING WORKFLOW:                                                                                                    
+  1. Load products from ../../data/products/women_clothing_v1.json                                                      
+  2. Check completed indices in scraping_progress.json                                                                  
+  3. For each unscraped product (5-249):                                                                                
+     a. Call mcp__firecrawl-mcp__firecrawl_scrape with:                                                                 
+        - url = product['link']                                                                                         
+        - formats = ['markdown']                                                                                        
+        - onlyMainContent = false                                                                                       
+        - waitFor = 2000                                                                                                
+        - removeBase64Images = true                                                                                     
+     b. Parse markdown with parse_product_page_markdown()                                                               
+     c. Extract: subcategory, material, fit, care, color_from_page, sleeve_type, length_type                            
+     d. Call record_scraped_item(index, product, scraped_attrs, success=True)                                           
+     e. Sleep 100ms between requests                                                                                    
+                                                                                                                        
+  EXECUTION STRATEGY:                                                                                                   
+  - Process in batches of 25-30 products to manage context                                                              
+  - Save progress after each product (automatic via record_scraped_item)                                                
+  - Target: Complete products 5-249 (245 products remaining in Session 1)                                               
+  - Next batch: Scrape indices 5-29 first (25 products)                                                                 
+                                                                                                                        
+  OUTPUT: Update scraping_progress.json and women_clothing_scraped.json incrementally.

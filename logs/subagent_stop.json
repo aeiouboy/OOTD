@@ -1,0 +1,24 @@
+[
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a373705",
+    "agent_transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2/subagents/agent-a373705.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a0c1b24",
+    "agent_transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d/subagents/agent-a0c1b24.jsonl",
+    "agent_type": ""
+  }
+]

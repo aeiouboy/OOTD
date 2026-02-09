@@ -1,0 +1,6 @@
+/chore e07cb522 Create                      
+  scrape_product_details.py and markdown_parser.py for Firecrawl MCP web  
+  scraping. Use firecrawl_scrape with onlyMainContent=false to get        
+  breadcrumb (subcategory), material, fit, color from Central.co.th       
+  product pages. Save to women_clothing_scraped.json. Then re-run         
+  classification with scraped data for better accuracy.

@@ -1,0 +1,64 @@
+============================================================
+WOMEN CLOTHING OCCASION CLASSIFICATION REPORT
+Generated: 2026-02-09 02:07:17
+============================================================
+
+Total Products: 1247
+Products with No Occasion: 8
+
+OCCASION DISTRIBUTION:
+----------------------------------------
+
+Work & Professional:
+  work_formal         :   382 ( 30.6%) ███████████████
+  work_casual         :   637 ( 51.1%) █████████████████████████
+  business_meeting    :   324 ( 26.0%) ████████████
+  interview           :   362 ( 29.0%) ██████████████
+  presentation        :   359 ( 28.8%) ██████████████
+
+Social & Events:
+  date                :   431 ( 34.6%) █████████████████
+  party               :   246 ( 19.7%) █████████
+  clubbing            :   294 ( 23.6%) ███████████
+  dinner              :   295 ( 23.7%) ███████████
+  brunch              :  1005 ( 80.6%) ████████████████████████████████████████
+  concert             :   937 ( 75.1%) █████████████████████████████████████
+  wedding_guest       :   102 (  8.2%) ████
+
+Casual & Lifestyle:
+  casual              :  1071 ( 85.9%) ██████████████████████████████████████████
+  cafe                :   881 ( 70.6%) ███████████████████████████████████
+  shopping            :   961 ( 77.1%) ██████████████████████████████████████
+  travel              :   895 ( 71.8%) ███████████████████████████████████
+  beach               :   307 ( 24.6%) ████████████
+  weekend             :   956 ( 76.7%) ██████████████████████████████████████
+
+Formal & Ceremonies:
+  graduation          :   105 (  8.4%) ████
+  gala                :    53 (  4.3%) ██
+  ceremony            :    71 (  5.7%) ██
+  funeral             :   131 ( 10.5%) █████
+
+Thai Cultural:
+  temple              :   103 (  8.3%) ████
+  thai_wedding        :    90 (  7.2%) ███
+  songkran            :   985 ( 79.0%) ███████████████████████████████████████
+  loy_krathong        :   755 ( 60.5%) ██████████████████████████████
+  cny                 :   709 ( 56.9%) ████████████████████████████
+
+Active & Sports:
+  sport               :   400 ( 32.1%) ████████████████
+  yoga                :   370 ( 29.7%) ██████████████
+  outdoor             :   368 ( 29.5%) ██████████████
+
+============================================================
+
+Products with no occasions (first 10):
+  - Peach Woman Pisteinen Unikko
+  - Women Crew Neck Long Sleeve Striped
+  - Women Longleeve Loose Fit Poplinhirt Moss Gray
+  - Mothercarepro1 Girl Toddler Set Mermaid Vest T Shirt And Shorts Grcds2510061679
+  - Mkp1384994 Mkp1384994
+  - Mkp1384990 Mkp1384990
+  - Women 6109 Intl X Mainqueeze Daily Fave 100 Wht
+  - Mothercare Boy Set Vest T Shirt And Shorts Grcds2510061715

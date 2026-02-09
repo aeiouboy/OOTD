@@ -1,0 +1,40 @@
+{
+  "type": "result",
+  "subtype": "success",
+  "is_error": false,
+  "duration_ms": 60681,
+  "duration_api_ms": 56921,
+  "num_turns": 6,
+  "result": "The chore plan has been created.\n\n**Plan file created:** `specs/chore-d76a7c72-fix-enum-value-mismatches.md`\n\nThe plan addresses fixing 7 TypeScript enum value mismatches across all 14 products in `mock-data04.ts`:\n\n| Enum Type | Replacements Needed |\n|-----------|---------------------|\n| SongkranSuitability | 'no' \u2192 'neither' (11 occurrences) |\n| CoverageType | 'not-applicable'/'not-covered' \u2192 'exposed' (15 occurrences) |\n| TextureType | 'smooth' \u2192 'matte', 'structured' \u2192 'textured' (8 occurrences) |\n| WeddingAppropriateType | 'not-appropriate' \u2192 'none', 'conservative' \u2192 'morning' (4 occurrences) |\n| LayerCompatibility | 'relaxed' \u2192 'loose' (11 occurrences in arrays only) |\n| OutfitCompleteness | 'complete' \u2192 'standalone', 'needs-bottom-and-top' \u2192 'needs-both', 'accessory'/'footwear' \u2192 'needs-accessories' (8 occurrences) |\n| OutfitRoleType | 'neutral' \u2192 'supporting' (1 occurrence) |\n\nThe plan includes detailed notes to avoid changing similar values in unrelated contexts (e.g., `colorTone: 'neutral'`, `layeringStyle: 'relaxed'`, `outfitRole: 'footwear'`).",
+  "session_id": "b43644be-5022-4893-b987-81018efa29a4",
+  "total_cost_usd": 0.53588075,
+  "usage": {
+    "input_tokens": 7,
+    "cache_creation_input_tokens": 55773,
+    "cache_read_input_tokens": 199529,
+    "output_tokens": 3500,
+    "server_tool_use": {
+      "web_search_requests": 0,
+      "web_fetch_requests": 0
+    },
+    "service_tier": "standard",
+    "cache_creation": {
+      "ephemeral_1h_input_tokens": 55773,
+      "ephemeral_5m_input_tokens": 0
+    }
+  },
+  "modelUsage": {
+    "claude-opus-4-5-20251101": {
+      "inputTokens": 7,
+      "outputTokens": 3500,
+      "cacheReadInputTokens": 199529,
+      "cacheCreationInputTokens": 55773,
+      "webSearchRequests": 0,
+      "costUSD": 0.53588075,
+      "contextWindow": 200000,
+      "maxOutputTokens": 64000
+    }
+  },
+  "permission_denials": [],
+  "uuid": "54ebb859-1f5d-4ee1-b66f-b2edf4840c72"
+}

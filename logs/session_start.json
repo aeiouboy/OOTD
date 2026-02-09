@@ -1,0 +1,41 @@
+[
+  {
+    "session_id": "19916dad-013e-4ff1-9755-720e0723dbbb",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/19916dad-013e-4ff1-9755-720e0723dbbb.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "fb783cb7-cdd7-4ce1-b0b4-c54b2d728071",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/fb783cb7-cdd7-4ce1-b0b4-c54b2d728071.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "d0192999-5edc-40ea-a3c5-7355147cc339",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/d0192999-5edc-40ea-a3c5-7355147cc339.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-opus-4-6"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "clear"
+  }
+]

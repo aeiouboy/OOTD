@@ -1,0 +1,42 @@
+[
+  {
+    "session_id": "fb783cb7-cdd7-4ce1-b0b4-c54b2d728071",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/fb783cb7-cdd7-4ce1-b0b4-c54b2d728071.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": " update claude version"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "kill un nesserory process"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "kill all  unnesserory process"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "lets do git commit and push to master"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "UserPromptSubmit",
+    "prompt": "yesd"
+  }
+]

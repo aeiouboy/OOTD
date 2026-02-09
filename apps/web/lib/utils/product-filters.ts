@@ -1,10 +1,13 @@
 /**
  * Product Filters
  * Advanced filtering logic for enhanced product model
+ *
+ * chore-kb003: Added KB-powered filters for Thai occasions, trends, and visual weight
  */
 
 import type { EnhancedProduct, ProductFilterCriteria, ProductSortField } from '../types/product-types'
-import type { OccasionType, Gender, FormalityLevel } from '../types/enums'
+import type { OccasionType, Gender, FormalityLevel, TrendLifecycle, VisualWeightLevel } from '../types/enums'
+import type { ThaiOccasion } from '../matching/thai-cultural-matcher'
 
 /**
  * Filter by occasion (Task 5.2)
@@ -352,4 +355,149 @@ export function getFilterOptions(products: EnhancedProduct[]) {
       max: Math.max(...products.map((p) => p.pricing?.currentPrice || 0)),
     },
   }
+}
+
+// ============================================================================
+// KB003: KB-Powered Filters
+// ============================================================================
+
+/**
+ * Get Thai context from product (with fallback)
+ */
+function getThaiContext(product: EnhancedProduct): any {
+  return (product as any).thaiContext || null
+}
+
+/**
+ * Get visual matching from product (with fallback)
+ */
+function getVisualMatching(product: EnhancedProduct): any {
+  return (product as any).visualMatching || null
+}
+
+/**
+ * Get social proof from product (with fallback)
+ */
+function getSocialProof(product: EnhancedProduct): any {
+  return (product as any).socialProof || null
+}
+
+/**
+ * KB003: Filter by Thai cultural occasion
+ * Uses thaiContext attributes for filtering
+ */
+export function filterByThaiOccasion(
+  products: EnhancedProduct[],
+  occasion: ThaiOccasion
+): EnhancedProduct[] {
+  return products.filter((product) => {
+    const ctx = getThaiContext(product)
+    if (!ctx) return true // Include products without Thai context
+
+    switch (occasion) {
+      case 'temple':
+        return ctx.templeAppropriate === true
+      case 'wedding-morning':
+      case 'wedding-evening':
+        return ctx.weddingAppropriate !== 'none'
+      case 'funeral':
+        return ctx.funeralAppropriate === true
+      case 'songkran-temple':
+        return ctx.songkranSuitable === 'temple-morning' || ctx.songkranSuitable === 'both'
+      case 'songkran-water':
+        return ctx.songkranSuitable === 'water-play' || ctx.songkranSuitable === 'both'
+      case 'loy-krathong':
+        return ctx.loyKrathongSuitable === true
+      case 'chinese-new-year':
+        return ctx.cnySuitable === 'suitable'
+      case 'royal-event':
+        return ctx.templeAppropriate === true // Similar modesty requirements
+      case 'casual':
+      default:
+        return true
+    }
+  })
+}
+
+/**
+ * KB003: Filter by trend status
+ * Uses socialProof.trendStatus for filtering
+ */
+export function filterByTrendStatus(
+  products: EnhancedProduct[],
+  statuses: TrendLifecycle[]
+): EnhancedProduct[] {
+  return products.filter((product) => {
+    const sp = getSocialProof(product)
+    if (!sp || !sp.trendStatus) return true // Include products without social proof
+    return statuses.includes(sp.trendStatus)
+  })
+}
+
+/**
+ * KB003: Filter by visual weight level
+ * Uses visualMatching.visualWeightLevel for filtering
+ */
+export function filterByVisualWeight(
+  products: EnhancedProduct[],
+  levels: VisualWeightLevel[]
+): EnhancedProduct[] {
+  return products.filter((product) => {
+    const vm = getVisualMatching(product)
+    if (!vm || !vm.visualWeightLevel) return true // Include products without visual matching
+    return levels.includes(vm.visualWeightLevel)
+  })
+}
+
+/**
+ * KB003: Filter by month suitability
+ * Uses thaiContext.monthSuitability for filtering
+ */
+export function filterByMonthSuitability(
+  products: EnhancedProduct[],
+  month: number,
+  minScore: number = 6
+): EnhancedProduct[] {
+  const monthIndex = Math.max(0, Math.min(11, month))
+
+  return products.filter((product) => {
+    const ctx = getThaiContext(product)
+    if (!ctx || !ctx.monthSuitability || ctx.monthSuitability.length !== 12) {
+      return true // Include products without month suitability
+    }
+    return ctx.monthSuitability[monthIndex] >= minScore
+  })
+}
+
+/**
+ * KB003: Filter by cost-per-wear tier
+ * Uses priceIntelligence.costPerWear for filtering
+ */
+export function filterByCostPerWear(
+  products: EnhancedProduct[],
+  maxCostPerWear: number
+): EnhancedProduct[] {
+  return products.filter((product) => {
+    const pi = (product as any).priceIntelligence
+    if (!pi || typeof pi.costPerWear !== 'number') {
+      // Estimate from price (assume 50 wears)
+      const price = product.pricing?.currentPrice || 0
+      return (price / 50) <= maxCostPerWear
+    }
+    return pi.costPerWear <= maxCostPerWear
+  })
+}
+
+/**
+ * KB003: Get trending products (emerging, peak, or trending status)
+ */
+export function getTrendingProducts(products: EnhancedProduct[]): EnhancedProduct[] {
+  return filterByTrendStatus(products, ['emerging', 'peak', 'trending'] as TrendLifecycle[])
+}
+
+/**
+ * KB003: Get timeless products (classic or timeless status)
+ */
+export function getTimelessProducts(products: EnhancedProduct[]): EnhancedProduct[] {
+  return filterByTrendStatus(products, ['classic', 'timeless'] as TrendLifecycle[])
 }

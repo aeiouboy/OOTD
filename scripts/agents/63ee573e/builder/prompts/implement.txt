@@ -1,0 +1,1 @@
+/implement specs/chore-63ee573e-add-missing-kb-attributes.md

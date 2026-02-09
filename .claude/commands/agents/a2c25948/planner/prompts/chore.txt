@@ -1,0 +1,7 @@
+/chore a2c25948 Implement          
+  chore-kb003: Integrate KB expansion attributes with AI matching         
+  algorithms. Create specialized matchers (thai-cultural-matcher.ts,      
+  visual-matching-scorer.ts, cross-product-matcher.ts,                    
+  price-intelligence-optimizer.ts, social-proof-ranker.ts) and integrate  
+  with outfit-combination-rules.ts and ai-chat-service.ts. Reference spec:
+   specs/chore-kb003-integrate-kb-ai-matching.md

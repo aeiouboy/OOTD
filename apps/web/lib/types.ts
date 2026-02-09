@@ -12,6 +12,15 @@ export type { FlatLayItem }
 // Re-export EnhancedMockProduct and ColorTone from mock-data02.ts for enhanced outfit generation
 export type { EnhancedMockProduct, ColorTone } from './mock-data02'
 
+// Export Inspiration-First Architecture types
+export * from './types/inspiration'
+
+// KB Expansion Feb 2026 - Thai Cultural Context Types
+export * from './types/thai-context-types'
+
+// KB Expansion Feb 2026 - AI Matching Types
+export * from './types/ai-matching-types'
+
 // Legacy interfaces maintained for backward compatibility
 // These will gradually be replaced by EnhancedProduct
 export interface OutfitRequest {

@@ -1,0 +1,184 @@
+[
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep -E '(node|next|pnpm|npm|python|claude)' | grep -v grep | grep -v \"Claude Code\"",
+      "description": "List potentially unnecessary dev processes"
+    },
+    "tool_use_id": "toolu_01HJ6EFx5PbcW8dYqzHi9GVf"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep -E '(node|next|pnpm|npm|python|claude)' | grep -v grep | grep -v \"Claude Code\" | wc -l",
+      "description": "Count dev-related processes"
+    },
+    "tool_use_id": "toolu_01BnkbzSbYVSRVUkz1qg43vJ"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[c]laude' | grep -v \"skip-permissions\" | wc -l",
+      "description": "Count background claude agent processes"
+    },
+    "tool_use_id": "toolu_012JBMqFc8XNUbkdGVssmqUc"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[n]ode' | grep -v \"Claude\" | head -20",
+      "description": "List node processes"
+    },
+    "tool_use_id": "toolu_01Giy8Xih2Y3mA9UmBboqAwo"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[c]laude' | grep -v \"skip-permissions\" | grep 'stream-json' | awk '{print $2}' | wc -l",
+      "description": "Count stale claude agent processes to kill"
+    },
+    "tool_use_id": "toolu_014CgE7TQJUM4Lo6P2ydUnbi"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[c]laude' | grep -v \"skip-permissions\" | grep 'stream-json' | awk '{print $2}' | xargs kill 2>/dev/null; echo \"Killed stale claude agents\"",
+      "description": "Kill all stale background claude agent processes"
+    },
+    "tool_use_id": "toolu_01AeGkoEGcaxTk41xjAnQyRo"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[c]laude' | grep -v \"skip-permissions\" | wc -l",
+      "description": "Verify remaining claude processes"
+    },
+    "tool_use_id": "toolu_01Agim5TXf74FP8DkErRkfdi"
+  },
+  {
+    "session_id": "beb9d6d1-4436-46e1-bde7-7886af6ad6a2",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/beb9d6d1-4436-46e1-bde7-7886af6ad6a2.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep '[c]laude' | grep -v \"skip-permissions\"",
+      "description": "Check what claude processes remain"
+    },
+    "tool_use_id": "toolu_016xPK1vsXNCw4mQswYSw2es"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git branch -a | head -20",
+      "description": "List git branches"
+    },
+    "tool_use_id": "toolu_011vYDXeLSyCzQzA4CnDwhMq"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git status -s | head -30",
+      "description": "Show working tree status (short format)"
+    },
+    "tool_use_id": "toolu_01XmXusFgAUU3jnzHQjgfcc7"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git log --oneline -5",
+      "description": "Show recent commits"
+    },
+    "tool_use_id": "toolu_019rjeGs5mvJs91o5wASEd8n"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git status -s | wc -l",
+      "description": "Count total changed files"
+    },
+    "tool_use_id": "toolu_011JRtXvuopjm3uFKV1JrkD1"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git diff --stat | tail -5",
+      "description": "Show diff stats summary"
+    },
+    "tool_use_id": "toolu_019ksV2BQShKg8bbK3LL1XJ3"
+  },
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "git add -A",
+      "description": "Stage all changes"
+    },
+    "tool_use_id": "toolu_01Bkm4ba8HqdwanjJf7TfaZ3"
+  }
+]
