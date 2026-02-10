@@ -406,5 +406,13 @@
     "permission_mode": "bypassPermissions",
     "hook_event_name": "Stop",
     "stop_hook_active": false
+  },
+  {
+    "session_id": "feb92a05-b046-47d3-9477-3cd5e18f2005",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/feb92a05-b046-47d3-9477-3cd5e18f2005.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "Stop",
+    "stop_hook_active": false
   }
 ]
