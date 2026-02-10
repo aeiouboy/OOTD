@@ -43,6 +43,10 @@ export function parseLooksData(fullResponse: string): ParsedLooksResponse {
 
   // Graceful fallback: no structured block found
   if (startIdx === -1) {
+    // Try fallback markdown parser for inline product recommendations
+    if (hasInlineProductPatterns(fullResponse)) {
+      return parseFallbackMarkdown(fullResponse);
+    }
     return { text: fullResponse.trim(), looks: [] };
   }
 
@@ -150,6 +154,247 @@ export function parseLooksData(fullResponse: string): ParsedLooksResponse {
   return { text, looks };
 }
 
+// ============================================================================
+// Fallback Markdown Parser
+// ============================================================================
+
+/**
+ * Detect if text contains inline product recommendation patterns.
+ * Looks for numbered items with price + link indicators.
+ */
+function hasInlineProductPatterns(text: string): boolean {
+  // Match patterns like: **1. Product Name** with price (บาท) and URL
+  const numberedItemWithPrice = /\*\*\d+\.\s*.+?\*\*[\s\S]*?(?:฿|บาท|THB|\d{3,})/;
+  const hasUrl = /https?:\/\/[^\s)]+/;
+  return numberedItemWithPrice.test(text) && hasUrl.test(text);
+}
+
+/**
+ * Parse inline markdown product recommendations as a fallback
+ * when AI doesn't use the structured ---LOOKS_DATA--- format.
+ *
+ * Handles patterns like:
+ *   **1. Product Name** - **Brand:** GIORDANO - **Price:** 🏷 420 บาท - **Link:** 🔗 https://...
+ *   **1. Product Name** (Brand) - ราคา 420 บาท [link](url)
+ */
+function parseFallbackMarkdown(text: string): ParsedLooksResponse {
+  const lines = text.split('\n');
+
+  // Regex to match numbered product entries: **N. ...** or N. **...**
+  const numberedItemRegex = /^\s*\*?\*?\s*(\d+)\.\s*\*{0,2}(.+?)\*{0,2}\s*[-–—]/;
+
+  // Find the first numbered item to split intro text from product listing
+  let firstItemLineIdx = -1;
+  for (let i = 0; i < lines.length; i++) {
+    if (numberedItemRegex.test(lines[i]) || /^\s*\*{0,2}\s*\d+\.\s/.test(lines[i])) {
+      firstItemLineIdx = i;
+      break;
+    }
+  }
+
+  // Check for "Look N:" headers to detect multi-look grouping
+  const lookHeaderRegex = /(?:look|ลุค)\s*(\d+)\s*[:\-–—|]/i;
+
+  const conversationalText = firstItemLineIdx > 0
+    ? lines.slice(0, firstItemLineIdx).join('\n').trim()
+    : '';
+
+  const productSection = firstItemLineIdx >= 0
+    ? lines.slice(firstItemLineIdx).join('\n')
+    : text;
+
+  // Extract individual product entries
+  // Each entry starts with a numbered pattern like **N.
+  const productEntryRegex = /\*{0,2}\s*(\d+)\.\s*\*{0,2}\s*(.+?)(?=\n\s*\*{0,2}\s*\d+\.\s|\n\s*(?:look|ลุค)\s*\d+|$)/gis;
+
+  interface ExtractedItem {
+    name: string;
+    brand: string;
+    price: number;
+    url: string;
+    lookGroup: number;
+  }
+
+  const extractedItems: ExtractedItem[] = [];
+  let currentLookGroup = 1;
+
+  // Process line by line for better control
+  const productLines = productSection.split('\n');
+  let currentEntry = '';
+  let currentNumber = 0;
+
+  for (const line of productLines) {
+    // Check for look headers
+    const lookMatch = line.match(lookHeaderRegex);
+    if (lookMatch) {
+      currentLookGroup = parseInt(lookMatch[1], 10);
+      continue;
+    }
+
+    // Check if this line starts a new numbered entry
+    const numMatch = line.match(/^\s*\*{0,2}\s*(\d+)\.\s/);
+    if (numMatch) {
+      // Process previous entry if exists
+      if (currentEntry && currentNumber > 0) {
+        const item = extractProductFromEntry(currentEntry);
+        if (item) {
+          extractedItems.push({ ...item, lookGroup: currentLookGroup });
+        }
+      }
+      currentNumber = parseInt(numMatch[1], 10);
+      currentEntry = line;
+    } else if (currentEntry) {
+      // Continuation of current entry
+      currentEntry += '\n' + line;
+    }
+  }
+
+  // Process last entry
+  if (currentEntry && currentNumber > 0) {
+    const item = extractProductFromEntry(currentEntry);
+    if (item) {
+      extractedItems.push({ ...item, lookGroup: currentLookGroup });
+    }
+  }
+
+  if (extractedItems.length === 0) {
+    return { text: text.trim(), looks: [] };
+  }
+
+  // Group items into looks
+  const lookGroups = new Map<number, ExtractedItem[]>();
+  for (const item of extractedItems) {
+    const group = lookGroups.get(item.lookGroup) || [];
+    group.push(item);
+    lookGroups.set(item.lookGroup, group);
+  }
+
+  // If only one group and many items, split into looks of ~3 items each
+  const looks: ChatLook[] = [];
+  if (lookGroups.size === 1 && extractedItems.length > 4) {
+    const items = extractedItems;
+    const itemsPerLook = 3;
+    for (let i = 0; i < items.length; i += itemsPerLook) {
+      const chunk = items.slice(i, i + itemsPerLook);
+      const lookNumber = looks.length + 1;
+      looks.push({
+        lookNumber,
+        styleName: `Look ${lookNumber}`,
+        items: chunk.map(item => ({
+          name: item.name,
+          brand: item.brand,
+          category: 'Unknown',
+          color: 'Unknown',
+          description: '',
+          sku: '',
+          price: item.price,
+          url: item.url,
+        })),
+        totalPrice: chunk.reduce((sum, item) => sum + item.price, 0),
+        imageStatus: 'pending',
+      });
+    }
+  } else {
+    // Use detected look groups (or single group)
+    for (const [groupNum, items] of lookGroups) {
+      looks.push({
+        lookNumber: groupNum,
+        styleName: `Look ${groupNum}`,
+        items: items.map(item => ({
+          name: item.name,
+          brand: item.brand,
+          category: 'Unknown',
+          color: 'Unknown',
+          description: '',
+          sku: '',
+          price: item.price,
+          url: item.url,
+        })),
+        totalPrice: items.reduce((sum, item) => sum + item.price, 0),
+        imageStatus: 'pending',
+      });
+    }
+  }
+
+  // Clean markdown artifacts from conversational text
+  const cleanText = cleanMarkdownText(conversationalText);
+
+  return { text: cleanText, looks };
+}
+
+/**
+ * Extract product details (name, brand, price, url) from a single markdown entry.
+ */
+function extractProductFromEntry(entry: string): { name: string; brand: string; price: number; url: string } | null {
+  // Extract product name from **N. Product Name** or similar
+  const nameMatch = entry.match(/\*{0,2}\s*\d+\.\s*\*{0,2}\s*(.+?)\*{0,2}\s*(?:[-–—]|\n|$)/);
+  const name = nameMatch ? nameMatch[1].trim().replace(/\*+/g, '').trim() : '';
+
+  if (!name) return null;
+
+  // Extract brand: **Brand:** X or (Brand) or Brand: X
+  let brand = '';
+  const brandPatterns = [
+    /\*{0,2}(?:Brand|แบรนด์|ยี่ห้อ)\s*[:\uff1a]\*{0,2}\s*(.+?)(?:\s*[-–—]|\s*\n|$)/i,
+    /\(([A-Za-z][A-Za-z\s&.]+)\)/,
+  ];
+  for (const pattern of brandPatterns) {
+    const match = entry.match(pattern);
+    if (match) {
+      brand = match[1].trim().replace(/\*+/g, '').trim();
+      break;
+    }
+  }
+
+  // Extract price: 420 บาท, ฿420, THB 420, 🏷 420, ราคา 420
+  let price = 0;
+  const pricePatterns = [
+    /(?:Price|ราคา|🏷️?)\s*[:\uff1a]?\s*\*{0,2}\s*🏷?\s*([0-9,]+(?:\.\d+)?)\s*(?:บาท|THB|฿)/i,
+    /(?:฿|THB)\s*([0-9,]+(?:\.\d+)?)/i,
+    /([0-9,]+(?:\.\d+)?)\s*(?:บาท|THB|฿)/,
+    /(?:Price|ราคา|🏷️?)\s*[:\uff1a]?\s*\*{0,2}\s*🏷?\s*([0-9,]+(?:\.\d+)?)/i,
+  ];
+  for (const pattern of pricePatterns) {
+    const match = entry.match(pattern);
+    if (match) {
+      price = parseFloat(match[1].replace(/,/g, ''));
+      if (!isNaN(price) && price > 0) break;
+    }
+  }
+
+  // Extract URL
+  let url = '';
+  const urlPatterns = [
+    /(?:Link|ลิงก์|🔗)\s*[:\uff1a]?\s*🔗?\s*(https?:\/\/[^\s)>\]]+)/i,
+    /\[.+?\]\((https?:\/\/[^\s)]+)\)/,
+    /(https?:\/\/[^\s)>\]]+)/,
+  ];
+  for (const pattern of urlPatterns) {
+    const match = entry.match(pattern);
+    if (match) {
+      url = match[1].trim();
+      break;
+    }
+  }
+
+  // Must have at least name and (price or url) to be considered a product
+  if (!name || (price === 0 && !url)) return null;
+
+  return { name, brand, price, url };
+}
+
+/**
+ * Clean markdown formatting artifacts from conversational text.
+ * Removes bold markers, emoji artifacts, etc.
+ */
+function cleanMarkdownText(text: string): string {
+  return text
+    .replace(/\*{2,}(.+?)\*{2,}/g, '$1')  // **bold** → bold
+    .replace(/\*(.+?)\*/g, '$1')           // *italic* → italic
+    .replace(/#{1,6}\s*/g, '')              // ## headers → remove
+    .trim();
+}
+
 /**
  * Validate looks against the product catalog.
  * - Matches each item's SKU against the catalog
@@ -175,21 +420,40 @@ export function validateLooksAgainstCatalog(
     }
   }
 
+  // Build URL lookup map (for fallback parser items that have URLs but no SKUs)
+  const urlMap = new Map<string, EnhancedProduct>();
+  for (const product of catalog) {
+    const productUrl = product.centralIntegration?.productUrl;
+    if (productUrl) {
+      urlMap.set(normalizeUrl(productUrl), product);
+    }
+  }
+
   return looks.map(look => {
     const validatedItems = look.items
       .map(item => {
-        if (!item.sku) return null; // No SKU = drop
+        let catalogProduct: EnhancedProduct | undefined;
 
-        const catalogProduct = skuMap.get(item.sku.toLowerCase());
-        if (!catalogProduct) return null; // SKU not in catalog = drop
+        // Primary: SKU-based lookup
+        if (item.sku) {
+          catalogProduct = skuMap.get(item.sku.toLowerCase());
+        }
 
-        // Force catalog URL and price
+        // Secondary: URL-based lookup (for fallback-parsed items without SKUs)
+        if (!catalogProduct && item.url) {
+          catalogProduct = urlMap.get(normalizeUrl(item.url));
+        }
+
+        if (!catalogProduct) return null; // Not in catalog = drop
+
+        // Force catalog URL and price, populate SKU if missing
         return {
           ...item,
           url: catalogProduct.centralIntegration?.productUrl || item.url,
           price: catalogProduct.pricing?.currentPrice || item.price,
           name: item.name, // Keep AI's display name (may be Thai)
           brand: catalogProduct.brand || item.brand,
+          sku: item.sku || catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || '',
         };
       })
       .filter((item): item is ChatLookItem => item !== null);
@@ -203,4 +467,18 @@ export function validateLooksAgainstCatalog(
       totalPrice,
     };
   }).filter(look => look.items.length > 0); // Drop looks with no valid items
+}
+
+/**
+ * Normalize a URL for comparison (remove trailing slashes, query params, lowercase).
+ */
+function normalizeUrl(url: string): string {
+  try {
+    const parsed = new URL(url);
+    // Keep host + pathname, lowercase, strip trailing slash
+    return (parsed.host + parsed.pathname).toLowerCase().replace(/\/+$/, '');
+  } catch {
+    // If URL parsing fails, do basic normalization
+    return url.toLowerCase().replace(/\/+$/, '').replace(/^https?:\/\//, '');
+  }
 }

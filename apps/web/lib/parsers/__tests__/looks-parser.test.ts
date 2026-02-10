@@ -154,6 +154,82 @@ TOTAL:12,990
   });
 });
 
+describe('parseLooksData - fallback markdown parser', () => {
+  it('should parse inline markdown product recommendations', () => {
+    const response = `สวัสดีค่ะ! มาดูชุดทำงานสไตล์มินิมอลกันเลยนะคะ
+
+**1. เสื้อเชิ้ตขาว** - **Brand:** GIORDANO - **Price:** 🏷 420 บาท - **Link:** 🔗 https://central.co.th/p/shirt1
+**2. กางเกงสแล็คสีดำ** - **Brand:** CPS - **Price:** 🏷 1,290 บาท - **Link:** 🔗 https://central.co.th/p/pants1
+**3. รองเท้าคัชชู** - **Brand:** BATA - **Price:** 🏷 890 บาท - **Link:** 🔗 https://central.co.th/p/shoes1`;
+
+    const result = parseLooksData(response);
+
+    expect(result.text).toContain('สวัสดีค่ะ');
+    expect(result.text).not.toContain('**');
+    expect(result.looks.length).toBeGreaterThanOrEqual(1);
+
+    const allItems = result.looks.flatMap(l => l.items);
+    expect(allItems.length).toBe(3);
+    expect(allItems[0].name).toContain('เสื้อเชิ้ตขาว');
+    expect(allItems[0].brand).toBe('GIORDANO');
+    expect(allItems[0].price).toBe(420);
+    expect(allItems[0].url).toContain('https://central.co.th/p/shirt1');
+    expect(allItems[1].price).toBe(1290);
+    expect(allItems[2].price).toBe(890);
+  });
+
+  it('should not trigger fallback for plain text without products', () => {
+    const response = 'สวัสดีค่ะ! วันนี้อากาศร้อนมากเลยนะคะ ลองใส่ชุดเบาๆ สบายๆ ดูค่ะ';
+    const result = parseLooksData(response);
+
+    expect(result.text).toBe(response);
+    expect(result.looks).toHaveLength(0);
+  });
+
+  it('should handle markdown products without emoji in price/link', () => {
+    const response = `ลองดูสินค้าเหล่านี้นะคะ
+
+**1. Oxford Shirt** - **Brand:** Uniqlo - **Price:** 990 บาท - **Link:** https://central.co.th/p/ox1
+**2. Chino Pants** - **Brand:** Dockers - **Price:** 1,590 บาท - **Link:** https://central.co.th/p/ch1`;
+
+    const result = parseLooksData(response);
+
+    const allItems = result.looks.flatMap(l => l.items);
+    expect(allItems.length).toBe(2);
+    expect(allItems[0].name).toContain('Oxford Shirt');
+    expect(allItems[0].price).toBe(990);
+    expect(allItems[1].price).toBe(1590);
+  });
+
+  it('should calculate totalPrice for fallback-parsed looks', () => {
+    const response = `แนะนำค่ะ
+
+**1. Item A** - **Price:** 500 บาท - **Link:** https://example.com/a
+**2. Item B** - **Price:** 700 บาท - **Link:** https://example.com/b
+**3. Item C** - **Price:** 800 บาท - **Link:** https://example.com/c`;
+
+    const result = parseLooksData(response);
+    const totalAllItems = result.looks.reduce((s, l) => s + l.totalPrice, 0);
+    expect(totalAllItems).toBe(2000);
+  });
+
+  it('should split many items into multiple looks', () => {
+    const response = `มีหลายตัวเลือกค่ะ
+
+**1. A** - **Price:** 100 บาท - **Link:** https://ex.com/1
+**2. B** - **Price:** 200 บาท - **Link:** https://ex.com/2
+**3. C** - **Price:** 300 บาท - **Link:** https://ex.com/3
+**4. D** - **Price:** 400 บาท - **Link:** https://ex.com/4
+**5. E** - **Price:** 500 บาท - **Link:** https://ex.com/5`;
+
+    const result = parseLooksData(response);
+    // 5 items > 4 threshold, should be split into multiple looks (~3 per look)
+    expect(result.looks.length).toBeGreaterThanOrEqual(2);
+    const totalItems = result.looks.reduce((s, l) => s + l.items.length, 0);
+    expect(totalItems).toBe(5);
+  });
+});
+
 describe('validateLooksAgainstCatalog', () => {
   const catalog = [
     mockProduct('SKU001', 'https://central.co.th/real/sku001', 790, 'CPS'),
@@ -243,5 +319,45 @@ describe('validateLooksAgainstCatalog', () => {
     const validated = validateLooksAgainstCatalog(looks, []);
     // With empty catalog, all items pass through unchanged
     expect(validated).toEqual(looks);
+  });
+
+  it('should match items by URL when SKU is empty (fallback parser output)', () => {
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'URL Test',
+      items: [
+        { name: 'เสื้อเชิ้ต', brand: 'AI Brand', category: 'Unknown', color: 'Unknown', description: '', sku: '', price: 999, url: 'https://central.co.th/real/sku001' },
+        { name: 'กางเกง', brand: 'AI Brand', category: 'Unknown', color: 'Unknown', description: '', sku: '', price: 999, url: 'https://central.co.th/real/sku002' },
+      ],
+      totalPrice: 1998,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, catalog);
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(2);
+    // Should populate SKU from catalog
+    expect(validated[0].items[0].sku).toBe('SKU001');
+    expect(validated[0].items[1].sku).toBe('SKU002');
+    // Should force catalog price
+    expect(validated[0].items[0].price).toBe(790);
+    expect(validated[0].items[1].price).toBe(1590);
+    // Brand from catalog
+    expect(validated[0].items[0].brand).toBe('CPS');
+  });
+
+  it('should match URLs with trailing slashes or different casing', () => {
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Normalize Test',
+      items: [
+        { name: 'Item', brand: '', category: 'Unknown', color: 'Unknown', description: '', sku: '', price: 0, url: 'https://Central.co.th/real/SKU001/' },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, catalog);
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items[0].sku).toBe('SKU001');
+    expect(validated[0].items[0].price).toBe(790);
   });
 });
