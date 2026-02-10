@@ -187,10 +187,38 @@ export default function ChatInterface({ onOutfitSelect, onViewDetails }: ChatInt
         sender: 'assistant',
         timestamp: new Date(),
         outfits: data.outfits || [],
+        looks: data.looks || [],
       }
 
       setMessages((prev) => [...prev, aiResponse])
       setIsTyping(false)
+
+      // v5.0: Trigger async image generation for looks
+      if (data.looks && data.looks.length > 0) {
+        const looksWithItems = data.looks.filter((l: { items: unknown[] }) => l.items?.length > 0)
+        if (looksWithItems.length > 0) {
+          try {
+            const imgRes = await fetch('/api/chat/looks-images', {
+              method: 'POST',
+              headers: { 'Content-Type': 'application/json' },
+              body: JSON.stringify({ looks: looksWithItems }),
+            })
+            if (imgRes.ok) {
+              const imgData = await imgRes.json()
+              // Update the message with generated images
+              setMessages((prev) =>
+                prev.map((msg) =>
+                  msg.id === aiResponse.id
+                    ? { ...msg, looks: imgData.looks }
+                    : msg
+                )
+              )
+            }
+          } catch (imgError) {
+            console.error('[Chat] Looks image generation error:', imgError)
+          }
+        }
+      }
     } catch (error) {
       console.error('Chat error:', error)
 
@@ -332,8 +360,74 @@ export default function ChatInterface({ onOutfitSelect, onViewDetails }: ChatInt
                   message.sender === "user" ? "text-gray-500" : "text-white/70"
                 }`}>{formatTime(message.timestamp)}</p>
 
-                {/* Outfit Cards */}
-                {message.outfits && message.outfits.length > 0 && (
+                {/* v5.0: Look Cards */}
+                {message.looks && message.looks.length > 0 && (
+                  <div className="mt-3 space-y-3">
+                    {message.looks.map((look) => (
+                      <Card key={`look-${look.lookNumber}`} className="p-3 bg-white/20 backdrop-blur-sm">
+                        <div className="space-y-2">
+                          <div className="flex items-center justify-between">
+                            <h4 className="font-semibold text-sm text-white">
+                              Look {look.lookNumber}: {look.styleName}
+                            </h4>
+                            <span className="text-sm font-bold text-white">
+                              ฿{look.totalPrice.toLocaleString()}
+                            </span>
+                          </div>
+
+                          {/* Flat-lay image */}
+                          {look.imageUrl && (
+                            <img
+                              src={look.imageUrl}
+                              alt={look.styleName}
+                              className="w-full rounded-lg object-cover aspect-square"
+                            />
+                          )}
+                          {look.imageStatus === 'pending' && (
+                            <div className="w-full h-32 rounded-lg bg-white/10 flex items-center justify-center">
+                              <span className="text-xs text-white/70">Generating flat-lay...</span>
+                            </div>
+                          )}
+
+                          {/* Items list */}
+                          <div className="space-y-1.5">
+                            {look.items.map((item, idx) => (
+                              <div key={`${item.sku}-${idx}`} className="flex items-center justify-between text-xs">
+                                <div className="flex-1 min-w-0">
+                                  <span className="text-white font-medium">{item.name}</span>
+                                  <span className="text-white/60 ml-1">({item.brand})</span>
+                                </div>
+                                <div className="flex items-center gap-2 flex-shrink-0">
+                                  <span className="text-white/80">฿{item.price.toLocaleString()}</span>
+                                  {item.url && (
+                                    <a
+                                      href={item.url}
+                                      target="_blank"
+                                      rel="noopener noreferrer"
+                                      className="text-white underline hover:text-white/80"
+                                    >
+                                      Buy
+                                    </a>
+                                  )}
+                                </div>
+                              </div>
+                            ))}
+                          </div>
+
+                          {/* Styling tip */}
+                          {look.tip && (
+                            <p className="text-xs text-white/70 italic mt-1">
+                              Tip: {look.tip}
+                            </p>
+                          )}
+                        </div>
+                      </Card>
+                    ))}
+                  </div>
+                )}
+
+                {/* Legacy Outfit Cards (v4 and below) */}
+                {message.outfits && message.outfits.length > 0 && (!message.looks || message.looks.length === 0) && (
                   <div className="mt-3 space-y-3">
                     {message.outfits.map((outfit) => (
                       <Card key={outfit.id} className="p-3 bg-white/20 backdrop-blur-sm">

@@ -140,6 +140,7 @@ vi.mock('../../matching/social-proof-ranker', () => ({
 vi.mock('../../utils/ai-serializer', () => ({
   createOutfitPrompt: vi.fn().mockReturnValue('Outfit prompt'),
   serializeForAI: vi.fn().mockReturnValue('Serialized data'),
+  serializeCatalogForV5: vi.fn().mockReturnValue('=== PRODUCT CATALOG ===\n=== END CATALOG (0 products) ==='),
 }));
 
 vi.mock('../../categorization/occasion-mapper', () => ({
@@ -148,11 +149,15 @@ vi.mock('../../categorization/occasion-mapper', () => ({
 
 vi.mock('../../prompts/prompt-version', () => ({
   getActiveSystemPrompt: vi.fn().mockReturnValue('System prompt'),
-  VersionUtils: { getVersion: vi.fn().mockReturnValue('v2.3') },
+  VersionUtils: {
+    getVersion: vi.fn().mockReturnValue('v5.0'),
+    isV5Active: vi.fn().mockReturnValue(false), // Default to v4 behavior for existing tests
+  },
 }));
 
-vi.mock('../../prompts/system-prompt-v2', () => ({
-  SYSTEM_PROMPT_V2: 'Mocked system prompt v2',
+vi.mock('../../parsers/looks-parser', () => ({
+  parseLooksData: vi.fn().mockReturnValue({ text: 'Test response', looks: [] }),
+  validateLooksAgainstCatalog: vi.fn().mockReturnValue([]),
 }));
 
 // Mock global fetch for OpenRouter API calls

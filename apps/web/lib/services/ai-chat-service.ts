@@ -47,6 +47,10 @@ import {
   filterAndValidateProducts,
 } from '../utils/duplicate-filter'
 import { getActiveSystemPrompt, VersionUtils } from '../prompts/prompt-version'
+// v5.0: Looks parser and catalog serializer
+import { parseLooksData, validateLooksAgainstCatalog } from '../parsers/looks-parser'
+import { serializeCatalogForV5 } from '../utils/ai-serializer'
+import type { ChatLook } from '../types/chat-types'
 import {
   detectKnowledgeTopics,
   formatKnowledgeForPrompt,
@@ -134,6 +138,8 @@ export interface ChatResponse {
   imageRequest?: boolean
   /** Outfit description for image generation (v3.1) */
   outfitDescription?: string
+  /** v5.0: Structured looks with per-look items and flat-lay images */
+  looks?: ChatLook[]
 }
 
 /**
@@ -430,7 +436,7 @@ async function callOpenRouter(
   const messages = [
     {
       role: 'system',
-      content: SYSTEM_PROMPT_V2,
+      content: getActiveSystemPrompt(),
     },
     ...(conversationHistory || []),
     {
@@ -471,7 +477,7 @@ async function callOpenRouter(
         model: 'google/gemini-3-flash-preview',
         messages,
         temperature: 0.7,
-        max_tokens: 2000,
+        max_tokens: VersionUtils.isV5Active() ? 3000 : 2000,
       }),
       signal: controller.signal,
     })
@@ -491,6 +497,300 @@ async function callOpenRouter(
 }
 
 /**
+ * v5.0: Process chat request with structured looks output + anti-hallucination
+ *
+ * This replaces the old flow where AI text and product recommendations were disconnected.
+ * New flow:
+ * 1. Keep all existing guardrails, clarification, session management
+ * 2. Inject pipe-delimited catalog into the prompt
+ * 3. AI returns conversational Thai text + ---LOOKS_DATA--- structured block
+ * 4. parseLooksData() extracts text + per-Look items
+ * 5. validateLooksAgainstCatalog() verifies SKUs, forces catalog URLs
+ * 6. Return { message, looks } — images generated async by /api/chat/looks-images
+ */
+async function processAIChatRequestV5(
+  request: ChatRequest,
+  availableProducts: EnhancedProduct[]
+): Promise<ChatResponse> {
+  // Initialize or get session context
+  let sessionContext = request.sessionContext || createSessionContext(request.conversationId)
+
+  // Check if session should be reset
+  if (shouldResetSession(request.message)) {
+    sessionContext = createSessionContext(request.conversationId)
+    console.log('[AI Chat v5] Session reset requested')
+  }
+
+  // STEP 1: Check guardrails first - redirect if off-topic
+  const guardrailMessage = checkGuardrails(request.message)
+  if (guardrailMessage) {
+    console.log('[AI Chat v5] Off-topic query detected, redirecting')
+    return {
+      message: guardrailMessage,
+      recommendedProducts: [],
+      looks: [],
+      sessionContext,
+    }
+  }
+
+  // STEP 1.5: Check for image generation request (v3.1)
+  const isImageRequest = detectImageRequest(request.message)
+  if (isImageRequest) {
+    console.log('[AI Chat v5] Image generation request detected')
+    const conversationMessages = request.conversationHistory || []
+    const outfitDescription = extractOutfitDescription(request.message, conversationMessages, 5)
+    return {
+      message: 'เจ๋งเลย! กำลังสร้างภาพชุดที่เราแนะนำให้ดูนะ ✨ รอแป๊บนึงนะจ้า! 📸',
+      recommendedProducts: [],
+      looks: [],
+      sessionContext,
+      imageRequest: true,
+      outfitDescription,
+    }
+  }
+
+  // STEP 2: Analyze user query and extract detected info
+  const userQuery = analyzeUserQuery(request.message)
+  const detectedInfo: Partial<SessionContext['conversationContext']> = {}
+  if (userQuery.detectedGender) detectedInfo.gender = userQuery.detectedGender
+  if (userQuery.detectedOccasion) detectedInfo.occasion = userQuery.detectedOccasion
+  if (userQuery.detectedBudget) detectedInfo.budget = userQuery.detectedBudget
+  if (userQuery.detectedDestination) detectedInfo.destination = userQuery.detectedDestination
+
+  if (Object.keys(detectedInfo).length > 0) {
+    sessionContext = updateSessionContext(sessionContext, [], undefined, detectedInfo)
+  }
+
+  // STEP 3: Check turn count and force recommendations
+  const clarificationCount = getClarificationCount(sessionContext)
+  const shouldForceNow = shouldForceRecommendationsUtil(sessionContext)
+  const hasProvidedRecommendations = sessionContext.hasProvidedRecommendations || false
+  const isFollowUpPhase = sessionContext.dialoguePhase === 'follow-up' || hasProvidedRecommendations
+
+  // v2.2: Detect follow-up request
+  const followUpDetection = detectFollowUpRequest(request.message, hasProvidedRecommendations)
+  console.log(formatFollowUpDetection(followUpDetection))
+
+  // Check if clarifications are needed
+  const clarificationsNeeded = getClarificationsNeeded(
+    userQuery,
+    request.conversationHistory,
+    sessionContext.askedClarifications,
+    sessionContext.conversationContext,
+    sessionContext.clarificationTurnCount,
+    hasProvidedRecommendations
+  )
+
+  if (clarificationsNeeded.length > 0) {
+    const clarificationQuestion = formatClarificationQuestions(clarificationsNeeded)
+    const clarificationType = clarificationsNeeded[0].type
+    console.log(`[AI Chat v5] Clarification needed: ${clarificationType}`)
+
+    const updatedSession = updateSessionContext(sessionContext, [], clarificationType)
+    return {
+      message: clarificationQuestion,
+      recommendedProducts: [],
+      looks: [],
+      sessionContext: updatedSession,
+    }
+  }
+
+  // STEP 4: Detect occasion
+  const occasion = detectOccasion(request.message)
+  const thaiOccasion = detectThaiOccasionFromMessage(request.message)
+  if (thaiOccasion) {
+    console.log(`[AI Chat v5] Thai occasion detected: ${thaiOccasion}`)
+  }
+
+  // STEP 5: Filter products
+  let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion)
+
+  // v4.0: Enhance with semantic search
+  if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
+    try {
+      const semanticProducts = await searchProductsFromSupabase(request.message, occasion || undefined, 30)
+      if (semanticProducts.length > 0) {
+        const enhancedSemantic = transformDbProductsToEnhanced(semanticProducts)
+        const seenSkus = new Set<string>()
+        const merged: EnhancedProduct[] = []
+        for (const product of [...enhancedSemantic, ...filteredProducts]) {
+          const key = product.sku || product.id
+          if (!seenSkus.has(key)) {
+            seenSkus.add(key)
+            merged.push(product)
+          }
+        }
+        filteredProducts = merged
+        console.log(`[AI Chat v5] Semantic search: ${merged.length} total products`)
+      }
+    } catch (semanticError) {
+      console.error('[AI Chat v5] Semantic search failed:', semanticError)
+    }
+  }
+
+  // Apply duplicate prevention
+  const { products: uniqueProducts, hasSufficientProducts: sufficient, message: insufficientMessage } = filterAndValidateProducts(
+    filteredProducts,
+    sessionContext,
+    3
+  )
+
+  if (!sufficient) {
+    return {
+      message: insufficientMessage || 'ขออภัยค่ะ ไม่พบสินค้าใหม่เพิ่มเติมในหมวดนี้',
+      recommendedProducts: [],
+      looks: [],
+      sessionContext,
+    }
+  }
+  filteredProducts = uniqueProducts
+
+  if (filteredProducts.length === 0) {
+    return {
+      message: 'ขออภัยค่ะ ไม่พบสินค้าที่ตรงกับความต้องการของคุณในขณะนี้ คุณลองปรับเกณฑ์การค้นหาหรือถามคำถามใหม่ได้ค่ะ',
+      recommendedProducts: [],
+      looks: [],
+      sessionContext,
+    }
+  }
+
+  // STEP 6: Serialize catalog for v5 pipe-delimited format
+  const catalogContext = serializeCatalogForV5(filteredProducts.slice(0, 50))
+  console.log(`[AI Chat v5] Catalog injected: ${Math.min(filteredProducts.length, 50)} products`)
+
+  // Category detection for template instruction
+  const categoryDetection = detectCategory(request.message)
+  console.log(formatCategoryDetection(categoryDetection))
+
+  // RAG-based knowledge retrieval
+  const ragResult = await retrieveKnowledgeWithRAG(
+    request.message,
+    userQuery.detectedGender || sessionContext.conversationContext.gender,
+    userQuery.detectedOccasion || sessionContext.conversationContext.occasion
+  )
+  const knowledgeContext = ragResult.knowledgeContext
+
+  if (ragResult.retrievedIds.length > 0) {
+    sessionContext = {
+      ...sessionContext,
+      retrievedKnowledgeIds: [
+        ...(sessionContext.retrievedKnowledgeIds || []),
+        ...ragResult.retrievedIds.filter(
+          (id) => !(sessionContext.retrievedKnowledgeIds || []).includes(id)
+        ),
+      ],
+    }
+  }
+
+  // Build v5 enhanced prompt with catalog injection
+  const prefs = request.userPreferences
+  let userPreferencesContext = ''
+  if (prefs) {
+    const parts = []
+    if (prefs.userName) parts.push(`Name: ${prefs.userName}`)
+    if (prefs.gender) parts.push(`Gender: ${prefs.gender}`)
+    if (prefs.ageRange) parts.push(`Age: ${prefs.ageRange}`)
+    if (prefs.stylePreferences?.length) parts.push(`Style: ${prefs.stylePreferences.join(', ')}`)
+    if (parts.length > 0) {
+      userPreferencesContext = `[USER PROFILE]\n${parts.join('\n')}\n`
+    }
+  }
+
+  const templateInstruction = getTemplateInstruction(categoryDetection.category)
+  const followUpInstruction = generateFollowUpInstruction(followUpDetection)
+
+  // v5.0: Build prompt with catalog context (pipe-delimited) instead of old createOutfitPrompt
+  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\nUser message: ${request.message}`
+
+  if (followUpInstruction) {
+    enhancedPrompt = `${followUpInstruction}\n\n${enhancedPrompt}`
+    console.log('[AI Chat v5] Follow-up instruction injected')
+  }
+
+  // Determine force recommendation flag
+  const lastAssistantMessage = request.conversationHistory?.filter(m => m.role === 'assistant').pop()
+  const isAnsweringPreviousClarification = lastAssistantMessage &&
+    sessionContext.askedClarifications.length > 0 &&
+    isAnsweringClarification(request.message, sessionContext.askedClarifications[sessionContext.askedClarifications.length - 1])
+  const shouldInjectForceInstruction = shouldForceNow || isAnsweringPreviousClarification || isFollowUpPhase
+
+  if (shouldInjectForceInstruction) {
+    console.log('[AI Chat v5] Force recommendation mode active')
+  }
+
+  // STEP 7: Call AI with v5 system prompt + catalog
+  let aiResponse = await callOpenRouter(
+    enhancedPrompt,
+    request.conversationHistory,
+    sessionContext,
+    shouldInjectForceInstruction
+  )
+
+  // Loop detection (same as v4)
+  let loopDetection: LoopDetectionResult = { isLoop: false, suggestedAction: 'allow-response' }
+  let hasRetriedForLoop = false
+
+  if (shouldCheckForLoop(request.conversationHistory)) {
+    loopDetection = detectLoop(aiResponse, sessionContext, clarificationCount)
+    console.log(formatLoopDetection(loopDetection))
+
+    if (loopDetection.isLoop && loopDetection.suggestedAction === 'retry-with-force') {
+      console.log('[AI Chat v5] Retrying with force instruction due to loop detection')
+      const retryForceInstruction = generateForceInstruction(loopDetection.loopType, clarificationCount)
+      const retryPrompt = `${enhancedPrompt}\n\n${retryForceInstruction}`
+      aiResponse = await callOpenRouter(retryPrompt, request.conversationHistory, sessionContext, true)
+      hasRetriedForLoop = true
+    }
+  }
+
+  // Response validation
+  const validation = validateResponseWithPhase(aiResponse, isFollowUpPhase)
+  console.log(formatValidationErrors(validation))
+
+  if (!validation.isValid && !hasRetriedForLoop) {
+    console.warn('[AI Chat v5] Retrying due to template validation failure')
+    const expectedTemplate = categoryDetection.category === 'CLOTHS' ? 'A' : 'B'
+    const correctionInstruction = `[CRITICAL CORRECTION - TEMPLATE VIOLATION DETECTED]\nYour previous response did not follow Template ${expectedTemplate}.\nERRORS: ${validation.errors.join('; ')}\nRegenerate following Template ${expectedTemplate} structure.\n${getTemplateInstruction(categoryDetection.category)}`
+    const correctionPrompt = `${enhancedPrompt}\n\n${correctionInstruction}`
+    try {
+      aiResponse = await callOpenRouter(correctionPrompt, request.conversationHistory, sessionContext, true)
+    } catch (retryError) {
+      console.error('[AI Chat v5] Retry failed:', retryError)
+    }
+  }
+
+  // STEP 8: Parse AI response for structured looks data
+  const parsedResponse = parseLooksData(aiResponse)
+  console.log(`[AI Chat v5] Parsed: ${parsedResponse.looks.length} looks from AI response`)
+
+  // STEP 9: Validate looks against catalog (anti-hallucination)
+  const validatedLooks = validateLooksAgainstCatalog(parsedResponse.looks, filteredProducts)
+  console.log(`[AI Chat v5] Validated: ${validatedLooks.length} looks (${validatedLooks.reduce((sum, l) => sum + l.items.length, 0)} items)`)
+
+  // Collect recommended products from validated looks for session tracking
+  const recommendedProducts = filteredProducts.slice(0, 6)
+  const newProductIds = extractProductIds(recommendedProducts)
+  const updatedSessionContext = updateSessionContext(sessionContext, newProductIds)
+
+  console.log(`[AI Chat v5] Recommended ${newProductIds.length} new products. Total in session: ${updatedSessionContext.recommendedProductIds.length}`)
+
+  // STEP 10: Return response with looks
+  return {
+    message: parsedResponse.text || aiResponse,
+    recommendedProducts,
+    occasion,
+    reasoning: `Found ${filteredProducts.length} unique products, AI curated ${validatedLooks.length} looks`,
+    sessionContext: updatedSessionContext,
+    looks: validatedLooks,
+    // Still trigger auto-image if looks have items
+    imageRequest: validatedLooks.some(l => l.items.length > 0),
+    outfitDescription: validatedLooks.length > 0
+      ? `Fashion looks for ${occasion || 'daily wear'}: ${validatedLooks.map(l => l.styleName).join(', ')}`
+      : undefined,
+  }
+}
+
+/**
  * Process chat request with AI
  * Enhanced with session management and duplicate prevention
  */
@@ -498,6 +798,12 @@ export async function processAIChatRequest(
   request: ChatRequest,
   availableProducts: EnhancedProduct[]
 ): Promise<ChatResponse> {
+  // v5.0: Delegate to v5 pipeline when active
+  if (VersionUtils.isV5Active()) {
+    console.log('[AI Chat] v5.0 active — using structured looks pipeline')
+    return processAIChatRequestV5(request, availableProducts)
+  }
+
   try {
     // Initialize or get session context
     let sessionContext = request.sessionContext || createSessionContext(request.conversationId)

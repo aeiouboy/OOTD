@@ -103,6 +103,25 @@ export interface ChatMessage {
   displayMode?: 'portrait' | 'flat-lay'
   /** Recommended items for flat-lay display (v4.0) */
   recommendedItems?: FlatLayItem[]
+  /** v5.0: Structured looks with per-look items */
+  looks?: Array<{
+    lookNumber: number
+    styleName: string
+    items: Array<{
+      name: string
+      brand: string
+      category: string
+      color: string
+      price: number
+      url: string
+      sku: string
+    }>
+    tip?: string
+    totalPrice: number
+    imageUrl?: string
+    imageBase64?: string
+    imageStatus?: 'pending' | 'generating' | 'done' | 'error'
+  }>
 }
 
 export interface ConversationStarter {

@@ -1,34 +1,35 @@
 /**
  * System Prompt Version Management
  *
- * Supports switching between v2.1, v3.0, and v4.0 for A/B testing
+ * Supports switching between v2.1, v3.0, v4.0, and v5.0 for A/B testing
  *
- * @version 4.0
+ * @version 5.0
  */
 
 import { SYSTEM_PROMPT_V2, SYSTEM_PROMPT_V2_METADATA } from './system-prompt-v2';
 import { SYSTEM_PROMPT_V3, SYSTEM_PROMPT_V3_METADATA } from './system-prompt-v3';
 import { SYSTEM_PROMPT_V4, SYSTEM_PROMPT_V4_METADATA } from './system-prompt-v4';
+import { SYSTEM_PROMPT_V5, SYSTEM_PROMPT_V5_METADATA } from './system-prompt-v5';
 
 /**
  * Available prompt versions
  */
-export type PromptVersion = 'v2.1' | 'v3.0' | 'v4.0';
+export type PromptVersion = 'v2.1' | 'v3.0' | 'v4.0' | 'v5.0';
 
 /**
  * Current prompt version (default)
  */
-export const PROMPT_VERSION: PromptVersion = 'v4.0';
+export const PROMPT_VERSION: PromptVersion = 'v5.0';
 
 /**
  * Previous prompt version (for rollback)
  */
-export const PREVIOUS_VERSION: PromptVersion = 'v3.0';
+export const PREVIOUS_VERSION: PromptVersion = 'v4.0';
 
 /**
  * Get system prompt by version
  *
- * @param version - The prompt version to use ('v2.1', 'v3.0', or 'v4.0')
+ * @param version - The prompt version to use ('v2.1', 'v3.0', 'v4.0', or 'v5.0')
  * @returns The system prompt string
  */
 export function getSystemPrompt(version: PromptVersion = PROMPT_VERSION): string {
@@ -39,9 +40,11 @@ export function getSystemPrompt(version: PromptVersion = PROMPT_VERSION): string
       return SYSTEM_PROMPT_V3;
     case 'v4.0':
       return SYSTEM_PROMPT_V4;
+    case 'v5.0':
+      return SYSTEM_PROMPT_V5;
     default:
-      // Default to v4.0
-      return SYSTEM_PROMPT_V4;
+      // Default to v5.0
+      return SYSTEM_PROMPT_V5;
   }
 }
 
@@ -59,8 +62,10 @@ export function getSystemPromptMetadata(version: PromptVersion = PROMPT_VERSION)
       return SYSTEM_PROMPT_V3_METADATA;
     case 'v4.0':
       return SYSTEM_PROMPT_V4_METADATA;
+    case 'v5.0':
+      return SYSTEM_PROMPT_V5_METADATA;
     default:
-      return SYSTEM_PROMPT_V4_METADATA;
+      return SYSTEM_PROMPT_V5_METADATA;
   }
 }
 
@@ -73,11 +78,11 @@ export function getPromptVersionFromEnv(): PromptVersion {
   const envVersion = process.env.SYSTEM_PROMPT_VERSION as PromptVersion | undefined;
 
   // Validate environment variable
-  if (envVersion === 'v2.1' || envVersion === 'v3.0' || envVersion === 'v4.0') {
+  if (envVersion === 'v2.1' || envVersion === 'v3.0' || envVersion === 'v4.0' || envVersion === 'v5.0') {
     return envVersion;
   }
 
-  // Default to v4.0
+  // Default to v5.0
   return PROMPT_VERSION;
 }
 
@@ -102,13 +107,20 @@ export function getActiveSystemPrompt(): string {
  * @returns true if the version exists
  */
 export function isVersionAvailable(version: string): version is PromptVersion {
-  return version === 'v2.1' || version === 'v3.0' || version === 'v4.0';
+  return version === 'v2.1' || version === 'v3.0' || version === 'v4.0' || version === 'v5.0';
 }
 
 /**
  * Version comparison utilities
  */
 export const VersionUtils = {
+  /**
+   * Check if v5.0 is active
+   */
+  isV5Active: (): boolean => {
+    return getPromptVersionFromEnv() === 'v5.0';
+  },
+
   /**
    * Check if v4.0 is active
    */

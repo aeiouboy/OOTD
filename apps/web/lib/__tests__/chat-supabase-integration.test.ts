@@ -61,6 +61,28 @@ vi.mock('openai', () => ({
   })),
 }))
 
+// Mock prompt-version (v5.0 active by default)
+vi.mock('@/lib/prompts/prompt-version', () => ({
+  getActiveSystemPrompt: vi.fn().mockReturnValue('Mocked system prompt v5'),
+  VersionUtils: {
+    isV5Active: vi.fn().mockReturnValue(false), // Use v4 flow for these integration tests
+    getVersion: vi.fn().mockReturnValue('v4.0'),
+  },
+}))
+
+// Mock looks parser (v5.0)
+vi.mock('@/lib/parsers/looks-parser', () => ({
+  parseLooksData: vi.fn().mockReturnValue({ text: 'Mocked response', looks: [] }),
+  validateLooksAgainstCatalog: vi.fn().mockReturnValue([]),
+}))
+
+// Mock ai-serializer (v5.0 catalog serializer)
+vi.mock('@/lib/utils/ai-serializer', () => ({
+  createOutfitPrompt: vi.fn().mockReturnValue('Outfit prompt'),
+  serializeForAI: vi.fn().mockReturnValue('Serialized'),
+  serializeCatalogForV5: vi.fn().mockReturnValue('=== CATALOG ==='),
+}))
+
 // Mock enhanced-outfit-generator
 vi.mock('@/lib/enhanced-outfit-generator', () => ({
   generateOutfitsFromQuery: vi.fn().mockReturnValue([]),

@@ -15,6 +15,7 @@ import {
 } from '@/lib/services/ai-chat-service'
 import { generateOutfitsFromQuery } from '@/lib/enhanced-outfit-generator'
 import { getProductName, getProductPrice, getProductImageUrl } from '@/lib/utils/product-utils'
+import { VersionUtils } from '@/lib/prompts/prompt-version'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -96,6 +97,39 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // v5.0: When v5 is active, return structured looks directly (no generateOutfitsFromQuery)
+    if (VersionUtils.isV5Active() && response.looks) {
+      console.log(`[Chat API v5] Returning ${response.looks.length} looks`)
+
+      return NextResponse.json({
+        message: response.message,
+        looks: response.looks.map(look => ({
+          lookNumber: look.lookNumber,
+          styleName: look.styleName,
+          items: look.items.map(item => ({
+            name: item.name,
+            brand: item.brand,
+            category: item.category,
+            color: item.color,
+            description: item.description,
+            sku: item.sku,
+            price: item.price,
+            url: item.url,
+          })),
+          tip: look.tip,
+          totalPrice: look.totalPrice,
+          imageStatus: look.imageStatus || 'pending',
+        })),
+        outfits: [], // Empty for backward compatibility
+        occasion: response.occasion,
+        reasoning: response.reasoning,
+        sessionContext: response.sessionContext,
+        imageRequest: response.imageRequest,
+        outfitDescription: response.outfitDescription,
+      })
+    }
+
+    // v4 and below: Legacy outfit generation
     // Convert userPreferences to UserProfile if available
     const userProfile: UserProfile | null = userPreferences ? {
       userName: userPreferences.userName || '',
