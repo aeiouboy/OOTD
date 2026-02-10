@@ -1,0 +1,275 @@
+[
+  {
+    "timestamp": "2026-02-09T20:25:23.178712",
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "mcp__playwright__browser_click",
+    "tool_use_id": "toolu_01Xi8giaMPXjpvMRKSxQQQv2",
+    "tool_input": {
+      "element": "Close modal button",
+      "ref": "e558"
+    },
+    "error": "### Error\nError: Ref e558 not found in the current page snapshot. Try capturing new snapshot.",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "raw_input": {
+      "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "mcp__playwright__browser_click",
+      "tool_input": {
+        "element": "Close modal button",
+        "ref": "e558"
+      },
+      "tool_use_id": "toolu_01Xi8giaMPXjpvMRKSxQQQv2",
+      "error": "### Error\nError: Ref e558 not found in the current page snapshot. Try capturing new snapshot.",
+      "is_interrupt": false,
+      "logged_at": "2026-02-09T20:25:23.178712"
+    }
+  },
+  {
+    "timestamp": "2026-02-09T20:59:25.185572",
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "mcp__playwright__browser_take_screenshot",
+    "tool_use_id": "toolu_01HqZa9zY48CJPSJhRitwMXS",
+    "tool_input": {
+      "type": "png",
+      "filename": "test-result/e2e-01-main-page.png"
+    },
+    "error": "### Error\nError: ENOENT: no such file or directory, open '/Users/naruechon/OOTD/test-result/e2e-01-main-page.png'",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "raw_input": {
+      "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "mcp__playwright__browser_take_screenshot",
+      "tool_input": {
+        "type": "png",
+        "filename": "test-result/e2e-01-main-page.png"
+      },
+      "tool_use_id": "toolu_01HqZa9zY48CJPSJhRitwMXS",
+      "error": "### Error\nError: ENOENT: no such file or directory, open '/Users/naruechon/OOTD/test-result/e2e-01-main-page.png'",
+      "is_interrupt": false,
+      "logged_at": "2026-02-09T20:59:25.185572"
+    }
+  },
+  {
+    "timestamp": "2026-02-09T21:06:47.038913",
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Read",
+    "tool_use_id": "toolu_011YBGDK63GyfqASVRsxUdfY",
+    "tool_input": {
+      "file_path": "/Users/naruechon/OOTD/apps/web/lib/types"
+    },
+    "error": "EISDIR: illegal operation on a directory, read",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "raw_input": {
+      "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Read",
+      "tool_input": {
+        "file_path": "/Users/naruechon/OOTD/apps/web/lib/types"
+      },
+      "tool_use_id": "toolu_011YBGDK63GyfqASVRsxUdfY",
+      "error": "EISDIR: illegal operation on a directory, read",
+      "is_interrupt": false,
+      "logged_at": "2026-02-09T21:06:47.038913"
+    }
+  },
+  {
+    "timestamp": "2026-02-09T22:21:48.039097",
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01RpNqS2jLDtyAEw6p14i6Q8",
+    "tool_input": {
+      "command": "pnpm test --run lib/__tests__/chat-supabase-integration.test.ts",
+      "timeout": 120000,
+      "description": "Run the chat Supabase integration tests"
+    },
+    "error": "Exit code 1\nstderr | lib/__tests__/chat-supabase-integration.test.ts > Chat API Route - Supabase Product Loading > handles gracefully when both sources return empty\n[Chat API] No enhanced products available, falling back to mock data\n\n\n\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 13 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > calls retrieveFromSupabase when SUPABASE_RAG_ENABLED=true\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:274:38\n    272|     )\n    273| \n    274|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    275|   })\n    276| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > returns knowledge context when Supabase returns documents\nAssertionError: expected \"spy\" to be called with arguments: [ \u2026(2) ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:319:37\n    317|     )\n    318| \n    319|     expect(mockBuildFashionContext).toHaveBeenCalledWith(mockRetrieval\u2026\n       |                                     ^\n    320|     expect(result).toBeDefined()\n    321|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase returns no documents\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:381:38\n    379|     )\n    380| \n    381|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    382|     expect(mockGetRAGService).toHaveBeenCalled()\n    383|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase throws error\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:415:38\n    413|     )\n    414| \n    415|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    416|     expect(mockGetRAGService).toHaveBeenCalled()\n    417|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[4/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > skips Supabase and uses Vectra when SUPABASE_RAG_ENABLED=false\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:449:31\n    447| \n    448|     expect(mockRetrieveFromSupabase).not.toHaveBeenCalled()\n    449|     expect(mockGetRAGService).toHaveBeenCalled()\n       |                               ^\n    450|   })\n    451| })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[5/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > calls searchProductsFromSupabase when SUPABASE_RAG_ENABLED=true\nAssertionError: expected \"spy\" to be called with arguments: [ 'floral dress', undefined, 30 ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:494:44\n    492|     )\n    493| \n    494|     expect(mockSearchProductsFromSupabase).toHaveBeenCalledWith('flora\u2026\n       |                                            ^\n    495|   })\n    496| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[6/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > merges semantic and heuristic results without duplicates\nAssertionError: expected \"spy\" to be called with arguments: [ [ { id: 'semantic-1', \u2026(17) } ] ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:532:47\n    530| \n    531|     // Semantic results should be transformed and merged\n    532|     expect(mockTransformDbProductsToEnhanced).toHaveBeenCalledWith([se\u2026\n       |                                               ^\n    533|   })\n    534| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[7/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > uses heuristic-only when searchProductsFromSupabase returns empty\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:565:44\n    563|     )\n    564| \n    565|     expect(mockSearchProductsFromSupabase).toHaveBeenCalled()\n       |                                            ^\n    566|     expect(result).toBeDefined()\n    567|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[8/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > catches error and uses heuristic when searchProductsFromSupabase throws\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:599:44\n    597|     )\n    598| \n    599|     expect(mockSearchProductsFromSupabase).toHaveBeenCalled()\n    \n\n... [12958 characters truncated] ...\n\nt: No\n  Force Recommendations: No\n  POST-RECOMMENDATION LOCKOUT: No\n  Follow-up Phase (Step 4): No\n[Follow-up Handler] Not a follow-up request\n[AI Chat] Clarification needed: gender\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have Supabase products with Vectra RAG\n[Chat API] Generated 0 outfits\n[Chat API] imageRequest: undefined, outfitDescription: no\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Processing message: reverse flags test\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Using JSON products (1 items)\n[Chat API] Using 1 enhanced products\n[Chat API] Using AI-powered recommendations\n[AI Chat] Turn Count: \u001b[33m0\u001b[39m\n[Turn Stats]\n  Clarifications: 0/2\n  Recommendations: No\n  Exceeded Limit: No\n  Force Recommendations: No\n  POST-RECOMMENDATION LOCKOUT: No\n  Follow-up Phase (Step 4): No\n[Follow-up Handler] Not a follow-up request\n[AI Chat] Clarification needed: gender\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Generated 0 outfits\n[Chat API] imageRequest: undefined, outfitDescription: no\n\n \u276f lib/__tests__/chat-supabase-integration.test.ts (22 tests | 13 failed) 141ms\n   \u2713 Chat API Route - Supabase Product Loading > loads products from Supabase when SUPABASE_PRODUCTS_ENABLED=true 128ms\n   \u2713 Chat API Route - Supabase Product Loading > falls back to JSON when Supabase returns empty array 1ms\n   \u2713 Chat API Route - Supabase Product Loading > uses JSON loader directly when SUPABASE_PRODUCTS_ENABLED=false 0ms\n   \u2713 Chat API Route - Supabase Product Loading > handles gracefully when both sources return empty 1ms\n   \u2713 Chat API Route - Supabase Product Loading > transforms Supabase products correctly before use 1ms\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > calls retrieveFromSupabase when SUPABASE_RAG_ENABLED=true 4ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > returns knowledge context when Supabase returns documents 1ms\n     \u2192 expected \"spy\" to be called with arguments: [ \u2026(2) ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase returns no documents 1ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase throws error 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > skips Supabase and uses Vectra when SUPABASE_RAG_ENABLED=false 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Semantic Product Search > calls searchProductsFromSupabase when SUPABASE_RAG_ENABLED=true 0ms\n     \u2192 expected \"spy\" to be called with arguments: [ 'floral dress', undefined, 30 ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Semantic Product Search > merges semantic and heuristic results without duplicates 0ms\n     \u2192 expected \"spy\" to be called with arguments: [ [ { id: 'semantic-1', \u2026(17) } ] ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Semantic Product Search > uses heuristic-only when searchProductsFromSupabase returns empty 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Semantic Product Search > catches error and uses heuristic when searchProductsFromSupabase throws 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u2713 AI Chat Service - Semantic Product Search > skips semantic search when SUPABASE_RAG_ENABLED=false 0ms\n   \u2713 AI Chat Service - Semantic Product Search > skips semantic search when message is too short 0ms\n   \u00d7 AI Chat Service - Semantic Product Search > passes occasion filter to searchProductsFromSupabase 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 Feature Flag Behavior > SUPABASE_RAG_ENABLED=true enables both knowledge and semantic search 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u2713 Feature Flag Behavior > SUPABASE_RAG_ENABLED=false disables both features 0ms\n   \u2713 Feature Flag Behavior > SUPABASE_PRODUCTS_ENABLED controls product catalog source independently 0ms\n   \u00d7 Feature Flag Behavior > flags are independent: can have Supabase products with Vectra RAG 1ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG 0ms\n     \u2192 expected \"spy\" to be called at least once\n\n Test Files  1 failed (1)\n      Tests  13 failed | 9 passed (22)\n   Start at  22:21:46\n   Duration  951ms (transform 125ms, setup 99ms, collect 39ms, tests 141ms, environment 289ms, prepare 35ms)\n\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "raw_input": {
+      "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "pnpm test --run lib/__tests__/chat-supabase-integration.test.ts",
+        "timeout": 120000,
+        "description": "Run the chat Supabase integration tests"
+      },
+      "tool_use_id": "toolu_01RpNqS2jLDtyAEw6p14i6Q8",
+      "error": "Exit code 1\nstderr | lib/__tests__/chat-supabase-integration.test.ts > Chat API Route - Supabase Product Loading > handles gracefully when both sources return empty\n[Chat API] No enhanced products available, falling back to mock data\n\n\n\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 13 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > calls retrieveFromSupabase when SUPABASE_RAG_ENABLED=true\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:274:38\n    272|     )\n    273| \n    274|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    275|   })\n    276| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[1/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > returns knowledge context when Supabase returns documents\nAssertionError: expected \"spy\" to be called with arguments: [ \u2026(2) ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:319:37\n    317|     )\n    318| \n    319|     expect(mockBuildFashionContext).toHaveBeenCalledWith(mockRetrieval\u2026\n       |                                     ^\n    320|     expect(result).toBeDefined()\n    321|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[2/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase returns no documents\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:381:38\n    379|     )\n    380| \n    381|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    382|     expect(mockGetRAGService).toHaveBeenCalled()\n    383|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[3/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase throws error\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:415:38\n    413|     )\n    414| \n    415|     expect(mockRetrieveFromSupabase).toHaveBeenCalled()\n       |                                      ^\n    416|     expect(mockGetRAGService).toHaveBeenCalled()\n    417|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[4/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Supabase RAG Knowledge Retrieval > skips Supabase and uses Vectra when SUPABASE_RAG_ENABLED=false\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:449:31\n    447| \n    448|     expect(mockRetrieveFromSupabase).not.toHaveBeenCalled()\n    449|     expect(mockGetRAGService).toHaveBeenCalled()\n       |                               ^\n    450|   })\n    451| })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[5/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > calls searchProductsFromSupabase when SUPABASE_RAG_ENABLED=true\nAssertionError: expected \"spy\" to be called with arguments: [ 'floral dress', undefined, 30 ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:494:44\n    492|     )\n    493| \n    494|     expect(mockSearchProductsFromSupabase).toHaveBeenCalledWith('flora\u2026\n       |                                            ^\n    495|   })\n    496| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[6/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > merges semantic and heuristic results without duplicates\nAssertionError: expected \"spy\" to be called with arguments: [ [ { id: 'semantic-1', \u2026(17) } ] ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n \u276f lib/__tests__/chat-supabase-integration.test.ts:532:47\n    530| \n    531|     // Semantic results should be transformed and merged\n    532|     expect(mockTransformDbProductsToEnhanced).toHaveBeenCalledWith([se\u2026\n       |                                               ^\n    533|   })\n    534| \n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[7/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > uses heuristic-only when searchProductsFromSupabase returns empty\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:565:44\n    563|     )\n    564| \n    565|     expect(mockSearchProductsFromSupabase).toHaveBeenCalled()\n       |                                            ^\n    566|     expect(result).toBeDefined()\n    567|   })\n\n\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af\u23af[8/13]\u23af\n\n FAIL  lib/__tests__/chat-supabase-integration.test.ts > AI Chat Service - Semantic Product Search > catches error and uses heuristic when searchProductsFromSupabase throws\nAssertionError: expected \"spy\" to be called at least once\n \u276f lib/__tests__/chat-supabase-integration.test.ts:599:44\n    597|     )\n    598| \n    599|     expect(mockSearchProductsFromSupabase).toHaveBeenCalled()\n    \n\n... [12958 characters truncated] ...\n\nt: No\n  Force Recommendations: No\n  POST-RECOMMENDATION LOCKOUT: No\n  Follow-up Phase (Step 4): No\n[Follow-up Handler] Not a follow-up request\n[AI Chat] Clarification needed: gender\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have Supabase products with Vectra RAG\n[Chat API] Generated 0 outfits\n[Chat API] imageRequest: undefined, outfitDescription: no\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Processing message: reverse flags test\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Using JSON products (1 items)\n[Chat API] Using 1 enhanced products\n[Chat API] Using AI-powered recommendations\n[AI Chat] Turn Count: \u001b[33m0\u001b[39m\n[Turn Stats]\n  Clarifications: 0/2\n  Recommendations: No\n  Exceeded Limit: No\n  Force Recommendations: No\n  POST-RECOMMENDATION LOCKOUT: No\n  Follow-up Phase (Step 4): No\n[Follow-up Handler] Not a follow-up request\n[AI Chat] Clarification needed: gender\n\nstdout | lib/__tests__/chat-supabase-integration.test.ts > Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG\n[Chat API] Generated 0 outfits\n[Chat API] imageRequest: undefined, outfitDescription: no\n\n \u276f lib/__tests__/chat-supabase-integration.test.ts (22 tests | 13 failed) 141ms\n   \u2713 Chat API Route - Supabase Product Loading > loads products from Supabase when SUPABASE_PRODUCTS_ENABLED=true 128ms\n   \u2713 Chat API Route - Supabase Product Loading > falls back to JSON when Supabase returns empty array 1ms\n   \u2713 Chat API Route - Supabase Product Loading > uses JSON loader directly when SUPABASE_PRODUCTS_ENABLED=false 0ms\n   \u2713 Chat API Route - Supabase Product Loading > handles gracefully when both sources return empty 1ms\n   \u2713 Chat API Route - Supabase Product Loading > transforms Supabase products correctly before use 1ms\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > calls retrieveFromSupabase when SUPABASE_RAG_ENABLED=true 4ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > returns knowledge context when Supabase returns documents 1ms\n     \u2192 expected \"spy\" to be called with arguments: [ \u2026(2) ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase returns no documents 1ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > falls back to Vectra when Supabase throws error 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Supabase RAG Knowledge Retrieval > skips Supabase and uses Vectra when SUPABASE_RAG_ENABLED=false 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Semantic Product Search > calls searchProductsFromSupabase when SUPABASE_RAG_ENABLED=true 0ms\n     \u2192 expected \"spy\" to be called with arguments: [ 'floral dress', undefined, 30 ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Semantic Product Search > merges semantic and heuristic results without duplicates 0ms\n     \u2192 expected \"spy\" to be called with arguments: [ [ { id: 'semantic-1', \u2026(17) } ] ]\u001b[90m\n\nNumber of calls: \u001b[1m0\u001b[22m\n\u001b[39m\n   \u00d7 AI Chat Service - Semantic Product Search > uses heuristic-only when searchProductsFromSupabase returns empty 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 AI Chat Service - Semantic Product Search > catches error and uses heuristic when searchProductsFromSupabase throws 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u2713 AI Chat Service - Semantic Product Search > skips semantic search when SUPABASE_RAG_ENABLED=false 0ms\n   \u2713 AI Chat Service - Semantic Product Search > skips semantic search when message is too short 0ms\n   \u00d7 AI Chat Service - Semantic Product Search > passes occasion filter to searchProductsFromSupabase 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 Feature Flag Behavior > SUPABASE_RAG_ENABLED=true enables both knowledge and semantic search 0ms\n     \u2192 expected \"spy\" to be called at least once\n   \u2713 Feature Flag Behavior > SUPABASE_RAG_ENABLED=false disables both features 0ms\n   \u2713 Feature Flag Behavior > SUPABASE_PRODUCTS_ENABLED controls product catalog source independently 0ms\n   \u00d7 Feature Flag Behavior > flags are independent: can have Supabase products with Vectra RAG 1ms\n     \u2192 expected \"spy\" to be called at least once\n   \u00d7 Feature Flag Behavior > flags are independent: can have JSON products with Supabase RAG 0ms\n     \u2192 expected \"spy\" to be called at least once\n\n Test Files  1 failed (1)\n      Tests  13 failed | 9 passed (22)\n   Start at  22:21:46\n   Duration  951ms (transform 125ms, setup 99ms, collect 39ms, tests 141ms, environment 289ms, prepare 35ms)\n\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
+      "is_interrupt": false,
+      "logged_at": "2026-02-09T22:21:48.039097"
+    }
+  },
+  {
+    "timestamp": "2026-02-10T11:45:23.995636",
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Read",
+    "tool_use_id": "toolu_019sF9iB6rL3aFPWq5LzNreo",
+    "tool_input": {
+      "file_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528/tool-results/toolu_01PSb6W9onobf8WsXoQFFn3U.txt",
+      "offset": 9700
+    },
+    "error": "File content (270KB) exceeds maximum allowed size (256KB). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content.",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "raw_input": {
+      "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Read",
+      "tool_input": {
+        "file_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528/tool-results/toolu_01PSb6W9onobf8WsXoQFFn3U.txt",
+        "offset": 9700
+      },
+      "tool_use_id": "toolu_019sF9iB6rL3aFPWq5LzNreo",
+      "error": "File content (270KB) exceeds maximum allowed size (256KB). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content.",
+      "is_interrupt": false,
+      "logged_at": "2026-02-10T11:45:23.995636"
+    }
+  },
+  {
+    "timestamp": "2026-02-10T16:27:23.812958",
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "mcp__playwright__browser_navigate",
+    "tool_use_id": "toolu_01FVTJC7De9WXkovQxjKKVwT",
+    "tool_input": {
+      "url": "http://localhost:3000"
+    },
+    "error": "### Error\nError: browserType.launchPersistentContext: Failed to launch the browser process.\nBrowser logs:\n\n<launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52878 about:blank\n<launched> pid=70498\n[pid=70498][out] Opening in existing browser session.\n[pid=70498] <process did exit: exitCode=0, signal=null>\n[pid=70498] starting temporary directories cleanup\nCall log:\n\u001b[2m  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52878 about:blank\u001b[22m\n\u001b[2m  - <launched> pid=70498\u001b[22m\n\u001b[2m  - [pid=70498][out] Opening in existing browser session.\u001b[22m\n\u001b[2m  - [pid=70498] <process did exit: exitCode=0, signal=null>\u001b[22m\n\u001b[2m  - [pid=70498] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70498] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=70498] <kill>\u001b[22m\n\u001b[2m  - [pid=70498] <skipped force kill spawnedProcess.killed=false processClosed=true>\u001b[22m\n\u001b[2m  - [pid=70498] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70498] <gracefully close end>\u001b[22m",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "raw_input": {
+      "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "mcp__playwright__browser_navigate",
+      "tool_input": {
+        "url": "http://localhost:3000"
+      },
+      "tool_use_id": "toolu_01FVTJC7De9WXkovQxjKKVwT",
+      "error": "### Error\nError: browserType.launchPersistentContext: Failed to launch the browser process.\nBrowser logs:\n\n<launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52878 about:blank\n<launched> pid=70498\n[pid=70498][out] Opening in existing browser session.\n[pid=70498] <process did exit: exitCode=0, signal=null>\n[pid=70498] starting temporary directories cleanup\nCall log:\n\u001b[2m  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52878 about:blank\u001b[22m\n\u001b[2m  - <launched> pid=70498\u001b[22m\n\u001b[2m  - [pid=70498][out] Opening in existing browser session.\u001b[22m\n\u001b[2m  - [pid=70498] <process did exit: exitCode=0, signal=null>\u001b[22m\n\u001b[2m  - [pid=70498] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70498] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=70498] <kill>\u001b[22m\n\u001b[2m  - [pid=70498] <skipped force kill spawnedProcess.killed=false processClosed=true>\u001b[22m\n\u001b[2m  - [pid=70498] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70498] <gracefully close end>\u001b[22m",
+      "is_interrupt": false,
+      "logged_at": "2026-02-10T16:27:23.812958"
+    }
+  },
+  {
+    "timestamp": "2026-02-10T16:27:35.093618",
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "mcp__playwright__browser_navigate",
+    "tool_use_id": "toolu_018mvaH2PWEBb7kWnwaanDkV",
+    "tool_input": {
+      "url": "http://localhost:3000"
+    },
+    "error": "### Error\nError: browserType.launchPersistentContext: Failed to launch the browser process.\nBrowser logs:\n\n<launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52892 about:blank\n<launched> pid=70550\n[pid=70550][out] Opening in existing browser session.\n[pid=70550] <process did exit: exitCode=0, signal=null>\n[pid=70550] starting temporary directories cleanup\nCall log:\n\u001b[2m  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52892 about:blank\u001b[22m\n\u001b[2m  - <launched> pid=70550\u001b[22m\n\u001b[2m  - [pid=70550][out] Opening in existing browser session.\u001b[22m\n\u001b[2m  - [pid=70550] <process did exit: exitCode=0, signal=null>\u001b[22m\n\u001b[2m  - [pid=70550] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70550] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=70550] <kill>\u001b[22m\n\u001b[2m  - [pid=70550] <skipped force kill spawnedProcess.killed=false processClosed=true>\u001b[22m\n\u001b[2m  - [pid=70550] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70550] <gracefully close end>\u001b[22m",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "raw_input": {
+      "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "mcp__playwright__browser_navigate",
+      "tool_input": {
+        "url": "http://localhost:3000"
+      },
+      "tool_use_id": "toolu_018mvaH2PWEBb7kWnwaanDkV",
+      "error": "### Error\nError: browserType.launchPersistentContext: Failed to launch the browser process.\nBrowser logs:\n\n<launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52892 about:blank\n<launched> pid=70550\n[pid=70550][out] Opening in existing browser session.\n[pid=70550] <process did exit: exitCode=0, signal=null>\n[pid=70550] starting temporary directories cleanup\nCall log:\n\u001b[2m  - <launching> /Applications/Google Chrome.app/Contents/MacOS/Google Chrome --disable-field-trial-config --disable-background-networking --disable-background-timer-throttling --disable-backgrounding-occluded-windows --disable-back-forward-cache --disable-breakpad --disable-client-side-phishing-detection --disable-component-extensions-with-background-pages --disable-component-update --no-default-browser-check --disable-default-apps --disable-dev-shm-usage --disable-features=AvoidUnnecessaryBeforeUnloadCheckSync,BoundaryEventDispatchTracksNodeRemoval,DestroyProfileOnBrowserClose,DialMediaRouteProvider,GlobalMediaControls,HttpsUpgrades,LensOverlay,MediaRouter,PaintHolding,ThirdPartyStoragePartitioning,Translate,AutoDeElevate,OptimizationHints,AutomationControlled --enable-features=CDPScreenshotNewSurface --allow-pre-commit-input --disable-hang-monitor --disable-ipc-flooding-protection --disable-popup-blocking --disable-prompt-on-repost --disable-renderer-backgrounding --force-color-profile=srgb --metrics-recording-only --no-first-run --password-store=basic --use-mock-keychain --no-service-autorun --export-tagged-pdf --disable-search-engine-choice-screen --unsafely-disable-devtools-self-xss-warnings --edge-skip-compat-layer-relaunch --disable-infobars --disable-search-engine-choice-screen --disable-sync --user-data-dir=/Users/naruechon/Library/Caches/ms-playwright/mcp-chrome-3efb677 --remote-debugging-port=52892 about:blank\u001b[22m\n\u001b[2m  - <launched> pid=70550\u001b[22m\n\u001b[2m  - [pid=70550][out] Opening in existing browser session.\u001b[22m\n\u001b[2m  - [pid=70550] <process did exit: exitCode=0, signal=null>\u001b[22m\n\u001b[2m  - [pid=70550] starting temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70550] <gracefully close start>\u001b[22m\n\u001b[2m  - [pid=70550] <kill>\u001b[22m\n\u001b[2m  - [pid=70550] <skipped force kill spawnedProcess.killed=false processClosed=true>\u001b[22m\n\u001b[2m  - [pid=70550] finished temporary directories cleanup\u001b[22m\n\u001b[2m  - [pid=70550] <gracefully close end>\u001b[22m",
+      "is_interrupt": false,
+      "logged_at": "2026-02-10T16:27:35.093618"
+    }
+  },
+  {
+    "timestamp": "2026-02-10T16:30:51.350508",
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Read",
+    "tool_use_id": "toolu_01XCbWUhAoMrx5xXiRu39Er5",
+    "tool_input": {
+      "file_path": "/private/tmp/claude-502/-Users-naruechon-OOTD/tasks/becdf13.output"
+    },
+    "error": "File content (84010 tokens) exceeds maximum allowed tokens (25000). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content.",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "raw_input": {
+      "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Read",
+      "tool_input": {
+        "file_path": "/private/tmp/claude-502/-Users-naruechon-OOTD/tasks/becdf13.output"
+      },
+      "tool_use_id": "toolu_01XCbWUhAoMrx5xXiRu39Er5",
+      "error": "File content (84010 tokens) exceeds maximum allowed tokens (25000). Please use offset and limit parameters to read specific portions of the file, or use the GrepTool to search for specific content.",
+      "is_interrupt": false,
+      "logged_at": "2026-02-10T16:30:51.350508"
+    }
+  },
+  {
+    "timestamp": "2026-02-10T16:31:39.384083",
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "mcp__playwright__browser_click",
+    "tool_use_id": "toolu_01RTXHYREjHFDsuiHgqL4d2o",
+    "tool_input": {
+      "ref": "e10",
+      "element": "Let's Go button"
+    },
+    "error": "### Error\nError: Ref e10 not found in the current page snapshot. Try capturing new snapshot.",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "raw_input": {
+      "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+      "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+      "cwd": "/Users/naruechon/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "mcp__playwright__browser_click",
+      "tool_input": {
+        "ref": "e10",
+        "element": "Let's Go button"
+      },
+      "tool_use_id": "toolu_01RTXHYREjHFDsuiHgqL4d2o",
+      "error": "### Error\nError: Ref e10 not found in the current page snapshot. Try capturing new snapshot.",
+      "is_interrupt": false,
+      "logged_at": "2026-02-10T16:31:39.384083"
+    }
+  }
+]

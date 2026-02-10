@@ -1,0 +1,317 @@
+[
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a05c5f2",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:19:02.237837"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aee4af2",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:19:11.275677"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a535bc8",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:28:37.102095"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a33aaf0",
+    "agent_type": "frontend",
+    "logged_at": "2026-02-09T20:48:52.174670"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a65ffaa",
+    "agent_type": "tester-components",
+    "logged_at": "2026-02-09T20:49:11.551217"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "af386f2",
+    "agent_type": "backend",
+    "logged_at": "2026-02-09T20:49:34.364365"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a548193",
+    "agent_type": "frontend",
+    "logged_at": "2026-02-09T20:50:40.867751"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aea3945",
+    "agent_type": "tester-grid-api",
+    "logged_at": "2026-02-09T20:50:55.317628"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a485634",
+    "agent_type": "tester-components",
+    "logged_at": "2026-02-09T20:51:20.735636"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4055b7",
+    "agent_type": "tester-components",
+    "logged_at": "2026-02-09T20:51:25.363163"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a223294",
+    "agent_type": "backend",
+    "logged_at": "2026-02-09T20:51:52.832296"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aacc81e",
+    "agent_type": "tester-grid-api",
+    "logged_at": "2026-02-09T20:53:44.719425"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a07ea62",
+    "agent_type": "tester-grid-api",
+    "logged_at": "2026-02-09T20:54:00.589347"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a58e1e4",
+    "agent_type": "tester-grid-api",
+    "logged_at": "2026-02-09T20:54:13.838557"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a6f8775",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T21:06:18.044246"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae3c173",
+    "agent_type": "builder",
+    "logged_at": "2026-02-09T22:10:41.874806"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aec8b5f",
+    "agent_type": "builder",
+    "logged_at": "2026-02-09T22:13:45.413543"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a3cc17f",
+    "agent_type": "builder",
+    "logged_at": "2026-02-09T22:14:12.822160"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ac03c27",
+    "agent_type": "builder",
+    "logged_at": "2026-02-09T22:19:47.117491"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a045fca",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T23:24:18.291527"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a046ecc",
+    "agent_type": "researcher",
+    "logged_at": "2026-02-10T11:26:20.900408"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a649eab",
+    "agent_type": "api-wirer",
+    "logged_at": "2026-02-10T11:35:43.069978"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a7df4fb",
+    "agent_type": "prompt-engineer",
+    "logged_at": "2026-02-10T11:36:20.339056"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a77f1ab",
+    "agent_type": "api-wirer",
+    "logged_at": "2026-02-10T11:38:16.353746"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8bba92",
+    "agent_type": "prompt-engineer",
+    "logged_at": "2026-02-10T11:38:53.165715"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ac49e3d",
+    "agent_type": "prompt-engineer-2",
+    "logged_at": "2026-02-10T11:39:21.426165"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a401cee",
+    "agent_type": "prompt-engineer",
+    "logged_at": "2026-02-10T11:44:56.618102"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a7b2831",
+    "agent_type": "validator",
+    "logged_at": "2026-02-10T11:44:58.348601"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9e8c9d",
+    "agent_type": "prompt-engineer",
+    "logged_at": "2026-02-10T11:45:09.942584"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "afb7645",
+    "agent_type": "validator",
+    "logged_at": "2026-02-10T11:46:14.826090"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a0ba571",
+    "agent_type": "api-wirer",
+    "logged_at": "2026-02-10T11:46:23.361928"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a35cca8",
+    "agent_type": "prompt-engineer",
+    "logged_at": "2026-02-10T11:46:23.869928"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8d48f4",
+    "agent_type": "prompt-engineer-2",
+    "logged_at": "2026-02-10T11:46:24.076032"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abb8477",
+    "agent_type": "validator",
+    "logged_at": "2026-02-10T11:46:28.014526"
+  },
+  {
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8e4a1c",
+    "agent_type": "general-purpose",
+    "logged_at": "2026-02-10T16:28:55.486959"
+  }
+]

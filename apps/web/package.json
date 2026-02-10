@@ -17,7 +17,9 @@
     "e2e:headed": "playwright test --headed",
     "seed:knowledge": "tsx scripts/seed-knowledge.ts",
     "seed:knowledge:clean": "tsx scripts/seed-knowledge.ts --clean",
-    "seed:knowledge:preview": "tsx scripts/seed-knowledge.ts --dry-run --verbose"
+    "seed:knowledge:preview": "tsx scripts/seed-knowledge.ts --dry-run --verbose",
+    "seed:products": "tsx lib/supabase/migrations/002_seed_products.ts",
+    "seed:knowledge:supabase": "tsx lib/supabase/migrations/003_seed_knowledge.ts"
   },
   "dependencies": {
     "@dqbd/tiktoken": "^1.0.22",
@@ -49,6 +51,7 @@
     "@radix-ui/react-toggle": "1.1.1",
     "@radix-ui/react-toggle-group": "1.1.1",
     "@radix-ui/react-tooltip": "1.1.6",
+    "@supabase/supabase-js": "^2.95.3",
     "@types/papaparse": "^5.3.16",
     "@vercel/analytics": "latest",
     "autoprefixer": "^10.4.20",
@@ -92,6 +95,7 @@
     "@types/react-dom": "^18",
     "@types/react-window": "^1.8.8",
     "@vitejs/plugin-react": "^5.0.4",
+    "dotenv": "^17.2.4",
     "eslint": "^8.57.1",
     "eslint-config-next": "^15.5.4",
     "jsdom": "^27.0.0",

@@ -6,7 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { EnhancedProduct } from '@/lib/types/product-types'
 import type { UserProfile } from '@/lib/types/user-profile-types'
-import { loadProductsServerSide } from '@/lib/server-product-loader'
+import { loadProductsServerSide, loadProductsFromSupabase } from '@/lib/server-product-loader'
+import { transformDbProductsToEnhanced } from '@/lib/transformers/db-product-to-enhanced'
 import {
   processAIChatRequest,
   getFallbackRecommendations,
@@ -34,8 +35,21 @@ export async function POST(request: NextRequest) {
       console.log(`[Chat API] Session has ${sessionContext.recommendedProductIds?.length || 0} previously recommended products`)
     }
 
-    // Load enhanced products (server-side)
-    const products = await loadProductsServerSide()
+    // Load enhanced products - prefer Supabase, fallback to JSON files
+    let products: EnhancedProduct[] = []
+
+    if (process.env.SUPABASE_PRODUCTS_ENABLED === 'true') {
+      const dbProducts = await loadProductsFromSupabase(undefined, 200)
+      if (dbProducts && dbProducts.length > 0) {
+        products = transformDbProductsToEnhanced(dbProducts)
+        console.log(`[Chat API] Using Supabase products (${products.length} items)`)
+      }
+    }
+
+    if (products.length === 0) {
+      products = await loadProductsServerSide()
+      console.log(`[Chat API] Using JSON products (${products.length} items)`)
+    }
 
     if (products.length === 0) {
       console.warn('[Chat API] No enhanced products available, falling back to mock data')

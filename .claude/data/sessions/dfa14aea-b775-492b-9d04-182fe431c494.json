@@ -1,0 +1,10 @@
+{
+  "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+  "prompts": [
+    "update /Users/naruechon/OOTD/.claude/commands/lean.md refer to our code base",
+    "commit this",
+    "install mcp: {\n  \"mcpServers\": {\n    \"supabase\": {\n      \"type\": \"http\",\n      \"url\": \"https://mcp.supabase.com/mcp\"\n    }\n  }\n} using mcp export: key: ## supabase\n\npass: LXLjElIhZdhtYNNP\n\nproject_url: [https://kvrjrohcjyctbhjlbdti.supabase.co](https://kvrjrohcjyctbhjlbdti.supabase.co/)\n\nPublishable API Key: sb_publishable_fNXgNTLgoM2VmpKTtgGclw_uJSwgdSw\n\nanon: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2cmpyb2hjanljdGJoamxiZHRpIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzA2Mzg5NzAsImV4cCI6MjA4NjIxNDk3MH0.ne1ANJZtumuAy4QaPiThqCLWdsfuMG1jjZszt40LWiE\n\n**service_role: eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6Imt2cmpyb2hjanljdGJoamxiZHRpIiwicm9sZSI6InNlcnZpY2Vfcm9sZSIsImlhdCI6MTc3MDYzODk3MCwiZXhwIjoyMDg2MjE0OTcwfQ.qN1RmXn5fd-elHqaey6N4eFntnB0YwDzGerU2efvh-4**",
+    "you are config to the wrong path: /Users/naruechon/OOTD/.mcp.json"
+  ],
+  "agent_name": "Axiom"
+}

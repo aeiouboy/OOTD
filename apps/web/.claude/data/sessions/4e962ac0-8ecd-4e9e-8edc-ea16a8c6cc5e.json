@@ -1,0 +1,8 @@
+{
+  "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+  "prompts": [
+    "base on implementation plan : specs/occasion-preset-flat-lay-generation.md, it should recommend minimun 3 items per looks to complete looks",
+    "base on implementation plan : specs/occasion-preset-flat-lay-generation.md, it don't have text on flat lay generate",
+    "issue is \"some looks generate just 2 items on looks\" but base on implementation plan : specs/occasion-preset-flat-lay-generation.md, it have to recommend minimun 3 items per looks to complete looks "
+  ]
+}

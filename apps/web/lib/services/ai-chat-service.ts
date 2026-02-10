@@ -98,6 +98,9 @@ import {
   detectImageRequest,
   extractOutfitDescription,
 } from '../utils/image-trigger-detector'
+// Supabase RAG integration (v4.0)
+import { retrieveFromSupabase, searchProductsFromSupabase } from '../rag/supabase-retrieval'
+import { transformDbProductsToEnhanced } from '../transformers/db-product-to-enhanced'
 
 export interface ChatRequest {
   message: string
@@ -218,6 +221,50 @@ async function retrieveKnowledgeWithRAG(
   detectedOccasion?: string
 ): Promise<RAGRetrievalResult> {
   try {
+    // v4.0: Check if Supabase RAG is enabled
+    if (process.env.SUPABASE_RAG_ENABLED === 'true') {
+      console.log('[AI Chat] RAG: Using Supabase pgvector')
+
+      try {
+        const retrievalOptions: RetrievalOptions = {
+          topK: 5,
+          threshold: 0.7,
+          filters: {},
+        }
+
+        if (detectedGender) {
+          retrievalOptions.filters!.gender = detectedGender
+        }
+        if (detectedOccasion) {
+          retrievalOptions.filters!.occasion = detectedOccasion
+        }
+
+        const retrievalResult = await retrieveFromSupabase(message, retrievalOptions)
+
+        if (retrievalResult.documents.length > 0) {
+          const knowledgeContext = buildFashionContext(retrievalResult, message)
+          const retrievedIds = retrievalResult.documents.map((doc) => doc.id)
+
+          console.log(
+            `[AI Chat] RAG: Supabase retrieved ${retrievalResult.documents.length} documents (${retrievalResult.metadata.tokenCount} tokens in ${retrievalResult.metadata.retrievalTimeMs}ms)`
+          )
+
+          return {
+            knowledgeContext,
+            retrievedIds,
+            usedFallback: false,
+          }
+        }
+
+        // No documents from Supabase, fall through to Vectra
+        console.warn('[AI Chat] RAG: Supabase returned no documents, falling back to Vectra')
+      } catch (supabaseError) {
+        console.error('[AI Chat] RAG: Supabase retrieval failed, falling back to Vectra:', supabaseError)
+      }
+    }
+
+    // Existing Vectra-based retrieval (fallback or when SUPABASE_RAG_ENABLED !== 'true')
+    console.log('[AI Chat] RAG: Using Vectra in-memory')
     const ragService = getRAGService()
 
     // Build retrieval options with filters based on detected context
@@ -590,6 +637,40 @@ export async function processAIChatRequest(
 
     // Filter products based on request (with Thai occasion)
     let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion)
+
+    // v4.0: Enhance with semantic search when Supabase RAG is enabled
+    if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
+      try {
+        console.log('[AI Chat] Semantic search: querying Supabase for relevant products')
+        const semanticProducts = await searchProductsFromSupabase(
+          request.message,
+          occasion || undefined,
+          30
+        )
+
+        if (semanticProducts.length > 0) {
+          const enhancedSemantic = transformDbProductsToEnhanced(semanticProducts)
+
+          // Merge: semantic results first, then heuristic results, deduped by SKU
+          const seenSkus = new Set<string>()
+          const merged: EnhancedProduct[] = []
+
+          for (const product of [...enhancedSemantic, ...filteredProducts]) {
+            const key = product.sku || product.id
+            if (!seenSkus.has(key)) {
+              seenSkus.add(key)
+              merged.push(product)
+            }
+          }
+
+          filteredProducts = merged
+          console.log(`[AI Chat] Semantic search: merged ${enhancedSemantic.length} semantic + ${filteredProducts.length - enhancedSemantic.length} heuristic = ${merged.length} total`)
+        }
+      } catch (semanticError) {
+        console.error('[AI Chat] Semantic search failed, using heuristic only:', semanticError)
+        // Continue with heuristic-only results
+      }
+    }
 
     // Apply duplicate prevention - filter out already recommended products
     const { products: uniqueProducts, hasSufficientProducts: sufficient, message: insufficientMessage } = filterAndValidateProducts(

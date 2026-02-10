@@ -1,0 +1,767 @@
+[
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "adfec92",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-09T19:05:04.112269"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a92d60e",
+    "agent_type": "researcher-implementation",
+    "logged_at": "2026-02-09T19:05:14.850320"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a052930",
+    "agent_type": "researcher-best-practices",
+    "logged_at": "2026-02-09T19:05:22.901327"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a31c59e",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-09T19:05:31.718776"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a15f184",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-09T19:07:40.845775"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a268e94",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-09T19:07:54.195398"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a813237",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-09T19:09:58.311404"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a2f0748",
+    "agent_type": "researcher-implementation",
+    "logged_at": "2026-02-09T19:09:59.366807"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a433d88",
+    "agent_type": "researcher-best-practices",
+    "logged_at": "2026-02-09T19:09:59.411119"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ac5a9da",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-09T19:09:59.988363"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aee8693",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T19:25:49.488461"
+  },
+  {
+    "session_id": "b6842c4e-0501-4059-88c9-3d382c0c7a71",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/b6842c4e-0501-4059-88c9-3d382c0c7a71.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a17cb56",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T19:39:40.550002"
+  },
+  {
+    "session_id": "b6842c4e-0501-4059-88c9-3d382c0c7a71",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/b6842c4e-0501-4059-88c9-3d382c0c7a71.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abece2e",
+    "agent_type": "builder-backend",
+    "logged_at": "2026-02-09T19:43:39.173688"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa91f47",
+    "agent_type": "builder",
+    "logged_at": "2026-02-09T19:45:33.670599"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abe0dff",
+    "agent_type": "builder-backend",
+    "logged_at": "2026-02-09T19:50:16.087553"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8a9717",
+    "agent_type": "builder-knowledge",
+    "logged_at": "2026-02-09T19:51:16.293832"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a40e660",
+    "agent_type": "builder-frontend",
+    "logged_at": "2026-02-09T19:52:00.400188"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a131a1d",
+    "agent_type": "builder-api",
+    "logged_at": "2026-02-09T19:53:39.681977"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "afad54d",
+    "agent_type": "builder-knowledge",
+    "logged_at": "2026-02-09T19:53:53.313589"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a1e132d",
+    "agent_type": "builder-frontend",
+    "logged_at": "2026-02-09T19:54:41.179209"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae85be1",
+    "agent_type": "builder-api",
+    "logged_at": "2026-02-09T19:56:10.185496"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a513cf6",
+    "agent_type": "validator-backend",
+    "logged_at": "2026-02-09T19:56:23.106300"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae1f0de",
+    "agent_type": "validator-e2e",
+    "logged_at": "2026-02-09T19:56:52.967912"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4b7e41",
+    "agent_type": "builder-backend",
+    "logged_at": "2026-02-09T19:58:12.118615"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a514225",
+    "agent_type": "builder-backend",
+    "logged_at": "2026-02-09T19:58:23.583492"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae1f6c2",
+    "agent_type": "validator-e2e",
+    "logged_at": "2026-02-09T19:58:58.949992"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ad4d21b",
+    "agent_type": "validator-backend",
+    "logged_at": "2026-02-09T20:00:04.259616"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abdd9a1",
+    "agent_type": "builder-backend",
+    "logged_at": "2026-02-09T20:02:16.725856"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "adf7bfd",
+    "agent_type": "builder-knowledge",
+    "logged_at": "2026-02-09T20:02:20.731412"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9495fe",
+    "agent_type": "builder-frontend",
+    "logged_at": "2026-02-09T20:02:21.257316"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab5d392",
+    "agent_type": "builder-api",
+    "logged_at": "2026-02-09T20:02:21.744417"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a81f581",
+    "agent_type": "validator-backend",
+    "logged_at": "2026-02-09T20:02:22.296942"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a58f1fb",
+    "agent_type": "validator-e2e",
+    "logged_at": "2026-02-09T20:02:22.795183"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abd686f",
+    "agent_type": "seeder-products",
+    "logged_at": "2026-02-09T20:08:36.287525"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a974925",
+    "agent_type": "seeder-knowledge",
+    "logged_at": "2026-02-09T20:08:40.058282"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab3a9a6",
+    "agent_type": "seeder-knowledge",
+    "logged_at": "2026-02-09T20:09:21.580238"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a597c06",
+    "agent_type": "seeder-products",
+    "logged_at": "2026-02-09T20:09:38.860892"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab8e0ec",
+    "agent_type": "seeder-products",
+    "logged_at": "2026-02-09T20:09:59.256668"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "af53756",
+    "agent_type": "seeder-knowledge",
+    "logged_at": "2026-02-09T20:09:59.553302"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abaf633",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:34:29.931669"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a34cbfa",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:34:36.236493"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ad0d39c",
+    "agent_type": "general-purpose",
+    "logged_at": "2026-02-09T20:34:43.152177"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aca5755",
+    "agent_type": "Plan",
+    "logged_at": "2026-02-09T20:36:38.565857"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9a3eff",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-09T20:44:17.033072"
+  },
+  {
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ad01182",
+    "agent_type": "general-purpose",
+    "logged_at": "2026-02-10T16:23:50.055799"
+  },
+  {
+    "session_id": "834fe191-666c-4803-ac47-1d4d15c66304",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/834fe191-666c-4803-ac47-1d4d15c66304.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8ceef2",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T17:03:45.269186"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a6d0e67",
+    "agent_type": "builder-types-prompts",
+    "logged_at": "2026-02-10T17:19:59.569920"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "adc85b5",
+    "agent_type": "builder-types-prompts",
+    "logged_at": "2026-02-10T17:22:26.364604"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8c723d",
+    "agent_type": "builder-types-prompts",
+    "logged_at": "2026-02-10T17:22:31.218907"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a2a29a3",
+    "agent_type": "builder-service-api",
+    "logged_at": "2026-02-10T17:23:23.841399"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abbe2f6",
+    "agent_type": "builder-tests-prompt",
+    "logged_at": "2026-02-10T17:23:25.893114"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a25f8f1",
+    "agent_type": "builder-tests-prompt",
+    "logged_at": "2026-02-10T17:24:56.079959"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a61ec5b",
+    "agent_type": "builder-types-prompts",
+    "logged_at": "2026-02-10T17:25:00.621795"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a6c5ac8",
+    "agent_type": "builder-tests-prompt",
+    "logged_at": "2026-02-10T17:25:01.553187"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a79313a",
+    "agent_type": "builder-service-api",
+    "logged_at": "2026-02-10T17:25:53.376268"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a08fbe8",
+    "agent_type": "builder-service-api",
+    "logged_at": "2026-02-10T17:26:07.904815"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a49931e",
+    "agent_type": "builder-hook-ui",
+    "logged_at": "2026-02-10T17:26:30.262698"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a1094f0",
+    "agent_type": "builder-tests-service",
+    "logged_at": "2026-02-10T17:26:43.630777"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a3eef6e",
+    "agent_type": "builder-hook-ui",
+    "logged_at": "2026-02-10T17:27:46.768323"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4eddb7",
+    "agent_type": "builder-hook-ui",
+    "logged_at": "2026-02-10T17:27:51.501886"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae7e611",
+    "agent_type": "builder-hook-ui",
+    "logged_at": "2026-02-10T17:27:59.683442"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a0739ad",
+    "agent_type": "builder-tests-service",
+    "logged_at": "2026-02-10T17:28:42.649209"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ac18d23",
+    "agent_type": "builder-tests-hook",
+    "logged_at": "2026-02-10T17:28:54.347740"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a75d6ba",
+    "agent_type": "builder-tests-hook",
+    "logged_at": "2026-02-10T17:30:54.348720"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "afca532",
+    "agent_type": "validator-final",
+    "logged_at": "2026-02-10T17:31:04.001984"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a8a9cd6",
+    "agent_type": "validator-final",
+    "logged_at": "2026-02-10T17:32:14.939108"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a12c935",
+    "agent_type": "validator-final",
+    "logged_at": "2026-02-10T17:32:25.269473"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a825513",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-10T18:55:54.383717"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "adc954b",
+    "agent_type": "researcher-implementation",
+    "logged_at": "2026-02-10T18:56:01.716482"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abe764b",
+    "agent_type": "researcher-best-practices",
+    "logged_at": "2026-02-10T18:56:10.325410"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a070276",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-10T18:56:18.695788"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "acce689",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-10T18:57:47.682984"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa64945",
+    "agent_type": "researcher-best-practices",
+    "logged_at": "2026-02-10T18:57:56.292032"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa3a39e",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-10T18:57:58.091789"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a15f28c",
+    "agent_type": "researcher-implementation",
+    "logged_at": "2026-02-10T18:58:06.086403"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a83f584",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T18:59:49.985606"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a28a78d",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T18:59:54.513768"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a96b06d",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T18:59:58.960878"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ae70c92",
+    "agent_type": "researcher-overview",
+    "logged_at": "2026-02-10T19:00:03.359376"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a80220b",
+    "agent_type": "researcher-implementation",
+    "logged_at": "2026-02-10T19:00:03.824480"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a56f7f0",
+    "agent_type": "researcher-best-practices",
+    "logged_at": "2026-02-10T19:00:05.410285"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a867088",
+    "agent_type": "researcher-tools",
+    "logged_at": "2026-02-10T19:00:05.427959"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a96b06d",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T19:01:55.589609"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "afeb581",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-10T19:02:59.966609"
+  },
+  {
+    "session_id": "40cb2f03-814b-43c3-8735-57608e86d8fe",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/40cb2f03-814b-43c3-8735-57608e86d8fe.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa37ea4",
+    "agent_type": "Plan",
+    "logged_at": "2026-02-10T19:03:29.667360"
+  }
+]

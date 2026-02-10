@@ -1,0 +1,11 @@
+{
+  "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+  "prompts": [
+    "/lean reseach what is the occation most suitable for our product catalogs",
+    "lets focus on women type first",
+    "/plan_w_team \"create a comprehensive plan to implement fashsion suggestion system with top 3 occasion for women categories with tag\ninclude the product migration to supabase with pg_vector, all task must be validate with specialist sub agent for both back-end site and front-end (using playwright), the RAG knowledge must\nbe upload from this path: /Users/naruechon/OOTD/data/personas/knowledge_base\u201d \u201ccreate a team mate to parallel work  with implementation task and testing task\u201d",
+    "use sub agent builder is work ",
+    "test use sub agent builder is work ?"
+  ],
+  "agent_name": "Nexus"
+}

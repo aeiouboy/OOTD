@@ -10,6 +10,7 @@ import path from 'path'
 import type { Product } from './types'
 import type { EnhancedProduct } from './types/product-types'
 import type { ProductMasterItem, ProductMasterV1Item, ProductVersion } from './types/kb-expansion-types'
+import type { DbProduct } from './supabase/types'
 import { transformCentralProduct } from './transformers/central-to-product'
 import { enrichProductData, hasKBAttributes } from './transformers/product-enrichment'
 import { validateProduct } from './validation/product-validator'
@@ -170,5 +171,37 @@ export async function loadProductsServerSide(): Promise<EnhancedProduct[]> {
   } catch (error) {
     console.error('[ServerProductLoader] Error loading products:', error)
     return []
+  }
+}
+
+/**
+ * Load products from Supabase when SUPABASE_PRODUCTS_ENABLED is true.
+ * Returns null if Supabase is disabled or unavailable, signaling callers to use JSON fallback.
+ */
+export async function loadProductsFromSupabase(
+  occasionFilter?: string,
+  limit = 100
+): Promise<DbProduct[] | null> {
+  if (process.env.SUPABASE_PRODUCTS_ENABLED !== 'true') {
+    return null
+  }
+
+  try {
+    const { createServerClient } = await import('./supabase/client')
+    const supabase = createServerClient()
+
+    let query = supabase.from('products').select('*')
+
+    if (occasionFilter) {
+      query = query.eq('primary_occasion', occasionFilter)
+    }
+
+    const { data, error } = await query.limit(limit)
+    if (error) throw error
+
+    return data
+  } catch (error) {
+    console.error('[ServerProductLoader] Failed to load from Supabase, will fallback to JSON:', error)
+    return null
   }
 }

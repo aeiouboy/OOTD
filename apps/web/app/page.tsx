@@ -18,6 +18,11 @@ import { initializeProductCatalog } from "@/lib/data-loader"
 import { MessageCircle, Sparkles, Bell, SlidersHorizontal, Grid3x3 } from "lucide-react"
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow"
 import { useUserProfile } from "@/lib/hooks/useUserProfile"
+import { OccasionFilterChips, OccasionSuggestionGrid } from "@/components/occasion"
+import { useOccasionSuggestions } from "@/lib/hooks/useOccasionSuggestions"
+import type { SuggestionProduct } from "@/lib/hooks/useOccasionSuggestions"
+import type { OccasionType } from "@/lib/supabase/types"
+import ProductModal from "@/components/product/ProductModal"
 
 export default function HomePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -28,6 +33,10 @@ export default function HomePage() {
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
   const [isLoadingOutfits, setIsLoadingOutfits] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(true)
+  const [selectedOccasion, setSelectedOccasion] = useState<OccasionType | null>(null)
+
+  // Occasion suggestions hook
+  const { products: occasionProducts, isLoading: isLoadingOccasion, error: occasionError, refetch: refetchOccasion } = useOccasionSuggestions(selectedOccasion)
 
   // User profile hook for onboarding
   const { profile, isLoading: isLoadingProfile } = useUserProfile()
@@ -126,6 +135,20 @@ export default function HomePage() {
     setSelectedProduct(product)
   }
 
+  const handleOccasionProductClick = (sp: SuggestionProduct) => {
+    const mapped: Product = {
+      sku: sp.sku ?? sp.id,
+      name: sp.product_name,
+      brand: sp.brand ?? 'Unknown',
+      price: sp.price ?? 0,
+      imageUrl: sp.image_url ?? '',
+      availability: 'in_stock',
+      onlineUrl: sp.link ?? undefined,
+      category: 'Women',
+    }
+    setSelectedProduct(mapped)
+  }
+
   const handleShopLook = (outfit: Outfit) => {
     console.log("Shopping for outfit:", outfit.title)
   }
@@ -168,13 +191,27 @@ export default function HomePage() {
       </div>
 
       {/* Middle Panel - Outfit Discovery (Flexible, takes remaining space) */}
-      <main className="flex-1 min-w-0" aria-label="Outfit Recommendations">
-        <OutfitDiscovery
-          outfits={filteredOutfits}
-          onSelectOutfit={selectOutfit}
-          onClearFilters={resetFilters}
-          isLoading={isLoadingProducts || isLoadingOutfits}
-        />
+      <main className="flex-1 min-w-0 overflow-y-auto" aria-label="Outfit Recommendations">
+        <div className="px-4 pt-3">
+          <OccasionFilterChips selected={selectedOccasion} onSelect={setSelectedOccasion} />
+        </div>
+        {selectedOccasion ? (
+          <OccasionSuggestionGrid
+            products={occasionProducts}
+            isLoading={isLoadingOccasion}
+            occasion={selectedOccasion}
+            onProductClick={handleOccasionProductClick}
+            error={occasionError}
+            onRetry={refetchOccasion}
+          />
+        ) : (
+          <OutfitDiscovery
+            outfits={filteredOutfits}
+            onSelectOutfit={selectOutfit}
+            onClearFilters={resetFilters}
+            isLoading={isLoadingProducts || isLoadingOutfits}
+          />
+        )}
       </main>
 
       {/* Right Panel - Resizable Chat Assistant + Details */}
@@ -221,23 +258,37 @@ export default function HomePage() {
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
         <div className={activeTab === "outfits" ? "block" : "hidden"}>
-          <div className="p-5">
-            <div className="grid grid-cols-2 gap-4">
-              {filteredOutfits.map((outfit) => (
-                <div
-                  key={outfit.id}
-                  className="cursor-pointer hover:shadow-lg transition-shadow border rounded-lg overflow-hidden"
-                  onClick={() => selectOutfit(outfit)}
-                >
-                  <div className="aspect-[3/4] bg-gray-100"></div>
-                  <div className="p-3">
-                    <h3 className="font-medium text-sm line-clamp-1">{outfit.title}</h3>
-                    <p className="text-primary font-bold text-sm mt-1">฿{outfit.totalPrice.toLocaleString()}</p>
-                  </div>
-                </div>
-              ))}
-            </div>
+          <div className="px-5 pt-3">
+            <OccasionFilterChips selected={selectedOccasion} onSelect={setSelectedOccasion} />
           </div>
+          {selectedOccasion ? (
+            <OccasionSuggestionGrid
+              products={occasionProducts}
+              isLoading={isLoadingOccasion}
+              occasion={selectedOccasion}
+              onProductClick={handleOccasionProductClick}
+              error={occasionError}
+              onRetry={refetchOccasion}
+            />
+          ) : (
+            <div className="p-5">
+              <div className="grid grid-cols-2 gap-4">
+                {filteredOutfits.map((outfit) => (
+                  <div
+                    key={outfit.id}
+                    className="cursor-pointer hover:shadow-lg transition-shadow border rounded-lg overflow-hidden"
+                    onClick={() => selectOutfit(outfit)}
+                  >
+                    <div className="aspect-[3/4] bg-gray-100"></div>
+                    <div className="p-3">
+                      <h3 className="font-medium text-sm line-clamp-1">{outfit.title}</h3>
+                      <p className="text-primary font-bold text-sm mt-1">฿{outfit.totalPrice.toLocaleString()}</p>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            </div>
+          )}
         </div>
 
         <div className={activeTab === "chat" ? "block h-full" : "hidden"}>
@@ -325,6 +376,13 @@ export default function HomePage() {
         }}
         onProductClick={handleProductClick}
         onShopLook={handleShopLook}
+      />
+
+      {/* Product Detail Modal - for occasion products and outfit product clicks */}
+      <ProductModal
+        product={selectedProduct}
+        isOpen={!!selectedProduct}
+        onClose={() => setSelectedProduct(null)}
       />
     </>
   )

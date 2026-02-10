@@ -129,3 +129,9 @@ Feature specs are stored in `specs/` with the naming convention:
 - `.claude/commands/` - Slash command templates
 - `.claude/skills/` - Skill definitions (orchestrator, playwright-mcp)
 - `.claude/agents/` - Agent configurations
+
+## Guidelines
+
+- Research documents go in `research/`, implementation plans in `specs/`
+- **Plan mode**: After a plan is approved, always save it to `specs/<descriptive-name>.md` before starting implementation
+- Save test results from Playwright screen capture to `test-result/`

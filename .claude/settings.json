@@ -168,5 +168,5 @@
       }
     ]
   },
-  "teammateMode": "auto"
+  "teammateMode": "in-process"
 }

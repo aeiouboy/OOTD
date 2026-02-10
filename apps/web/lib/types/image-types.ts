@@ -1,3 +1,5 @@
+import type { OccasionType } from './enums';
+
 /**
  * Type definitions for image generation feature (Customer Journey Step 4)
  * Supports text-to-image generation for outfit visualization using OpenRouter's Gemini 2.5 Flash Image model
@@ -29,6 +31,17 @@ export type UserAesthetic =
   | 'bohemian'
   | 'streetwear'
   | 'romantic';
+
+/**
+ * Configuration for OpenRouter image generation output
+ * Controls aspect ratio and resolution of generated images
+ */
+export interface ImageConfig {
+  /** Aspect ratio for generated image */
+  aspect_ratio?: '1:1' | '2:3' | '3:2' | '3:4' | '4:3' | '4:5' | '5:4' | '9:16' | '16:9' | '21:9';
+  /** Output image resolution */
+  image_size?: '1K' | '2K' | '4K';
+}
 
 /**
  * Individual item in a flat-lay composition
@@ -271,4 +284,50 @@ export interface HybridFlatLayResponse {
   error?: string;
   /** Human-readable message */
   message?: string;
+}
+
+// ============================================================================
+// Occasion Preset Flat-Lay Types
+// ============================================================================
+
+/**
+ * Occasion preset identifiers for quick flat-lay generation
+ */
+export type OccasionPreset = 'weekend-social' | 'date-night' | 'everyday-casual';
+
+/**
+ * Request payload for occasion-based flat-lay generation
+ */
+export interface OccasionFlatLayRequest {
+  occasion: OccasionPreset;
+  userName?: string;
+  userAge?: string;
+  stylePreferences?: string[];
+  hasReferenceImage?: boolean;
+}
+
+/**
+ * Response from occasion-based flat-lay generation
+ */
+export interface OccasionFlatLayResponse {
+  success: boolean;
+  imageBase64?: string;
+  imageUrl?: string;
+  curatedItems?: FlatLayItem[];
+  imagePrompt?: string;
+  error?: string;
+  message?: string;
+}
+
+/**
+ * Configuration mapping for occasion presets
+ */
+export interface OccasionPresetConfig {
+  preset: OccasionPreset;
+  label: string;
+  emoji: string;
+  occasionTypes: OccasionType[];
+  formalityRange: { min: number; max: number };
+  defaultColorPalette: string[];
+  keyPieces: string[];
 }

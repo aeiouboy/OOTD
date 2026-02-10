@@ -1,0 +1,34 @@
+[
+  {
+    "session_id": "ad2e155a-262f-4730-8599-eaf62e867a07",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/ad2e155a-262f-4730-8599-eaf62e867a07.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-09T21:06:37.172089"
+  },
+  {
+    "session_id": "234fcca1-508d-4dd6-ae8b-94323bf86528",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/234fcca1-508d-4dd6-ae8b-94323bf86528.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-10T18:52:45.385613"
+  },
+  {
+    "session_id": "43d75d4b-6a0b-4dbe-89da-203c15e71437",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/43d75d4b-6a0b-4dbe-89da-203c15e71437.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-10T18:52:45.682491"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-10T18:52:46.227341"
+  }
+]

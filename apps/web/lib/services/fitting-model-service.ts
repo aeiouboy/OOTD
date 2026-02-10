@@ -9,6 +9,13 @@
  * - Try-on looks: outfit worn on user's fitting model (v6.0)
  */
 
+import {
+  buildFittingModelPrompt,
+  buildMysteryModelPrompt,
+  buildTryOnPrompt,
+  buildDualReferenceTryOnPrompt,
+} from '../prompts/image-prompts';
+
 /**
  * Response from fitting model generation
  */
@@ -37,47 +44,6 @@ export interface TryOnLooksRequest {
 }
 
 /**
- * Fitting model prompt template based on fitting_model.md
- * Shortened to stay under 3000 character limit for fitting-model generation
- * Generates a person in standard outfit (white crop top + black shorts + barefoot)
- */
-const FITTING_MODEL_PROMPT_TEMPLATE = `
-Photorealistic fashion catalog image. Reference photo shows the person's face - match it EXACTLY.
-
-FACE: Exact match to reference - same face shape, eyes, nose, mouth, skin tone, hair. No beautification.
-
-BODY: Match body type from reference or use proportionate figure.
-
-OUTFIT: White spaghetti strap crop top, black high-waisted legging shorts, barefoot.
-
-POSE: Standing straight, facing camera, arms at sides, feet together.
-
-MANDATORY BACKGROUND: Pure white infinity cove studio backdrop (RGB 255,255,255). The model floats in infinite white void with zero visible floor, ground, horizon line, or surface. No shadows on background whatsoever.
-
-LIGHTING: Bright front-facing softbox, high-key lighting to eliminate all shadows on backdrop.
-
-OUTPUT: E-commerce product photo quality, clean cutout-ready image.
-`.trim();
-
-/**
- * Mystery mode prompt template for users who don't upload photos
- * Shortened to stay under 1000 character limit for outfit generation
- */
-const MYSTERY_MODEL_PROMPT = `
-E-commerce fashion catalog photo of Thai woman, 25-30, natural beauty, warm brown eyes, shoulder-length black hair.
-
-OUTFIT: White spaghetti strap crop top, black high-waisted legging shorts, barefoot.
-
-POSE: Standing straight, facing camera, arms at sides, feet together.
-
-MANDATORY BACKGROUND: Pure white infinity cove (RGB 255,255,255). Model floats in infinite white void - NO floor, NO ground, NO shadows on backdrop.
-
-LIGHTING: High-key softbox, bright even illumination eliminating all backdrop shadows.
-
-OUTPUT: Clean cutout-ready product photo.
-`.trim();
-
-/**
  * Generates a fitting model image from the user's photo
  *
  * @param userPhotoBase64 - Base64 encoded user photo (with data URL prefix)
@@ -96,7 +62,7 @@ export async function generateFittingModel(
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        description: FITTING_MODEL_PROMPT_TEMPLATE,
+        description: buildFittingModelPrompt(),
         referenceImage: userPhotoBase64,
         generationType: 'fitting-model',
         style: {
@@ -161,7 +127,7 @@ export async function generateDefaultFittingModel(): Promise<FittingModelRespons
         'Content-Type': 'application/json',
       },
       body: JSON.stringify({
-        description: MYSTERY_MODEL_PROMPT,
+        description: buildMysteryModelPrompt(),
         generationType: 'fitting-model',
         style: {
           photographyStyle: 'professional studio',
@@ -206,95 +172,6 @@ export async function generateDefaultFittingModel(): Promise<FittingModelRespons
       message: 'Unable to connect to the image generation service',
     };
   }
-}
-
-/**
- * Try-on prompt template for showing outfit on fitting model (single image reference)
- * Emphasizes maintaining exact face/body from reference while changing outfit
- */
-function buildTryOnPrompt(items: Array<{ name: string; category: string; color?: string }>, outfitTitle?: string): string {
-  const itemDescriptions = items.map(item => {
-    const color = item.color ? `${item.color} ` : '';
-    return `${color}${item.name}`;
-  }).join(', ');
-
-  return `
-Photorealistic fashion catalog image. Reference photo shows the person - match face and body EXACTLY.
-
-FACE: Exact match to reference - same face shape, eyes, nose, mouth, skin tone, hair. No beautification.
-
-BODY: Match body type from reference exactly.
-
-OUTFIT: ${itemDescriptions}${outfitTitle ? ` (${outfitTitle})` : ''}
-
-POSE: Standing straight, facing camera, confident pose, feet together.
-
-MANDATORY BACKGROUND: Pure white infinity cove studio backdrop (RGB 255,255,255). Model floats in infinite white void - NO floor, NO ground, NO shadows on backdrop.
-
-LIGHTING: Bright front-facing softbox, high-key lighting to eliminate all shadows on backdrop.
-
-OUTPUT: E-commerce product photo quality, clean cutout-ready image, outfit clearly visible.
-`.trim();
-}
-
-/**
- * Try-on prompt template for dual image reference (fitting model + flat-lay)
- * IMAGE 1 is the fitting model (face/body reference)
- * IMAGE 2 is the flat-lay showing exact outfit items to wear
- * Uses transfer-focused approach with mandatory checklists for outfit consistency
- */
-function buildDualReferenceTryOnPrompt(items: Array<{ name: string; category: string; color?: string }>, outfitTitle?: string): string {
-  const itemDescriptions = items.map(item => {
-    const color = item.color ? `${item.color} ` : '';
-    return `${color}${item.name}`;
-  }).join(', ');
-
-  return `
-Apply ALL fashion items from IMAGE 2 onto the person in IMAGE 1, creating a photorealistic image where the person wears the complete styled outfit.
-
-COMPOSITION:
-- Full-body centered shot
-- CRITICAL FRAMING: Model MUST fill 90-95% of the vertical frame. Head nearly touches top edge, feet nearly touch bottom edge. ZERO excessive whitespace above or below the model.
-- CROP TIGHT: Frame the shot as a tight full-body crop with minimal margins (max 5% padding above head and below feet).
-- Standing pose, facing camera, feet together
-
-MANDATORY TRANSFER CHECKLIST - EVERY ITEM MUST APPEAR:
-✓ Top/Upper garment
-✓ Bottom/Lower garment or Dress
-✓ Outerwear (if present in IMAGE 2)
-✓ Footwear/Shoes (MANDATORY if in IMAGE 2)
-✓ Accessories (bags, belts, jewelry, glasses if visible in IMAGE 2)
-
-REALISM REQUIREMENTS:
-- Preserve person's face, skin tone, hair, body proportions from IMAGE 1
-- Generate natural shadows and highlights on ALL outfit pieces
-- Ensure fabric draping responds to body position and gravity
-- Match color accuracy from IMAGE 2 exactly
-- Proper layering and depth
-
-MANDATORY BACKGROUND:
-- Pure white infinity cove studio backdrop (RGB 255,255,255)
-- Model floats in infinite white void - NO floor, NO ground, NO shadows on backdrop
-
-LIGHTING:
-- Bright front-facing softbox, high-key lighting
-- Match IMAGE 1's studio lighting style
-- Eliminate all shadows on backdrop
-
-REJECT IF MISSING:
-❌ Any clothing item from IMAGE 2
-❌ Any accessories (bag, sunglasses, watch, earrings, jewelry) visible in IMAGE 2
-❌ Person still wearing IMAGE 1's original outfit pieces
-❌ Model appears small with excessive whitespace (must fill 90%+ of frame)
-
-OUTPUT SPECIFICATIONS:
-- Photo quality: High-resolution, professional photography standard
-- Realism: Photorealistic
-- Face preservation: 100% similarity to IMAGE 1
-- Complete outfit: 100% of items from IMAGE 2 must be present
-
-Items being transferred: ${itemDescriptions}${outfitTitle ? ` (${outfitTitle})` : ''}
-`.trim();
 }
 
 /**

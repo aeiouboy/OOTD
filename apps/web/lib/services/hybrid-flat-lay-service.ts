@@ -25,6 +25,7 @@ import {
   bufferToBase64,
 } from '@/lib/utils/image-compositor';
 import { OpenRouterImageClient } from './image-generation-service';
+import { buildBackgroundPrompt } from '../prompts/image-prompts';
 
 /**
  * Default canvas dimensions for hybrid flat-lay
@@ -50,94 +51,6 @@ const AESTHETIC_TO_BACKGROUND: Record<UserAesthetic, BackgroundStyle> = {
 };
 
 /**
- * Background style to AI prompt mapping
- */
-const BACKGROUND_PROMPTS: Record<BackgroundStyle, string> = {
-  'white-clean': `
-Generate a pure white background image for flat-lay photography.
-REQUIREMENTS:
-- Completely flat, solid white background (#FFFFFF)
-- No textures, patterns, or variations
-- No shadows or gradients
-- Perfect for product photography
-- Square format (1:1 aspect ratio)
-- Completely empty, no objects or elements
-`.trim(),
-
-  'marble-white': `
-Generate a luxurious white marble texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Elegant white Carrara marble surface
-- Subtle grey veining patterns
-- Soft, sophisticated look
-- High-end luxury aesthetic
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for quiet-luxury fashion styling
-`.trim(),
-
-  'marble-grey': `
-Generate a sophisticated grey marble texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Refined grey marble surface
-- Elegant dark veining patterns
-- Professional, corporate aesthetic
-- Timeless and sophisticated look
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for business fashion styling
-`.trim(),
-
-  'wood-light': `
-Generate a natural light wood texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Warm, light oak or birch wood surface
-- Natural wood grain patterns
-- Organic, natural aesthetic
-- Soft, inviting warmth
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for bohemian or natural fashion styling
-`.trim(),
-
-  'wood-dark': `
-Generate a rich dark wood texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Deep walnut or mahogany wood surface
-- Sophisticated dark wood grain
-- Dark academia aesthetic
-- Scholarly, refined atmosphere
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for dark academia fashion styling
-`.trim(),
-
-  'linen-natural': `
-Generate a natural linen fabric texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Soft, natural linen texture
-- Warm beige/cream color
-- Clean-girl aesthetic
-- Fresh, organic feel
-- Square format (1:1 aspect ratio)
-- Flat surface with no folds or wrinkles
-- Perfect for effortless chic fashion styling
-`.trim(),
-
-  'linen-grey': `
-Generate a sophisticated grey linen fabric texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Elegant grey linen texture
-- Subtle weave pattern
-- Casual-chic aesthetic
-- Modern, understated elegance
-- Square format (1:1 aspect ratio)
-- Flat surface with no folds or wrinkles
-- Perfect for casual everyday fashion styling
-`.trim(),
-};
-
-/**
  * Maps user aesthetic to background style
  *
  * @param aesthetic - User's aesthetic preference
@@ -148,16 +61,6 @@ export function mapAestheticToBackground(aesthetic?: UserAesthetic): BackgroundS
     return 'white-clean';
   }
   return AESTHETIC_TO_BACKGROUND[aesthetic] || 'white-clean';
-}
-
-/**
- * Builds the AI prompt for background generation
- *
- * @param style - Background style to generate
- * @returns Prompt string for AI generation
- */
-export function buildBackgroundPrompt(style: BackgroundStyle): string {
-  return BACKGROUND_PROMPTS[style] || BACKGROUND_PROMPTS['white-clean'];
 }
 
 /**
