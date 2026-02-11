@@ -490,7 +490,7 @@ export function detectKnowledgeTopics(message: string): KnowledgeTopic[] {
   }
 
   // Fabric-related keywords
-  if (/ผ้า|fabric|material|วัสดุ|cotton|linen|ร้อน|เย็น|หนาว/.test(lowerMessage)) {
+  if (/ผ้า|fabric|material|วัสดุ|cotton|linen|ร้อน|เย็น|หนาว|แดด|ฝน|rain|hot|cold|อากาศ|climate/.test(lowerMessage)) {
     topics.push('fabric');
     topics.push('weather');
   }
@@ -501,12 +501,12 @@ export function detectKnowledgeTopics(message: string): KnowledgeTopic[] {
   }
 
   // Body type keywords
-  if (/รูปร่าง|body|type|เตี้ย|สูง|อ้วน|ผอม|petite|สะโพก|เอว|ไหล่/.test(lowerMessage)) {
+  if (/รูปร่าง|body|type|เตี้ย|สูง|อ้วน|ผอม|petite|สะโพก|เอว|ไหล่|ท้อง|pregnant|plus.?size|ไซส์ใหญ่|curvy/.test(lowerMessage)) {
     topics.push('body_type');
   }
 
   // Occasion keywords
-  if (/งาน|occasion|wedding|แต่งงาน|บวช|funeral|ศพ|temple|วัด|ทำงาน|work|office/.test(lowerMessage)) {
+  if (/งาน|occasion|wedding|แต่งงาน|บวช|funeral|ศพ|temple|วัด|ทำงาน|work|office|คาสชวล|casual|คาเฟ่|cafe|เดท|date|เที่ยว|สบาย|ปาร์ตี้|party|สังสรรค์|ดินเนอร์|dinner|brunch|ช้อปปิ้ง|shopping|ออฟฟิศ|สัมภาษณ์|interview|ออกเดท|กินข้าว|คอนเสิร์ต|concert|เรียน|มหาลัย|จบการศึกษา|graduation|ปีใหม่|สงกรานต์/.test(lowerMessage)) {
     topics.push('occasion');
     topics.push('thai_culture');
   }

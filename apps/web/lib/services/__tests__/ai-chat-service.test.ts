@@ -24,10 +24,12 @@ vi.mock('../../utils/clarification-detector', () => ({
     hasBudget: false,
     hasDestination: false,
     isTravelQuery: false,
+    hasColors: false,
   }),
   getClarificationsNeeded: vi.fn().mockReturnValue([]),
   formatClarificationQuestions: vi.fn().mockReturnValue('What gender?'),
   isAnsweringClarification: vi.fn().mockReturnValue(false),
+  detectColors: vi.fn().mockReturnValue([]),
 }));
 
 vi.mock('../../utils/conversation-flow-tracker', () => ({
@@ -113,6 +115,10 @@ vi.mock('../../rag/supabase-retrieval', () => ({
   searchProductsFromSupabase: vi.fn().mockResolvedValue([]),
 }));
 
+vi.mock('../../rag/query-translator', () => ({
+  translateQueryForRAG: vi.fn((msg: string) => Promise.resolve(msg)),
+}));
+
 vi.mock('../../transformers/db-product-to-enhanced', () => ({
   transformDbProductsToEnhanced: vi.fn().mockReturnValue([]),
 }));
@@ -121,6 +127,7 @@ vi.mock('../../utils/product-filters', () => ({
   applyFilters: vi.fn().mockImplementation((products) => products),
   filterByThaiOccasion: vi.fn().mockImplementation((products) => products),
   filterByMonthSuitability: vi.fn().mockImplementation((products) => products),
+  rankProductsByRelevance: vi.fn().mockImplementation((products) => products),
 }));
 
 vi.mock('../../matching/thai-cultural-matcher', () => ({
@@ -182,7 +189,7 @@ import { detectImageRequest, extractOutfitDescription } from '../../utils/image-
 import { applyFilters, filterByThaiOccasion, filterByMonthSuitability } from '../../utils/product-filters';
 import { detectThaiOccasion as detectThaiOccasionMatcher } from '../../matching/thai-cultural-matcher';
 import { filterAndValidateProducts } from '../../utils/duplicate-filter';
-import { getClarificationsNeeded } from '../../utils/clarification-detector';
+import { getClarificationsNeeded, analyzeUserQuery } from '../../utils/clarification-detector';
 
 // ---------------------------------------------------------------------------
 // Test Helpers
@@ -425,9 +432,8 @@ describe('ai-chat-service', () => {
       expect(extractBudget('999 บาท')).toBe(999);
     });
 
-    it('partially matches non-comma 4-digit numbers (regex limitation)', () => {
-      // "budget 5000" -> regex matches "500" (3 digits max without comma)
-      expect(extractBudget('budget 5000')).toBe(500);
+    it('correctly parses non-comma 4-digit numbers', () => {
+      expect(extractBudget('budget 5000')).toBe(5000);
     });
 
     it('returns undefined for messages without budget info', () => {
@@ -835,6 +841,39 @@ describe('ai-chat-service', () => {
 
       expect(result.message).toBe('What gender?');
       expect(result.recommendedProducts).toEqual([]);
+    });
+
+    it('does NOT ask gender clarification when userPreferences.gender is set', async () => {
+      // Simulate: message has no gender keyword, but profile has gender
+      vi.mocked(analyzeUserQuery).mockReturnValueOnce({
+        message: 'ชุดไปคาเฟ่ งบ 3000',
+        hasGender: false,
+        hasOccasion: true,
+        hasBudget: true,
+        hasDestination: false,
+        isTravelQuery: false,
+        hasColors: false,
+        detectedOccasion: 'cafe',
+        detectedBudget: 3000,
+      });
+
+      // getClarificationsNeeded should NOT be called with empty gender context
+      // because our fix populates it from userPreferences
+      vi.mocked(getClarificationsNeeded).mockReturnValueOnce([]);
+
+      const request = createMockRequest({
+        message: 'ชุดไปคาเฟ่ งบ 3000',
+        userPreferences: { gender: 'women' },
+      });
+      const result = await processAIChatRequest(request, products);
+
+      // Should NOT return a clarification question
+      expect(result.message).not.toContain('ผู้หญิงหรือผู้ชาย');
+      // Should have products (not an empty clarification response)
+      expect(result.recommendedProducts!.length).toBeGreaterThan(0);
+
+      // Verify that the session context was updated with gender from profile
+      expect(result.sessionContext?.conversationContext?.gender).toBe('women');
     });
 
     it('auto-triggers imageRequest when products are recommended', async () => {

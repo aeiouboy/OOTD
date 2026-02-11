@@ -18,7 +18,7 @@
 
 import type { EnhancedProduct } from '../types/product-types'
 import { createOutfitPrompt, serializeForAI } from '../utils/ai-serializer'
-import { applyFilters, filterByThaiOccasion, filterByMonthSuitability } from '../utils/product-filters'
+import { applyFilters, filterByThaiOccasion, filterByMonthSuitability, rankProductsByRelevance } from '../utils/product-filters'
 import { mapProductToOccasions } from '../categorization/occasion-mapper'
 import type { OccasionType } from '../types/enums'
 import type { SessionContext } from '../types/chat-types'
@@ -45,6 +45,7 @@ import {
   filterDuplicateProducts,
   extractProductIds,
   filterAndValidateProducts,
+  getInsufficientProductsMessage,
 } from '../utils/duplicate-filter'
 import { getActiveSystemPrompt, VersionUtils } from '../prompts/prompt-version'
 // v5.0: Looks parser and catalog serializer
@@ -105,6 +106,8 @@ import {
 // Supabase RAG integration (v4.0)
 import { retrieveFromSupabase, searchProductsFromSupabase } from '../rag/supabase-retrieval'
 import { transformDbProductsToEnhanced } from '../transformers/db-product-to-enhanced'
+// v5.1: Query translator for hybrid search
+import { translateQueryForRAG } from '../rag/query-translator'
 
 export interface ChatRequest {
   message: string
@@ -174,9 +177,9 @@ export function detectOccasion(message: string): OccasionType | undefined {
  */
 export function extractBudget(message: string): number | undefined {
   const budgetPatterns = [
-    /(?:budget|ราคา|งบ).*?(\d{1,3}(?:,\d{3})*(?:\.\d{2})?)/i,
-    /(\d{1,3}(?:,\d{3})*)\s*(?:baht|บาท|thb)/i,
-    /(?:under|below|ไม่เกิน).*?(\d{1,3}(?:,\d{3})*)/i,
+    /(?:budget|ราคา|งบ).*?(\d[\d,]*(?:\.\d{2})?)/i,
+    /(\d[\d,]*)\s*(?:baht|บาท|thb)/i,
+    /(?:under|below|ไม่เกิน).*?(\d[\d,]*)/i,
   ]
 
   for (const pattern of budgetPatterns) {
@@ -221,110 +224,131 @@ interface RAGRetrievalResult {
   usedFallback: boolean
 }
 
+/**
+ * Vector-only knowledge retrieval (Supabase → Vectra cascade)
+ * Used as one arm of the hybrid search pipeline.
+ */
+async function retrieveVectorKnowledge(
+  query: string,
+  detectedGender?: 'men' | 'women',
+  detectedOccasion?: string
+): Promise<RetrievalResult> {
+  // Build retrieval options
+  const retrievalOptions: RetrievalOptions = {
+    topK: 5,
+    threshold: 0.25,
+    filters: {},
+  }
+  if (detectedGender) retrievalOptions.filters!.gender = detectedGender
+  if (detectedOccasion) retrievalOptions.filters!.occasion = detectedOccasion
+
+  // Try Supabase first if enabled
+  if (process.env.SUPABASE_RAG_ENABLED === 'true') {
+    try {
+      console.log('[AI Chat] RAG: Using Supabase pgvector')
+      const result = await retrieveFromSupabase(query, retrievalOptions)
+      if (result.documents.length > 0) {
+        console.log(`[AI Chat] RAG: Supabase retrieved ${result.documents.length} documents`)
+        return result
+      }
+      console.warn('[AI Chat] RAG: Supabase returned no documents, trying Vectra')
+    } catch (err) {
+      console.error('[AI Chat] RAG: Supabase failed, trying Vectra:', err)
+    }
+  }
+
+  // Vectra fallback
+  try {
+    console.log('[AI Chat] RAG: Using Vectra in-memory')
+    const ragService = getRAGService()
+    const result = await ragService.retrieve(query, retrievalOptions)
+    if (result.documents.length > 0) {
+      console.log(`[AI Chat] RAG: Vectra retrieved ${result.documents.length} documents`)
+      return result
+    }
+  } catch (err) {
+    console.error('[AI Chat] RAG: Vectra failed:', err)
+  }
+
+  // Return empty result (keyword layer will still provide context)
+  return {
+    documents: [],
+    scores: [],
+    totalFound: 0,
+    metadata: { retrievalTimeMs: 0, query, normalizedQuery: query.toLowerCase(), appliedFilters: {}, tokenCount: 0 },
+  }
+}
+
+/**
+ * Merge vector search results with keyword search results.
+ * Vector context comes first, keyword context appended as additional knowledge.
+ */
+function mergeRAGResults(
+  vectorResult: PromiseSettledResult<RetrievalResult>,
+  keywordResult: PromiseSettledResult<RAGRetrievalResult>,
+  originalQuery: string
+): RAGRetrievalResult {
+  // Extract vector docs
+  const vectorDocs = vectorResult.status === 'fulfilled' ? vectorResult.value.documents : []
+  const vectorContext = vectorDocs.length > 0
+    ? buildFashionContext(vectorResult.status === 'fulfilled' ? vectorResult.value : { documents: [], scores: [], totalFound: 0, metadata: { retrievalTimeMs: 0, query: '', normalizedQuery: '', appliedFilters: {}, tokenCount: 0 } }, originalQuery)
+    : ''
+
+  // Extract keyword context
+  const keywordContext = keywordResult.status === 'fulfilled'
+    ? keywordResult.value.knowledgeContext
+    : ''
+
+  // Merge contexts
+  let knowledgeContext = ''
+  if (vectorContext && keywordContext) {
+    knowledgeContext = `${vectorContext}\n\n--- Additional Fashion Knowledge ---\n${keywordContext}`
+  } else {
+    knowledgeContext = vectorContext || keywordContext
+  }
+
+  const retrievedIds = vectorResult.status === 'fulfilled'
+    ? vectorResult.value.documents.map(d => d.id)
+    : []
+
+  const usedFallback = vectorDocs.length === 0
+
+  console.log(`[AI Chat] RAG Hybrid: ${vectorDocs.length} vector docs + keyword context (${keywordContext.length} chars), usedFallback=${usedFallback}`)
+
+  return {
+    knowledgeContext,
+    retrievedIds,
+    usedFallback,
+  }
+}
+
+/**
+ * Hybrid RAG retrieval: runs vector search + keyword search in parallel, merges results.
+ *
+ * v5.1: Replaces the old cascade architecture (Supabase → Vectra → keyword).
+ * - Thai queries are translated to English for vector search
+ * - Original Thai text is used for keyword matching
+ * - Both run in parallel via Promise.allSettled for better recall + lower latency
+ */
 async function retrieveKnowledgeWithRAG(
   message: string,
   detectedGender?: 'men' | 'women',
   detectedOccasion?: string
 ): Promise<RAGRetrievalResult> {
   try {
-    // v4.0: Check if Supabase RAG is enabled
-    if (process.env.SUPABASE_RAG_ENABLED === 'true') {
-      console.log('[AI Chat] RAG: Using Supabase pgvector')
+    // Step 1: Translate Thai → English (for vector search only)
+    const translatedQuery = await translateQueryForRAG(message)
 
-      try {
-        const retrievalOptions: RetrievalOptions = {
-          topK: 5,
-          threshold: 0.7,
-          filters: {},
-        }
+    // Step 2: Run vector search and keyword search in parallel
+    const [vectorResult, keywordResult] = await Promise.allSettled([
+      retrieveVectorKnowledge(translatedQuery, detectedGender, detectedOccasion),
+      Promise.resolve(useKeywordFallback(message)),  // Use ORIGINAL Thai message for keyword matching
+    ])
 
-        if (detectedGender) {
-          retrievalOptions.filters!.gender = detectedGender
-        }
-        if (detectedOccasion) {
-          retrievalOptions.filters!.occasion = detectedOccasion
-        }
-
-        const retrievalResult = await retrieveFromSupabase(message, retrievalOptions)
-
-        if (retrievalResult.documents.length > 0) {
-          const knowledgeContext = buildFashionContext(retrievalResult, message)
-          const retrievedIds = retrievalResult.documents.map((doc) => doc.id)
-
-          console.log(
-            `[AI Chat] RAG: Supabase retrieved ${retrievalResult.documents.length} documents (${retrievalResult.metadata.tokenCount} tokens in ${retrievalResult.metadata.retrievalTimeMs}ms)`
-          )
-
-          return {
-            knowledgeContext,
-            retrievedIds,
-            usedFallback: false,
-          }
-        }
-
-        // No documents from Supabase, fall through to Vectra
-        console.warn('[AI Chat] RAG: Supabase returned no documents, falling back to Vectra')
-      } catch (supabaseError) {
-        console.error('[AI Chat] RAG: Supabase retrieval failed, falling back to Vectra:', supabaseError)
-      }
-    }
-
-    // Existing Vectra-based retrieval (fallback or when SUPABASE_RAG_ENABLED !== 'true')
-    console.log('[AI Chat] RAG: Using Vectra in-memory')
-    const ragService = getRAGService()
-
-    // Build retrieval options with filters based on detected context
-    const retrievalOptions: RetrievalOptions = {
-      topK: 5,
-      threshold: 0.7,
-      filters: {},
-    }
-
-    // Add gender filter if detected
-    if (detectedGender) {
-      retrievalOptions.filters!.gender = detectedGender
-    }
-
-    // Add occasion filter if detected
-    if (detectedOccasion) {
-      retrievalOptions.filters!.occasion = detectedOccasion
-    }
-
-    console.log('[AI Chat] RAG: Attempting semantic retrieval with options:', {
-      topK: retrievalOptions.topK,
-      threshold: retrievalOptions.threshold,
-      filters: retrievalOptions.filters,
-    })
-
-    // Perform RAG retrieval
-    const retrievalResult = await ragService.retrieve(message, retrievalOptions)
-
-    // Check if we got meaningful results
-    if (retrievalResult.documents.length > 0) {
-      // Build fashion context from retrieved documents
-      const knowledgeContext = buildFashionContext(retrievalResult, message)
-
-      // Extract document IDs for caching
-      const retrievedIds = retrievalResult.documents.map((doc) => doc.id)
-
-      console.log(
-        `[AI Chat] RAG: Retrieved ${retrievalResult.documents.length} documents (${retrievalResult.metadata.tokenCount} tokens in ${retrievalResult.metadata.retrievalTimeMs}ms)`
-      )
-      console.log('[AI Chat] RAG: Document IDs:', retrievedIds)
-
-      return {
-        knowledgeContext,
-        retrievedIds,
-        usedFallback: false,
-      }
-    } else {
-      // No documents found, use fallback
-      console.warn('[AI Chat] RAG: No documents found, falling back to keyword-based retrieval')
-      return useKeywordFallback(message)
-    }
+    // Step 3: Merge results
+    return mergeRAGResults(vectorResult, keywordResult, message)
   } catch (error) {
-    // RAG failed, use fallback
-    console.error('[AI Chat] RAG: Retrieval failed, falling back to keyword-based:', error)
+    console.error('[AI Chat] RAG: Hybrid retrieval failed:', error)
     return useKeywordFallback(message)
   }
 }
@@ -364,7 +388,8 @@ export function filterProductsForRequest(
   products: EnhancedProduct[],
   request: ChatRequest,
   occasion?: OccasionType,
-  thaiOccasion?: ThaiOccasion | null
+  thaiOccasion?: ThaiOccasion | null,
+  colors?: string[]
 ): EnhancedProduct[] {
   const { message, userPreferences } = request
 
@@ -396,6 +421,17 @@ export function filterProductsForRequest(
     filtered = monthFiltered
   }
 
+  // Apply color filter if colors are specified (only if result still has >= 3 products)
+  if (colors && colors.length > 0) {
+    const colorFiltered = applyFilters(filtered, { colors })
+    if (colorFiltered.length >= 3) {
+      filtered = colorFiltered
+      console.log(`[AI Chat v5] Applied color filter (${colors.join(', ')}): ${filtered.length} products`)
+    } else {
+      console.log(`[AI Chat v5] Color filter (${colors.join(', ')}) would leave ${colorFiltered.length} products, skipping`)
+    }
+  }
+
   // If no results and we have an occasion, try without occasion filter
   if (filtered.length === 0 && occasion) {
     filtered = applyFilters(products, {
@@ -412,6 +448,7 @@ export function filterProductsForRequest(
     })
   }
 
+  console.log(`[AI Chat v5] Product filter: ${products.length} → ${filtered.length} (gender=${gender}, occasion=${occasion}, budget=${budget})`)
   return filtered
 }
 
@@ -556,6 +593,12 @@ async function processAIChatRequestV5(
   if (userQuery.detectedOccasion) detectedInfo.occasion = userQuery.detectedOccasion
   if (userQuery.detectedBudget) detectedInfo.budget = userQuery.detectedBudget
   if (userQuery.detectedDestination) detectedInfo.destination = userQuery.detectedDestination
+  if (userQuery.detectedColors) detectedInfo.colors = userQuery.detectedColors
+
+  // v5.2: Use profile gender when message doesn't explicitly mention gender
+  if (!userQuery.detectedGender && request.userPreferences?.gender) {
+    detectedInfo.gender = request.userPreferences.gender as 'men' | 'women'
+  }
 
   if (Object.keys(detectedInfo).length > 0) {
     sessionContext = updateSessionContext(sessionContext, [], undefined, detectedInfo)
@@ -603,7 +646,12 @@ async function processAIChatRequestV5(
   }
 
   // STEP 5: Filter products
-  let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion)
+  // Resolve colors from multiple sources (priority: follow-up newColor > current message > session context)
+  const resolvedColors: string[] = followUpDetection.parameters.newColor
+    ? [followUpDetection.parameters.newColor]
+    : userQuery.detectedColors || sessionContext.conversationContext.colors || []
+
+  let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion, resolvedColors.length > 0 ? resolvedColors : undefined)
 
   // v4.0: Enhance with semantic search
   if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
@@ -629,15 +677,18 @@ async function processAIChatRequestV5(
   }
 
   // Apply duplicate prevention
-  const { products: uniqueProducts, hasSufficientProducts: sufficient, message: insufficientMessage } = filterAndValidateProducts(
+  const { products: uniqueProducts, hasSufficientProducts: sufficient } = filterAndValidateProducts(
     filteredProducts,
     sessionContext,
     3
   )
 
-  if (!sufficient) {
+  console.log(`[AI Chat v5] After duplicate filter: ${uniqueProducts.length} unique products (sufficient: ${sufficient})`)
+
+  // Only block if truly zero products remain; otherwise let AI work with what's available
+  if (uniqueProducts.length === 0) {
     return {
-      message: insufficientMessage || 'ขออภัยค่ะ ไม่พบสินค้าใหม่เพิ่มเติมในหมวดนี้',
+      message: getInsufficientProductsMessage(),
       recommendedProducts: [],
       looks: [],
       sessionContext,
@@ -653,6 +704,11 @@ async function processAIChatRequestV5(
       sessionContext,
     }
   }
+
+  // Rank products by relevance so truncation keeps the best candidates
+  const budget = request.userPreferences?.budget || extractBudget(request.message)
+  filteredProducts = rankProductsByRelevance(filteredProducts, occasion, budget)
+  console.log(`[AI Chat v5] Ranked ${filteredProducts.length} products by relevance`)
 
   // STEP 6: Serialize catalog for v5 pipe-delimited format
   const catalogContext = serializeCatalogForV5(filteredProducts.slice(0, 50))
@@ -872,6 +928,11 @@ export async function processAIChatRequest(
       console.log(`[AI Chat] Detected destination: ${userQuery.detectedDestination}`);
     }
 
+    // v5.2: Use profile gender when message doesn't explicitly mention gender
+    if (!userQuery.detectedGender && request.userPreferences?.gender) {
+      detectedInfo.gender = request.userPreferences.gender as 'men' | 'women';
+    }
+
     // Update session context with detected information
     if (Object.keys(detectedInfo).length > 0) {
       sessionContext = updateSessionContext(
@@ -1006,6 +1067,11 @@ export async function processAIChatRequest(
         sessionContext,
       }
     }
+
+    // Rank products by relevance so truncation keeps the best candidates
+    const legacyBudget = request.userPreferences?.budget || extractBudget(request.message)
+    filteredProducts = rankProductsByRelevance(filteredProducts, occasion, legacyBudget)
+    console.log(`[AI Chat] Ranked ${filteredProducts.length} products by relevance`)
 
     // v2.1: CRITICAL - Detect category to determine template type (A or B)
     const categoryDetection = detectCategory(request.message)

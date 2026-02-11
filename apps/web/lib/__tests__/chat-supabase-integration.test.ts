@@ -88,6 +88,11 @@ vi.mock('@/lib/enhanced-outfit-generator', () => ({
   generateOutfitsFromQuery: vi.fn().mockReturnValue([]),
 }))
 
+// Mock query translator (v5.1 hybrid search)
+vi.mock('@/lib/rag/query-translator', () => ({
+  translateQueryForRAG: vi.fn((msg: string) => Promise.resolve(msg)),
+}))
+
 // Helper: Create a mock DbProduct
 function createMockDbProduct(overrides?: Partial<DbProduct>): DbProduct {
   return {
