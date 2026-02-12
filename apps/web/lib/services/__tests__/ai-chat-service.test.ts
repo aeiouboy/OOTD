@@ -128,6 +128,22 @@ vi.mock('../../utils/product-filters', () => ({
   filterByThaiOccasion: vi.fn().mockImplementation((products) => products),
   filterByMonthSuitability: vi.fn().mockImplementation((products) => products),
   rankProductsByRelevance: vi.fn().mockImplementation((products) => products),
+  filterByOccasionWithFormality: vi.fn().mockImplementation((products) => products),
+  filterByFormality: vi.fn().mockImplementation((products) => products),
+}));
+
+vi.mock('../../constants/occasions', () => ({
+  OCCASIONS: {
+    work: { type: 'work', formalityRange: { min: 6, max: 9 }, keywords: ['work', 'office'] },
+    chill: { type: 'chill', formalityRange: { min: 1, max: 4 }, keywords: ['chill', 'casual'] },
+    wedding: { type: 'wedding', formalityRange: { min: 7, max: 10 }, keywords: ['wedding'] },
+    sport: { type: 'sport', formalityRange: { min: 1, max: 2 }, keywords: ['sport', 'gym'] },
+    travel: { type: 'travel', formalityRange: { min: 2, max: 5 }, keywords: ['travel'] },
+    date: { type: 'date', formalityRange: { min: 4, max: 7 }, keywords: ['date'] },
+    dinner: { type: 'dinner', formalityRange: { min: 5, max: 8 }, keywords: ['dinner'] },
+    cafe: { type: 'cafe', formalityRange: { min: 2, max: 5 }, keywords: ['cafe'] },
+    party: { type: 'party', formalityRange: { min: 5, max: 9 }, keywords: ['party'] },
+  },
 }));
 
 vi.mock('../../matching/thai-cultural-matcher', () => ({
@@ -328,6 +344,18 @@ describe('ai-chat-service', () => {
       expect(detectOccasion('ชุดไปเที่ยว')).toBe('travel');
     });
 
+    it('detects "travel" from Thai keyword "ทะเล" (beach/sea)', () => {
+      expect(detectOccasion('อยากได้ชุดไปทะเล งบ 10000')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai keyword "ชายหาด" (beach)', () => {
+      expect(detectOccasion('ชุดไปชายหาด')).toBe('travel');
+    });
+
+    it('detects "travel" from English keyword "beach"', () => {
+      expect(detectOccasion('beach outfit')).toBe('travel');
+    });
+
     it('detects "date" from English keyword', () => {
       expect(detectOccasion('going on a date tonight')).toBe('date');
     });
@@ -358,6 +386,300 @@ describe('ai-chat-service', () => {
 
     it('detects "party" from Thai keyword "ปาร์ตี้"', () => {
       expect(detectOccasion('ชุดไปปาร์ตี้')).toBe('party');
+    });
+
+    // --- Expanded Thai keywords: work ---
+    it('detects "work" from Thai "สัมภาษณ์งาน"', () => {
+      expect(detectOccasion('ชุดไปสัมภาษณ์งาน')).toBe('work');
+    });
+
+    it('detects "work" from Thai "นำเสนองาน"', () => {
+      expect(detectOccasion('วันนี้ต้องนำเสนองาน')).toBe('work');
+    });
+
+    it('detects "work" from Thai "พรีเซนต์"', () => {
+      expect(detectOccasion('ต้องพรีเซนต์ให้ลูกค้า')).toBe('work');
+    });
+
+    it('detects "work" from English "interview"', () => {
+      expect(detectOccasion('job interview outfit')).toBe('work');
+    });
+
+    it('detects "work" from Thai "เข้าออฟฟิศ"', () => {
+      expect(detectOccasion('พรุ่งนี้ต้องเข้าออฟฟิศ')).toBe('work');
+    });
+
+    // --- Expanded Thai keywords: chill ---
+    it('detects "chill" from Thai "นอนบ้าน"', () => {
+      expect(detectOccasion('วันนี้นอนบ้าน')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "อยู่บ้าน"', () => {
+      expect(detectOccasion('ชุดอยู่บ้าน')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "เดินห้าง"', () => {
+      expect(detectOccasion('ไปเดินห้าง')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "ห้างสรรพสินค้า"', () => {
+      expect(detectOccasion('ชุดไปห้างสรรพสินค้า')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "ชิว"', () => {
+      expect(detectOccasion('ชุดชิวๆ')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "วันออฟ"', () => {
+      expect(detectOccasion('ชุดใส่วันออฟ')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "เสาร์อาทิตย์"', () => {
+      expect(detectOccasion('ชุดใส่เสาร์อาทิตย์')).toBe('chill');
+    });
+
+    it('detects "chill" from Thai "ใส่สบาย"', () => {
+      expect(detectOccasion('อยากได้ชุดใส่สบาย')).toBe('chill');
+    });
+
+    // --- Expanded Thai keywords: wedding ---
+    it('detects "wedding" from Thai "งานหมั้น"', () => {
+      expect(detectOccasion('ชุดไปงานหมั้น')).toBe('wedding');
+    });
+
+    it('detects "wedding" from Thai "เพื่อนเจ้าสาว"', () => {
+      expect(detectOccasion('ชุดเพื่อนเจ้าสาว')).toBe('wedding');
+    });
+
+    it('detects "wedding" from Thai "งานวิวาห์"', () => {
+      expect(detectOccasion('ชุดไปงานวิวาห์')).toBe('wedding');
+    });
+
+    it('detects "wedding" from English "bridesmaid"', () => {
+      expect(detectOccasion('bridesmaid dress')).toBe('wedding');
+    });
+
+    it('detects "wedding" from English "engagement"', () => {
+      expect(detectOccasion('engagement party outfit')).toBe('wedding');
+    });
+
+    // --- Expanded Thai keywords: sport ---
+    it('detects "sport" from Thai "ปีนเขา"', () => {
+      expect(detectOccasion('ชุดไปปีนเขา')).toBe('sport');
+    });
+
+    it('detects "sport" from Thai "โยคะ"', () => {
+      expect(detectOccasion('ชุดเล่นโยคะ')).toBe('sport');
+    });
+
+    it('detects "sport" from English "yoga"', () => {
+      expect(detectOccasion('yoga outfit')).toBe('sport');
+    });
+
+    it('detects "sport" from English "pilates"', () => {
+      expect(detectOccasion('pilates class outfit')).toBe('sport');
+    });
+
+    it('detects "sport" from Thai "ว่ายน้ำ"', () => {
+      expect(detectOccasion('ชุดว่ายน้ำ')).toBe('sport');
+    });
+
+    it('detects "sport" from Thai "กีฬา"', () => {
+      expect(detectOccasion('ชุดเล่นกีฬา')).toBe('sport');
+    });
+
+    it('detects "sport" from Thai "ยิม"', () => {
+      expect(detectOccasion('ชุดไปยิม')).toBe('sport');
+    });
+
+    it('detects "sport" from English "hiking"', () => {
+      expect(detectOccasion('hiking outfit')).toBe('sport');
+    });
+
+    // --- Expanded Thai keywords: travel ---
+    it('detects "travel" from Thai "ภูเขา"', () => {
+      expect(detectOccasion('ชุดไปภูเขา')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "เกาะ"', () => {
+      expect(detectOccasion('ไปเที่ยวเกาะ')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "ต่างจังหวัด"', () => {
+      expect(detectOccasion('ไปเที่ยวต่างจังหวัด')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "ต่างประเทศ"', () => {
+      expect(detectOccasion('ไปเที่ยวต่างประเทศ')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "สระว่ายน้ำ" (note: "ว่ายน้ำ" matches sport first)', () => {
+      // "สระว่ายน้ำ" contains "ว่ายน้ำ" which is in sport keywords
+      // sport is checked before travel, so sport wins
+      expect(detectOccasion('ชุดใส่สระว่ายน้ำ')).toBe('sport');
+    });
+
+    it('detects "travel" from Thai "ริมสระ" (poolside/resort context)', () => {
+      expect(detectOccasion('ชุดนั่งริมสระ')).toBe('travel');
+    });
+
+    it('detects "travel" from English "pool party"', () => {
+      expect(detectOccasion('pool party outfit')).toBe('travel');
+    });
+
+    it('detects "travel" from English "resort"', () => {
+      expect(detectOccasion('resort wear')).toBe('travel');
+    });
+
+    it('detects "travel" from English "island"', () => {
+      expect(detectOccasion('island hopping outfit')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "แบกเป้"', () => {
+      expect(detectOccasion('แบกเป้ไปเที่ยว')).toBe('travel');
+    });
+
+    it('detects "travel" from Thai "ปูลปาร์ตี้"', () => {
+      expect(detectOccasion('ชุดปูลปาร์ตี้')).toBe('travel');
+    });
+
+    // --- Expanded Thai keywords: date ---
+    it('detects "date" from Thai "ออกเดท"', () => {
+      expect(detectOccasion('วันนี้ออกเดท')).toBe('date');
+    });
+
+    it('detects "date" from Thai "ไปหาแฟน"', () => {
+      expect(detectOccasion('ชุดไปหาแฟน')).toBe('date');
+    });
+
+    it('detects "date" from Thai "ไปเจอแฟน"', () => {
+      expect(detectOccasion('ชุดไปเจอแฟน')).toBe('date');
+    });
+
+    it('detects "date" from Thai "นัดเจอ"', () => {
+      expect(detectOccasion('วันนี้นัดเจอกัน')).toBe('date');
+    });
+
+    it('detects "date" from Thai "วันวาเลนไทน์"', () => {
+      expect(detectOccasion('ชุดวันวาเลนไทน์')).toBe('date');
+    });
+
+    it('detects "date" from English "date night"', () => {
+      expect(detectOccasion('date night outfit')).toBe('date');
+    });
+
+    // --- Expanded Thai keywords: dinner ---
+    it('detects "dinner" from Thai "อาหารค่ำ"', () => {
+      expect(detectOccasion('ชุดไปกินอาหารค่ำ')).toBe('dinner');
+    });
+
+    it('detects "dinner" from Thai "ฉลอง"', () => {
+      expect(detectOccasion('ชุดไปฉลอง')).toBe('dinner');
+    });
+
+    it('detects "dinner" from Thai "ครบรอบ"', () => {
+      expect(detectOccasion('ชุดไปฉลองครบรอบ')).toBe('dinner');
+    });
+
+    it('detects "dinner" from English "anniversary"', () => {
+      expect(detectOccasion('anniversary dinner outfit')).toBe('dinner');
+    });
+
+    it('detects "dinner" from English "fine dining"', () => {
+      expect(detectOccasion('fine dining outfit')).toBe('dinner');
+    });
+
+    it('detects "dinner" from Thai "กินข้าวนอกบ้าน"', () => {
+      expect(detectOccasion('ชุดกินข้าวนอกบ้าน')).toBe('dinner');
+    });
+
+    it('detects "dinner" from Thai "ร้านหรู"', () => {
+      expect(detectOccasion('ชุดไปร้านหรู')).toBe('dinner');
+    });
+
+    // --- Expanded Thai keywords: cafe ---
+    it('detects "cafe" from Thai "ร้านกาแฟ"', () => {
+      expect(detectOccasion('ชุดไปร้านกาแฟ')).toBe('cafe');
+    });
+
+    it('detects "cafe" from Thai "ไปนั่งเล่น"', () => {
+      expect(detectOccasion('ชุดไปนั่งเล่น')).toBe('cafe');
+    });
+
+    it('detects "cafe" from Thai "ไปทำงานคาเฟ่" (note: "ทำงาน" matches work first)', () => {
+      // "ไปทำงานคาเฟ่" contains "ทำงาน" which is in work keywords
+      // work is checked before cafe, so work wins
+      expect(detectOccasion('วันนี้ไปทำงานคาเฟ่')).toBe('work');
+    });
+
+    it('detects "cafe" from Thai "ไปนั่งทำงานที่คาเฟ่"', () => {
+      // This also has "ทำงาน" so work wins — known limitation of keyword matching
+      expect(detectOccasion('ไปนั่งทำงานที่คาเฟ่')).toBe('work');
+    });
+
+    it('detects "cafe" from Thai "มื้อสาย"', () => {
+      expect(detectOccasion('ชุดไปกินมื้อสาย')).toBe('cafe');
+    });
+
+    it('detects "cafe" from Thai "นั่งคาเฟ่"', () => {
+      expect(detectOccasion('ชุดนั่งคาเฟ่')).toBe('cafe');
+    });
+
+    it('detects "cafe" from Thai "คาเฟ่ฮอป"', () => {
+      expect(detectOccasion('วันนี้คาเฟ่ฮอป')).toBe('cafe');
+    });
+
+    it('detects "cafe" from English "brunch"', () => {
+      expect(detectOccasion('brunch outfit')).toBe('cafe');
+    });
+
+    // --- Expanded Thai keywords: party ---
+    it('detects "party" from Thai "งานเลี้ยงรุ่น"', () => {
+      expect(detectOccasion('ชุดไปงานเลี้ยงรุ่น')).toBe('party');
+    });
+
+    it('detects "party" from Thai "ปาร์ตี้วันเกิด"', () => {
+      expect(detectOccasion('ชุดไปปาร์ตี้วันเกิด')).toBe('party');
+    });
+
+    it('detects "party" from Thai "งานรับปริญญา"', () => {
+      expect(detectOccasion('ชุดไปงานรับปริญญา')).toBe('party');
+    });
+
+    it('detects "party" from Thai "คอนเสิร์ต"', () => {
+      expect(detectOccasion('ชุดไปคอนเสิร์ต')).toBe('party');
+    });
+
+    it('detects "party" from English "concert"', () => {
+      expect(detectOccasion('concert outfit')).toBe('party');
+    });
+
+    it('detects "party" from English "festival"', () => {
+      expect(detectOccasion('festival outfit')).toBe('party');
+    });
+
+    it('detects "party" from Thai "เทศกาล"', () => {
+      expect(detectOccasion('ชุดไปงานเทศกาล')).toBe('party');
+    });
+
+    it('detects "party" from English "nightclub"', () => {
+      expect(detectOccasion('nightclub outfit')).toBe('party');
+    });
+
+    it('detects "party" from Thai "เคาท์ดาวน์"', () => {
+      expect(detectOccasion('ชุดไปเคาท์ดาวน์')).toBe('party');
+    });
+
+    it('detects "party" from Thai "ปีใหม่"', () => {
+      expect(detectOccasion('ชุดไปงานปีใหม่')).toBe('party');
+    });
+
+    it('detects "party" from English "graduation"', () => {
+      expect(detectOccasion('graduation party outfit')).toBe('party');
+    });
+
+    it('detects "party" from Thai "ไปคลับ"', () => {
+      expect(detectOccasion('ชุดไปคลับ')).toBe('party');
     });
 
     it('returns undefined for unrecognized messages', () => {

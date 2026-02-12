@@ -15,6 +15,8 @@ import type {
   SeasonType,
   StyleTag,
 } from '../types/enums'
+import { mapProductToOccasions, calculateFormalityLevel } from '../categorization/occasion-mapper'
+import { extractColorFromProductName } from '../prompts/image-prompts'
 
 /**
  * Map DbProduct occasion column names to OccasionType enum values.
@@ -74,11 +76,89 @@ function toAvailabilityStatus(raw: string | null): AvailabilityStatus {
 }
 
 /**
+ * Infer a specific garment category from the product name when the DB
+ * category is a generic bucket like "women_clothing".
+ */
+function inferSpecificCategory(name: string, genericCategory: string): string {
+  if (genericCategory !== 'women_clothing' && genericCategory !== 'men_clothing') {
+    return genericCategory
+  }
+
+  const lower = name.toLowerCase()
+
+  if (/\bblazer\b/.test(lower)) return 'blazer'
+  if (/\bjumpsuit\b/.test(lower)) return 'jumpsuit'
+  if (/\bcardigan\b/.test(lower)) return 'cardigan'
+  if (/\bsweater\b|\bknit\b/.test(lower)) return 'sweater'
+  if (/\bt-shirt\b|\btee\b/.test(lower)) return 't-shirt'
+  if (/\bblouse\b/.test(lower)) return 'blouse'
+  if (/\bpolo\b/.test(lower)) return 'polo'
+  if (/\bshirt\b/.test(lower)) return 'shirt'
+  if (/\bdress\b/.test(lower)) return 'dress'
+  if (/\bpants\b|\btrouser\b/.test(lower)) return 'pants'
+  if (/\bskirt\b/.test(lower)) return 'skirt'
+  if (/\bjacket\b|\bcoat\b/.test(lower)) return 'jacket'
+  if (/\bcrop\b/.test(lower)) return 'crop-top'
+  if (/\bcami\b/.test(lower)) return 'cami-top'
+
+  return genericCategory
+}
+
+/**
  * Transform a single DbProduct row into an EnhancedProduct.
  */
 export function transformDbProductToEnhanced(dbProduct: DbProduct): EnhancedProduct {
   const gender = inferGender(dbProduct.category)
-  const occasionTags = buildOccasionTags(dbProduct)
+  const extractedColor = extractColorFromProductName(dbProduct.product_name) || 'unknown'
+  const specificCategory = inferSpecificCategory(dbProduct.product_name, dbProduct.category)
+
+  // Calculate formality level from product attributes instead of hardcoding 5
+  const formalityLevel = calculateFormalityLevel({
+    name: dbProduct.product_name,
+    description: dbProduct.product_description || undefined,
+    formalityLevel: 5 as FormalityLevel, // seed value for the calculator
+    category: dbProduct.category,
+  })
+
+  // Get DB-based occasion tags
+  const dbOccasionTags = buildOccasionTags(dbProduct)
+
+  // Get inference-based occasion tags from product name/description
+  const inferredOccasionTags = mapProductToOccasions({
+    name: dbProduct.product_name,
+    description: dbProduct.product_description || undefined,
+    formalityLevel,
+    category: dbProduct.category,
+  })
+
+  // Merge DB-based and inference-based tags (deduplicated)
+  const mergedOccasions = new Set<OccasionType>([...dbOccasionTags, ...inferredOccasionTags])
+
+  // Add primary_occasion from DB if it maps to a valid OccasionType
+  if (dbProduct.primary_occasion) {
+    const validOccasions: OccasionType[] = ['work', 'chill', 'wedding', 'sport', 'travel', 'date', 'dinner', 'cafe', 'party']
+    // Map DB occasion names to OccasionType
+    const dbPrimaryMap: Record<string, OccasionType> = {
+      weekend_social: 'chill',
+      date_night: 'date',
+      everyday_casual: 'chill',
+      work: 'work',
+      wedding: 'wedding',
+      sport: 'sport',
+      travel: 'travel',
+      date: 'date',
+      dinner: 'dinner',
+      cafe: 'cafe',
+      party: 'party',
+      chill: 'chill',
+    }
+    const mapped = dbPrimaryMap[dbProduct.primary_occasion] || (validOccasions.includes(dbProduct.primary_occasion as OccasionType) ? dbProduct.primary_occasion as OccasionType : undefined)
+    if (mapped) {
+      mergedOccasions.add(mapped)
+    }
+  }
+
+  const occasionTags = Array.from(mergedOccasions)
 
   return {
     // Core information
@@ -106,7 +186,7 @@ export function transformDbProductToEnhanced(dbProduct: DbProduct): EnhancedProd
     // Classification
     classification: {
       category: {
-        category: dbProduct.category,
+        category: specificCategory,
       },
       gender,
       tags: {
@@ -114,12 +194,12 @@ export function transformDbProductToEnhanced(dbProduct: DbProduct): EnhancedProd
       },
     },
 
-    // Style attributes (defaults -- no color/style data in DbProduct)
+    // Style attributes — use calculated formality instead of hardcoded 5
     style: {
       colors: {
-        primary: 'unknown',
+        primary: extractedColor,
       },
-      formalityLevel: 5 as FormalityLevel,
+      formalityLevel,
       styleAttributes: [] as StyleTag[],
       seasonality: ['all-season'] as SeasonType[],
     },

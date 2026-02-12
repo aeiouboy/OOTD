@@ -18,9 +18,10 @@
 
 import type { EnhancedProduct } from '../types/product-types'
 import { createOutfitPrompt, serializeForAI } from '../utils/ai-serializer'
-import { applyFilters, filterByThaiOccasion, filterByMonthSuitability, rankProductsByRelevance } from '../utils/product-filters'
+import { applyFilters, filterByThaiOccasion, filterByMonthSuitability, rankProductsByRelevance, filterByOccasionWithFormality, filterByFormality } from '../utils/product-filters'
 import { mapProductToOccasions } from '../categorization/occasion-mapper'
-import type { OccasionType } from '../types/enums'
+import type { OccasionType, FormalityLevel } from '../types/enums'
+import { OCCASIONS } from '../constants/occasions'
 import type { SessionContext } from '../types/chat-types'
 // KB003: Import Thai cultural matcher for occasion detection
 import {
@@ -145,6 +146,56 @@ export interface ChatResponse {
   looks?: ChatLook[]
 }
 
+const MAX_CHAT_MESSAGE_CHARS = 420
+const MAX_CHAT_MESSAGE_LINES = 4
+
+/**
+ * Keep assistant text concise for chat bubbles.
+ * - Removes any leaked structured LOOKS_DATA block
+ * - Limits message by line count and character count
+ */
+function shortenAssistantMessage(rawMessage: string): string {
+  if (!rawMessage || typeof rawMessage !== 'string') return ''
+
+  const withoutStructuredBlock = rawMessage
+    .replace(/---LOOKS_DATA---[\s\S]*?---END_LOOKS_DATA---/gi, '')
+    .trim()
+
+  const normalized = withoutStructuredBlock
+    .replace(/\r\n/g, '\n')
+    .replace(/[ \t]+/g, ' ')
+    .replace(/\n{3,}/g, '\n\n')
+    .trim()
+
+  if (!normalized) return ''
+
+  const limitedLines = normalized
+    .split('\n')
+    .filter((line) => line.trim().length > 0)
+    .slice(0, MAX_CHAT_MESSAGE_LINES)
+    .join('\n')
+    .trim()
+
+  if (limitedLines.length <= MAX_CHAT_MESSAGE_CHARS) {
+    return limitedLines
+  }
+
+  const cutoff = limitedLines.slice(0, MAX_CHAT_MESSAGE_CHARS)
+  const breakpoints = [
+    cutoff.lastIndexOf('\n'),
+    cutoff.lastIndexOf('.'),
+    cutoff.lastIndexOf('!'),
+    cutoff.lastIndexOf('?'),
+    cutoff.lastIndexOf(' '),
+  ]
+  const bestBreakpoint = Math.max(...breakpoints)
+  const safeCutoff = bestBreakpoint > MAX_CHAT_MESSAGE_CHARS * 0.6
+    ? bestBreakpoint
+    : MAX_CHAT_MESSAGE_CHARS
+
+  return `${cutoff.slice(0, safeCutoff).trimEnd()}...`
+}
+
 /**
  * Detect occasion from user message
  */
@@ -152,15 +203,74 @@ export function detectOccasion(message: string): OccasionType | undefined {
   const lowerMessage = message.toLowerCase()
 
   const occasionKeywords: Record<OccasionType, string[]> = {
-    work: ['work', 'office', 'meeting', 'presentation', 'ทำงาน', 'ออฟฟิศ', 'ประชุม'],
-    chill: ['chill', 'relax', 'weekend', 'casual', 'วันหยุด', 'ชิลล์', 'สบายๆ'],
-    wedding: ['wedding', 'งานแต่ง', 'แต่งงาน'],
-    sport: ['sport', 'gym', 'workout', 'exercise', 'ออกกำลัง', 'วิ่ง', 'ฟิตเนส'],
-    travel: ['travel', 'trip', 'vacation', 'ท่องเที่ยว', 'เที่ยว'],
-    date: ['date', 'romantic', 'เดท', 'โรแมนติก'],
-    dinner: ['dinner', 'restaurant', 'dining', 'ดินเนอร์', 'ร้านอาหาร'],
-    cafe: ['cafe', 'coffee', 'brunch', 'คาเฟ่', 'กาแฟ'],
-    party: ['party', 'celebration', 'event', 'ปาร์ตี้', 'งานเลี้ยง', 'งานสังสรรค์'],
+    work: [
+      'work', 'office', 'meeting', 'presentation', 'interview', 'corporate', 'formal meeting',
+      'ทำงาน', 'ออฟฟิศ', 'ประชุม', 'สัมภาษณ์งาน', 'นำเสนองาน', 'พรีเซนต์',
+      'ที่ทำงาน', 'ไปทำงาน', 'ชุดทำงาน', 'ใส่ทำงาน', 'ไปออฟฟิศ',
+      'สัมภาษณ์', 'ไปสัมภาษณ์', 'เข้าออฟฟิศ',
+    ],
+    chill: [
+      'chill', 'relax', 'weekend', 'casual', 'laid-back', 'lounging', 'hang out', 'hangout',
+      'วันหยุด', 'ชิลล์', 'สบายๆ', 'ชิว', 'ชิล',
+      'นอนบ้าน', 'อยู่บ้าน', 'เดินห้าง', 'ห้างสรรพสินค้า', 'ไปห้าง', 'เดินเล่น',
+      'วันว่าง', 'หยุดสุดสัปดาห์', 'เสาร์อาทิตย์', 'วันออฟ',
+      'ไม่มีธุระ', 'อยู่เฉยๆ', 'เดินเที่ยวห้าง', 'ใส่เล่น', 'ใส่สบาย',
+    ],
+    wedding: [
+      'wedding', 'bridal', 'bridesmaid', 'engagement',
+      'งานแต่ง', 'แต่งงาน', 'งานหมั้น', 'เพื่อนเจ้าสาว', 'งานวิวาห์',
+      'ไปงานแต่ง', 'ชุดไปงานแต่ง', 'งานสมรส', 'ไปงานหมั้น',
+      'เจ้าสาว', 'งานเช้า', 'พิธีแต่งงาน',
+    ],
+    sport: [
+      'sport', 'gym', 'workout', 'exercise', 'fitness', 'running', 'jogging', 'hiking',
+      'yoga', 'pilates', 'swimming', 'cycling',
+      'ออกกำลัง', 'วิ่ง', 'ฟิตเนส', 'ปีนเขา', 'โยคะ', 'พิลาทิส',
+      'ว่ายน้ำ', 'กีฬา', 'ซ้อมกีฬา', 'ปั่นจักรยาน', 'เล่นกีฬา',
+      'ยิม', 'เวิร์คเอาท์', 'ออกกำลังกาย', 'เล่นโยคะ',
+      'ฟิต', 'คาร์ดิโอ', 'เทรนนิ่ง',
+    ],
+    travel: [
+      'travel', 'trip', 'vacation', 'beach', 'island', 'resort', 'holiday', 'backpacking',
+      'pool party', 'pool', 'mountain',
+      'ท่องเที่ยว', 'เที่ยว', 'ทะเล', 'ชายหาด', 'ทริป', 'พักร้อน', 'รีสอร์ท',
+      'ภูเขา', 'เกาะ', 'ต่างจังหวัด', 'ต่างประเทศ', 'สระว่ายน้ำ',
+      'ไปเที่ยว', 'ไปทะเล', 'ไปเกาะ', 'ทริปทะเล', 'เที่ยวทะเล',
+      'ชิลทะเล', 'ริมทะเล', 'ริมสระ', 'ริมหาด',
+      'เที่ยวต่างจังหวัด', 'เที่ยวต่างประเทศ', 'ไปต่างจังหวัด',
+      'วันพักผ่อน', 'แบกเป้', 'เที่ยวเกาะ', 'ไปภูเขา', 'ปูลปาร์ตี้',
+    ],
+    date: [
+      'date', 'romantic', 'date night', 'first date',
+      'เดท', 'โรแมนติก', 'ออกเดท', 'ไปเดท',
+      'ไปหาแฟน', 'ไปเจอแฟน', 'นัดเจอ', 'เจอแฟน',
+      'ไปเดทกับแฟน', 'วันวาเลนไทน์', 'เดทแรก', 'เดทนัดแรก',
+      'ไปเดทกัน', 'นัดเดท', 'ออกเดทกัน',
+    ],
+    dinner: [
+      'dinner', 'restaurant', 'dining', 'fine dining', 'buffet',
+      'ดินเนอร์', 'ร้านอาหาร', 'อาหารค่ำ', 'ฉลอง', 'ครบรอบ',
+      'anniversary', 'กินข้าว', 'มื้อเย็น',
+      'ไปกินข้าว', 'กินข้าวนอกบ้าน', 'ร้านหรู', 'ร้านอาหารหรู',
+      'ไปดินเนอร์', 'มื้อค่ำ', 'ฉลองครบรอบ', 'ไปฉลอง',
+      'ฉลองวันเกิด', 'กินข้าวข้างนอก', 'ไปร้านอาหาร',
+    ],
+    cafe: [
+      'cafe', 'coffee', 'brunch', 'coffee shop', 'afternoon tea',
+      'คาเฟ่', 'กาแฟ', 'ร้านกาแฟ', 'มื้อสาย', 'บรันช์',
+      'ไปนั่งเล่น', 'นั่งคาเฟ่', 'ไปคาเฟ่',
+      'ร้านนั่งชิล', 'ร้านชา', 'ร้านขนม', 'ไปนั่งร้านกาแฟ',
+      'จิบกาแฟ', 'ชิลคาเฟ่', 'ถ่ายรูปคาเฟ่', 'คาเฟ่ฮอป',
+    ],
+    party: [
+      'party', 'celebration', 'event', 'nightclub', 'clubbing', 'concert',
+      'festival', 'prom', 'gala', 'graduation', 'new year',
+      'ปาร์ตี้', 'งานเลี้ยง', 'งานสังสรรค์', 'คอนเสิร์ต', 'เทศกาล',
+      'งานเลี้ยงรุ่น', 'ปาร์ตี้วันเกิด', 'งานรับปริญญา', 'ไนท์คลับ',
+      'ปาตี้', 'งานปาร์ตี้', 'ไปคอนเสิร์ต', 'ไปเฟสติวัล',
+      'ปีใหม่', 'เคาท์ดาวน์', 'ไปงานเลี้ยง', 'สังสรรค์',
+      'ไปปาร์ตี้', 'ไปคลับ', 'งานเลี้ยงวันเกิด', 'งานจบ', 'รับปริญญา',
+    ],
   }
 
   for (const [occasion, keywords] of Object.entries(occasionKeywords)) {
@@ -432,13 +542,40 @@ export function filterProductsForRequest(
     }
   }
 
-  // If no results and we have an occasion, try without occasion filter
+  // If no results and we have an occasion, try graduated fallback
   if (filtered.length === 0 && occasion) {
-    filtered = applyFilters(products, {
-      gender: gender,
-      priceRange: budget ? { min: 0, max: budget } : undefined,
-      availability: ['in_stock', 'low_stock'],
-    })
+    // Try 1: formality range filter (use occasion's formality range instead of tags)
+    const formalityRange = OCCASIONS[occasion]?.formalityRange
+    if (formalityRange) {
+      filtered = applyFilters(products, {
+        gender: gender,
+        formality: formalityRange,
+        priceRange: budget ? { min: 0, max: budget } : undefined,
+        availability: ['in_stock', 'low_stock'],
+      })
+      console.log(`[AI Chat v5] Occasion filter: ${occasion} → ${filtered.length} products (method: formality)`)
+    }
+
+    // Try 2: loose filter (exclude very casual for formal occasions)
+    if (filtered.length === 0 && formalityRange && formalityRange.min >= 5) {
+      filtered = filterByFormality(products, { min: 3 as FormalityLevel, max: 10 as FormalityLevel })
+      filtered = applyFilters(filtered, {
+        gender: gender,
+        priceRange: budget ? { min: 0, max: budget } : undefined,
+        availability: ['in_stock', 'low_stock'],
+      })
+      console.log(`[AI Chat v5] Occasion filter: ${occasion} → ${filtered.length} products (method: loose)`)
+    }
+
+    // Try 3: no occasion filter at all
+    if (filtered.length === 0) {
+      filtered = applyFilters(products, {
+        gender: gender,
+        priceRange: budget ? { min: 0, max: budget } : undefined,
+        availability: ['in_stock', 'low_stock'],
+      })
+      console.log(`[AI Chat v5] Occasion filter: ${occasion} → ${filtered.length} products (method: none)`)
+    }
   }
 
   // If still no results, return all available products
@@ -531,6 +668,57 @@ async function callOpenRouter(
     clearTimeout(timeoutId)
     throw error
   }
+}
+
+/**
+ * Build explicit occasion instruction block for injection into AI prompt.
+ * Tells the AI exactly what to recommend (and what NOT to recommend) for the detected occasion.
+ */
+function buildOccasionInstruction(occasion: OccasionType, message: string): string {
+  const occasionDef = OCCASIONS[occasion]
+  if (!occasionDef) return ''
+
+  // Beach sub-occasion override
+  const beachKeywords = ['ทะเล', 'ชายหาด', 'เกาะ', 'ริมทะเล', 'ริมหาด', 'beach', 'island', 'seaside']
+  const isBeach = beachKeywords.some(kw => message.toLowerCase().includes(kw))
+
+  if (isBeach) {
+    return `[MANDATORY OCCASION CONTEXT — READ THIS BEFORE RESPONDING]
+User's occasion: ไปเที่ยวทะเล / Beach / Sea
+Formality range: 1-3 (very casual, lightweight)
+MUST recommend: casual dress, shorts, sandals, linen shirt, swimwear cover-up, tank top, sundress, sarong
+NEVER recommend: blazer, formal suit, closed leather shoes, heavy fabric, structured jacket, pencil skirt, heels, pleated skirt
+Style: lightweight, breathable fabrics suitable for hot beach weather. Colors: white, pastels, tropical prints, bright solids.
+YOUR RESPONSE TEXT MUST mention beach/ทะเล. DO NOT describe the outfit as suitable for คาเฟ่, เดินห้าง, ออฟฟิศ, or any other occasion.
+If no products in the catalog match beach wear, say so honestly: "ตอนนี้ยังไม่มีชุดทะเลโดยเฉพาะ แต่มีตัวเลือกที่ใส่ไปเที่ยวทะเลได้".`
+  }
+
+  // Mountain/hiking sub-occasion
+  const mountainKeywords = ['ภูเขา', 'ปีนเขา', 'เขาใหญ่', 'mountain', 'hiking']
+  const isMountain = mountainKeywords.some(kw => message.toLowerCase().includes(kw))
+
+  if (isMountain) {
+    return `[MANDATORY OCCASION CONTEXT — READ THIS BEFORE RESPONDING]
+User's occasion: ไปเที่ยวภูเขา / Mountain / Hiking
+Formality range: 1-3
+MUST recommend: comfortable pants, sneakers, lightweight jacket, layered tops, athletic wear
+NEVER recommend: heels, formal dress, blazer, delicate fabrics
+YOUR RESPONSE TEXT MUST mention mountain/ภูเขา. DO NOT describe the outfit as suitable for other occasions.
+If no products in the catalog match this occasion, say so honestly and suggest closest alternatives.`
+  }
+
+  // General occasion instruction from OCCASIONS definition
+  const { keyPieces, avoidItems } = occasionDef.styleGuidelines
+  const fRange = occasionDef.formalityRange
+
+  return `[MANDATORY OCCASION CONTEXT — READ THIS BEFORE RESPONDING]
+User's occasion: ${occasionDef.name.th} / ${occasionDef.name.en}
+Formality range: ${fRange.min}-${fRange.max}
+Key pieces to recommend: ${keyPieces.join(', ')}
+Items to AVOID: ${avoidItems.join(', ')}
+Colors: ${occasionDef.styleGuidelines.colorSuggestions.join(', ')}
+YOUR RESPONSE TEXT MUST reference the user's stated occasion (${occasionDef.name.th}). DO NOT substitute a different occasion.
+If no products in the catalog match this occasion, say so honestly and suggest closest alternatives.`
 }
 
 /**
@@ -653,26 +841,87 @@ async function processAIChatRequestV5(
 
   let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion, resolvedColors.length > 0 ? resolvedColors : undefined)
 
-  // v4.0: Enhance with semantic search
+  // Semantic-first pipeline: When no hardcoded occasion is detected (e.g. user types free-form
+  // Thai like "อยากได้ชุดไปงานบุญ"), the keyword-based heuristic filter may return generic or
+  // irrelevant products. In this case, Supabase pgvector semantic search becomes the PRIMARY
+  // product source, with heuristic results added only as a small supplement. When an occasion
+  // IS detected, semantic results are still prioritized (placed first in the merge) so the AI
+  // sees the most relevant products at the top of the catalog, but heuristic results fill gaps.
   if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
     try {
+      const heuristicCount = filteredProducts.length
       const semanticProducts = await searchProductsFromSupabase(request.message, occasion || undefined, 30)
       if (semanticProducts.length > 0) {
         const enhancedSemantic = transformDbProductsToEnhanced(semanticProducts)
-        const seenSkus = new Set<string>()
-        const merged: EnhancedProduct[] = []
-        for (const product of [...enhancedSemantic, ...filteredProducts]) {
-          const key = product.sku || product.id
-          if (!seenSkus.has(key)) {
-            seenSkus.add(key)
-            merged.push(product)
+
+        console.log(`[AI Chat v5] Semantic-first: ${enhancedSemantic.length} semantic results, ${heuristicCount} heuristic results, occasion=${occasion || 'none'}`)
+
+        if (!occasion && enhancedSemantic.length >= 3) {
+          // No hardcoded occasion detected: semantic search results ARE the primary source.
+          // Only add a small budget-filtered supplement to avoid drowning semantic relevance.
+          const seenSkus = new Set(enhancedSemantic.map(p => p.sku || p.id))
+          const supplement = filteredProducts
+            .filter(p => !seenSkus.has(p.sku || p.id))
+            .slice(0, 20)
+          filteredProducts = [...enhancedSemantic, ...supplement]
+          console.log(`[AI Chat v5] Semantic-first (no occasion): ${enhancedSemantic.length} semantic + ${supplement.length} supplement = ${filteredProducts.length}`)
+        } else {
+          // Occasion detected or few semantic results: merge with semantic first for priority
+          const seenSkus = new Set<string>()
+          const merged: EnhancedProduct[] = []
+          for (const product of [...enhancedSemantic, ...filteredProducts]) {
+            const key = product.sku || product.id
+            if (!seenSkus.has(key)) {
+              seenSkus.add(key)
+              merged.push(product)
+            }
           }
+          filteredProducts = merged
+          console.log(`[AI Chat v5] Semantic merge (occasion=${occasion}): ${enhancedSemantic.length} semantic + ${heuristicCount} heuristic = ${merged.length} merged`)
         }
-        filteredProducts = merged
-        console.log(`[AI Chat v5] Semantic search: ${merged.length} total products`)
+      } else {
+        console.log(`[AI Chat v5] Semantic search returned 0 results, using ${heuristicCount} heuristic products only`)
       }
     } catch (semanticError) {
-      console.error('[AI Chat v5] Semantic search failed:', semanticError)
+      console.error('[AI Chat v5] Semantic search failed, falling back to heuristic:', semanticError)
+    }
+  }
+
+  // Re-apply occasion+formality filter after semantic merge to remove off-occasion products
+  // HARD FILTER: Always apply formality filter for detected occasions — never silently skip
+  let noExactOccasionMatch = false
+  if (occasion && filteredProducts.length > 0) {
+    // Beach sub-occasion: tighten formality to 1-3 (instead of travel's 2-5)
+    const beachKeywords = ['ทะเล', 'ชายหาด', 'เกาะ', 'ริมทะเล', 'ริมหาด', 'beach', 'island', 'seaside']
+    const isBeach = beachKeywords.some(kw => request.message.toLowerCase().includes(kw))
+    const resolvedFormalityRange = isBeach
+      ? { min: 1 as FormalityLevel, max: 3 as FormalityLevel }
+      : OCCASIONS[occasion]?.formalityRange
+
+    if (isBeach) {
+      console.log(`[AI Chat v5] Beach sub-occasion detected, overriding formality to 1-3`)
+    }
+
+    const occasionFiltered = isBeach
+      ? filterByFormality(filteredProducts, resolvedFormalityRange!)
+      : filterByOccasionWithFormality(filteredProducts, occasion)
+
+    if (occasionFiltered.length > 0) {
+      filteredProducts = occasionFiltered
+      console.log(`[AI Chat v5] Strict occasion filter: ${occasionFiltered.length} products (occasion: ${occasion})`)
+    } else if (resolvedFormalityRange) {
+      // Widen formality by ±2 but NEVER skip entirely
+      const widerMin = Math.max(1, resolvedFormalityRange.min - 2) as FormalityLevel
+      const widerMax = Math.min(10, resolvedFormalityRange.max + 2) as FormalityLevel
+      const widerFiltered = filterByFormality(filteredProducts, { min: widerMin, max: widerMax })
+      if (widerFiltered.length > 0) {
+        filteredProducts = widerFiltered
+        noExactOccasionMatch = true
+        console.log(`[AI Chat v5] Widened formality filter (${widerMin}-${widerMax}): ${widerFiltered.length} products`)
+      } else {
+        noExactOccasionMatch = true
+        console.log(`[AI Chat v5] No products match even widened formality, using all ${filteredProducts.length} products with no-match flag`)
+      }
     }
   }
 
@@ -755,8 +1004,26 @@ async function processAIChatRequestV5(
   const templateInstruction = getTemplateInstruction(categoryDetection.category)
   const followUpInstruction = generateFollowUpInstruction(followUpDetection)
 
+  // v5.0: Build occasion instruction for explicit AI guidance
+  // Placed RIGHT BEFORE the user message for maximum attention (recency bias)
+  let occasionInstruction = ''
+  if (occasion) {
+    occasionInstruction = buildOccasionInstruction(occasion, request.message)
+    console.log(`[AI Chat v5] Occasion instruction injected for: ${occasion}`)
+  }
+
+  // v5.3: No-match honest messaging when formality filter had to be widened
+  let noMatchInstruction = ''
+  if (noExactOccasionMatch) {
+    noMatchInstruction = `\n[NOTE: No products in the catalog exactly match this occasion's formality range.
+The products below are the closest alternatives. Be honest with the user — say "ตอนนี้ยังไม่มีสินค้าที่ตรงกับโอกาสนี้พอดี แต่มีตัวเลือกใกล้เคียงที่น่าสนใจ" and present them as alternatives, NOT as perfect matches.]\n`
+    console.log('[AI Chat v5] No-exact-match instruction injected')
+  }
+
   // v5.0: Build prompt with catalog context (pipe-delimited) instead of old createOutfitPrompt
-  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\nUser message: ${request.message}`
+  // CRITICAL: Occasion instruction is placed AFTER the catalog and BEFORE the user message
+  // so the AI sees it last and prioritizes it (recency bias)
+  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\n${occasionInstruction}${noMatchInstruction}\nUser message: ${request.message}`
 
   if (followUpInstruction) {
     enhancedPrompt = `${followUpInstruction}\n\n${enhancedPrompt}`
@@ -832,7 +1099,7 @@ async function processAIChatRequestV5(
 
   // STEP 10: Return response with looks
   return {
-    message: parsedResponse.text || aiResponse,
+    message: shortenAssistantMessage(parsedResponse.text || aiResponse),
     recommendedProducts,
     occasion,
     reasoning: `Found ${filteredProducts.length} unique products, AI curated ${validatedLooks.length} looks`,
@@ -1036,6 +1303,33 @@ export async function processAIChatRequest(
       } catch (semanticError) {
         console.error('[AI Chat] Semantic search failed, using heuristic only:', semanticError)
         // Continue with heuristic-only results
+      }
+    }
+
+    // Re-apply occasion+formality filter after semantic merge to remove off-occasion products
+    // HARD FILTER: Always apply — never silently skip
+    if (occasion && filteredProducts.length > 0) {
+      const beachKw = ['ทะเล', 'ชายหาด', 'เกาะ', 'ริมทะเล', 'ริมหาด', 'beach', 'island', 'seaside']
+      const isBeachLegacy = beachKw.some(kw => request.message.toLowerCase().includes(kw))
+      const legacyFormalityRange = isBeachLegacy
+        ? { min: 1 as FormalityLevel, max: 3 as FormalityLevel }
+        : OCCASIONS[occasion]?.formalityRange
+
+      const occasionFiltered = isBeachLegacy
+        ? filterByFormality(filteredProducts, legacyFormalityRange!)
+        : filterByOccasionWithFormality(filteredProducts, occasion)
+
+      if (occasionFiltered.length > 0) {
+        filteredProducts = occasionFiltered
+        console.log(`[AI Chat] Strict occasion filter: ${occasionFiltered.length} products (occasion: ${occasion})`)
+      } else if (legacyFormalityRange) {
+        const wMin = Math.max(1, legacyFormalityRange.min - 2) as FormalityLevel
+        const wMax = Math.min(10, legacyFormalityRange.max + 2) as FormalityLevel
+        const wider = filterByFormality(filteredProducts, { min: wMin, max: wMax })
+        if (wider.length > 0) {
+          filteredProducts = wider
+          console.log(`[AI Chat] Widened formality filter (${wMin}-${wMax}): ${wider.length} products`)
+        }
       }
     }
 
@@ -1288,7 +1582,7 @@ MANDATORY: Fix all errors listed above and provide a complete ${expectedTemplate
     const autoOutfitDescription = `Full body look for ${occasion || 'daily wear'}: ${productNames}. Context: ${occasion} setting.`;
 
     return {
-      message: aiResponse,
+      message: shortenAssistantMessage(aiResponse),
       recommendedProducts,
       occasion,
       reasoning: `Found ${filteredProducts.length} unique products matching your request`,

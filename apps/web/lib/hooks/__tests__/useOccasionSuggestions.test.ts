@@ -61,7 +61,7 @@ describe('useOccasionSuggestions', () => {
     await act(async () => {
       resolvePromise!({
         ok: true,
-        json: async () => ({ products: mockProducts }),
+        json: async () => ({ data: mockProducts }),
       })
     })
 
@@ -112,7 +112,7 @@ describe('useOccasionSuggestions', () => {
     // Second call succeeds
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ products: mockProducts }),
+      json: async () => ({ data: mockProducts }),
     })
 
     await act(async () => {
@@ -163,7 +163,7 @@ describe('useOccasionSuggestions', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ products: weekendProducts }),
+      json: async () => ({ data: weekendProducts }),
     })
 
     const { result, rerender } = renderHook(
@@ -178,7 +178,7 @@ describe('useOccasionSuggestions', () => {
 
     mockFetch.mockResolvedValueOnce({
       ok: true,
-      json: async () => ({ products: dateProducts }),
+      json: async () => ({ data: dateProducts }),
     })
 
     rerender({ occasion: 'date_night' })

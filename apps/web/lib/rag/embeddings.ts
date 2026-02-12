@@ -118,9 +118,9 @@ function getBackoffDelay(attempt: number): number {
  * Get OpenRouter API key
  */
 function getApiKey(): string {
-  const apiKey = process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || '';
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY || '';
   if (!apiKey) {
-    throw new Error('OpenRouter API key is required. Set NEXT_PUBLIC_OPENROUTER_API_KEY in .env.local');
+    throw new Error('OpenRouter API key is required. Set OPENROUTER_API_KEY or NEXT_PUBLIC_OPENROUTER_API_KEY in .env.local');
   }
   return apiKey;
 }

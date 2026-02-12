@@ -128,7 +128,7 @@ describe('OccasionSuggestionGrid', () => {
       />
     )
 
-    const grid = container.firstElementChild as HTMLElement
+    const grid = container.querySelector('.grid') as HTMLElement
     expect(grid.className).toContain('grid-cols-2')
     expect(grid.className).toContain('md:grid-cols-3')
     expect(grid.className).toContain('lg:grid-cols-4')

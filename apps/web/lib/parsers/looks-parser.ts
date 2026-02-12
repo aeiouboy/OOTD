@@ -447,14 +447,21 @@ export function validateLooksAgainstCatalog(
         if (!catalogProduct) return null; // Not in catalog = drop
 
         // Force catalog URL and price, populate SKU if missing
+        const primaryColor = catalogProduct.style?.colors?.primary;
+        const secondaryColors = catalogProduct.style?.colors?.secondary || [];
+        const productColors = [primaryColor, ...secondaryColors].filter((c): c is string => !!c);
+
         return {
           ...item,
           url: catalogProduct.centralIntegration?.productUrl || item.url,
+          imageUrl: catalogProduct.centralIntegration?.images?.primary || '',
           price: catalogProduct.pricing?.currentPrice || item.price,
-          name: item.name, // Keep AI's display name (may be Thai)
+          name: item.name,
           brand: catalogProduct.brand || item.brand,
           sku: item.sku || catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || '',
-        };
+          colors: productColors,
+          sizes: catalogProduct.sizing?.availableSizes || [],
+        } as ChatLookItem;
       })
       .filter((item): item is ChatLookItem => item !== null);
 

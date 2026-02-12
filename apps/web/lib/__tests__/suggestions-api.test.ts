@@ -57,10 +57,12 @@ vi.mock('@/lib/supabase/client', () => ({
 const mockGetProductsByOccasion = vi.fn()
 const mockGetAllProducts = vi.fn()
 const mockSearchProductsBySimilarity = vi.fn()
+const mockGetProductCount = vi.fn()
 vi.mock('@/lib/supabase/products', () => ({
   getProductsByOccasion: (...args: unknown[]) => mockGetProductsByOccasion(...args),
   getAllProducts: (...args: unknown[]) => mockGetAllProducts(...args),
   searchProductsBySimilarity: (...args: unknown[]) => mockSearchProductsBySimilarity(...args),
+  getProductCount: (...args: unknown[]) => mockGetProductCount(...args),
 }))
 
 // Mock embeddings for POST semantic search tests
@@ -85,7 +87,7 @@ describe('/api/suggestions response schema', () => {
     process.env.SUPABASE_PRODUCTS_ENABLED = 'false'
   })
 
-  it('GET returns correct response schema with products array', async () => {
+  it('GET returns correct response schema with data array', async () => {
     const { GET } = await import('@/app/api/suggestions/route')
 
     const request = createMockNextRequest('http://localhost:3000/api/suggestions?occasion=weekend_social&limit=10')
@@ -93,12 +95,16 @@ describe('/api/suggestions response schema', () => {
     const body = await response.json()
 
     // Verify top-level schema
-    expect(body).toHaveProperty('products')
+    expect(body).toHaveProperty('data')
     expect(body).toHaveProperty('occasion')
     expect(body).toHaveProperty('total')
+    expect(body).toHaveProperty('page')
+    expect(body).toHaveProperty('totalPages')
     expect(body).toHaveProperty('source')
-    expect(Array.isArray(body.products)).toBe(true)
+    expect(Array.isArray(body.data)).toBe(true)
     expect(typeof body.total).toBe('number')
+    expect(typeof body.page).toBe('number')
+    expect(typeof body.totalPages).toBe('number')
     expect(body.source).toBe('json')
   })
 
@@ -109,8 +115,8 @@ describe('/api/suggestions response schema', () => {
     const response = await GET(request)
     const body = await response.json()
 
-    if (body.products.length > 0) {
-      const product = body.products[0]
+    if (body.data.length > 0) {
+      const product = body.data[0]
       expect(product).toHaveProperty('id')
       expect(product).toHaveProperty('product_name')
       expect(product).toHaveProperty('image_url')
@@ -129,7 +135,7 @@ describe('/api/suggestions response schema', () => {
     const body = await response.json()
 
     expect(body.occasion).toBe('date_night')
-    for (const product of body.products) {
+    for (const product of body.data) {
       expect(product.primary_occasion).toBe('date_night')
     }
   })
@@ -144,14 +150,16 @@ describe('/api/suggestions response schema', () => {
     expect(body.occasion).toBe('all')
   })
 
-  it('GET total matches products array length', async () => {
+  it('GET total is full count and data.length is at most total', async () => {
     const { GET } = await import('@/app/api/suggestions/route')
 
     const request = createMockNextRequest('http://localhost:3000/api/suggestions?limit=5')
     const response = await GET(request)
     const body = await response.json()
 
-    expect(body.total).toBe(body.products.length)
+    // total is the full count of women items (2), data.length <= total
+    expect(body.total).toBe(2)
+    expect(body.data.length).toBeLessThanOrEqual(body.total)
   })
 
   it('GET filters to women_clothing only (MVP)', async () => {
@@ -161,7 +169,7 @@ describe('/api/suggestions response schema', () => {
     const response = await GET(request)
     const body = await response.json()
 
-    for (const product of body.products) {
+    for (const product of body.data) {
       expect(product.category).toBe('women_clothing')
     }
   })
@@ -173,7 +181,7 @@ describe('/api/suggestions response schema', () => {
     const response = await GET(request)
     const body = await response.json()
 
-    for (const product of body.products) {
+    for (const product of body.data) {
       expect(product.occasion_weekend_social).toBeGreaterThanOrEqual(0)
       expect(product.occasion_weekend_social).toBeLessThanOrEqual(1)
       expect(product.occasion_date_night).toBeGreaterThanOrEqual(0)
@@ -181,6 +189,43 @@ describe('/api/suggestions response schema', () => {
       expect(product.occasion_everyday_casual).toBeGreaterThanOrEqual(0)
       expect(product.occasion_everyday_casual).toBeLessThanOrEqual(1)
     }
+  })
+
+  it('GET with page=2&limit=1 returns correct offset slice', async () => {
+    const { GET } = await import('@/app/api/suggestions/route')
+
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?limit=1&page=2')
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(body.page).toBe(2)
+    // With 2 women items and limit=1, page 2 should have 1 item (the second one)
+    expect(body.data.length).toBeLessThanOrEqual(1)
+    expect(body.total).toBe(2)
+  })
+
+  it('GET with page beyond total returns empty data array', async () => {
+    const { GET } = await import('@/app/api/suggestions/route')
+
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?page=999')
+    const response = await GET(request)
+    const body = await response.json()
+
+    expect(body.data).toEqual([])
+    expect(body.total).toBeGreaterThan(0)
+    expect(body.page).toBe(999)
+  })
+
+  it('totalPages is computed correctly', async () => {
+    const { GET } = await import('@/app/api/suggestions/route')
+
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?limit=1')
+    const response = await GET(request)
+    const body = await response.json()
+
+    // With 2 women items and limit=1, totalPages should be 2
+    expect(body.totalPages).toBe(body.total)
+    expect(body.totalPages).toBe(2)
   })
 })
 

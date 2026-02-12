@@ -1,6 +1,7 @@
 import { describe, it, expect, vi, beforeEach } from 'vitest';
 import { parseAIResponse, buildImagePromptFromItems, generateOccasionFlatLay } from '../occasion-flat-lay-service';
-import type { OccasionFlatLayRequest } from '@/lib/types/image-types';
+import { computeFlatLayLayout } from '@/lib/prompts/image-prompts';
+import type { OccasionFlatLayRequest, FlatLayItem } from '@/lib/types/image-types';
 
 // ---------------------------------------------------------------------------
 // Mock OpenRouterImageClient
@@ -194,12 +195,143 @@ A flat lay image.`;
   });
 
   // ---------------------------------------------------------------------------
+  // Tests: computeFlatLayLayout
+  // ---------------------------------------------------------------------------
+
+  describe('computeFlatLayLayout', () => {
+    it('assigns inverted triangle positions for 3 items', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Dress', category: 'Dress', color: 'Red' },
+        { name: 'Heels', category: 'Shoes', color: 'Black' },
+        { name: 'Ring', category: 'Ring', color: 'Gold' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      expect(layout).toHaveLength(3);
+      expect(layout[0].position).toBe('TOP-CENTER');
+      expect(layout[1].position).toBe('BOTTOM-LEFT');
+      expect(layout[2].position).toBe('BOTTOM-RIGHT');
+    });
+
+    it('assigns 2x2 grid positions for 4 items', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Blazer', category: 'Blazer', color: 'Navy' },
+        { name: 'Pants', category: 'Pants', color: 'Grey' },
+        { name: 'Shoes', category: 'Shoes', color: 'Black' },
+        { name: 'Watch', category: 'Watch', color: 'Silver' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      expect(layout).toHaveLength(4);
+      expect(layout[0].position).toBe('UPPER-LEFT');
+      expect(layout[1].position).toBe('UPPER-RIGHT');
+      expect(layout[2].position).toBe('LOWER-LEFT');
+      expect(layout[3].position).toBe('LOWER-RIGHT');
+    });
+
+    it('assigns cross/diamond positions for 5 items', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Dress', category: 'Dress', color: 'Red' },
+        { name: 'Jacket', category: 'Jacket', color: 'Black' },
+        { name: 'Shoes', category: 'Shoes', color: 'Nude' },
+        { name: 'Bag', category: 'Bag', color: 'Tan' },
+        { name: 'Earrings', category: 'Earrings', color: 'Gold' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      expect(layout).toHaveLength(5);
+      expect(layout[0].position).toBe('CENTER');
+      expect(layout[1].position).toBe('UPPER-LEFT');
+      expect(layout[2].position).toBe('UPPER-RIGHT');
+      expect(layout[3].position).toBe('LOWER-LEFT');
+      expect(layout[4].position).toBe('LOWER-RIGHT');
+    });
+
+    it('assigns 2x3 grid positions for 6 items', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Top', category: 'Top', color: 'White' },
+        { name: 'Skirt', category: 'Skirt', color: 'Black' },
+        { name: 'Jacket', category: 'Jacket', color: 'Grey' },
+        { name: 'Shoes', category: 'Shoes', color: 'Nude' },
+        { name: 'Bag', category: 'Bag', color: 'Brown' },
+        { name: 'Necklace', category: 'Necklace', color: 'Gold' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      expect(layout).toHaveLength(6);
+      expect(layout[0].position).toBe('UPPER-LEFT');
+      expect(layout[1].position).toBe('UPPER-CENTER');
+      expect(layout[2].position).toBe('UPPER-RIGHT');
+      expect(layout[3].position).toBe('LOWER-LEFT');
+      expect(layout[4].position).toBe('LOWER-CENTER');
+      expect(layout[5].position).toBe('LOWER-RIGHT');
+    });
+
+    it('classifies sizes correctly: Dress=large, Shoes=medium, Jewelry=small', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Earrings', category: 'Jewelry', color: 'Gold' },
+        { name: 'Sneakers', category: 'Shoes', color: 'White' },
+        { name: 'Wrap Dress', category: 'Dress', color: 'Blue' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      // After sorting: Dress (large), Shoes (medium), Jewelry (small)
+      expect(layout[0].sizeHint).toBe('large');
+      expect(layout[0].item.name).toBe('Wrap Dress');
+      expect(layout[1].sizeHint).toBe('medium');
+      expect(layout[1].item.name).toBe('Sneakers');
+      expect(layout[2].sizeHint).toBe('small');
+      expect(layout[2].item.name).toBe('Earrings');
+    });
+
+    it('handles case-insensitive category matching', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Item1', category: 'DRESS', color: 'Red' },
+        { name: 'Item2', category: 'shoes', color: 'Black' },
+        { name: 'Item3', category: 'Jewelry', color: 'Gold' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      expect(layout[0].sizeHint).toBe('large');
+      expect(layout[1].sizeHint).toBe('medium');
+      expect(layout[2].sizeHint).toBe('small');
+    });
+
+    it('returns empty array for empty input', () => {
+      const layout = computeFlatLayLayout([]);
+      expect(layout).toHaveLength(0);
+    });
+
+    it('sorts large items to prominent positions', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Ring', category: 'Ring', color: 'Gold' },
+        { name: 'Sneakers', category: 'Sneakers', color: 'White' },
+        { name: 'Blazer', category: 'Blazer', color: 'Navy' },
+      ];
+
+      const layout = computeFlatLayLayout(items);
+
+      // After sorting: Blazer (large) -> TOP-CENTER, Sneakers (medium) -> BOTTOM-LEFT, Ring (small) -> BOTTOM-RIGHT
+      expect(layout[0].item.name).toBe('Blazer');
+      expect(layout[0].position).toBe('TOP-CENTER');
+      expect(layout[1].item.name).toBe('Sneakers');
+      expect(layout[2].item.name).toBe('Ring');
+    });
+  });
+
+  // ---------------------------------------------------------------------------
   // Tests: buildImagePromptFromItems
   // ---------------------------------------------------------------------------
 
   describe('buildImagePromptFromItems', () => {
-    it('includes exact item count multiple times for reinforcement', () => {
-      const items = [
+    it('includes exact item count in the prompt', () => {
+      const items: FlatLayItem[] = [
         { name: 'Silk Dress', category: 'Dress', color: 'Red', visualDescription: 'A silk dress' },
         { name: 'Heels', category: 'Shoes', color: 'Black', visualDescription: 'Black heels' },
         { name: 'Clutch', category: 'Bag', color: 'Gold', visualDescription: 'A gold clutch' },
@@ -208,27 +340,11 @@ A flat lay image.`;
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
       expect(prompt).toContain('exactly 3 fashion items');
-      expect(prompt).toContain('MUST include ALL 3 items');
-      expect(prompt).toContain('all 3 items');
-      expect(prompt).toContain('each of the 3 pieces');
+      expect(prompt).toContain('All 3 items');
     });
 
-    it('lists every item explicitly with number, color, and category', () => {
-      const items = [
-        { name: 'Cotton Tee', category: 'Top', color: 'White', visualDescription: 'A white tee' },
-        { name: 'Wide Jeans', category: 'Bottom', color: 'Blue', visualDescription: 'Wide jeans' },
-        { name: 'Sneakers', category: 'Shoes', color: 'Grey', visualDescription: 'Grey sneakers' },
-      ];
-
-      const prompt = buildImagePromptFromItems(items, 'Everyday Casual');
-
-      expect(prompt).toContain('1. a white cotton tee (top)');
-      expect(prompt).toContain('2. a blue wide jeans (bottom)');
-      expect(prompt).toContain('3. a grey sneakers (shoes)');
-    });
-
-    it('includes anti-text instructions', () => {
-      const items = [
+    it('includes anti-text instructions near the start of the prompt', () => {
+      const items: FlatLayItem[] = [
         { name: 'Dress', category: 'Dress', color: 'Navy', visualDescription: 'A navy dress' },
         { name: 'Heels', category: 'Shoes', color: 'Nude', visualDescription: 'Nude heels' },
         { name: 'Bag', category: 'Bag', color: 'Black', visualDescription: 'A black bag' },
@@ -236,15 +352,44 @@ A flat lay image.`;
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
-      expect(prompt).toContain('Do NOT include any text');
-      expect(prompt).toContain('no text of any kind');
+      // Anti-text instructions appear at the very beginning
+      const first100 = prompt.substring(0, 100);
+      expect(first100).toContain('NO text');
+    });
+
+    it('includes spatial position strings', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Dress', category: 'Dress', color: 'Navy' },
+        { name: 'Heels', category: 'Shoes', color: 'Nude' },
+        { name: 'Bracelet', category: 'Bracelet', color: 'Gold' },
+      ];
+
+      const prompt = buildImagePromptFromItems(items, 'Date Night');
+
+      expect(prompt).toContain('TOP-CENTER');
+      expect(prompt).toContain('BOTTOM-LEFT');
+      expect(prompt).toContain('BOTTOM-RIGHT');
+    });
+
+    it('includes size hints in the prompt', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Blazer', category: 'Blazer', color: 'Navy' },
+        { name: 'Heels', category: 'Heels', color: 'Nude' },
+        { name: 'Watch', category: 'Watch', color: 'Silver' },
+      ];
+
+      const prompt = buildImagePromptFromItems(items, 'Work');
+
+      expect(prompt).toContain('(large)');
+      expect(prompt).toContain('(medium)');
+      expect(prompt).toContain('(small)');
     });
 
     it('includes occasion label in the prompt', () => {
-      const items = [
-        { name: 'Tee', category: 'Top', color: 'White', visualDescription: 'A tee' },
-        { name: 'Shorts', category: 'Bottom', color: 'Khaki', visualDescription: 'Shorts' },
-        { name: 'Sandals', category: 'Shoes', color: 'Brown', visualDescription: 'Sandals' },
+      const items: FlatLayItem[] = [
+        { name: 'Tee', category: 'Top', color: 'White' },
+        { name: 'Shorts', category: 'Bottom', color: 'Khaki' },
+        { name: 'Sandals', category: 'Shoes', color: 'Brown' },
       ];
 
       const prompt = buildImagePromptFromItems(items, 'Weekend & Social');
@@ -253,18 +398,46 @@ A flat lay image.`;
     });
 
     it('scales count references correctly for 5 items', () => {
-      const items = [
-        { name: 'Top', category: 'Top', color: 'White', visualDescription: 'A top' },
-        { name: 'Bottom', category: 'Bottom', color: 'Blue', visualDescription: 'A bottom' },
-        { name: 'Shoes', category: 'Shoes', color: 'Black', visualDescription: 'Shoes' },
-        { name: 'Bag', category: 'Bag', color: 'Tan', visualDescription: 'A bag' },
-        { name: 'Earrings', category: 'Accessory', color: 'Gold', visualDescription: 'Earrings' },
+      const items: FlatLayItem[] = [
+        { name: 'Top', category: 'Top', color: 'White' },
+        { name: 'Bottom', category: 'Bottom', color: 'Blue' },
+        { name: 'Shoes', category: 'Shoes', color: 'Black' },
+        { name: 'Bag', category: 'Bag', color: 'Tan' },
+        { name: 'Earrings', category: 'Accessory', color: 'Gold' },
       ];
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
       expect(prompt).toContain('exactly 5 fashion items');
-      expect(prompt).toContain('MUST include ALL 5 items');
+      expect(prompt).toContain('cross/diamond arrangement');
+      expect(prompt).toContain('CENTER');
+    });
+
+    it('uses inverted triangle layout for 3 items', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Dress', category: 'Dress', color: 'Red' },
+        { name: 'Shoes', category: 'Shoes', color: 'Black' },
+        { name: 'Ring', category: 'Ring', color: 'Gold' },
+      ];
+
+      const prompt = buildImagePromptFromItems(items, 'Date Night');
+
+      expect(prompt).toContain('inverted triangle arrangement');
+    });
+
+    it('handles items without color gracefully', () => {
+      const items: FlatLayItem[] = [
+        { name: 'Dress', category: 'Dress' },
+        { name: 'Shoes', category: 'Shoes' },
+        { name: 'Belt', category: 'Belt' },
+      ];
+
+      const prompt = buildImagePromptFromItems(items, 'Casual');
+
+      // Should not contain "undefined" and should still produce valid prompt
+      expect(prompt).not.toContain('undefined');
+      expect(prompt).toContain('dress');
+      expect(prompt).toContain('shoes');
     });
   });
 
@@ -290,7 +463,7 @@ A flat lay image.`;
       expect(result.imageBase64).toBe('base64-image-data');
       expect(result.imageUrl).toBe('https://example.com/flat-lay.png');
       expect(result.curatedItems).toHaveLength(3);
-      // imagePrompt is now the structured prompt built from curated items
+      // imagePrompt is now the structured prompt built from curated items with spatial layout
       expect(result.imagePrompt).toContain('exactly 3 fashion items');
       expect(result.imagePrompt).toContain('linen wrap dress');
       expect(result.imagePrompt).toContain('woven straw tote');
@@ -304,13 +477,12 @@ A flat lay image.`;
       expect(fetchArgs[1].method).toBe('POST');
       expect(fetchArgs[1].headers.Authorization).toBe(`Bearer ${TEST_API_KEY}`);
 
-      // Verify image generation received structured prompt with all items + anti-text
+      // Verify image generation received structured prompt with spatial positions + anti-text
       expect(mockGenerateRawFlatLay).toHaveBeenCalledTimes(1);
       const imagePromptArg = mockGenerateRawFlatLay.mock.calls[0][0];
       expect(imagePromptArg).toContain('exactly 3 fashion items');
-      expect(imagePromptArg).toContain('MUST include ALL 3 items');
-      expect(imagePromptArg).toContain('Do NOT include any text');
-      expect(imagePromptArg).toContain('no text of any kind');
+      expect(imagePromptArg).toContain('NO text');
+      expect(imagePromptArg).toContain('TOP-CENTER');
     });
 
     it('handles AI curation fetch failure gracefully', async () => {

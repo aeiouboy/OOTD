@@ -128,11 +128,10 @@ export default function ProductDetail({ product, onBack, className = "" }: Produ
 
             <div className="aspect-[3/4] relative group">
               <img
-                src={`${product.imageUrl}?variant=${currentImageIndex}`}
+                src={product.imageUrl || "/placeholder.svg"}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-transform cursor-zoom-in ${
-                  isZoomed ? "scale-150" : "scale-100"
-                }`}
+                className={`w-full h-full object-cover transition-transform cursor-zoom-in ${isZoomed ? "scale-150" : "scale-100"
+                  }`}
                 onClick={() => setIsZoomed(!isZoomed)}
                 loading="lazy"
                 onError={(e) => {
@@ -178,9 +177,8 @@ export default function ProductDetail({ product, onBack, className = "" }: Produ
                   aria-label={`View image ${index + 1}`}
                 >
                   <div
-                    className={`w-2 h-2 rounded-full transition-colors ${
-                      index === currentImageIndex ? "bg-white shadow-sm" : "bg-white/60"
-                    }`}
+                    className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? "bg-white shadow-sm" : "bg-white/60"
+                      }`}
                   />
                 </button>
               ))}

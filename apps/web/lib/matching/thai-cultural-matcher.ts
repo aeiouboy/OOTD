@@ -382,35 +382,102 @@ export function isACFriendly(outfit: EnhancedProduct[]): boolean {
 
 /**
  * Detect Thai occasion from user query
+ * Supports both Thai and English keywords for cultural occasions
  */
 export function detectThaiOccasion(query: string): ThaiOccasion | null {
   const lowerQuery = query.toLowerCase()
 
-  if (lowerQuery.includes('temple') || lowerQuery.includes('วัด')) {
+  // Temple — Thai keywords: วัด, ไหว้พระ, ทำบุญ, ตักบาตร
+  if (
+    lowerQuery.includes('temple') ||
+    lowerQuery.includes('วัด') ||
+    lowerQuery.includes('ไหว้พระ') ||
+    lowerQuery.includes('ทำบุญ') ||
+    lowerQuery.includes('ตักบาตร') ||
+    lowerQuery.includes('ไปวัด')
+  ) {
     return 'temple'
   }
-  if (lowerQuery.includes('wedding') || lowerQuery.includes('งานแต่ง')) {
-    if (lowerQuery.includes('evening') || lowerQuery.includes('เย็น')) {
+
+  // Wedding — Thai keywords: งานแต่ง, แต่งงาน, งานหมั้น, งานวิวาห์, เพื่อนเจ้าสาว, พิธีแต่งงาน
+  if (
+    lowerQuery.includes('wedding') ||
+    lowerQuery.includes('งานแต่ง') ||
+    lowerQuery.includes('แต่งงาน') ||
+    lowerQuery.includes('งานหมั้น') ||
+    lowerQuery.includes('งานวิวาห์') ||
+    lowerQuery.includes('เพื่อนเจ้าสาว') ||
+    lowerQuery.includes('พิธีแต่งงาน') ||
+    lowerQuery.includes('งานสมรส')
+  ) {
+    if (lowerQuery.includes('evening') || lowerQuery.includes('เย็น') || lowerQuery.includes('กลางคืน') || lowerQuery.includes('ค่ำ')) {
       return 'wedding-evening'
     }
     return 'wedding-morning'
   }
-  if (lowerQuery.includes('funeral') || lowerQuery.includes('งานศพ')) {
+
+  // Funeral — Thai keywords: งานศพ, ฌาปนกิจ, ไว้อาลัย, สวดศพ, เผาศพ, วัดงานศพ
+  if (
+    lowerQuery.includes('funeral') ||
+    lowerQuery.includes('งานศพ') ||
+    lowerQuery.includes('ฌาปนกิจ') ||
+    lowerQuery.includes('ไว้อาลัย') ||
+    lowerQuery.includes('สวดศพ') ||
+    lowerQuery.includes('เผาศพ') ||
+    lowerQuery.includes('ไปงานศพ')
+  ) {
     return 'funeral'
   }
-  if (lowerQuery.includes('songkran') || lowerQuery.includes('สงกรานต์')) {
-    if (lowerQuery.includes('water') || lowerQuery.includes('เล่นน้ำ')) {
+
+  // Songkran — Thai keywords: สงกรานต์, เล่นน้ำ, สาดน้ำ
+  if (
+    lowerQuery.includes('songkran') ||
+    lowerQuery.includes('สงกรานต์')
+  ) {
+    if (
+      lowerQuery.includes('water') ||
+      lowerQuery.includes('เล่นน้ำ') ||
+      lowerQuery.includes('สาดน้ำ') ||
+      lowerQuery.includes('ถนนข้าวสาร')
+    ) {
       return 'songkran-water'
     }
     return 'songkran-temple'
   }
-  if (lowerQuery.includes('loy krathong') || lowerQuery.includes('ลอยกระทง')) {
+
+  // Loy Krathong — Thai keywords: ลอยกระทง, วันลอยกระทง
+  if (
+    lowerQuery.includes('loy krathong') ||
+    lowerQuery.includes('ลอยกระทง') ||
+    lowerQuery.includes('วันลอยกระทง') ||
+    lowerQuery.includes('ยี่เป็ง')
+  ) {
     return 'loy-krathong'
   }
-  if (lowerQuery.includes('chinese new year') || lowerQuery.includes('ตรุษจีน') || lowerQuery.includes('cny')) {
+
+  // Chinese New Year — Thai keywords: ตรุษจีน, เยาวราช, วันตรุษจีน, ไหว้เจ้า
+  if (
+    lowerQuery.includes('chinese new year') ||
+    lowerQuery.includes('ตรุษจีน') ||
+    lowerQuery.includes('cny') ||
+    lowerQuery.includes('เยาวราช') ||
+    lowerQuery.includes('วันตรุษจีน') ||
+    lowerQuery.includes('ไหว้เจ้า')
+  ) {
     return 'chinese-new-year'
   }
-  if (lowerQuery.includes('royal') || lowerQuery.includes('พระราชา')) {
+
+  // Royal event — Thai keywords: พระราชา, งานพระราชพิธี, เสด็จ, รัชกาล
+  if (
+    lowerQuery.includes('royal') ||
+    lowerQuery.includes('พระราชา') ||
+    lowerQuery.includes('งานพระราชพิธี') ||
+    lowerQuery.includes('เสด็จ') ||
+    lowerQuery.includes('วันพ่อ') ||
+    lowerQuery.includes('วันแม่') ||
+    lowerQuery.includes('ใส่เสื้อเหลือง') ||
+    lowerQuery.includes('ใส่เสื้อฟ้า')
+  ) {
     return 'royal-event'
   }
 

@@ -52,7 +52,7 @@ describe('Supabase product queries', () => {
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
             order: vi.fn(() => ({
-              limit: vi.fn(() =>
+              range: vi.fn(() =>
                 Promise.resolve({ data: [mockProductRows[0]], error: null })
               ),
             })),
@@ -73,7 +73,7 @@ describe('Supabase product queries', () => {
         select: vi.fn(() => ({
           eq: vi.fn(() => ({
             order: vi.fn(() => ({
-              limit: vi.fn(() =>
+              range: vi.fn(() =>
                 Promise.resolve({
                   data: null,
                   error: { message: 'connection error' },
@@ -115,7 +115,7 @@ describe('Supabase product queries', () => {
     it('queries all products with limit', async () => {
       mockFrom.mockReturnValue({
         select: vi.fn(() => ({
-          limit: vi.fn(() =>
+          range: vi.fn(() =>
             Promise.resolve({ data: mockProductRows, error: null })
           ),
         })),
@@ -142,7 +142,7 @@ describe('Supabase product queries', () => {
       expect(mockRpc).toHaveBeenCalledWith('search_products', {
         query_embedding: JSON.stringify(embedding),
         occasion_filter: 'date_night',
-        match_threshold: 0.7,
+        match_threshold: 0.25,
         match_count: 10,
       })
       expect(data).toHaveLength(1)

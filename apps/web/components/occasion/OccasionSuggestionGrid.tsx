@@ -3,6 +3,7 @@
 import { OccasionSuggestionCard } from './OccasionSuggestionCard'
 import type { SuggestionProduct } from './OccasionSuggestionCard'
 import { Skeleton } from '@/components/ui/skeleton'
+import { Pagination } from '@/components/ui/Pagination'
 import type { OccasionType } from '@/lib/supabase/types'
 import { ShoppingBag, AlertCircle } from 'lucide-react'
 
@@ -13,6 +14,9 @@ interface OccasionSuggestionGridProps {
   onProductClick?: (product: SuggestionProduct) => void
   error?: string | null
   onRetry?: () => void
+  page?: number
+  totalPages?: number
+  onPageChange?: (page: number) => void
 }
 
 export function OccasionSuggestionGrid({
@@ -22,6 +26,9 @@ export function OccasionSuggestionGrid({
   onProductClick,
   error,
   onRetry,
+  page,
+  totalPages,
+  onPageChange,
 }: OccasionSuggestionGridProps) {
   if (isLoading) {
     return (
@@ -72,14 +79,19 @@ export function OccasionSuggestionGrid({
   }
 
   return (
-    <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
-      {products.map((product) => (
-        <OccasionSuggestionCard
-          key={product.id}
-          product={product}
-          onClick={onProductClick}
-        />
-      ))}
+    <div>
+      <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 p-4">
+        {products.map((product) => (
+          <OccasionSuggestionCard
+            key={product.id}
+            product={product}
+            onClick={onProductClick}
+          />
+        ))}
+      </div>
+      {page != null && totalPages != null && onPageChange && totalPages > 1 && (
+        <Pagination page={page} totalPages={totalPages} onPageChange={onPageChange} />
+      )}
     </div>
   )
 }

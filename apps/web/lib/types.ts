@@ -52,6 +52,8 @@ export interface Outfit {
   flatLayImageBase64?: string
   /** Flag indicating flat-lay image is being generated (v5.0) */
   isGeneratingFlatLay?: boolean
+  /** True when some item colors in flat-lay couldn't be determined from product name */
+  hasApproximateColors?: boolean
   /** Try-on image URL for fitting model visualization (v6.0) */
   tryOnImageUrl?: string
   /** Try-on image as base64 fallback (v6.0) */

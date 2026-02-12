@@ -360,8 +360,32 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         console.log(`[Chat] Session updated: ${data.sessionContext.recommendedProductIds?.length || 0} total products recommended`)
       }
 
+      // v5.0: Convert looks → Outfit[] if v5 API returned structured looks
+      let resolvedOutfits: Outfit[] = data.outfits || []
+      if (data.looks && Array.isArray(data.looks) && data.looks.length > 0) {
+        resolvedOutfits = data.looks.map((look: any) => ({
+          id: `look-${look.lookNumber || Date.now()}`,
+          title: look.styleName || `Look ${look.lookNumber}`,
+          description: look.tip || '',
+          totalPrice: look.totalPrice || 0,
+          items: (look.items || []).map((item: any) => ({
+            sku: item.sku || '',
+            name: item.name || '',
+            brand: item.brand || '',
+            price: item.price || 0,
+            imageUrl: item.imageUrl || '',
+            availability: 'in_stock' as const,
+            onlineUrl: item.url || '',
+            category: item.category || '',
+            colors: item.color ? [item.color] : [],
+          })),
+          imageUrl: look.imageUrl,
+        }))
+        console.log(`[Chat] Converted ${data.looks.length} v5 looks → Outfit[]`)
+      }
+
       // v8.0: Collect all products from outfits for visual consistency replacement lookup
-      const outfitProducts: Product[] = (data.outfits || []).flatMap((o: Outfit) => o.items || [])
+      const outfitProducts: Product[] = resolvedOutfits.flatMap((o: Outfit) => o.items || [])
       if (outfitProducts.length > 0) {
         setAllProducts(prev => {
           // Merge with existing products, avoiding duplicates by SKU
@@ -372,7 +396,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       }
 
       // v5.0: Mark outfits as generating flat-lay if we have image request
-      const outfitsWithLoading = (data.outfits || []).map((outfit: Outfit) => ({
+      const outfitsWithLoading = resolvedOutfits.map((outfit: Outfit) => ({
         ...outfit,
         isGeneratingFlatLay: data.imageRequest && outfit.items.length > 0,
       }))

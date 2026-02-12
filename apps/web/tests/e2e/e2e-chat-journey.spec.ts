@@ -5,6 +5,8 @@
 
 import { test, expect } from '@playwright/test';
 
+const TEST_CHAT_PROMPT = process.env.E2E_CHAT_PROMPT ?? 'อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้';
+
 test.describe('Chat Journey E2E', () => {
     // Force desktop layout
     test.use({ viewport: { width: 1920, height: 1080 } });
@@ -43,7 +45,7 @@ test.describe('Chat Journey E2E', () => {
 
         // 3. Send User Request
         const chatInput = page.locator('input[placeholder*="OOTDay"]').or(page.locator('input[type="text"]')).first();
-        await chatInput.fill('อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้');
+        await chatInput.fill(TEST_CHAT_PROMPT);
         await chatInput.press('Enter');
 
         // 4. Wait for AI Response (Text + Outfit Cards)

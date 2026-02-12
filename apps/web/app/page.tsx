@@ -36,7 +36,7 @@ export default function HomePage() {
   const [selectedOccasion, setSelectedOccasion] = useState<OccasionType | null>(null)
 
   // Occasion suggestions hook
-  const { products: occasionProducts, isLoading: isLoadingOccasion, error: occasionError, refetch: refetchOccasion } = useOccasionSuggestions(selectedOccasion)
+  const { products: occasionProducts, isLoading: isLoadingOccasion, error: occasionError, refetch: refetchOccasion, page: occasionPage, totalPages: occasionTotalPages, setPage: setOccasionPage } = useOccasionSuggestions(selectedOccasion)
 
   // User profile hook for onboarding
   const { profile, isLoading: isLoadingProfile } = useUserProfile()
@@ -203,6 +203,9 @@ export default function HomePage() {
             onProductClick={handleOccasionProductClick}
             error={occasionError}
             onRetry={refetchOccasion}
+            page={occasionPage}
+            totalPages={occasionTotalPages}
+            onPageChange={setOccasionPage}
           />
         ) : (
           <OutfitDiscovery
@@ -269,6 +272,9 @@ export default function HomePage() {
               onProductClick={handleOccasionProductClick}
               error={occasionError}
               onRetry={refetchOccasion}
+              page={occasionPage}
+              totalPages={occasionTotalPages}
+              onPageChange={setOccasionPage}
             />
           ) : (
             <div className="p-5">

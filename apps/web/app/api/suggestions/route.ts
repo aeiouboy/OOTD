@@ -1,5 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { getProductsByOccasion, getAllProducts, searchProductsBySimilarity } from '@/lib/supabase/products'
+import { getProductsByOccasion, getAllProducts, searchProductsBySimilarity, getProductCount } from '@/lib/supabase/products'
 import { computeOccasionScores } from '@/lib/supabase/occasion-scoring'
 import { generateEmbedding } from '@/lib/rag/embeddings'
 import type { OccasionType } from '@/lib/supabase/types'
@@ -42,7 +42,7 @@ function loadJsonProducts(): ProductMasterEntry[] {
   return []
 }
 
-function fallbackJsonResponse(occasion: OccasionType | null, limit: number) {
+function fallbackJsonResponse(occasion: OccasionType | null, limit: number, page: number, offset: number) {
   const raw = loadJsonProducts()
 
   // Filter to women's clothing (MVP focus)
@@ -89,28 +89,33 @@ function fallbackJsonResponse(occasion: OccasionType | null, limit: number) {
     )
   }
 
-  const products = filtered.slice(0, limit)
+  const total = filtered.length
+  const products = filtered.slice(offset, offset + limit)
 
   return NextResponse.json({
-    products,
+    data: products,
+    total,
+    page,
+    totalPages: Math.ceil(total / limit),
     occasion: occasion ?? 'all',
-    total: products.length,
     source: 'json',
   })
 }
 
-// GET /api/suggestions?occasion=weekend_social&limit=20
+// GET /api/suggestions?occasion=weekend_social&limit=20&page=1
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
   const occasion = searchParams.get('occasion') as OccasionType | null
-  const limit = parseInt(searchParams.get('limit') ?? '20', 10)
+  const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10)), 100)
+  const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
+  const offset = (page - 1) * limit
 
   try {
     const supabaseEnabled =
       process.env.SUPABASE_PRODUCTS_ENABLED === 'true'
 
     if (!supabaseEnabled) {
-      return fallbackJsonResponse(occasion, limit)
+      return fallbackJsonResponse(occasion, limit, page, offset)
     }
 
     if (occasion && !VALID_OCCASIONS.includes(occasion)) {
@@ -123,19 +128,23 @@ export async function GET(request: NextRequest) {
       )
     }
 
+    const total = await getProductCount(occasion ?? undefined)
+
     const products = occasion
-      ? await getProductsByOccasion(occasion, limit)
-      : await getAllProducts(limit)
+      ? await getProductsByOccasion(occasion, limit, offset)
+      : await getAllProducts(limit, offset)
 
     return NextResponse.json({
-      products,
+      data: products,
+      total,
+      page,
+      totalPages: Math.ceil(total / limit),
       occasion: occasion ?? 'all',
-      total: products.length,
       source: 'supabase',
     })
   } catch (error) {
     console.error('[suggestions] Supabase error, falling back to JSON:', error)
-    return fallbackJsonResponse(occasion, limit)
+    return fallbackJsonResponse(occasion, limit, page, offset)
   }
 }
 
@@ -164,7 +173,7 @@ export async function POST(request: NextRequest) {
       process.env.SUPABASE_PRODUCTS_ENABLED === 'true'
 
     if (!supabaseEnabled) {
-      return fallbackJsonResponse(occasion ?? null, limit)
+      return fallbackJsonResponse(occasion ?? null, limit, 1, 0)
     }
 
     // Semantic search when query is provided

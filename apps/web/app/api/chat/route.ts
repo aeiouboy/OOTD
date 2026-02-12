@@ -115,6 +115,7 @@ export async function POST(request: NextRequest) {
             sku: item.sku,
             price: item.price,
             url: item.url,
+            imageUrl: item.imageUrl,
           })),
           tip: look.tip,
           totalPrice: look.totalPrice,

@@ -224,6 +224,9 @@ export interface ChatLookItem {
   sku: string;
   price: number;
   url: string;
+  imageUrl?: string;
+  colors?: string[];
+  sizes?: string[];
 }
 
 /**

@@ -280,7 +280,7 @@ export function OutfitDetail({
           </p>
 
           {/* Outfit preview image - prioritize flat-lay images from chat */}
-          <div className="aspect-[3/4] bg-gray-100 rounded-lg mb-4 overflow-hidden">
+          <div className="aspect-[3/4] bg-gray-100 rounded-lg mb-4 overflow-hidden relative">
             {(outfit.flatLayImageUrl || outfit.flatLayImageBase64 || outfit.imageUrl) ? (
               <img
                 src={outfit.flatLayImageUrl || outfit.flatLayImageBase64 || outfit.imageUrl}
@@ -289,6 +289,13 @@ export function OutfitDetail({
               />
             ) : (
               <div className="w-full h-full bg-gray-300" />
+            )}
+            {outfit.hasApproximateColors && (outfit.flatLayImageUrl || outfit.flatLayImageBase64) && (
+              <div className="absolute bottom-2 left-2 right-2 bg-black/50 rounded-md px-2 py-1">
+                <p className="text-xs text-white/90 text-center">
+                  สีในภาพอาจแตกต่างจากสินค้าจริง กรุณาตรวจสอบสีจริงที่หน้าสินค้า
+                </p>
+              </div>
             )}
           </div>
 

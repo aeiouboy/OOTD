@@ -10,6 +10,7 @@ import {
   cleanCategoryForPrompt,
   containsProductNameOrSku,
   getDefaultImageConfig,
+  computeFlatLayLayout,
 } from '@/lib/prompts/image-prompts'
 import type { FlatLayItem, BackgroundStyle } from '@/lib/types/image-types'
 
@@ -52,24 +53,40 @@ describe('buildFlatLayPrompt', () => {
     expect(prompt).toMatch(/e-commerce|product photography|fashion editorial/i)
   })
 
-  it('contains zero negative framing', () => {
+  it('includes anti-text instructions at the start of the prompt', () => {
     const prompt = buildFlatLayPrompt(items)
-    expect(prompt).not.toMatch(NEGATIVE_FRAMING)
+    const first100 = prompt.substring(0, 100)
+    expect(first100).toContain('NO text')
+  })
+
+  it('includes spatial position strings', () => {
+    const prompt = buildFlatLayPrompt(items)
+    // 3 items = inverted triangle: TOP-CENTER, BOTTOM-LEFT, BOTTOM-RIGHT
+    expect(prompt).toContain('TOP-CENTER')
+    expect(prompt).toContain('BOTTOM-LEFT')
+    expect(prompt).toContain('BOTTOM-RIGHT')
+  })
+
+  it('includes size hints in the prompt', () => {
+    const prompt = buildFlatLayPrompt(items)
+    expect(prompt).toContain('(large)')
+    expect(prompt).toContain('(medium)')
   })
 
   it('includes occasion context when provided', () => {
     const prompt = buildFlatLayPrompt(items, 'work meeting')
-    expect(prompt).toContain('Styled for work meeting')
+    expect(prompt).toContain('work meeting outfit')
   })
 
   it('omits occasion context when not provided', () => {
     const prompt = buildFlatLayPrompt(items)
-    expect(prompt).not.toContain('Styled for')
+    // Without occasion, the label defaults to "coordinated"
+    expect(prompt).toContain('coordinated outfit')
   })
 
-  it('ends with Square 1:1 format hint', () => {
+  it('includes Square 1:1 format hint', () => {
     const prompt = buildFlatLayPrompt(items)
-    expect(prompt).toMatch(/Square 1:1 format\.?$/)
+    expect(prompt).toContain('Square 1:1 format.')
   })
 
   it('uses cleanCategoryForPrompt for normalisation', () => {
@@ -97,6 +114,52 @@ describe('buildFlatLayPrompt', () => {
     // Should fall back to category + colour, not use the SKU-contaminated visualDescription
     expect(prompt).not.toContain('SKU AB12345')
     expect(prompt).toMatch(/red top/i)
+  })
+
+  it('includes layout pattern description', () => {
+    const prompt = buildFlatLayPrompt(items)
+    expect(prompt).toContain('inverted triangle arrangement')
+  })
+})
+
+// ---------------------------------------------------------------------------
+// computeFlatLayLayout (imported from image-prompts)
+// ---------------------------------------------------------------------------
+
+describe('computeFlatLayLayout', () => {
+  it('classifies Dress as large, Shoes as medium, Jewelry as small', () => {
+    const items: FlatLayItem[] = [
+      { name: 'Midi Dress', category: 'Dress', color: 'Red' },
+      { name: 'Loafers', category: 'Shoes', color: 'Black' },
+      { name: 'Pearl Necklace', category: 'Necklace', color: 'White' },
+    ]
+    const layout = computeFlatLayLayout(items)
+    expect(layout[0].sizeHint).toBe('large')
+    expect(layout[1].sizeHint).toBe('medium')
+    expect(layout[2].sizeHint).toBe('small')
+  })
+
+  it('handles case-insensitive categories', () => {
+    const items: FlatLayItem[] = [
+      { name: 'Item', category: 'BLAZER', color: 'Grey' },
+    ]
+    const layout = computeFlatLayLayout(items)
+    expect(layout[0].sizeHint).toBe('large')
+  })
+
+  it('assigns presentation hints based on size', () => {
+    const items: FlatLayItem[] = [
+      { name: 'Coat', category: 'Coat', color: 'Black' },
+      { name: 'Boots', category: 'Boots', color: 'Brown' },
+      { name: 'Scarf', category: 'Scarf', color: 'Red' },
+    ]
+    const layout = computeFlatLayLayout(items)
+    // Large items get folding/flat hints
+    expect(layout[0].presentationHint).toMatch(/folded|laid flat/)
+    // Medium items get angled hints
+    expect(layout[1].presentationHint).toMatch(/angled|diagonal/)
+    // Small items get delicate hints
+    expect(layout[2].presentationHint).toMatch(/delicately|accent/)
   })
 })
 

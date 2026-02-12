@@ -236,14 +236,23 @@ export function OutfitRecommendationCard({
             </div>
           ) : hasFlatLayImage && flatLayImage && !imageError ? (
             // Show AI-generated flat-lay image (preferred)
-            <Image
-              src={flatLayImage}
-              alt={outfit.title}
-              fill
-              className="object-contain"
-              sizes="(max-width: 768px) 100vw, 400px"
-              onError={() => setImageError(true)}
-            />
+            <>
+              <Image
+                src={flatLayImage}
+                alt={outfit.title}
+                fill
+                className="object-contain"
+                sizes="(max-width: 768px) 100vw, 400px"
+                onError={() => setImageError(true)}
+              />
+              {outfit.hasApproximateColors && (
+                <div className="absolute bottom-1 left-1 right-1 bg-black/50 rounded px-1.5 py-0.5">
+                  <p className="text-[10px] text-white/90 text-center">
+                    สีในภาพอาจแตกต่างจากสินค้าจริง
+                  </p>
+                </div>
+              )}
+            </>
           ) : outfit.items && outfit.items.length > 0 ? (
             // Fallback: Use FlatLayComposite (CSS-based flat-lay) instead of mannequin thumbnail
             <FlatLayComposite items={outfit.items} />

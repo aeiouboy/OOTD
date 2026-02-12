@@ -5,6 +5,7 @@
 
 import type { OccasionFlatLayRequest, OccasionFlatLayResponse, FlatLayItem } from '../types/image-types';
 import { buildOccasionFlatLaySystemPrompt, getOccasionPresetConfig } from '../prompts/occasion-flat-lay-prompt';
+import { computeFlatLayLayout } from '../prompts/image-prompts';
 import { OpenRouterImageClient } from './image-generation-service';
 
 const LOG_PREFIX = '[OccasionFlatLay]';
@@ -71,19 +72,30 @@ export function parseAIResponse(responseText: string): {
 
 /**
  * Build a structured image generation prompt from parsed curated items.
- * Uses the item array directly instead of relying on the AI's free-text IMAGE_PROMPT,
- * ensuring every curated item is explicitly listed for the image model.
+ * Uses spatial layout positioning to ensure every curated item is explicitly
+ * placed in the image with clear positional context for the image model.
  */
 export function buildImagePromptFromItems(
   curatedItems: FlatLayItem[],
   occasionLabel: string
 ): string {
   const count = curatedItems.length;
-  const itemDescriptions = curatedItems
-    .map((item, i) => `${i + 1}. a ${item.color.toLowerCase()} ${item.name.toLowerCase()} (${item.category.toLowerCase()})`)
-    .join(', ');
+  const layout = computeFlatLayLayout(curatedItems);
 
-  return `A high-resolution, studio-lit flat-lay photograph showing exactly ${count} fashion items arranged as a coordinated ${occasionLabel.toLowerCase()} outfit on a pristine white surface. You MUST include ALL ${count} items — no more, no fewer. The ${count} items are: ${itemDescriptions}. The composition uses balanced spacing with each of the ${count} pieces clearly visible, well-separated, and proportionally sized. Photographed from directly overhead with soft, diffused three-point lighting that eliminates harsh shadows and preserves accurate colors. Professional e-commerce product photography quality with sharp focus across all ${count} items. Clean, minimal styling. Square 1:1 format. IMPORTANT: Do NOT include any text, labels, watermarks, brand logos, tags, or written words anywhere in the image. The image must contain ONLY the ${count} clothing and accessory items with absolutely no text of any kind.`;
+  // Determine layout pattern label
+  let layoutPattern: string;
+  if (count <= 3) layoutPattern = 'inverted triangle arrangement';
+  else if (count === 4) layoutPattern = '2\u00D72 grid';
+  else if (count === 5) layoutPattern = 'cross/diamond arrangement';
+  else layoutPattern = '2\u00D73 grid';
+
+  // Build item lines with spatial positions
+  const itemLines = layout.map((entry) => {
+    const colorInfo = entry.item.color ? `${entry.item.color.toLowerCase()} ` : '';
+    return `- ${entry.position} (${entry.sizeHint}): a ${colorInfo}${entry.item.name.toLowerCase()} (${entry.item.category.toLowerCase()}), ${entry.presentationHint}`;
+  }).join('\n');
+
+  return `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image shows exactly ${count} fashion items arranged on a pristine white surface as a coordinated ${occasionLabel.toLowerCase()} outfit. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${count} items are fully visible with no overlap or cropping. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce product photography quality. Square 1:1 format.`;
 }
 
 /**
