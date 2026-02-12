@@ -206,8 +206,14 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       category: item.subCategory || item.category || 'Item',
       color: item.colors?.[0],
       visualDescription: item.visualDescription,
+      sku: item.sku,
+      thumbnailUrl: item.imageUrl,
     }))
     const occasionContext = outfit.description
+    const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
+      return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
+    })
+    const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
 
     if (flatLayItems.length === 0) {
       console.log('[Chat] No items to generate flat-lay for')
@@ -222,7 +228,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         },
         body: JSON.stringify({
           description: outfit.description || 'LOOKs Inspiration',
-          generationType: 'flat-lay',
+          generationType,
           flatLayItems,
           occasionContext,
         }),
@@ -363,8 +369,9 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       // v5.0: Convert looks → Outfit[] if v5 API returned structured looks
       let resolvedOutfits: Outfit[] = data.outfits || []
       if (data.looks && Array.isArray(data.looks) && data.looks.length > 0) {
-        resolvedOutfits = data.looks.map((look: any) => ({
-          id: `look-${look.lookNumber || Date.now()}`,
+        const lookResponseId = Date.now()
+        resolvedOutfits = data.looks.map((look: any, index: number) => ({
+          id: `look-${lookResponseId}-${look.lookNumber || index + 1}`,
           title: look.styleName || `Look ${look.lookNumber}`,
           description: look.tip || '',
           totalPrice: look.totalPrice || 0,
@@ -377,7 +384,11 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
             availability: 'in_stock' as const,
             onlineUrl: item.url || '',
             category: item.category || '',
-            colors: item.color ? [item.color] : [],
+            subCategory: item.category || '',
+            visualDescription: item.description || '',
+            colors: Array.isArray(item.colors) && item.colors.length > 0
+              ? item.colors
+              : (item.color ? [item.color] : []),
           })),
           imageUrl: look.imageUrl,
         }))
@@ -386,6 +397,17 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
       // v8.0: Collect all products from outfits for visual consistency replacement lookup
       const outfitProducts: Product[] = resolvedOutfits.flatMap((o: Outfit) => o.items || [])
+      const replacementCatalog: Product[] = (() => {
+        const merged = [...allProducts]
+        const seen = new Set(merged.map((product) => product.sku))
+        for (const product of outfitProducts) {
+          if (!seen.has(product.sku)) {
+            seen.add(product.sku)
+            merged.push(product)
+          }
+        }
+        return merged
+      })()
       if (outfitProducts.length > 0) {
         setAllProducts(prev => {
           // Merge with existing products, avoiding duplicates by SKU
@@ -433,7 +455,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         // Generate flat-lay for each outfit, passing allProducts for visual consistency replacement
         for (const outfit of outfitsWithLoading) {
           if (outfit.items.length > 0) {
-            await generateFlatLayForOutfit(outfit, messageId, allProducts)
+            await generateFlatLayForOutfit(outfit, messageId, replacementCatalog)
           }
         }
 

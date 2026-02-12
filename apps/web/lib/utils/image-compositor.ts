@@ -230,41 +230,45 @@ async function createDropShadow(
   opacity: number = SHADOW_CONFIG.opacity
 ): Promise<Buffer> {
   // Create shadow by:
-  // 1. Extract alpha channel
-  // 2. Apply blur
-  // 3. Tint black with specified opacity
-  const { width, height } = await sharp(imageBuffer).metadata();
+  // 1. Extract raw alpha channel
+  // 2. Blur + apply opacity
+  // 3. Build RGBA black image with that alpha
+  const alphaRaw = await sharp(imageBuffer)
+    .ensureAlpha()
+    .extractChannel('alpha')
+    .raw()
+    .toBuffer({ resolveWithObject: true });
 
+  const width = alphaRaw.info.width;
+  const height = alphaRaw.info.height;
   if (!width || !height) {
     throw new Error('Could not get image dimensions for shadow');
   }
 
-  // Extract alpha and create black silhouette
-  const alphaBuffer = await sharp(imageBuffer)
-    .extractChannel('alpha')
+  const blurredAlpha = await sharp(alphaRaw.data, {
+    raw: {
+      width,
+      height,
+      channels: 1,
+    },
+  })
+    .blur(blur)
+    .linear(opacity, 0)
+    .raw()
     .toBuffer();
 
-  // Create black RGBA image with the alpha as mask
-  const shadowBuffer = await sharp({
-    create: {
+  const rgbaShadow = Buffer.alloc(width * height * 4);
+  for (let i = 0; i < blurredAlpha.length; i++) {
+    rgbaShadow[i * 4 + 3] = blurredAlpha[i];
+  }
+
+  const shadowBuffer = await sharp(rgbaShadow, {
+    raw: {
       width,
       height,
       channels: 4,
-      background: { r: 0, g: 0, b: 0, alpha: Math.round(opacity * 255) },
     },
   })
-    .composite([
-      {
-        input: alphaBuffer,
-        blend: 'dest-in',
-        raw: {
-          width,
-          height,
-          channels: 1,
-        },
-      },
-    ])
-    .blur(blur)
     .png()
     .toBuffer();
 
@@ -381,25 +385,31 @@ export async function compositeImages(
     const left = Math.round(layout.x * canvasWidth - transformed.width / 2);
     const top = Math.round(layout.y * canvasHeight - transformed.height / 2);
 
-    // Create drop shadow
-    const shadowBuffer = await createDropShadow(transformed.buffer);
+    const operations: sharp.OverlayOptions[] = [];
+    // Shadow is optional - if it fails, continue with product image.
+    try {
+      const shadowBuffer = await createDropShadow(transformed.buffer);
+      operations.push({
+        input: shadowBuffer,
+        left: left + SHADOW_CONFIG.offsetX,
+        top: top + SHADOW_CONFIG.offsetY,
+      });
+    } catch (error) {
+      console.warn(
+        `[ImageCompositor] Failed to create drop shadow for ${product.sku}, rendering without shadow:`,
+        error
+      );
+    }
+
+    operations.push({
+      input: transformed.buffer,
+      left,
+      top,
+    });
 
     compositeOps.push({
       zIndex: layout.zIndex,
-      operations: [
-        // Shadow (offset slightly)
-        {
-          input: shadowBuffer,
-          left: left + SHADOW_CONFIG.offsetX,
-          top: top + SHADOW_CONFIG.offsetY,
-        },
-        // Product image
-        {
-          input: transformed.buffer,
-          left,
-          top,
-        },
-      ],
+      operations,
     });
   }
 

@@ -29,6 +29,24 @@ const PROCESSOR_CONFIG = {
 };
 
 /**
+ * Background removal is optional.
+ * If rembg is not installed, we auto-disable it for this process and continue
+ * with original product images so hybrid generation still works.
+ */
+const DISABLE_PRODUCT_BG_REMOVAL = process.env.DISABLE_PRODUCT_BG_REMOVAL === 'true';
+let isBackgroundRemovalEnabled = !DISABLE_PRODUCT_BG_REMOVAL;
+let hasLoggedBackgroundRemovalDisabled = false;
+
+function isRembgMissingError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("no module named 'rembg'") ||
+    lower.includes('required library not found') ||
+    lower.includes('install required libraries with: pip install rembg')
+  );
+}
+
+/**
  * Fetches a product image from URL and returns it as a buffer
  *
  * @param url - URL of the product image
@@ -124,8 +142,19 @@ export async function removeProductBackground(inputBuffer: Buffer): Promise<Buff
         resolve(outputBuffer);
       } else {
         cleanup();
-        console.error('[ProductImageProcessor] Background removal failed:', stderr);
-        reject(new Error(`Background removal failed with code ${code}: ${stderr}`));
+        const errorMessage = `Background removal failed with code ${code}: ${stderr}`;
+        if (isRembgMissingError(errorMessage)) {
+          // Avoid spamming full traceback logs when rembg is missing.
+          if (!hasLoggedBackgroundRemovalDisabled) {
+            console.warn(
+              '[ProductImageProcessor] rembg dependency is missing. ' +
+              'Background removal will be skipped and original product images will be used.'
+            );
+          }
+        } else {
+          console.error('[ProductImageProcessor] Background removal failed:', stderr);
+        }
+        reject(new Error(errorMessage));
       }
     });
 
@@ -234,9 +263,31 @@ export async function processProductImage(item: FlatLayItem): Promise<ProcessedP
     const imageBuffer = await fetchProductImage(item.thumbnailUrl);
     console.log(`[ProductImageProcessor] Fetched ${imageBuffer.length} bytes`);
 
-    // Step 2: Remove background
-    const bgRemovedBuffer = await removeProductBackground(imageBuffer);
-    console.log(`[ProductImageProcessor] Background removed, ${bgRemovedBuffer.length} bytes`);
+    // Step 2: Remove background (optional, fallback to original image if unavailable)
+    let bgRemovedBuffer = imageBuffer;
+    if (isBackgroundRemovalEnabled) {
+      try {
+        bgRemovedBuffer = await removeProductBackground(imageBuffer);
+        console.log(`[ProductImageProcessor] Background removed, ${bgRemovedBuffer.length} bytes`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
+
+        if (isRembgMissingError(errorMessage)) {
+          isBackgroundRemovalEnabled = false;
+          if (!hasLoggedBackgroundRemovalDisabled) {
+            console.warn(
+              '[ProductImageProcessor] rembg is not installed; background removal disabled for this run. ' +
+              'Using original product images instead.'
+            );
+            hasLoggedBackgroundRemovalDisabled = true;
+          }
+        } else {
+          console.warn(
+            `[ProductImageProcessor] Background removal failed for "${item.name}", using original image: ${errorMessage}`
+          );
+        }
+      }
+    }
 
     // Step 3: Auto-crop to subject
     const croppedBuffer = await autoCropToSubject(bgRemovedBuffer);

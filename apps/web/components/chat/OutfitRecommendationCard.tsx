@@ -56,6 +56,7 @@ export function OutfitRecommendationCard({
     outfitId: outfit.id,
     items: outfit.items,
     occasionContext: outfit.title,
+    useHybridGeneration: true,
   })
 
   // v9.0: Use intersection observer for lazy loading - trigger generation when card becomes visible

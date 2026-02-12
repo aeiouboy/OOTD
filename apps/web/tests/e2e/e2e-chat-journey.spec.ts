@@ -73,6 +73,39 @@ test.describe('Chat Journey E2E', () => {
         const responseText = (await responseBubble.textContent()) ?? '';
         expect(responseText.length).toBeLessThanOrEqual(MAX_ASSISTANT_CHAT_CHARS);
 
+        // 5. Verify "View Look" flow shows matching shop items
+        const viewLookButton = page.getByRole('button', { name: 'ดูลุค' }).first();
+        await expect(viewLookButton).toBeVisible({ timeout: 120000 });
+        await expect(viewLookButton).toBeEnabled({ timeout: 120000 });
+        await viewLookButton.click();
+
+        await expect(page.getByText(/Shop this look/i)).toBeVisible({ timeout: 10000 });
+        const productCards = page.locator('div').filter({ hasText: /Buy Now/i });
+        await expect(productCards.first()).toBeVisible({ timeout: 10000 });
+
+        // 6. Verify product link is a product page URL, not a generic gender landing page
+        await page.evaluate(() => {
+            // @ts-expect-error test-only field
+            window.__lastOpenedUrl = null;
+            window.open = ((url?: string | URL | undefined) => {
+                // @ts-expect-error test-only field
+                window.__lastOpenedUrl = typeof url === 'string' ? url : (url?.toString() ?? '');
+                return null;
+            }) as typeof window.open;
+        });
+
+        const buyNowButton = page.getByRole('button', { name: 'Buy Now' }).first();
+        await expect(buyNowButton).toBeVisible({ timeout: 10000 });
+        await buyNowButton.click();
+
+        const openedUrl = await page.evaluate(() => {
+            // @ts-expect-error test-only field
+            return window.__lastOpenedUrl as string | null;
+        });
+        expect(openedUrl).toBeTruthy();
+        expect(openedUrl).not.toBe('https://www.central.co.th/th/women');
+        expect(openedUrl).not.toBe('https://www.central.co.th/th/men');
+
         // Take a screenshot of the result
         await page.screenshot({ path: 'test-results/chat-journey-result.png', fullPage: true });
     });

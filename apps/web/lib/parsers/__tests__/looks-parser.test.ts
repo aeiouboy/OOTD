@@ -261,6 +261,35 @@ describe('validateLooksAgainstCatalog', () => {
     expect(validated[0].totalPrice).toBe(2380);
   });
 
+  it('should prefer catalog fields for matched items to keep image/link/product aligned', () => {
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Catalog Sync',
+      items: [
+        {
+          name: 'AI Hallucinated Name',
+          brand: 'AI Brand',
+          category: 'Unknown',
+          color: 'Pink',
+          description: 'AI-generated description',
+          sku: 'SKU001',
+          price: 99999,
+          url: 'https://fake.com/not-real',
+        },
+      ],
+      totalPrice: 99999,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, catalog);
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(1);
+    expect(validated[0].items[0].name).toBe('สินค้า SKU001');
+    expect(validated[0].items[0].brand).toBe('CPS');
+    expect(validated[0].items[0].color).toBe('black');
+    expect(validated[0].items[0].url).toBe('https://central.co.th/real/sku001');
+    expect(validated[0].items[0].price).toBe(790);
+  });
+
   it('should drop items with invalid SKUs', () => {
     const looks = [{
       lookNumber: 1,

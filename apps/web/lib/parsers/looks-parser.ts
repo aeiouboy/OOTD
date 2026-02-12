@@ -452,16 +452,20 @@ export function validateLooksAgainstCatalog(
         const productColors = [primaryColor, ...secondaryColors].filter((c): c is string => !!c);
 
         const resolvedRole = resolveOutfitRole(catalogProduct, item);
+        const catalogName = getCatalogDisplayName(catalogProduct);
+        const catalogDescription = getCatalogDescription(catalogProduct);
 
         return {
           ...item,
           url: catalogProduct.centralIntegration?.productUrl || item.url,
           imageUrl: catalogProduct.centralIntegration?.images?.primary || '',
           price: catalogProduct.pricing?.currentPrice || item.price,
-          name: item.name,
+          name: catalogName || item.name,
           brand: catalogProduct.brand || item.brand,
           sku: item.sku || catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || '',
           category: resolvedRole || item.category,
+          color: primaryColor || item.color,
+          description: catalogDescription || item.description,
           colors: productColors,
           sizes: catalogProduct.sizing?.availableSizes || [],
           __role: resolvedRole,
@@ -504,6 +508,14 @@ function normalizeUrl(url: string): string {
     // If URL parsing fails, do basic normalization
     return url.toLowerCase().replace(/\/+$/, '').replace(/^https?:\/\//, '');
   }
+}
+
+function getCatalogDisplayName(product: EnhancedProduct): string {
+  return product.name?.th || product.name?.en || '';
+}
+
+function getCatalogDescription(product: EnhancedProduct): string {
+  return product.description?.th || product.description?.en || '';
 }
 
 /**
