@@ -416,5 +416,148 @@
     "agent_id": "ae6e502",
     "agent_transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e/subagents/agent-ae6e502.jsonl",
     "agent_type": ""
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "aa0e3c0",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5/subagents/agent-aa0e3c0.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a49c066",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5/subagents/agent-a49c066.jsonl",
+    "agent_type": "validator"
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "aa99a33",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5/subagents/agent-aa99a33.jsonl",
+    "agent_type": "validator"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "aa6cbca",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58/subagents/agent-aa6cbca.jsonl",
+    "agent_type": "fix-occasions"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a89b2f1",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58/subagents/agent-a89b2f1.jsonl",
+    "agent_type": "fix-colors"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a911696",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58/subagents/agent-a911696.jsonl",
+    "agent_type": "fix-colors"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a9028c6",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-a9028c6.jsonl",
+    "agent_type": "Explore"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a87bac9",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-a87bac9.jsonl",
+    "agent_type": "Explore"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "abf1b74",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-abf1b74.jsonl",
+    "agent_type": "prompt-builder"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "ab06414",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-ab06414.jsonl",
+    "agent_type": "prompt-builder"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a09a072",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-a09a072.jsonl",
+    "agent_type": "keyword-builder"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "ace19c1",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709/subagents/agent-ace19c1.jsonl",
+    "agent_type": "keyword-builder"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a1f54e3",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a/subagents/agent-a1f54e3.jsonl",
+    "agent_type": ""
   }
 ]

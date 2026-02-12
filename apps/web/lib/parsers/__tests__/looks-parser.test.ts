@@ -360,4 +360,54 @@ describe('validateLooksAgainstCatalog', () => {
     expect(validated[0].items[0].sku).toBe('SKU001');
     expect(validated[0].items[0].price).toBe(790);
   });
+
+  it('should remove duplicate outfit roles within the same look', () => {
+    const roleCatalog = [
+      {
+        ...mockProduct('TOP001', 'https://central.co.th/real/top001', 790, 'CPS'),
+        classification: {
+          category: { department: 'Clothing', category: 'Tops' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'top',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('TOP002', 'https://central.co.th/real/top002', 890, 'CPS'),
+        classification: {
+          category: { department: 'Clothing', category: 'Tops' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'top',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('BTM001', 'https://central.co.th/real/btm001', 1290, 'Levi'),
+        classification: {
+          category: { department: 'Clothing', category: 'Bottoms' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'bottom',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Duplicate Tops',
+      items: [
+        { name: 'Top A', brand: 'AI', category: 'Tops', color: 'Blue', description: '', sku: 'TOP001', price: 0, url: '' },
+        { name: 'Top B', brand: 'AI', category: 'Tops', color: 'White', description: '', sku: 'TOP002', price: 0, url: '' },
+        { name: 'Bottom', brand: 'AI', category: 'Bottoms', color: 'Navy', description: '', sku: 'BTM001', price: 0, url: '' },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, roleCatalog);
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(2);
+    expect(validated[0].items.some((item) => item.sku === 'TOP001')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'TOP002')).toBe(false);
+    expect(validated[0].items.some((item) => item.sku === 'BTM001')).toBe(true);
+  });
 });

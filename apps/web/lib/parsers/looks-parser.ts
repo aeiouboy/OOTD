@@ -430,7 +430,7 @@ export function validateLooksAgainstCatalog(
   }
 
   return looks.map(look => {
-    const validatedItems = look.items
+    const validatedItemsWithRole = look.items
       .map(item => {
         let catalogProduct: EnhancedProduct | undefined;
 
@@ -451,6 +451,8 @@ export function validateLooksAgainstCatalog(
         const secondaryColors = catalogProduct.style?.colors?.secondary || [];
         const productColors = [primaryColor, ...secondaryColors].filter((c): c is string => !!c);
 
+        const resolvedRole = resolveOutfitRole(catalogProduct, item);
+
         return {
           ...item,
           url: catalogProduct.centralIntegration?.productUrl || item.url,
@@ -459,11 +461,25 @@ export function validateLooksAgainstCatalog(
           name: item.name,
           brand: catalogProduct.brand || item.brand,
           sku: item.sku || catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || '',
+          category: resolvedRole || item.category,
           colors: productColors,
           sizes: catalogProduct.sizing?.availableSizes || [],
-        } as ChatLookItem;
+          __role: resolvedRole,
+        } as ChatLookItem & { __role: string };
       })
-      .filter((item): item is ChatLookItem => item !== null);
+      .filter((item): item is (ChatLookItem & { __role: string }) => item !== null);
+
+    // Enforce category-role uniqueness per look to prevent duplicate tops/shoes in flat-lay.
+    // Keep the first occurrence of each role.
+    const seenRoles = new Set<string>();
+    const validatedItems: ChatLookItem[] = [];
+    for (const item of validatedItemsWithRole) {
+      const roleKey = (item.__role || '').toLowerCase();
+      if (roleKey && seenRoles.has(roleKey)) continue;
+      if (roleKey) seenRoles.add(roleKey);
+      const { __role, ...cleanItem } = item;
+      validatedItems.push(cleanItem);
+    }
 
     // Recalculate total from validated items
     const totalPrice = validatedItems.reduce((sum, item) => sum + item.price, 0);
@@ -488,4 +504,25 @@ function normalizeUrl(url: string): string {
     // If URL parsing fails, do basic normalization
     return url.toLowerCase().replace(/\/+$/, '').replace(/^https?:\/\//, '');
   }
+}
+
+/**
+ * Resolve canonical outfit role for de-duplication (top, bottom, footwear, etc.)
+ */
+function resolveOutfitRole(product: EnhancedProduct, item: ChatLookItem): string {
+  const explicitRole = product.classification?.role;
+  if (explicitRole && explicitRole.trim()) {
+    return explicitRole.trim().toLowerCase();
+  }
+
+  const raw = `${item.category || ''} ${item.name || ''}`.toLowerCase();
+
+  if (/dress|เดรส/.test(raw)) return 'dress';
+  if (/shirt|tee|t-shirt|blouse|เสื้อ/.test(raw)) return 'top';
+  if (/pants|jeans|trouser|skirt|shorts|กางเกง|กระโปรง/.test(raw)) return 'bottom';
+  if (/shoe|sneaker|heel|sandal|loafer|รองเท้า/.test(raw)) return 'footwear';
+  if (/bag|belt|hat|cap|jewelry|accessor|กระเป๋า|เข็มขัด|หมวก|เครื่องประดับ/.test(raw)) return 'accessory';
+  if (/blazer|jacket|coat|cardigan|outer/.test(raw)) return 'outerwear';
+
+  return (item.category || 'item').toLowerCase();
 }

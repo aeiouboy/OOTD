@@ -129,13 +129,16 @@ Rules for the structured block:
 - Use pipe \`|\` as separator, no extra spaces around pipes
 - Price is a number without commas or currency (e.g., 1290 not \u0E3F1,290)
 - URL must be copied EXACTLY from the catalog
+- Each LOOK must use unique outfit roles (no duplicate tops, no duplicate bottoms, no duplicate shoes in the same look)
+- Build a complete look for the asked occasion when possible (e.g., top + bottom + footwear, or dress + footwear + accessory)
 
 Important: The structured block is for the system to parse \u2014 users see your conversational text. Always include both parts.
 
 Conversational text rules (for chat bubble readability):
 - Keep the conversational section short: max 2-3 sentences
 - Keep it under ~280 characters when possible
-- Do not list all product lines/prices/links in conversational text
+- Never include price numbers or product URLs in conversational text
+- Do not list product-by-product lines in conversational text
 - Put detailed item data only inside the ---LOOKS_DATA--- block
 
 When NOT in RECOMMENDATION MODE (clarification or redirect), do NOT include the ---LOOKS_DATA--- block.

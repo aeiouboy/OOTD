@@ -1,0 +1,12 @@
+{
+  "session_id": "2c5842a0-b6fb-48e4-a507-f0e1a0696df8",
+  "prompts": [
+    "bases on the issues user feedbak from to pls summary all user request as bullert point group by feature",
+    "bases on the issues user feedbak from today memmory  pls summary all user request as bullert point group by feature",
+    "what pending that user still working with agent so far",
+    "why me design a prompt for: USER_PROMPT: $1\nORCHESTRATION_PROMPT: $2 - (Optional) Guidance for team assembly, task structure, and execution strategy\nPLAN_OUTPUT_DIRECTORY: `specs/`\nTEAM_MEMBERS: `.claude/agents/team/*.md`\nGENERAL_PURPOSE_AGENT: `general-purpose`",
+    "why me design a user prompt for: USER_PROMPT: $1\nORCHESTRATION_PROMPT: $2 - (Optional) Guidance for team assembly, task structure, and execution strategy",
+    "help y me design a user prompt for: USER_PROMPT: $1\nORCHESTRATION_PROMPT: $2 - (Optional) Guidance for team assembly, task structure, and execution strategy"
+  ],
+  "agent_name": "Nexus"
+}

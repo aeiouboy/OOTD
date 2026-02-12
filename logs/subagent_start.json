@@ -763,5 +763,329 @@
     "agent_id": "aa37ea4",
     "agent_type": "Plan",
     "logged_at": "2026-02-10T19:03:29.667360"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abc5875",
+    "agent_type": "builder",
+    "logged_at": "2026-02-12T13:36:44.607696"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9db5bc",
+    "agent_type": "builder",
+    "logged_at": "2026-02-12T13:37:40.052060"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa620d8",
+    "agent_type": "builder",
+    "logged_at": "2026-02-12T13:37:53.672235"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4b5d11",
+    "agent_type": "builder",
+    "logged_at": "2026-02-12T13:38:41.097553"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a175ff7",
+    "agent_type": "validator",
+    "logged_at": "2026-02-12T13:40:18.030618"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "af53549",
+    "agent_type": "validator",
+    "logged_at": "2026-02-12T13:45:10.285402"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9ca051",
+    "agent_type": "validator",
+    "logged_at": "2026-02-12T13:45:51.731634"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a402737",
+    "agent_type": "fix-serializer",
+    "logged_at": "2026-02-12T13:57:53.806679"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a11df45",
+    "agent_type": "fix-supabase",
+    "logged_at": "2026-02-12T13:58:00.186893"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab49dd9",
+    "agent_type": "fix-topic-change",
+    "logged_at": "2026-02-12T13:58:05.898133"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a431212",
+    "agent_type": "fix-hallucination",
+    "logged_at": "2026-02-12T13:58:09.684042"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aebe6e9",
+    "agent_type": "fix-guardrail",
+    "logged_at": "2026-02-12T13:58:12.497347"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a22fa11",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T13:58:52.060033"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ad10f24",
+    "agent_type": "fix-hallucination",
+    "logged_at": "2026-02-12T13:58:58.542330"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a082a8c",
+    "agent_type": "fix-serializer",
+    "logged_at": "2026-02-12T13:58:58.581448"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a34e6fc",
+    "agent_type": "fix-guardrail",
+    "logged_at": "2026-02-12T13:58:59.192686"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a336bda",
+    "agent_type": "fix-hallucination",
+    "logged_at": "2026-02-12T13:59:12.105912"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a990568",
+    "agent_type": "fix-supabase",
+    "logged_at": "2026-02-12T13:59:12.692578"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa46439",
+    "agent_type": "fix-topic-change",
+    "logged_at": "2026-02-12T13:59:21.432155"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ad58855",
+    "agent_type": "builder-hook",
+    "logged_at": "2026-02-12T14:00:36.028982"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a1ea487",
+    "agent_type": "builder-component",
+    "logged_at": "2026-02-12T14:00:48.811111"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "af7c7bc",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:00:57.491149"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a83bf69",
+    "agent_type": "builder-hook",
+    "logged_at": "2026-02-12T14:01:06.668771"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa77e99",
+    "agent_type": "builder-component",
+    "logged_at": "2026-02-12T14:01:42.119659"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa0effc",
+    "agent_type": "builder-grid",
+    "logged_at": "2026-02-12T14:01:50.310327"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a680e89",
+    "agent_type": "builder-grid",
+    "logged_at": "2026-02-12T14:03:13.228924"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a607060",
+    "agent_type": "validator-ui",
+    "logged_at": "2026-02-12T14:03:13.712240"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4538dc",
+    "agent_type": "builder-grid",
+    "logged_at": "2026-02-12T14:03:18.502300"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a4ec53d",
+    "agent_type": "builder-hook",
+    "logged_at": "2026-02-12T14:04:00.415614"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abdd411",
+    "agent_type": "builder-component",
+    "logged_at": "2026-02-12T14:04:04.312490"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a2d800f",
+    "agent_type": "builder-grid",
+    "logged_at": "2026-02-12T14:04:07.104188"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a2ec6a4",
+    "agent_type": "validator-ui",
+    "logged_at": "2026-02-12T14:04:17.001184"
+  },
+  {
+    "session_id": "4b863620-487e-4bd8-8b72-e725c24e252c",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/4b863620-487e-4bd8-8b72-e725c24e252c.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aad9302",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:44:50.386302"
+  },
+  {
+    "session_id": "4b863620-487e-4bd8-8b72-e725c24e252c",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/4b863620-487e-4bd8-8b72-e725c24e252c.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a301f47",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:44:56.938774"
+  },
+  {
+    "session_id": "4b863620-487e-4bd8-8b72-e725c24e252c",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/4b863620-487e-4bd8-8b72-e725c24e252c.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab2fd89",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:45:01.650272"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a203006",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T17:20:55.331234"
   }
 ]

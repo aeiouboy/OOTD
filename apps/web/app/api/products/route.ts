@@ -124,9 +124,12 @@ export async function GET() {
   try {
     // Try multiple possible paths for products directory
     const possiblePaths = [
-      path.join(process.cwd(), '..', 'products'), // One level up (normal runtime)
-      path.join(process.cwd(), '..', '..', 'products'), // Two levels up (during build)
-      path.join('/Users/naruechon/Documents/Project/OOTDay', 'products'), // Absolute fallback
+      path.join(process.cwd(), '..', '..', 'data', 'products'), // apps/web -> data/products
+      path.join(process.cwd(), '..', 'data', 'products'),
+      path.join(process.cwd(), 'data', 'products'),
+      path.join(process.cwd(), '..', 'products'), // legacy
+      path.join(process.cwd(), '..', '..', 'products'), // legacy
+      path.join('/Users/naruechon/Documents/Project/OOTDay', 'products'), // Absolute legacy fallback
     ]
 
     let productsDir = ''
@@ -139,7 +142,10 @@ export async function GET() {
 
     if (!productsDir) {
       console.error('Products directory not found. Tried:', possiblePaths)
-      return NextResponse.json({ error: 'Product catalog not found' }, { status: 404 })
+      return NextResponse.json(
+        { products: [], count: 0, warning: 'Product catalog not found on filesystem' },
+        { status: 200 }
+      )
     }
 
     console.log('Loading JSON from:', productsDir)

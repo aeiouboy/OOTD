@@ -1,7 +1,0 @@
-/chore 6dd38a60 Execute Firecrawl MCP       
-  scraping for ALL products in women_clothing_v1.json. For each product:  
-  scrape URL with firecrawl_scrape (onlyMainContent=false,                
-  formats=['markdown'], waitFor=2000), parse with                         
-  markdown_parser.parse_product_page_markdown(), save to                  
-  women_clothing_scraped.json. Process in batches of 50 with 100ms delay. 
-  Checkpoint every 100 products. Report final extraction rates.

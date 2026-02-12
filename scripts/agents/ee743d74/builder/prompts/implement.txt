@@ -1,1 +1,0 @@
-/implement specs/chore-ee743d74-remove-gemini-watermark.md

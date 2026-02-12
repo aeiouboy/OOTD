@@ -30,5 +30,21 @@
     "hook_event_name": "SessionEnd",
     "reason": "other",
     "logged_at": "2026-02-10T18:52:46.227341"
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-12T13:36:10.424117"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear",
+    "logged_at": "2026-02-12T14:37:38.292235"
   }
 ]

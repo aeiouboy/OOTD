@@ -90,6 +90,7 @@ import {
   validateResponseWithPhase,
   formatValidationErrors,
 } from '../utils/response-validator'
+import { cleanHallucinatedProductMentions } from '../utils/text-hallucination-cleaner'
 import {
   detectCategory,
   getTemplateInstruction,
@@ -152,6 +153,7 @@ const MAX_CHAT_MESSAGE_LINES = 4
 /**
  * Keep assistant text concise for chat bubbles.
  * - Removes any leaked structured LOOKS_DATA block
+ * - Removes product-line noise (prices/links) from conversational text
  * - Limits message by line count and character count
  */
 function shortenAssistantMessage(rawMessage: string): string {
@@ -161,7 +163,8 @@ function shortenAssistantMessage(rawMessage: string): string {
     .replace(/---LOOKS_DATA---[\s\S]*?---END_LOOKS_DATA---/gi, '')
     .trim()
 
-  const normalized = withoutStructuredBlock
+  const sanitized = sanitizeConversationalText(withoutStructuredBlock)
+  const normalized = sanitized
     .replace(/\r\n/g, '\n')
     .replace(/[ \t]+/g, ' ')
     .replace(/\n{3,}/g, '\n\n')
@@ -194,6 +197,62 @@ function shortenAssistantMessage(rawMessage: string): string {
     : MAX_CHAT_MESSAGE_CHARS
 
   return `${cutoff.slice(0, safeCutoff).trimEnd()}...`
+}
+
+/**
+ * Remove verbose product listing artifacts from conversational bubble text.
+ * Product details are rendered from LOOKS_DATA cards, not the chat bubble.
+ */
+function sanitizeConversationalText(rawMessage: string): string {
+  if (!rawMessage) return ''
+
+  const withoutLinks = rawMessage
+    .replace(/\[คลิกดูสินค้า[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi, '')
+    .replace(/https?:\/\/[^\s)]+/gi, '')
+    .replace(/\(\s*https?:\/\/[^\s)]+\s*\)/gi, '')
+
+  const noisyPatterns = [
+    /🔗/i,
+    /\bprice\b/i,
+    /\bsku\b/i,
+    /central\.co\.th/i,
+    /฿\s*\d/i,
+    /\d[\d,]*(\.\d+)?\s*บาท/i,
+  ]
+
+  const cleanedLines = withoutLinks
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .filter((line) => {
+      // Drop bullet/numbered product lines that leak price/link metadata.
+      const isListLine = /^([*-]|\d+\.)\s*/.test(line)
+      const hasNoise = noisyPatterns.some((pattern) => pattern.test(line))
+      return !(isListLine && hasNoise)
+    })
+
+  return cleanedLines.join('\n').trim()
+}
+
+/**
+ * v5-specific template instruction.
+ * Legacy template instructions include "prices/links in text", which conflicts with v5 UI.
+ */
+function getV5TemplateInstruction(category: 'CLOTHS' | 'OTHER'): string {
+  if (category === 'CLOTHS') {
+    return `[CATEGORY: CLOTHS - v5]
+Provide outfit recommendations in RECOMMENDATION MODE.
+- Conversational text: short summary only (2-3 sentences), no product list format
+- Conversational text MUST NOT include prices or URLs
+- Put all product details (SKU, price, URL) only in ---LOOKS_DATA--- block
+- Each look should have unique outfit roles (avoid duplicate tops/bottoms/shoes in one look)`
+  }
+
+  return `[CATEGORY: OTHER - v5]
+Provide concise styling guidance.
+- Conversational text only, no prices, no URLs
+- If recommending items, keep details in ---LOOKS_DATA--- when applicable
+- Do not output verbose product-line listings in the chat bubble`
 }
 
 /**
@@ -1001,7 +1060,7 @@ async function processAIChatRequestV5(
     }
   }
 
-  const templateInstruction = getTemplateInstruction(categoryDetection.category)
+  const templateInstruction = getV5TemplateInstruction(categoryDetection.category)
   const followUpInstruction = generateFollowUpInstruction(followUpDetection)
 
   // v5.0: Build occasion instruction for explicit AI guidance
@@ -1070,16 +1129,11 @@ The products below are the closest alternatives. Be honest with the user — say
   const validation = validateResponseWithPhase(aiResponse, isFollowUpPhase)
   console.log(formatValidationErrors(validation))
 
+  // NOTE(v5): Legacy Template A/B validator expects price/link in conversational text.
+  // v5 intentionally keeps price/link in LOOKS_DATA only. So we log validation diagnostics
+  // but do not retry based on those legacy errors to avoid generating verbose text bubbles.
   if (!validation.isValid && !hasRetriedForLoop) {
-    console.warn('[AI Chat v5] Retrying due to template validation failure')
-    const expectedTemplate = categoryDetection.category === 'CLOTHS' ? 'A' : 'B'
-    const correctionInstruction = `[CRITICAL CORRECTION - TEMPLATE VIOLATION DETECTED]\nYour previous response did not follow Template ${expectedTemplate}.\nERRORS: ${validation.errors.join('; ')}\nRegenerate following Template ${expectedTemplate} structure.\n${getTemplateInstruction(categoryDetection.category)}`
-    const correctionPrompt = `${enhancedPrompt}\n\n${correctionInstruction}`
-    try {
-      aiResponse = await callOpenRouter(correctionPrompt, request.conversationHistory, sessionContext, true)
-    } catch (retryError) {
-      console.error('[AI Chat v5] Retry failed:', retryError)
-    }
+    console.warn('[AI Chat v5] Validation warnings ignored for v5 conversational mode')
   }
 
   // STEP 8: Parse AI response for structured looks data
@@ -1090,6 +1144,14 @@ The products below are the closest alternatives. Be honest with the user — say
   const validatedLooks = validateLooksAgainstCatalog(parsedResponse.looks, filteredProducts)
   console.log(`[AI Chat v5] Validated: ${validatedLooks.length} looks (${validatedLooks.reduce((sum, l) => sum + l.items.length, 0)} items)`)
 
+  // Remove hallucinated/dropped product mentions from text so bubble content
+  // always matches the validated look cards.
+  const cleanedTextResult = cleanHallucinatedProductMentions(
+    parsedResponse.text || aiResponse,
+    parsedResponse.looks,
+    validatedLooks
+  )
+
   // Collect recommended products from validated looks for session tracking
   const recommendedProducts = filteredProducts.slice(0, 6)
   const newProductIds = extractProductIds(recommendedProducts)
@@ -1099,7 +1161,7 @@ The products below are the closest alternatives. Be honest with the user — say
 
   // STEP 10: Return response with looks
   return {
-    message: shortenAssistantMessage(parsedResponse.text || aiResponse),
+    message: shortenAssistantMessage(cleanedTextResult.text),
     recommendedProducts,
     occasion,
     reasoning: `Found ${filteredProducts.length} unique products, AI curated ${validatedLooks.length} looks`,

@@ -1,0 +1,10 @@
+{
+  "session_id": "3c781d9b-a9ab-4c8a-a376-668fda68716d",
+  "prompts": [
+    "The supabase integration test doesn't mock prompt-version or parsers/looks-parser. Since these tests are for the integration flow and v5 is now active by default, I need to add mocks for the new dependencies. Let me add them after the existing mocks.    what i mean by mock?",
+    "I must call real api for testing do not mock all data at all super importan",
+    "it must use real api all the time do not use mock data this is super imptatant",
+    "are we ready for testing via UI?",
+    "git commit"
+  ]
+}

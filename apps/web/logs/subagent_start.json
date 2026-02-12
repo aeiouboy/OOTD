@@ -313,5 +313,140 @@
     "agent_id": "a8e4a1c",
     "agent_type": "general-purpose",
     "logged_at": "2026-02-10T16:28:55.486959"
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a49c066",
+    "agent_type": "validator",
+    "logged_at": "2026-02-12T13:29:48.693848"
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa99a33",
+    "agent_type": "validator",
+    "logged_at": "2026-02-12T13:31:31.566702"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a89b2f1",
+    "agent_type": "fix-colors",
+    "logged_at": "2026-02-12T14:03:58.904519"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "aa6cbca",
+    "agent_type": "fix-occasions",
+    "logged_at": "2026-02-12T14:04:04.479907"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "af04f54",
+    "agent_type": "fix-occasions",
+    "logged_at": "2026-02-12T14:05:25.874070"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a911696",
+    "agent_type": "fix-colors",
+    "logged_at": "2026-02-12T14:06:09.691854"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a01254f",
+    "agent_type": "fix-colors",
+    "logged_at": "2026-02-12T14:06:19.606880"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a9028c6",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:15:10.322044"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a87bac9",
+    "agent_type": "Explore",
+    "logged_at": "2026-02-12T14:16:37.253383"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a09a072",
+    "agent_type": "keyword-builder",
+    "logged_at": "2026-02-12T14:23:56.623123"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "abf1b74",
+    "agent_type": "prompt-builder",
+    "logged_at": "2026-02-12T14:24:00.930720"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ab06414",
+    "agent_type": "prompt-builder",
+    "logged_at": "2026-02-12T14:27:47.190409"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "ace19c1",
+    "agent_type": "keyword-builder",
+    "logged_at": "2026-02-12T14:27:57.241283"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a202aa3",
+    "agent_type": "keyword-builder",
+    "logged_at": "2026-02-12T14:29:20.337058"
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SubagentStart",
+    "agent_id": "a32b615",
+    "agent_type": "prompt-builder",
+    "logged_at": "2026-02-12T14:29:21.292324"
   }
 ]

@@ -1,1 +1,0 @@
-/chore 9f601f0b Fix localStorage cache quota exceeded error in useFlatLayGeneration.ts. When setCachedImage fails with QuotaExceededError, implement cache eviction: 1) Get all flat-lay cache keys, 2) Sort by timestamp (oldest first), 3) Remove oldest entries until there is enough space, 4) Retry the setItem. Add a try-catch with eviction logic in setCachedImage function.

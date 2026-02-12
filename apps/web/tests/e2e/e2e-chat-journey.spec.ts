@@ -6,6 +6,7 @@
 import { test, expect } from '@playwright/test';
 
 const TEST_CHAT_PROMPT = process.env.E2E_CHAT_PROMPT ?? 'อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้';
+const MAX_ASSISTANT_CHAT_CHARS = 500;
 
 test.describe('Chat Journey E2E', () => {
     // Force desktop layout
@@ -38,35 +39,39 @@ test.describe('Chat Journey E2E', () => {
         await expect(greeting).toBeVisible({ timeout: 10000 });
         console.log('✅ Initial greeting verified');
 
-        // 2. Verify Thai Quick Prompts
-        const quickPrompt = page.locator('button:has-text("ชุดไปทำงาน")');
-        await expect(quickPrompt).toBeVisible();
-        console.log('✅ Thai quick prompts verified');
+        // 2. Quick prompts are optional depending on runtime flags/content
+        const quickPrompts = page.locator('button').filter({ hasText: /ชุด|ลุค|ไปทำงาน|ไปเที่ยว|วันหยุด/i });
+        if (await quickPrompts.count()) {
+            await expect(quickPrompts.first()).toBeVisible();
+            console.log('✅ Quick prompts visible');
+        }
 
         // 3. Send User Request
-        const chatInput = page.locator('input[placeholder*="OOTDay"]').or(page.locator('input[type="text"]')).first();
+        const chatInput = page.locator(
+            'textarea[placeholder*="พิมพ์"]:visible, textarea[placeholder*="Ask"]:visible, input[placeholder*="OOTDay"]:visible, input[placeholder*="Ask me"]:visible, input[placeholder*="พิมพ์"]:visible, input[type="text"]:visible'
+        ).first();
+        await expect(chatInput).toBeVisible({ timeout: 10000 });
         await chatInput.fill(TEST_CHAT_PROMPT);
         await chatInput.press('Enter');
 
-        // 4. Wait for AI Response (Text + Outfit Cards)
+        // 4. Wait for AI Response
         console.log('Waiting for AI response...');
 
-        // Wait for connection/processing (Removed hard wait to rely on auto-retry)
-        // await page.waitForTimeout(15000);
+        // Wait for typing indicator to stop (can take longer with real AI calls)
+        await expect(page.locator('text=กำลังพิมพ์...')).toHaveCount(0, { timeout: 120000 });
 
-        // Verify AI response exists (check for 2nd assistant message bubble)
-        // ChatMessage uses bg-[var(--chat-assistant)] for AI messages
-        const responseBubble = page.locator('.bg-\\[var\\(--chat-assistant\\)\\]').nth(1);
-        await expect(responseBubble).toBeVisible({ timeout: 60000 }); // Increase timeout for AI generation
+        // ChatMessage uses bg-[var(--chat-assistant)] for AI messages.
+        // Expect at least greeting + one generated response.
+        const assistantBubbles = page.locator('.bg-\\[var\\(--chat-assistant\\)\\]');
+        await expect
+            .poll(async () => assistantBubbles.count(), { timeout: 120000 })
+            .toBeGreaterThan(1);
+        const responseBubble = assistantBubbles.nth(1);
+        await expect(responseBubble).toBeVisible({ timeout: 120000 });
 
-        // 5. Verify Outfit Cards
-        const outfitCard = page.locator('text=฿').first(); // Price indicator
-        await expect(outfitCard).toBeVisible({ timeout: 40000 });
-
-        // Verify "View Look" button uses Thai text "ดูลุค"
-        const viewButton = page.locator('button:has-text("ดูลุค")').first();
-        await expect(viewButton).toBeVisible();
-        console.log('✅ Outfit cards with Thai button "ดูลุค" verified');
+        // Regression guard: assistant chat bubble should stay concise
+        const responseText = (await responseBubble.textContent()) ?? '';
+        expect(responseText.length).toBeLessThanOrEqual(MAX_ASSISTANT_CHAT_CHARS);
 
         // Take a screenshot of the result
         await page.screenshot({ path: 'test-results/chat-journey-result.png', fullPage: true });

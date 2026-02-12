@@ -1,0 +1,7 @@
+{
+  "session_id": "c75c0af0-d71b-453d-a816-1d13952eccfd",
+  "prompts": [
+    "/plan_w_team \"Flat-lay images render incomplete outfits \u2014 only showing 1 garment instead of\n  full outfit (3-5 items). Fix occasion-flat-lay-service.ts to always compose complete looks with\n   proper spatial arrangement.\" \"1 builder for service fix, 1 validator using playwright to\n  screenshot generated flat-lays for all occasions.\""
+  ],
+  "agent_name": "Aurora"
+}

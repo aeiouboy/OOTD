@@ -1,1 +1,0 @@
-/implement specs/chore-dbc1c131-fix-logo-background-color-based.md

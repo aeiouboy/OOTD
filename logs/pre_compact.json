@@ -1,0 +1,74 @@
+[
+  {
+    "session_id": "e908c898-06a8-416a-b0a7-f0f7297c3bae",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/e908c898-06a8-416a-b0a7-f0f7297c3bae.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "3c781d9b-a9ab-4c8a-a376-668fda68716d",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/3c781d9b-a9ab-4c8a-a376-668fda68716d.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "3c781d9b-a9ab-4c8a-a376-668fda68716d",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/3c781d9b-a9ab-4c8a-a376-668fda68716d.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "28ea0690-ed2b-4a48-aff8-2e6412fa5fcd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/28ea0690-ed2b-4a48-aff8-2e6412fa5fcd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "35f3747c-f811-4f3a-af74-f3da2157606b",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/35f3747c-f811-4f3a-af74-f3da2157606b.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "35f3747c-f811-4f3a-af74-f3da2157606b",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/35f3747c-f811-4f3a-af74-f3da2157606b.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "74585a5d-4058-4cd3-a6cf-f999d3c716f4",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/74585a5d-4058-4cd3-a6cf-f999d3c716f4.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  }
+]

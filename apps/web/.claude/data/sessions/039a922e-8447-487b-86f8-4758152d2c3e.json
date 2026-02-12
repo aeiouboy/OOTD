@@ -1,0 +1,11 @@
+{
+  "session_id": "039a922e-8447-487b-86f8-4758152d2c3e",
+  "prompts": [
+    "run a test",
+    "/playwright-mcp run a full e2e test ",
+    "found a bug ai respones too long, and I think bubble present occation in chart mode not align with 3 main we dicssued",
+    "re run all",
+    "Several issues we found:\\\n\\\n1. When user Try on the image generated with unmatching product \\\n2. When user See looks the recommneded product has no image and wrong link when click buy now\\\n3. When click 3 dot to go setting or profile it not function \\\n\\\nspin a team to fix",
+    "setting is the config where user can change prefernace like style, age, gender"
+  ]
+}

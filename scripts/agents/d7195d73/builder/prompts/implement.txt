@@ -1,1 +1,0 @@
-/implement specs/chore-d7195d73-complete-session1-scraping.md

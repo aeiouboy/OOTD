@@ -62,5 +62,37 @@
     "hook_event_name": "PreCompact",
     "trigger": "auto",
     "custom_instructions": null
+  },
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "1e202719-b3ac-4d31-8382-db2a3fe4b709",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/1e202719-b3ac-4d31-8382-db2a3fe4b709.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "PreCompact",
+    "trigger": "auto",
+    "custom_instructions": null
   }
 ]
