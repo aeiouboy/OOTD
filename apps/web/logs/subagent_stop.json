@@ -559,5 +559,27 @@
     "agent_id": "a1f54e3",
     "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a/subagents/agent-a1f54e3.jsonl",
     "agent_type": ""
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a9eebae",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52/subagents/agent-a9eebae.jsonl",
+    "agent_type": ""
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "ac1cb50",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859/subagents/agent-ac1cb50.jsonl",
+    "agent_type": ""
   }
 ]

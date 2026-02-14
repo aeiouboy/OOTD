@@ -46,5 +46,29 @@
     "hook_event_name": "SessionEnd",
     "reason": "clear",
     "logged_at": "2026-02-12T14:37:38.292235"
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "clear",
+    "logged_at": "2026-02-12T22:29:02.298700"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-13T17:57:05.168607"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-13T17:57:05.449102"
   }
 ]

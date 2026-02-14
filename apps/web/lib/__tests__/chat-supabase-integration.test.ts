@@ -61,6 +61,21 @@ vi.mock('openai', () => ({
   })),
 }))
 
+// Mock global fetch for OpenRouter API calls
+global.fetch = vi.fn().mockResolvedValue({
+  ok: true,
+  status: 200,
+  json: async () => ({
+    choices: [
+      {
+        message: {
+          content: 'Mocked OpenRouter response',
+        },
+      },
+    ],
+  }),
+} as Response)
+
 // Mock prompt-version (v5.0 active by default)
 vi.mock('@/lib/prompts/prompt-version', () => ({
   getActiveSystemPrompt: vi.fn().mockReturnValue('Mocked system prompt v5'),
@@ -124,6 +139,10 @@ function createMockEnhancedProduct(overrides?: Partial<EnhancedProduct>): Enhanc
     id: 'SKU-001',
     sku: 'SKU-001',
     brand: 'Central Brand',
+    name: {
+      en: 'Mock Product',
+      th: 'สินค้าทดสอบ',
+    },
     style: {
       colors: {
         primary: 'floral',

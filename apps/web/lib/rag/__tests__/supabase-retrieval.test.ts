@@ -374,7 +374,8 @@ describe('searchProductsFromSupabase', () => {
     expect(mockSearchProducts).toHaveBeenCalledWith(
       expect.any(Array),
       undefined,
-      20
+      20,
+      undefined // genderFilter parameter added
     )
   })
 })

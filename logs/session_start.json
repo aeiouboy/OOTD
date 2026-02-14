@@ -335,5 +335,68 @@
     "hook_event_name": "SessionStart",
     "source": "compact",
     "model": "claude-opus-4-6"
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-opus-4-6"
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "compact",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "clear"
+  },
+  {
+    "session_id": "2bae3c8e-7fe2-47b5-a231-b210b1d88fe3",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2bae3c8e-7fe2-47b5-a231-b210b1d88fe3.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "11be6ef9-6c99-4b5a-b047-f2526b7b5239",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/11be6ef9-6c99-4b5a-b047-f2526b7b5239.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "resume",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "e0c6f3c2-6bff-4c7d-a8f3-1dc9b3a75bbc",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/e0c6f3c2-6bff-4c7d-a8f3-1dc9b3a75bbc.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionStart",
+    "source": "startup",
+    "model": "claude-sonnet-4-5-20250929"
   }
 ]

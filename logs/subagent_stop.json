@@ -1153,5 +1153,16 @@
     "agent_id": "a203006",
     "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a/subagents/agent-a203006.jsonl",
     "agent_type": "Explore"
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a8c64cd",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52/subagents/agent-a8c64cd.jsonl",
+    "agent_type": ""
   }
 ]

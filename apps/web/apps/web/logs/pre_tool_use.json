@@ -1,0 +1,41 @@
+[
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep -E \"(next|node|pnpm)\" | grep -v grep | head -10",
+      "description": "Check running Next.js/Node processes"
+    },
+    "tool_use_id": "toolu_0163dv86fHFS5YqB14MHiysh"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd apps/web && ls -lht logs/*.json 2>/dev/null | head -10 || echo \"No log files found\"",
+      "description": "List recent log files"
+    },
+    "tool_use_id": "toolu_01HJ96W6hUtGxFAqrg2undRh"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /Users/tachongrak/Projects/OOTD/apps/web && ls -lht logs/*.json 2>/dev/null | head -10 || echo \"No log files in apps/web/logs\"",
+      "description": "Check log files from full path"
+    },
+    "tool_use_id": "toolu_014VAPMTNmw3dahb6gmyYkYG"
+  }
+]

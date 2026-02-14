@@ -494,5 +494,96 @@
       "is_interrupt": false,
       "logged_at": "2026-02-12T15:32:03.729073"
     }
+  },
+  {
+    "timestamp": "2026-02-14T12:39:42.382398",
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_01PvwCJuq9j8ut1r9fR2uamM",
+    "tool_input": {
+      "command": "git diff b2b3edb..ce08119 --stat apps/web/components/chat/ChatAssistant.tsx",
+      "description": "Check what changed in ChatAssistant between commits"
+    },
+    "error": "Exit code 128\nfatal: ambiguous argument 'apps/web/components/chat/ChatAssistant.tsx': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "raw_input": {
+      "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+      "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+      "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "git diff b2b3edb..ce08119 --stat apps/web/components/chat/ChatAssistant.tsx",
+        "description": "Check what changed in ChatAssistant between commits"
+      },
+      "tool_use_id": "toolu_01PvwCJuq9j8ut1r9fR2uamM",
+      "error": "Exit code 128\nfatal: ambiguous argument 'apps/web/components/chat/ChatAssistant.tsx': unknown revision or path not in the working tree.\nUse '--' to separate paths from revisions, like this:\n'git <command> [<revision>...] -- [<file>...]'",
+      "is_interrupt": false,
+      "logged_at": "2026-02-14T12:39:42.382398"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T12:42:01.788711",
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Read",
+    "tool_use_id": "toolu_01N3TJYvwNDWRQrN7iK3VDuf",
+    "tool_input": {
+      "file_path": "/Users/tachongrak/Projects/OOTD/.github/workflows/claude-code-review.yml"
+    },
+    "error": "File does not exist. Current working directory: /Users/tachongrak/Projects/OOTD/apps/web",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "raw_input": {
+      "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+      "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+      "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Read",
+      "tool_input": {
+        "file_path": "/Users/tachongrak/Projects/OOTD/.github/workflows/claude-code-review.yml"
+      },
+      "tool_use_id": "toolu_01N3TJYvwNDWRQrN7iK3VDuf",
+      "error": "File does not exist. Current working directory: /Users/tachongrak/Projects/OOTD/apps/web",
+      "is_interrupt": false,
+      "logged_at": "2026-02-14T12:42:01.788711"
+    }
+  },
+  {
+    "timestamp": "2026-02-14T12:50:42.049071",
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "hook_event_name": "PostToolUseFailure",
+    "tool_name": "Bash",
+    "tool_use_id": "toolu_011keZ5nxaiZP61hxxg1LiS3",
+    "tool_input": {
+      "command": "grep -n \"export.*function searchProductsFromSupabase\\|export const searchProductsFromSupabase\" apps/web/lib/rag/supabase-retrieval.ts",
+      "description": "Find the actual function signature"
+    },
+    "error": "Exit code 2\ngrep: apps/web/lib/rag/supabase-retrieval.ts: No such file or directory",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+    "permission_mode": "bypassPermissions",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "raw_input": {
+      "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+      "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+      "cwd": "/Users/tachongrak/Projects/OOTD/apps/web",
+      "permission_mode": "bypassPermissions",
+      "hook_event_name": "PostToolUseFailure",
+      "tool_name": "Bash",
+      "tool_input": {
+        "command": "grep -n \"export.*function searchProductsFromSupabase\\|export const searchProductsFromSupabase\" apps/web/lib/rag/supabase-retrieval.ts",
+        "description": "Find the actual function signature"
+      },
+      "tool_use_id": "toolu_011keZ5nxaiZP61hxxg1LiS3",
+      "error": "Exit code 2\ngrep: apps/web/lib/rag/supabase-retrieval.ts: No such file or directory",
+      "is_interrupt": false,
+      "logged_at": "2026-02-14T12:50:42.049071"
+    }
   }
 ]

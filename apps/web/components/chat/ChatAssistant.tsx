@@ -25,6 +25,7 @@ import { exportResultsBoth } from '@/lib/test-result-exporter'
 import type { SessionContext } from '@/lib/types/chat-types'
 import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
+import { convertLooksToOutfits, mergeProductsBySku } from '@/lib/utils/chat-look-transformers'
 
 interface ChatAssistantProps {
   onViewOutfit: (outfit: Outfit) => void
@@ -417,52 +418,15 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       // v5.0: Convert looks → Outfit[] if v5 API returned structured looks
       let resolvedOutfits: Outfit[] = data.outfits || []
       if (data.looks && Array.isArray(data.looks) && data.looks.length > 0) {
-        const lookResponseId = Date.now()
-        resolvedOutfits = data.looks.map((look: any, index: number) => ({
-          id: `look-${lookResponseId}-${look.lookNumber || index + 1}`,
-          title: look.styleName || `Look ${look.lookNumber}`,
-          description: look.tip || '',
-          totalPrice: look.totalPrice || 0,
-          items: (look.items || []).map((item: any) => ({
-            sku: item.sku || '',
-            name: item.name || '',
-            brand: item.brand || '',
-            price: item.price || 0,
-            imageUrl: item.imageUrl || '',
-            availability: 'in_stock' as const,
-            onlineUrl: item.url || '',
-            category: item.category || '',
-            subCategory: item.category || '',
-            visualDescription: item.description || '',
-            colors: Array.isArray(item.colors) && item.colors.length > 0
-              ? item.colors
-              : (item.color ? [item.color] : []),
-          })),
-          imageUrl: look.imageUrl,
-        }))
+        resolvedOutfits = convertLooksToOutfits(data.looks)
         console.log(`[Chat] Converted ${data.looks.length} v5 looks → Outfit[]`)
       }
 
       // v8.0: Collect all products from outfits for visual consistency replacement lookup
       const outfitProducts: Product[] = resolvedOutfits.flatMap((o: Outfit) => o.items || [])
-      const replacementCatalog: Product[] = (() => {
-        const merged = [...allProducts]
-        const seen = new Set(merged.map((product) => product.sku))
-        for (const product of outfitProducts) {
-          if (!seen.has(product.sku)) {
-            seen.add(product.sku)
-            merged.push(product)
-          }
-        }
-        return merged
-      })()
+      const replacementCatalog = mergeProductsBySku(allProducts, outfitProducts)
       if (outfitProducts.length > 0) {
-        setAllProducts(prev => {
-          // Merge with existing products, avoiding duplicates by SKU
-          const existingSkus = new Set(prev.map(p => p.sku))
-          const newProducts = outfitProducts.filter((p: Product) => !existingSkus.has(p.sku))
-          return [...prev, ...newProducts]
-        })
+        setAllProducts((prev) => mergeProductsBySku(prev, outfitProducts))
       }
 
       // v5.0: Mark outfits as generating flat-lay if we have image request

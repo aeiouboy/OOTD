@@ -230,5 +230,45 @@
     "hook_event_name": "SessionEnd",
     "reason": "clear",
     "logged_at": "2026-02-12T14:52:33.177263"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-12T20:27:57.760662"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-12T20:28:03.199147"
+  },
+  {
+    "session_id": "2bae3c8e-7fe2-47b5-a231-b210b1d88fe3",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2bae3c8e-7fe2-47b5-a231-b210b1d88fe3.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-14T12:16:31.548191"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-14T12:18:10.533947"
+  },
+  {
+    "session_id": "e0c6f3c2-6bff-4c7d-a8f3-1dc9b3a75bbc",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/e0c6f3c2-6bff-4c7d-a8f3-1dc9b3a75bbc.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "SessionEnd",
+    "reason": "other",
+    "logged_at": "2026-02-14T12:19:03.436395"
   }
 ]
