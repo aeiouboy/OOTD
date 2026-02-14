@@ -398,7 +398,10 @@ function extractInfoFromHistory(history: Array<{ role: string; content: string }
  * @returns True if should ask budget
  */
 function shouldAskBudget(query: UserQuery): boolean {
-  // Only ask budget for high-value occasions or if user seems budget-conscious
+  // Only ask budget when user explicitly mentions budget/price concerns.
+  // Do NOT ask for high-value occasions (work, wedding, dinner) — the AI can
+  // recommend a range and let the user refine. Proactively asking budget
+  // feels robotic and blocks the natural conversation flow.
   const lowerMessage = query.message.toLowerCase();
 
   const budgetSensitiveKeywords = [
@@ -410,14 +413,12 @@ function shouldAskBudget(query: UserQuery): boolean {
     'budget',
     'save',
     'ไม่แพง',
+    'งบ',
+    'ราคา',
+    'price',
   ];
 
-  const highValueOccasions = ['wedding', 'งานแต่ง', 'work', 'ทำงาน', 'dinner', 'ดินเนอร์'];
-
-  const isBudgetSensitive = budgetSensitiveKeywords.some((keyword) => lowerMessage.includes(keyword));
-  const isHighValueOccasion = highValueOccasions.some((occasion) => lowerMessage.includes(occasion));
-
-  return isBudgetSensitive || isHighValueOccasion;
+  return budgetSensitiveKeywords.some((keyword) => lowerMessage.includes(keyword));
 }
 
 /**

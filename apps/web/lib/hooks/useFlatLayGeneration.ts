@@ -15,8 +15,9 @@ import {
 /**
  * Cache configuration for localStorage
  */
-const CACHE_PREFIX = 'flat-lay-v2-'
+const CACHE_PREFIX = 'flat-lay-v3-'
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
+const MAX_CACHED_BASE64_LENGTH = 600_000 // ~450KB binary equivalent
 
 /**
  * Maximum concurrent generations to prevent API overload
@@ -182,6 +183,14 @@ function getCachedImage(outfitId: string): string | null {
  */
 function setCachedImage(outfitId: string, imageBase64: string): void {
   if (typeof window === 'undefined') return
+
+  if (imageBase64.length > MAX_CACHED_BASE64_LENGTH) {
+    console.warn(
+      '[useFlatLayGeneration] Skipping cache for large image payload',
+      { outfitId, length: imageBase64.length }
+    )
+    return
+  }
 
   const key = `${CACHE_PREFIX}${outfitId}`
   const cached: CachedImage = {
@@ -644,12 +653,9 @@ export function useFlatLayGeneration({
             'Content-Type': 'application/json',
           },
           body: JSON.stringify({
-            generationType: useHybridGeneration ? 'hybrid-flat-lay' : 'flat-lay',
+            generationType: 'flat-lay',
             flatLayItems,
             occasionContext,
-            // Only include hybrid-specific options when using hybrid generation
-            ...(useHybridGeneration && backgroundStyle ? { backgroundStyle } : {}),
-            ...(useHybridGeneration && userAesthetic ? { userAesthetic } : {}),
           }),
         })
 

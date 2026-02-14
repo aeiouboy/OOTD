@@ -435,9 +435,12 @@ export async function POST(request: NextRequest) {
     let enhancedFlatLayItems = flatLayItems;
     if ((generationType === 'flat-lay' || generationType === 'hybrid-flat-lay') && flatLayItems) {
       const useVisionDescriptions = process.env.FLAT_LAY_USE_VISION === 'true';
+      const itemsHaveImages = flatLayItems.some(item => item.thumbnailUrl?.startsWith('https://'));
 
-      if (useVisionDescriptions) {
-        console.log('[API] Vision mode enabled - extracting product descriptions from images');
+      if (useVisionDescriptions && !itemsHaveImages) {
+        // Only run vision extraction when items DON'T have image URLs
+        // Multi-modal mode sends images directly — vision extraction is redundant
+        console.log('[API] Vision mode: extracting descriptions (no product images available)');
         try {
           enhancedFlatLayItems = await batchExtractDescriptions(flatLayItems, 3);
           const enrichedCount = enhancedFlatLayItems.filter((item) => item.visualDescription).length;
@@ -447,13 +450,22 @@ export async function POST(request: NextRequest) {
           // Fallback to original items if vision fails
           enhancedFlatLayItems = flatLayItems;
         }
+      } else if (itemsHaveImages) {
+        console.log('[API] Multi-modal mode: skipping vision extraction, sending product images directly');
       }
     }
 
     if (generationType === 'hybrid-flat-lay' && enhancedFlatLayItems) {
       // Hybrid flat-lay: AI background + real product images
       // Uses vision-enriched items for better AI fallback descriptions
-      const allowHybridAIFallback = process.env.HYBRID_FLATLAY_ALLOW_AI_FALLBACK === 'true'
+      const strictProductOnly = process.env.FLAT_LAY_STRICT_PRODUCT_ONLY !== 'false';
+      const requestedHybridAIFallback = process.env.HYBRID_FLATLAY_ALLOW_AI_FALLBACK === 'true';
+      const allowHybridAIFallback = requestedHybridAIFallback && !strictProductOnly;
+
+      if (requestedHybridAIFallback && strictProductOnly) {
+        console.log('[API] HYBRID_FLATLAY_ALLOW_AI_FALLBACK overridden by FLAT_LAY_STRICT_PRODUCT_ONLY=true');
+      }
+
       const hybridResult = await generateHybridFlatLayWithFallback(
         {
           items: enhancedFlatLayItems,

@@ -10,7 +10,7 @@
  */
 
 import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest } from '../types/image-types';
-import { buildFlatLayPrompt, buildFashionPrompt } from '../prompts/image-prompts';
+import { buildFlatLayPrompt, buildFashionPrompt, computeFlatLayLayout } from '../prompts/image-prompts';
 
 /**
  * OpenRouter API configuration
@@ -314,8 +314,16 @@ export class OpenRouterImageClient {
           console.log(`[ImageGen] Flat-lay retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
         }
 
-        const prompt = buildFlatLayPrompt(request.items, request.occasionContext);
-        const result = await this.makeFlatLayRequest(prompt);
+        // Extract valid product image URLs in layout order (max 5)
+        const layout = computeFlatLayLayout(request.items);
+        const imageUrls = layout
+          .filter(entry => entry.item.thumbnailUrl?.startsWith('https://'))
+          .slice(0, 5)
+          .map(entry => entry.item.thumbnailUrl!);
+
+        const hasImages = imageUrls.length > 0;
+        const prompt = buildFlatLayPrompt(request.items, request.occasionContext, hasImages);
+        const result = await this.makeFlatLayRequest(prompt, hasImages ? imageUrls : undefined);
         return result;
       } catch (error) {
         console.error(`[ImageGen] Flat-lay attempt ${attempt + 1} failed:`, error);
@@ -340,14 +348,22 @@ export class OpenRouterImageClient {
    *
    * @private
    */
-  private async makeFlatLayRequest(prompt: string): Promise<ImageGenerationResponse> {
-    // Build request body
+  private async makeFlatLayRequest(prompt: string, imageUrls?: string[]): Promise<ImageGenerationResponse> {
+    // Build request body — multi-modal when product images are available
     const requestBody = {
       model: OPENROUTER_CONFIG.model,
       messages: [
         {
           role: 'user',
-          content: prompt,
+          content: imageUrls && imageUrls.length > 0
+            ? [
+                { type: 'text' as const, text: prompt },
+                ...imageUrls.map(url => ({
+                  type: 'image_url' as const,
+                  image_url: { url },
+                })),
+              ]
+            : prompt,  // Fallback: text-only (current behavior)
         },
       ],
       modalities: ['text', 'image'], // Required for image generation
@@ -358,6 +374,7 @@ export class OpenRouterImageClient {
     console.log('[ImageGen] Sending flat-lay request to OpenRouter:', {
       model: requestBody.model,
       promptLength: prompt.length,
+      referenceImageCount: imageUrls?.length || 0,
     });
 
     // Create abort controller for timeout

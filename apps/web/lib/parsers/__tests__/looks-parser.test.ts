@@ -307,6 +307,26 @@ describe('validateLooksAgainstCatalog', () => {
     expect(validated[0].totalPrice).toBe(790);
   });
 
+  it('should fallback to a similar catalog product when SKU is missing but item intent is clear', () => {
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Fallback',
+      items: [
+        { name: 'White office shirt', brand: 'AI', category: 'Tops', color: 'White', description: 'clean formal shirt', sku: 'MISSING-001', price: 850, url: '' },
+      ],
+      totalPrice: 850,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, catalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(1);
+    // Should map to a real catalog product (not keep hallucinated SKU)
+    expect(validated[0].items[0].sku).toMatch(/^SKU00[1-3]$/);
+    expect(validated[0].items[0].url).toContain('https://central.co.th/real/');
+    expect(validated[0].items[0].price).toBeGreaterThan(0);
+  });
+
   it('should drop looks with no valid items', () => {
     const looks = [{
       lookNumber: 1,

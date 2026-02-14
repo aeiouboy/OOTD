@@ -150,10 +150,7 @@ export function OutfitDetail({
 
     try {
       const flatLayItems = transformToFlatLayItems(targetOutfit.items)
-      const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
-        return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
-      })
-      const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
+      const generationType = 'flat-lay'
 
       const response = await fetch('/api/generate-image', {
         method: 'POST',

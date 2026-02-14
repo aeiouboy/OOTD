@@ -579,14 +579,23 @@ export async function createWhiteBackground(
   width: number = DEFAULT_CANVAS.width,
   height: number = DEFAULT_CANVAS.height
 ): Promise<Buffer> {
-  return sharp({
-    create: {
-      width,
-      height,
-      channels: 3,
-      background: { r: 255, g: 255, b: 255 },
-    },
-  })
+  // Keep the studio background "white" but add subtle tonal depth so
+  // off-white garments remain visible (prevents washed-out composites).
+  const svg = `
+    <svg width="${width}" height="${height}" xmlns="http://www.w3.org/2000/svg">
+      <defs>
+        <radialGradient id="g1" cx="50%" cy="42%" r="70%">
+          <stop offset="0%" stop-color="#fbfbfa"/>
+          <stop offset="70%" stop-color="#f1f1ee"/>
+          <stop offset="100%" stop-color="#ebebe8"/>
+        </radialGradient>
+      </defs>
+      <rect width="100%" height="100%" fill="url(#g1)"/>
+    </svg>
+  `;
+
+  return sharp(Buffer.from(svg))
+    .resize(width, height, { fit: 'cover' })
     .png()
     .toBuffer();
 }

@@ -259,10 +259,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       thumbnailUrl: item.imageUrl,
     }))
     const occasionContext = outfit.description
-    const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
-      return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
-    })
-    const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
+    const generationType = 'flat-lay'
 
     if (flatLayItems.length === 0) {
       console.log('[Chat] No items to generate flat-lay for')

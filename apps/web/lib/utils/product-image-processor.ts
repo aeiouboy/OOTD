@@ -30,10 +30,32 @@ const PROCESSOR_CONFIG = {
   rejectLikelyModelShots: true,
   /** Skin ratio threshold for model-shot rejection (lower = stricter) */
   modelShotSkinRatioThreshold: (() => {
-    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_SKIN_THRESHOLD || '0.02');
-    if (!Number.isFinite(parsed)) return 0.02;
-    // Clamp to a safe operating window.
-    return Math.min(Math.max(parsed, 0.01), 0.08);
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_SKIN_THRESHOLD || '0.016');
+    if (!Number.isFinite(parsed)) return 0.016;
+    // Keep strict by default. Higher values allow too many on-model images.
+    return Math.min(Math.max(parsed, 0.006), 0.03);
+  })(),
+  /** Additional ratio checks in upper regions where faces/arms usually appear */
+  modelShotUpperSkinRatioThreshold: (() => {
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_UPPER_SKIN_THRESHOLD || '0.04');
+    if (!Number.isFinite(parsed)) return 0.04;
+    return Math.min(Math.max(parsed, 0.01), 0.12);
+  })(),
+  modelShotCenterUpperSkinRatioThreshold: (() => {
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_CENTER_SKIN_THRESHOLD || '0.06');
+    if (!Number.isFinite(parsed)) return 0.06;
+    return Math.min(Math.max(parsed, 0.015), 0.18);
+  })(),
+  modelShotTopSkinRatioThreshold: (() => {
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_TOP_SKIN_THRESHOLD || '0.08');
+    if (!Number.isFinite(parsed)) return 0.08;
+    return Math.min(Math.max(parsed, 0.02), 0.25);
+  })(),
+  /** Ignore tiny skin-like noise blobs */
+  modelShotMinSkinPixels: (() => {
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_MIN_SKIN_PIXELS || '140');
+    if (!Number.isFinite(parsed)) return 140;
+    return Math.min(Math.max(Math.round(parsed), 40), 2500);
   })(),
 };
 
@@ -109,6 +131,21 @@ function isClothingCategory(category: string): boolean {
   );
 }
 
+function isLightColorLabel(color?: string): boolean {
+  if (!color) return false;
+  const c = color.toLowerCase();
+  return (
+    c.includes('white') ||
+    c.includes('ivory') ||
+    c.includes('cream') ||
+    c.includes('off white') ||
+    c.includes('off-white') ||
+    c.includes('beige') ||
+    c.includes('nude') ||
+    c.includes('champagne')
+  );
+}
+
 function isLikelySkinPixel(r: number, g: number, b: number): boolean {
   // Conservative skin heuristic in RGB + YCbCr space.
   // Tight bounds reduce false positives on beige garments.
@@ -120,7 +157,16 @@ function isLikelySkinPixel(r: number, g: number, b: number): boolean {
   return cb >= 80 && cb <= 123 && cr >= 136 && cr <= 173;
 }
 
-async function detectLikelyModelShot(inputBuffer: Buffer): Promise<{ likelyModelShot: boolean; skinRatio: number }> {
+type ModelShotDetectionResult = {
+  likelyModelShot: boolean;
+  skinRatio: number;
+  upperSkinRatio: number;
+  centerUpperSkinRatio: number;
+  topSkinRatio: number;
+  reason: string;
+};
+
+async function detectLikelyModelShot(inputBuffer: Buffer): Promise<ModelShotDetectionResult> {
   try {
     const sharpModule = await import('sharp');
     const sharp = sharpModule.default;
@@ -130,29 +176,120 @@ async function detectLikelyModelShot(inputBuffer: Buffer): Promise<{ likelyModel
       .toBuffer({ resolveWithObject: true });
 
     const pixels = info.width * info.height;
-    if (!pixels) return { likelyModelShot: false, skinRatio: 0 };
+    if (!pixels) {
+      return {
+        likelyModelShot: false,
+        skinRatio: 0,
+        upperSkinRatio: 0,
+        centerUpperSkinRatio: 0,
+        topSkinRatio: 0,
+        reason: 'empty-image',
+      };
+    }
 
     let opaque = 0;
     let skin = 0;
-    for (let i = 0; i < pixels; i++) {
-      const idx = i * 4;
-      const a = data[idx + 3];
-      if (a < 20) continue;
-      opaque++;
-      const r = data[idx];
-      const g = data[idx + 1];
-      const b = data[idx + 2];
-      if (isLikelySkinPixel(r, g, b)) {
-        skin++;
+    let upperOpaque = 0;
+    let upperSkin = 0;
+    let centerUpperOpaque = 0;
+    let centerUpperSkin = 0;
+    let topOpaque = 0;
+    let topSkin = 0;
+
+    const upperBandEndY = Math.max(1, Math.floor(info.height * 0.45));
+    const topBandEndY = Math.max(1, Math.floor(info.height * 0.22));
+    const centerStartX = Math.floor(info.width * 0.2);
+    const centerEndX = Math.ceil(info.width * 0.8);
+
+    for (let y = 0; y < info.height; y++) {
+      for (let x = 0; x < info.width; x++) {
+        const i = y * info.width + x;
+        const idx = i * 4;
+        const a = data[idx + 3];
+        if (a < 20) continue;
+
+        opaque++;
+        const r = data[idx];
+        const g = data[idx + 1];
+        const b = data[idx + 2];
+        const isSkin = isLikelySkinPixel(r, g, b);
+
+        if (isSkin) skin++;
+
+        if (y < upperBandEndY) {
+          upperOpaque++;
+          if (isSkin) upperSkin++;
+        }
+
+        if (y < upperBandEndY && x >= centerStartX && x <= centerEndX) {
+          centerUpperOpaque++;
+          if (isSkin) centerUpperSkin++;
+        }
+
+        if (y < topBandEndY) {
+          topOpaque++;
+          if (isSkin) topSkin++;
+        }
       }
     }
 
-    if (!opaque) return { likelyModelShot: false, skinRatio: 0 };
+    if (!opaque) {
+      return {
+        likelyModelShot: false,
+        skinRatio: 0,
+        upperSkinRatio: 0,
+        centerUpperSkinRatio: 0,
+        topSkinRatio: 0,
+        reason: 'fully-transparent',
+      };
+    }
+
     const skinRatio = skin / opaque;
-    // Visible skin on isolated product shot is usually near zero.
-    return { likelyModelShot: skinRatio > PROCESSOR_CONFIG.modelShotSkinRatioThreshold, skinRatio };
+    const upperSkinRatio = upperOpaque > 0 ? upperSkin / upperOpaque : 0;
+    const centerUpperSkinRatio = centerUpperOpaque > 0 ? centerUpperSkin / centerUpperOpaque : 0;
+    const topSkinRatio = topOpaque > 0 ? topSkin / topOpaque : 0;
+
+    const minSkinPixels = PROCESSOR_CONFIG.modelShotMinSkinPixels;
+    const minUpperSkinPixels = Math.max(40, Math.floor(minSkinPixels * 0.35));
+    const minCenterUpperSkinPixels = Math.max(24, Math.floor(minSkinPixels * 0.22));
+    const minTopSkinPixels = Math.max(18, Math.floor(minSkinPixels * 0.16));
+
+    const globalHit =
+      skin >= minSkinPixels &&
+      skinRatio > PROCESSOR_CONFIG.modelShotSkinRatioThreshold;
+    const upperHit =
+      upperSkin >= minUpperSkinPixels &&
+      upperSkinRatio > PROCESSOR_CONFIG.modelShotUpperSkinRatioThreshold;
+    const centerUpperHit =
+      centerUpperSkin >= minCenterUpperSkinPixels &&
+      centerUpperSkinRatio > PROCESSOR_CONFIG.modelShotCenterUpperSkinRatioThreshold;
+    const topHit =
+      topSkin >= minTopSkinPixels &&
+      topSkinRatio > PROCESSOR_CONFIG.modelShotTopSkinRatioThreshold;
+
+    let reason = 'none';
+    if (centerUpperHit) reason = 'center-upper-skin';
+    else if (topHit) reason = 'top-skin';
+    else if (upperHit) reason = 'upper-skin';
+    else if (globalHit) reason = 'global-skin';
+
+    return {
+      likelyModelShot: globalHit || upperHit || centerUpperHit || topHit,
+      skinRatio,
+      upperSkinRatio,
+      centerUpperSkinRatio,
+      topSkinRatio,
+      reason,
+    };
   } catch {
-    return { likelyModelShot: false, skinRatio: 0 };
+    return {
+      likelyModelShot: false,
+      skinRatio: 0,
+      upperSkinRatio: 0,
+      centerUpperSkinRatio: 0,
+      topSkinRatio: 0,
+      reason: 'detection-failed',
+    };
   }
 }
 
@@ -683,17 +820,40 @@ async function processProductImageInternal(
       ? bgRemovedBuffer
       : await trimUniformBorders(bgRemovedBuffer);
 
-    // If image is still mostly opaque after background removal, try an extra
-    // border flood-fill pass to remove white/gray catalog cards.
+    // If image is still mostly opaque, we can optionally try an extra border
+    // flood-fill pass to remove white/gray catalog cards.
+    // Guardrails are strict for light garments to avoid erasing white clothing.
     let workingBuffer = preparedBuffer;
     const transparencyBefore = await getTransparencyRatio(workingBuffer);
-    if (transparencyBefore < 0.98) {
+    const lightColorItem = isLightColorLabel(item.color);
+
+    // Skip aggressive edge cleanup for light garments when rembg succeeded.
+    // This protects white/off-white products from being over-erased.
+    const shouldTryEdgeCleanup =
+      transparencyBefore < 0.98 &&
+      (!usedBackgroundRemoval || (!lightColorItem && transparencyBefore < 0.9));
+
+    if (shouldTryEdgeCleanup) {
       const edgeCleaned = await removeEdgeBackgroundByFloodFill(workingBuffer);
       const transparencyAfter = await getTransparencyRatio(edgeCleaned);
-      if (transparencyAfter > transparencyBefore + 0.005) {
+      const transparencyGain = transparencyAfter - transparencyBefore;
+      const opaqueRatioAfter = 1 - transparencyAfter;
+      const isLikelyOverErased = opaqueRatioAfter < 0.06;
+      const tooAggressiveForRembg = usedBackgroundRemoval && transparencyGain > 0.25;
+
+      if (
+        transparencyGain > 0.005 &&
+        !isLikelyOverErased &&
+        !tooAggressiveForRembg
+      ) {
         workingBuffer = edgeCleaned;
         console.log(
           `[ProductImageProcessor] Edge background cleanup improved transparency: ${transparencyBefore.toFixed(3)} -> ${transparencyAfter.toFixed(3)}`
+        );
+      } else if (transparencyGain > 0.005) {
+        console.log(
+          `[ProductImageProcessor] Skipped edge cleanup to protect product details: ` +
+          `gain=${transparencyGain.toFixed(3)}, opaqueAfter=${opaqueRatioAfter.toFixed(3)}, usedRembg=${usedBackgroundRemoval}, lightColor=${lightColorItem}`
         );
       }
     }
@@ -707,7 +867,10 @@ async function processProductImageInternal(
       const modelCheck = await detectLikelyModelShot(croppedBuffer);
       if (modelCheck.likelyModelShot) {
         throw new Error(
-          `Likely model-shot image detected (skinRatio=${modelCheck.skinRatio.toFixed(3)}), rejecting for flat-lay`
+          `Likely model-shot image detected (${modelCheck.reason}; ` +
+          `skin=${modelCheck.skinRatio.toFixed(3)}, upper=${modelCheck.upperSkinRatio.toFixed(3)}, ` +
+          `centerUpper=${modelCheck.centerUpperSkinRatio.toFixed(3)}, top=${modelCheck.topSkinRatio.toFixed(3)}), ` +
+          `rejecting for flat-lay`
         );
       }
     }

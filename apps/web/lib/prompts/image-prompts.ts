@@ -457,6 +457,7 @@ export function computeFlatLayLayout(items: FlatLayItem[]): FlatLayLayoutEntry[]
 export function buildFlatLayPrompt(
   items: FlatLayItem[],
   occasionContext?: string,
+  hasReferenceImages?: boolean,
 ): string {
   const itemCount = items.length;
   const layout = computeFlatLayLayout(items);
@@ -476,7 +477,23 @@ export function buildFlatLayPrompt(
     return `- ${entry.position} (${entry.sizeHint}): a ${itemDesc}, ${entry.presentationHint}`;
   }).join('\n');
 
-  return `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image shows exactly ${itemCount} fashion items arranged on a pristine white surface as a ${occasionLabel} outfit. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${itemCount} items are fully visible with no overlap or cropping. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce product photography quality. Square 1:1 format.`;
+  let prompt = `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image must contain products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. The image shows exactly ${itemCount} fashion items arranged as a ${occasionLabel} outfit on a clean seamless studio surface in light neutral grey-white for clear contrast. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${itemCount} items are fully visible with no overlap or cropping. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce studio-grade product photography quality. Square 1:1 format.`;
+
+  // Append reference image mapping instructions when multi-modal images are provided
+  if (hasReferenceImages) {
+    const itemsWithImages = layout.filter(entry => entry.item.thumbnailUrl?.startsWith('https://')).slice(0, 5);
+    if (itemsWithImages.length > 0) {
+      const imageMapping = itemsWithImages.map((entry, idx) => {
+        const colorInfo = entry.item.color ? `${entry.item.color.toLowerCase()} ` : '';
+        const clean = cleanCategoryForPrompt(entry.item.category);
+        return `- Reference Image ${idx + 1} shows the ${colorInfo}${clean.toLowerCase()} at ${entry.position}`;
+      }).join('\n');
+
+      prompt += `\n\nReference product images are provided below in order. Match the EXACT color, pattern, texture, and silhouette from each reference image:\n${imageMapping}`;
+    }
+  }
+
+  return prompt;
 }
 
 // ---------------------------------------------------------------------------

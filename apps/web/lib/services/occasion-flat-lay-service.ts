@@ -92,10 +92,13 @@ export function buildImagePromptFromItems(
   // Build item lines with spatial positions
   const itemLines = layout.map((entry) => {
     const colorInfo = entry.item.color ? `${entry.item.color.toLowerCase()} ` : '';
-    return `- ${entry.position} (${entry.sizeHint}): a ${colorInfo}${entry.item.name.toLowerCase()} (${entry.item.category.toLowerCase()}), ${entry.presentationHint}`;
+    const visualInfo = entry.item.visualDescription
+      ? `, ${entry.item.visualDescription.toLowerCase()}`
+      : '';
+    return `- ${entry.position} (${entry.sizeHint}): a ${colorInfo}${entry.item.name.toLowerCase()} (${entry.item.category.toLowerCase()}), ${entry.presentationHint}${visualInfo}`;
   }).join('\n');
 
-  return `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image shows exactly ${count} fashion items arranged on a pristine white surface as a coordinated ${occasionLabel.toLowerCase()} outfit. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${count} items are fully visible with no overlap or cropping. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce product photography quality. Square 1:1 format.`;
+  return `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image must contain products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. The image shows exactly ${count} fashion items arranged as a coordinated ${occasionLabel.toLowerCase()} outfit. Use a clean seamless studio backdrop in light neutral grey-white for clear contrast with white garments. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${count} items are fully visible with no overlap or cropping. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce studio-grade product photography quality. Square 1:1 format.`;
 }
 
 /**

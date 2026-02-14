@@ -49,6 +49,7 @@ function lookItemsToFlatLayItems(items: ChatLook['items']): FlatLayItem[] {
     category: item.category,
     color: item.color || undefined,
     sku: item.sku || undefined,
+    thumbnailUrl: item.imageUrl || undefined,
   }))
 }
 

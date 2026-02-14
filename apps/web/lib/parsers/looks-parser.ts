@@ -430,6 +430,8 @@ export function validateLooksAgainstCatalog(
   }
 
   return looks.map(look => {
+    const usedCatalogSkusInLook = new Set<string>();
+
     const validatedItemsWithRole = look.items
       .map(item => {
         let catalogProduct: EnhancedProduct | undefined;
@@ -444,7 +446,22 @@ export function validateLooksAgainstCatalog(
           catalogProduct = urlMap.get(normalizeUrl(item.url));
         }
 
-        if (!catalogProduct) return null; // Not in catalog = drop
+        // Tertiary: Fallback to a similar catalog product when SKU/URL doesn't resolve.
+        // This keeps "View Look" actionable even when the exact SKU is missing.
+        if (!catalogProduct) {
+          catalogProduct = findSimilarCatalogProduct(item, catalog, usedCatalogSkusInLook);
+        }
+
+        if (!catalogProduct) return null; // No reliable match = drop
+
+        const canonicalSku = (
+          catalogProduct.sku ||
+          catalogProduct.centralIntegration?.centralSKU ||
+          ''
+        ).toLowerCase();
+        if (canonicalSku) {
+          usedCatalogSkusInLook.add(canonicalSku);
+        }
 
         // Force catalog URL and price, populate SKU if missing
         const primaryColor = catalogProduct.style?.colors?.primary;
@@ -462,7 +479,7 @@ export function validateLooksAgainstCatalog(
           price: catalogProduct.pricing?.currentPrice || item.price,
           name: catalogName || item.name,
           brand: catalogProduct.brand || item.brand,
-          sku: item.sku || catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || '',
+          sku: catalogProduct.sku || catalogProduct.centralIntegration?.centralSKU || item.sku || '',
           category: resolvedRole || item.category,
           color: primaryColor || item.color,
           description: catalogDescription || item.description,
@@ -537,4 +554,122 @@ function resolveOutfitRole(product: EnhancedProduct, item: ChatLookItem): string
   if (/blazer|jacket|coat|cardigan|outer/.test(raw)) return 'outerwear';
 
   return (item.category || 'item').toLowerCase();
+}
+
+function inferRoleFromRawText(raw: string): string {
+  const value = raw.toLowerCase();
+  if (/dress|เดรส/.test(value)) return 'dress';
+  if (/shirt|tee|t-shirt|blouse|เสื้อ|top/.test(value)) return 'top';
+  if (/pants|jeans|trouser|skirt|shorts|กางเกง|กระโปรง|bottom/.test(value)) return 'bottom';
+  if (/shoe|sneaker|heel|sandal|loafer|รองเท้า|footwear/.test(value)) return 'footwear';
+  if (/bag|belt|hat|cap|jewelry|accessor|กระเป๋า|เข็มขัด|หมวก|เครื่องประดับ/.test(value)) return 'accessory';
+  if (/blazer|jacket|coat|cardigan|outer/.test(value)) return 'outerwear';
+  return '';
+}
+
+function normalizeText(value: string): string {
+  return value
+    .toLowerCase()
+    .replace(/[^a-z0-9ก-๙\s]/gi, ' ')
+    .replace(/\s+/g, ' ')
+    .trim();
+}
+
+function tokenize(value: string): string[] {
+  if (!value) return [];
+  const stopWords = new Set([
+    'women', 'woman', 'men', 'man', 'look', 'style', 'item', 'fashion',
+    'เสื้อผ้า', 'ชุด', 'ลุค', 'สินค้า',
+  ]);
+
+  return normalizeText(value)
+    .split(' ')
+    .map((token) => token.trim())
+    .filter((token) => token.length >= 3 && !stopWords.has(token));
+}
+
+function getCatalogCategoryText(product: EnhancedProduct): string {
+  const category = product.classification?.category;
+  return [
+    category?.subcategory,
+    category?.category,
+    category?.department,
+  ].filter(Boolean).join(' ');
+}
+
+function findSimilarCatalogProduct(
+  item: ChatLookItem,
+  catalog: EnhancedProduct[],
+  usedCatalogSkusInLook: Set<string>
+): EnhancedProduct | undefined {
+  const requestedRole = inferRoleFromRawText(`${item.category || ''} ${item.name || ''}`);
+  const requestedNameTokens = tokenize(`${item.name || ''} ${item.description || ''}`);
+  const requestedCategoryTokens = tokenize(item.category || '');
+  const requestedColor = normalizeText(item.color || '');
+  const requestedPrice = typeof item.price === 'number' && item.price > 0 ? item.price : null;
+
+  let best: { product: EnhancedProduct; score: number } | null = null;
+
+  for (const candidate of catalog) {
+    const candidateSku = (candidate.sku || candidate.centralIntegration?.centralSKU || '').toLowerCase();
+    if (candidateSku && usedCatalogSkusInLook.has(candidateSku)) continue;
+
+    const candidateRole = inferRoleFromRawText(
+      `${candidate.classification?.role || ''} ${getCatalogCategoryText(candidate)} ${getCatalogDisplayName(candidate)}`
+    );
+
+    // If we know the expected role, skip incompatible roles.
+    if (requestedRole && candidateRole && requestedRole !== candidateRole) continue;
+
+    const candidateTokens = tokenize(
+      `${getCatalogDisplayName(candidate)} ${getCatalogDescription(candidate)} ${getCatalogCategoryText(candidate)}`
+    );
+    const candidateTokenSet = new Set(candidateTokens);
+
+    let score = 0;
+
+    if (requestedRole && candidateRole === requestedRole) {
+      score += 45;
+    }
+
+    let nameOverlap = 0;
+    for (const token of requestedNameTokens) {
+      if (candidateTokenSet.has(token)) nameOverlap++;
+    }
+    score += Math.min(24, nameOverlap * 8);
+
+    let categoryOverlap = 0;
+    for (const token of requestedCategoryTokens) {
+      if (candidateTokenSet.has(token)) categoryOverlap++;
+    }
+    score += Math.min(20, categoryOverlap * 10);
+
+    if (requestedColor) {
+      const candidateColors = [
+        candidate.style?.colors?.primary || '',
+        ...(candidate.style?.colors?.secondary || []),
+      ].map((c) => normalizeText(c || ''));
+
+      if (candidateColors.some((c) => c && (c.includes(requestedColor) || requestedColor.includes(c)))) {
+        score += 10;
+      }
+    }
+
+    const candidatePrice = candidate.pricing?.currentPrice || 0;
+    if (requestedPrice && candidatePrice > 0) {
+      const diffRatio = Math.abs(candidatePrice - requestedPrice) / requestedPrice;
+      score += Math.max(0, 18 - diffRatio * 30);
+    }
+
+    // Guardrail: avoid weak random matches.
+    const hasSemanticSignal = requestedRole || nameOverlap > 0 || categoryOverlap > 0;
+    if (!hasSemanticSignal) continue;
+    if (score < 20) continue;
+
+    if (!best || score > best.score) {
+      best = { product: candidate, score };
+    }
+  }
+
+  return best?.product;
 }
