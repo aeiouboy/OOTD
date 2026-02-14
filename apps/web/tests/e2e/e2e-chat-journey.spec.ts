@@ -6,7 +6,45 @@
 import { test, expect } from '@playwright/test';
 
 const TEST_CHAT_PROMPT = process.env.E2E_CHAT_PROMPT ?? 'อยากได้ชุดที่ใส่ไปทำงานและไปหาเพื่อนต่อตอนเย็นได้';
+const TEST_CHAT_FOLLOWUP_BUDGET = process.env.E2E_CHAT_FOLLOWUP_BUDGET ?? '50000';
 const MAX_ASSISTANT_CHAT_CHARS = 500;
+const GENERIC_CATEGORY_URLS = new Set([
+    'https://www.central.co.th/th/women',
+    'https://www.central.co.th/th/men',
+    'https://www.central.co.th',
+]);
+
+type CapturedChatLookItem = {
+    name?: string;
+    url?: string;
+};
+
+type CapturedChatResponse = {
+    looks?: Array<{
+        items?: CapturedChatLookItem[];
+    }>;
+};
+
+type CapturedGenerateImageRequest = {
+    generationType?: string;
+    flatLayItems?: Array<{
+        name?: string;
+    }>;
+};
+
+type CapturedGenerateImageResponse = {
+    status: number;
+    contentType: string;
+    isJson: boolean;
+    success?: boolean;
+    error?: string;
+    message?: string;
+    rawSnippet?: string;
+};
+
+function normalizeText(value: string | null | undefined): string {
+    return (value ?? '').trim().replace(/\s+/g, ' ').toLowerCase();
+}
 
 test.describe('Chat Journey E2E', () => {
     // Force desktop layout
@@ -33,9 +71,86 @@ test.describe('Chat Journey E2E', () => {
     });
 
     test('should display correct initial greeting and handle chat flow', async ({ page }) => {
+        test.setTimeout(180000);
+        let capturedChatResponse: CapturedChatResponse | null = null;
+        let capturedFlatLayRequest: CapturedGenerateImageRequest | null = null;
+        const capturedGenerateImageResponses: CapturedGenerateImageResponse[] = [];
+        const capturedConsoleErrors: string[] = [];
+
+        page.on('console', (msg) => {
+            if (msg.type() !== 'error') return;
+            const text = msg.text();
+            if (
+                text.includes('/api/generate-image') ||
+                text.includes('Flat-lay generation error') ||
+                text.includes("Unexpected token '<'")
+            ) {
+                capturedConsoleErrors.push(text);
+            }
+        });
+
+        page.on('response', async (response) => {
+            if (!response.url().includes('/api/chat') || response.request().method() !== 'POST') return;
+            if (capturedChatResponse) return;
+            try {
+                const body = (await response.json()) as CapturedChatResponse;
+                if (body?.looks && Array.isArray(body.looks)) {
+                    capturedChatResponse = body;
+                }
+            } catch {
+                // Ignore non-JSON/failed parses in listener
+            }
+        });
+
+        page.on('request', (request) => {
+            if (!request.url().includes('/api/generate-image') || request.method() !== 'POST') return;
+            if (capturedFlatLayRequest) return;
+            try {
+                const data = request.postDataJSON() as CapturedGenerateImageRequest;
+                if (
+                    data &&
+                    (data.generationType === 'flat-lay' || data.generationType === 'hybrid-flat-lay') &&
+                    Array.isArray(data.flatLayItems) &&
+                    data.flatLayItems.length > 0
+                ) {
+                    capturedFlatLayRequest = data;
+                }
+            } catch {
+                // Ignore non-JSON payloads in listener
+            }
+        });
+
+        page.on('response', async (response) => {
+            if (!response.url().includes('/api/generate-image') || response.request().method() !== 'POST') return;
+
+            const contentType = response.headers()['content-type'] || '';
+            const isJson = contentType.includes('application/json');
+            const entry: CapturedGenerateImageResponse = {
+                status: response.status(),
+                contentType,
+                isJson,
+            };
+
+            try {
+                if (isJson) {
+                    const body = await response.json() as { success?: boolean; error?: string; message?: string };
+                    entry.success = body?.success;
+                    entry.error = body?.error;
+                    entry.message = body?.message;
+                } else {
+                    const raw = await response.text();
+                    entry.rawSnippet = raw.slice(0, 180);
+                }
+            } catch {
+                // Keep raw status + content type only.
+            }
+
+            capturedGenerateImageResponses.push(entry);
+        });
+
         // 1. Verify Initial Greeting
         // Look for the specific Thai greeting text
-        const greeting = page.locator('text=ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา');
+        const greeting = page.locator('text=ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา').first();
         await expect(greeting).toBeVisible({ timeout: 10000 });
         console.log('✅ Initial greeting verified');
 
@@ -73,6 +188,38 @@ test.describe('Chat Journey E2E', () => {
         const responseText = (await responseBubble.textContent()) ?? '';
         expect(responseText.length).toBeLessThanOrEqual(MAX_ASSISTANT_CHAT_CHARS);
 
+        // Wait for at least one flat-lay generation request so we can verify item consistency.
+        if ((capturedFlatLayRequest?.flatLayItems?.length ?? 0) === 0) {
+            // Some flows ask a clarification (e.g., budget) before returning looks.
+            const followupInput = page.locator(
+                'textarea[placeholder*="พิมพ์"]:visible, textarea[placeholder*="Ask"]:visible, input[placeholder*="OOTDay"]:visible, input[placeholder*="Ask me"]:visible, input[placeholder*="พิมพ์"]:visible, input[type="text"]:visible'
+            ).first();
+            await expect(followupInput).toBeVisible({ timeout: 10000 });
+            await followupInput.fill(TEST_CHAT_FOLLOWUP_BUDGET);
+            await followupInput.press('Enter');
+            await expect(page.locator('text=กำลังพิมพ์...')).toHaveCount(0, { timeout: 120000 });
+        }
+
+        await expect
+            .poll(() => capturedFlatLayRequest?.flatLayItems?.length ?? 0, { timeout: 120000 })
+            .toBeGreaterThan(0);
+
+        // Regression guard: flat-lay API responses must be JSON and non-500.
+        await expect
+            .poll(() => capturedGenerateImageResponses.length, { timeout: 120000 })
+            .toBeGreaterThan(0);
+        const nonJsonResponses = capturedGenerateImageResponses.filter((r) => !r.isJson);
+        expect(nonJsonResponses, `Non-JSON /api/generate-image responses: ${JSON.stringify(nonJsonResponses, null, 2)}`).toEqual([]);
+        const serverErrors = capturedGenerateImageResponses.filter((r) => r.status >= 500);
+        expect(serverErrors, `5xx /api/generate-image responses: ${JSON.stringify(serverErrors, null, 2)}`).toEqual([]);
+        const failedPayloads = capturedGenerateImageResponses.filter((r) => r.isJson && r.success === false);
+        expect(failedPayloads, `Flat-lay API returned success=false: ${JSON.stringify(failedPayloads, null, 2)}`).toEqual([]);
+        const aiFallbackResponses = capturedGenerateImageResponses.filter((r) =>
+            typeof r.message === 'string' && r.message.toLowerCase().includes('ai-only fallback')
+        );
+        expect(aiFallbackResponses, `Hybrid pipeline fell back to AI-only: ${JSON.stringify(aiFallbackResponses, null, 2)}`).toEqual([]);
+        expect(capturedConsoleErrors, `Console errors during flat-lay generation: ${capturedConsoleErrors.join('\n')}`).toEqual([]);
+
         // 5. Verify "View Look" flow shows matching shop items
         const viewLookButton = page.getByRole('button', { name: 'ดูลุค' }).first();
         await expect(viewLookButton).toBeVisible({ timeout: 120000 });
@@ -80,31 +227,66 @@ test.describe('Chat Journey E2E', () => {
         await viewLookButton.click();
 
         await expect(page.getByText(/Shop this look/i)).toBeVisible({ timeout: 10000 });
-        const productCards = page.locator('div').filter({ hasText: /Buy Now/i });
+        const productCards = page.locator('div.flex.gap-3.p-3.border.rounded-lg').filter({
+            has: page.getByRole('button', { name: 'Buy Now' }),
+        });
         await expect(productCards.first()).toBeVisible({ timeout: 10000 });
 
-        // 6. Verify product link is a product page URL, not a generic gender landing page
+        const renderedProductCount = await productCards.count();
+        expect(renderedProductCount).toBeGreaterThan(0);
+
+        const renderedNames: string[] = [];
+        for (let i = 0; i < renderedProductCount; i++) {
+            const nameText = await productCards.nth(i).locator('p.font-medium').first().textContent();
+            renderedNames.push(normalizeText(nameText));
+        }
+
+        const flatLayNames = (capturedFlatLayRequest?.flatLayItems ?? [])
+            .map((item) => normalizeText(item.name))
+            .filter(Boolean);
+        expect(flatLayNames.length).toBeGreaterThan(0);
+
+        // Shop list should map to items used to generate flat-lay.
+        for (const renderedName of renderedNames) {
+            expect(flatLayNames, `Rendered product "${renderedName}" should exist in flat-lay items`).toContain(renderedName);
+        }
+
+        // 6. Verify product links open real product pages.
         await page.evaluate(() => {
             // @ts-expect-error test-only field
-            window.__lastOpenedUrl = null;
+            window.__openedUrls = [];
             window.open = ((url?: string | URL | undefined) => {
+                const value = typeof url === 'string' ? url : (url?.toString() ?? '');
                 // @ts-expect-error test-only field
-                window.__lastOpenedUrl = typeof url === 'string' ? url : (url?.toString() ?? '');
+                window.__openedUrls.push(value);
                 return null;
             }) as typeof window.open;
         });
 
-        const buyNowButton = page.getByRole('button', { name: 'Buy Now' }).first();
-        await expect(buyNowButton).toBeVisible({ timeout: 10000 });
-        await buyNowButton.click();
+        const clickCount = Math.min(3, renderedProductCount);
+        for (let i = 0; i < clickCount; i++) {
+            await productCards.nth(i).getByRole('button', { name: 'Buy Now' }).click();
+        }
 
-        const openedUrl = await page.evaluate(() => {
+        const openedUrls = await page.evaluate(() => {
             // @ts-expect-error test-only field
-            return window.__lastOpenedUrl as string | null;
+            return window.__openedUrls as string[];
         });
-        expect(openedUrl).toBeTruthy();
-        expect(openedUrl).not.toBe('https://www.central.co.th/th/women');
-        expect(openedUrl).not.toBe('https://www.central.co.th/th/men');
+        expect(openedUrls.length).toBe(clickCount);
+
+        const chatLookUrls = (capturedChatResponse?.looks ?? [])
+            .flatMap((look) => look.items ?? [])
+            .map((item) => item.url ?? '')
+            .filter(Boolean);
+
+        for (const openedUrl of openedUrls) {
+            expect(openedUrl).toBeTruthy();
+            expect(GENERIC_CATEGORY_URLS.has(openedUrl)).toBeFalsy();
+            expect(openedUrl.startsWith('https://')).toBeTruthy();
+            if (chatLookUrls.length > 0) {
+                expect(chatLookUrls).toContain(openedUrl);
+            }
+        }
 
         // Take a screenshot of the result
         await page.screenshot({ path: 'test-results/chat-journey-result.png', fullPage: true });

@@ -15,6 +15,15 @@
 import { createServerClient } from '../client';
 import { generateBatchEmbeddings } from '../../rag/embeddings';
 import { RAG_CONFIG } from '../../rag/config';
+import { config } from 'dotenv';
+import * as fs from 'fs';
+import * as path from 'path';
+
+// Load env from apps/web/.env or .env.local
+const webRoot = path.resolve(__dirname, '../../..');
+const envLocalPath = path.join(webRoot, '.env.local');
+const envPath = path.join(webRoot, '.env');
+config({ path: fs.existsSync(envLocalPath) ? envLocalPath : envPath });
 
 const BATCH_SIZE = RAG_CONFIG.embedding.batchSize; // 50
 

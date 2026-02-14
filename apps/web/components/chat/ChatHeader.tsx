@@ -1,6 +1,7 @@
 'use client'
 
-import { Sparkles, ChevronLeft, MoreVertical, Trash2, HelpCircle, Settings } from 'lucide-react'
+import { useState } from 'react'
+import { Sparkles, ChevronLeft, MoreVertical, Trash2, HelpCircle, Settings, User } from 'lucide-react'
 import { Button } from '@/components/ui/button'
 import {
   DropdownMenu,
@@ -16,6 +17,8 @@ interface ChatHeaderProps {
   status?: ChatStatus
   onBack?: () => void
   onClearChat?: () => void
+  onSettingsClick?: () => void
+  onProfileClick?: () => void
   showBackButton?: boolean
 }
 
@@ -30,9 +33,35 @@ export function ChatHeader({
   status = 'online',
   onBack,
   onClearChat,
+  onSettingsClick,
+  onProfileClick,
   showBackButton = false
 }: ChatHeaderProps) {
+  const [open, setOpen] = useState(false)
   const currentStatus = statusConfig[status]
+
+  // Wrap handlers to close dropdown first, then open dialog
+  const handleProfileClick = () => {
+    setOpen(false)
+    // Small delay to let dropdown close and remove aria-hidden
+    requestAnimationFrame(() => {
+      onProfileClick?.()
+    })
+  }
+
+  const handleSettingsClick = () => {
+    setOpen(false)
+    requestAnimationFrame(() => {
+      onSettingsClick?.()
+    })
+  }
+
+  const handleClearChat = () => {
+    setOpen(false)
+    requestAnimationFrame(() => {
+      onClearChat?.()
+    })
+  }
 
   return (
     <div className="border-b px-4 py-3 bg-background/95 backdrop-blur supports-[backdrop-filter]:bg-background/60">
@@ -72,14 +101,30 @@ export function ChatHeader({
         </div>
 
         {/* Right section: Options menu */}
-        <DropdownMenu>
+        <DropdownMenu open={open} onOpenChange={setOpen}>
           <DropdownMenuTrigger asChild>
-            <Button variant="ghost" size="icon" className="h-9 w-9">
+            <Button 
+              variant="ghost" 
+              size="icon" 
+              className="h-9 w-9"
+            >
               <MoreVertical className="w-5 h-5" />
             </Button>
           </DropdownMenuTrigger>
-          <DropdownMenuContent align="end" className="w-48">
-            <DropdownMenuItem onClick={onClearChat} className="text-destructive">
+          <DropdownMenuContent 
+            align="end" 
+            className="w-48"
+            onCloseAutoFocus={(e) => {
+              // Prevent focus from returning to the trigger
+              e.preventDefault()
+            }}
+          >
+            <DropdownMenuItem onClick={handleProfileClick}>
+              <User className="w-4 h-4 mr-2" />
+              โปรไฟล์
+            </DropdownMenuItem>
+            <DropdownMenuSeparator />
+            <DropdownMenuItem onClick={handleClearChat} className="text-destructive">
               <Trash2 className="w-4 h-4 mr-2" />
               เคลียร์แชท
             </DropdownMenuItem>
@@ -88,9 +133,9 @@ export function ChatHeader({
               <HelpCircle className="w-4 h-4 mr-2" />
               ช่วยเหลือ
             </DropdownMenuItem>
-            <DropdownMenuItem>
+            <DropdownMenuItem onClick={handleSettingsClick}>
               <Settings className="w-4 h-4 mr-2" />
-              ตั้งค่า
+              ตั้งค่า (Dev)
             </DropdownMenuItem>
           </DropdownMenuContent>
         </DropdownMenu>

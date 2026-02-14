@@ -58,9 +58,8 @@ import {
   formatKnowledgeForPrompt,
   getKnowledgeSummary,
 } from '../knowledge/fashion-summaries'
-// RAG imports (v3.0)
+// RAG imports (v3.0) - Supabase-only
 import {
-  getRAGService,
   buildFashionContext,
   type RetrievalResult,
   type RetrievalOptions,
@@ -394,7 +393,7 @@ interface RAGRetrievalResult {
 }
 
 /**
- * Vector-only knowledge retrieval (Supabase → Vectra cascade)
+ * Vector-only knowledge retrieval (Supabase-only, no fallback)
  * Used as one arm of the hybrid search pipeline.
  */
 async function retrieveVectorKnowledge(
@@ -411,40 +410,27 @@ async function retrieveVectorKnowledge(
   if (detectedGender) retrievalOptions.filters!.gender = detectedGender
   if (detectedOccasion) retrievalOptions.filters!.occasion = detectedOccasion
 
-  // Try Supabase first if enabled
-  if (process.env.SUPABASE_RAG_ENABLED === 'true') {
-    try {
-      console.log('[AI Chat] RAG: Using Supabase pgvector')
-      const result = await retrieveFromSupabase(query, retrievalOptions)
-      if (result.documents.length > 0) {
-        console.log(`[AI Chat] RAG: Supabase retrieved ${result.documents.length} documents`)
-        return result
-      }
-      console.warn('[AI Chat] RAG: Supabase returned no documents, trying Vectra')
-    } catch (err) {
-      console.error('[AI Chat] RAG: Supabase failed, trying Vectra:', err)
-    }
-  }
-
-  // Vectra fallback
+  // Supabase-only retrieval (no Vectra fallback)
   try {
-    console.log('[AI Chat] RAG: Using Vectra in-memory')
-    const ragService = getRAGService()
-    const result = await ragService.retrieve(query, retrievalOptions)
-    if (result.documents.length > 0) {
-      console.log(`[AI Chat] RAG: Vectra retrieved ${result.documents.length} documents`)
-      return result
-    }
+    console.log('[AI Chat] RAG: Using Supabase pgvector')
+    const result = await retrieveFromSupabase(query, retrievalOptions)
+    console.log(`[AI Chat] RAG: Supabase retrieved ${result.documents.length} documents`)
+    return result
   } catch (err) {
-    console.error('[AI Chat] RAG: Vectra failed:', err)
-  }
-
-  // Return empty result (keyword layer will still provide context)
-  return {
-    documents: [],
-    scores: [],
-    totalFound: 0,
-    metadata: { retrievalTimeMs: 0, query, normalizedQuery: query.toLowerCase(), appliedFilters: {}, tokenCount: 0 },
+    console.error('[AI Chat] RAG: Supabase retrieval failed:', err)
+    // Return empty result (keyword layer will still provide context)
+    return {
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 0,
+        query,
+        normalizedQuery: query.toLowerCase(),
+        appliedFilters: retrievalOptions.filters || {},
+        tokenCount: 0
+      },
+    }
   }
 }
 
@@ -492,11 +478,39 @@ function mergeRAGResults(
 }
 
 /**
+ * Detects if a message is a generic greeting or too vague for specific RAG retrieval
+ */
+function isGenericGreetingOrVague(message: string): boolean {
+  const lowerMessage = message.toLowerCase().trim()
+
+  // Greeting patterns
+  const greetings = ['สวัสดี', 'หวัดดี', 'ดี', 'hello', 'hi', 'hey']
+  if (greetings.some(g => lowerMessage === g || lowerMessage.startsWith(g + ' '))) {
+    return true
+  }
+
+  // Very vague requests (< 15 chars, no specific keywords)
+  if (lowerMessage.length < 15) {
+    const vaguePatterns = [
+      /^(แนะนำ|ช่วย|หา|อยาก|ต้องการ)(ชุด|เสื้อ|กางเกง)?$/,
+      /^(recommend|suggest|help|find)\s*(outfit|clothes)?$/i,
+    ]
+    if (vaguePatterns.some(p => p.test(lowerMessage))) {
+      return true
+    }
+  }
+
+  return false
+}
+
+/**
  * Hybrid RAG retrieval: runs vector search + keyword search in parallel, merges results.
  *
  * v5.1: Replaces the old cascade architecture (Supabase → Vectra → keyword).
+ * v5.2: Enhanced with default knowledge retrieval for generic queries
  * - Thai queries are translated to English for vector search
  * - Original Thai text is used for keyword matching
+ * - Generic greetings trigger default introductory knowledge retrieval
  * - Both run in parallel via Promise.allSettled for better recall + lower latency
  */
 async function retrieveKnowledgeWithRAG(
@@ -505,8 +519,16 @@ async function retrieveKnowledgeWithRAG(
   detectedOccasion?: string
 ): Promise<RAGRetrievalResult> {
   try {
+    // Step 0: Check if query is generic/greeting → use default knowledge query
+    let queryForRetrieval = message
+    if (isGenericGreetingOrVague(message)) {
+      // Expand to a default fashion knowledge query to ensure we get baseline context
+      queryForRetrieval = 'fashion styling basics budget color coordination outfit tips'
+      console.log('[AI Chat] RAG: Generic query detected, using default knowledge query')
+    }
+
     // Step 1: Translate Thai → English (for vector search only)
-    const translatedQuery = await translateQueryForRAG(message)
+    const translatedQuery = await translateQueryForRAG(queryForRetrieval)
 
     // Step 2: Run vector search and keyword search in parallel
     const [vectorResult, keywordResult] = await Promise.allSettled([
@@ -659,10 +681,10 @@ async function callOpenRouter(
   sessionContext?: SessionContext,
   forceRecommendation?: boolean
 ) {
-  const apiKey = process.env.OPENROUTER_API_KEY
+  const apiKey = process.env.OPENROUTER_API_KEY || process.env.NEXT_PUBLIC_OPENROUTER_API_KEY
 
   if (!apiKey) {
-    throw new Error('OPENROUTER_API_KEY not configured')
+    throw new Error('OPENROUTER_API_KEY (or NEXT_PUBLIC_OPENROUTER_API_KEY) not configured')
   }
 
   // Build messages array with system prompt v2.1
@@ -909,7 +931,16 @@ async function processAIChatRequestV5(
   if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
     try {
       const heuristicCount = filteredProducts.length
-      const semanticProducts = await searchProductsFromSupabase(request.message, occasion || undefined, 30)
+      // v5.2: Pass detected/profile gender to semantic search for better filtering
+      const resolvedGender = userQuery.detectedGender ||
+                            sessionContext.conversationContext.gender ||
+                            request.userPreferences?.gender
+      const semanticProducts = await searchProductsFromSupabase(
+        request.message,
+        occasion || undefined,
+        30,
+        resolvedGender
+      )
       if (semanticProducts.length > 0) {
         const enhancedSemantic = transformDbProductsToEnhanced(semanticProducts)
 
@@ -1338,10 +1369,13 @@ export async function processAIChatRequest(
     if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
       try {
         console.log('[AI Chat] Semantic search: querying Supabase for relevant products')
+        // v5.2: Pass user gender to semantic search
+        const resolvedGender = request.userPreferences?.gender
         const semanticProducts = await searchProductsFromSupabase(
           request.message,
           occasion || undefined,
-          30
+          30,
+          resolvedGender
         )
 
         if (semanticProducts.length > 0) {

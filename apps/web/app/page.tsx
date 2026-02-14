@@ -1,7 +1,7 @@
 "use client"
 
 import { useState, useEffect } from "react"
-import ChatInterface from "@/components/chat/ChatInterface"
+
 import OutfitDetails from "@/components/outfit/OutfitDetails"
 import { Button } from "@/components/ui/button"
 import { NavigationFilters } from "@/components/navigation/NavigationFilters"
@@ -298,13 +298,7 @@ export default function HomePage() {
         </div>
 
         <div className={activeTab === "chat" ? "block h-full" : "hidden"}>
-          <ChatInterface
-            onOutfitSelect={(outfitId) => {
-              const outfit = allOutfits.find(o => o.id === outfitId)
-              if (outfit) selectOutfit(outfit)
-            }}
-            onViewDetails={selectOutfit}
-          />
+          <ChatAssistant onViewOutfit={selectOutfit} />
         </div>
 
         {activeTab === "filters" && (

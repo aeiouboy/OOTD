@@ -40,12 +40,14 @@ export async function retrieveFromSupabase(
     // 2. Extract filter / limit from options
     const categoryFilter = options?.filters?.category
     const topK = options?.topK ?? 5
+    const matchThreshold = options?.threshold ?? 0.25
 
     // 3. Call Supabase RPC
     const rows = await searchKnowledge(
       embeddingResult.embedding,
       categoryFilter,
-      topK
+      topK,
+      matchThreshold
     )
 
     // 4. Map rows to KnowledgeDocument[]
@@ -116,7 +118,8 @@ export async function retrieveFromSupabase(
 export async function searchProductsFromSupabase(
   query: string,
   occasionFilter?: string,
-  limit?: number
+  limit?: number,
+  genderFilter?: string
 ): Promise<DbProduct[]> {
   try {
     const embeddingResult = await generateEmbedding(query, true)
@@ -124,7 +127,8 @@ export async function searchProductsFromSupabase(
     const products = await searchProductsBySimilarity(
       embeddingResult.embedding,
       occasionFilter,
-      limit || 20
+      limit || 20,
+      genderFilter
     )
 
     return (products ?? []) as unknown as DbProduct[]

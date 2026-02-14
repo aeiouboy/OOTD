@@ -254,9 +254,16 @@ export function OutfitRecommendationCard({
                 </div>
               )}
             </>
-          ) : outfit.items && outfit.items.length > 0 ? (
+          ) : outfit.items && outfit.items.length > 0 && !flatLayError ? (
             // Fallback: Use FlatLayComposite (CSS-based flat-lay) instead of mannequin thumbnail
             <FlatLayComposite items={outfit.items} />
+          ) : flatLayError ? (
+            // When generation fails, avoid showing misleading pseudo-flatlay from raw product thumbnails.
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 px-4">
+              <AlertCircle className="w-6 h-6 text-amber-600 mb-2" />
+              <p className="text-xs text-gray-600 text-center">สร้างภาพลุคไม่สำเร็จ</p>
+              <p className="text-[10px] text-gray-500 text-center mt-1">กรุณาลองใหม่อีกครั้ง</p>
+            </div>
           ) : (
             // Placeholder when no image and no items available
             <div className="w-full h-full flex items-center justify-center bg-gray-200">

@@ -10,7 +10,7 @@
  * and parameter extraction in `extractFollowUpParameters`.
  */
 
-import { analyzeUserQuery } from '../clarification-detector';
+import { analyzeUserQuery, getClarificationsNeeded } from '../clarification-detector';
 import { detectFollowUpRequest } from '../follow-up-handler';
 
 describe('analyzeUserQuery() field detection', () => {
@@ -45,6 +45,26 @@ describe('analyzeUserQuery() field detection', () => {
     const result = analyzeUserQuery('ชุดทำงาน ผู้หญิง');
     expect(result.hasBudget).toBe(false);
     expect(result.detectedBudget).toBeUndefined();
+  });
+
+  it('should detect interview request as work occasion', () => {
+    const result = analyzeUserQuery('อยากได้ชุดไปสัมภาษณ์งานวันศุกร์นี้');
+    expect(result.hasOccasion).toBe(true);
+    expect(result.detectedOccasion).toBe('work');
+  });
+
+  it('should not ask occasion clarification for interview request', () => {
+    const query = analyzeUserQuery('อยากได้ชุดไปสัมภาษณ์งานวันศุกร์นี้');
+    const clarifications = getClarificationsNeeded(
+      query,
+      [],
+      [],
+      { gender: 'women' },
+      0,
+      false
+    );
+
+    expect(clarifications.some((c) => c.type === 'occasion')).toBe(false);
   });
 });
 

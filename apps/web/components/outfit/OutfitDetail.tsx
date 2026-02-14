@@ -14,7 +14,7 @@ import { ArrowLeft, Sparkles } from 'lucide-react'
 /**
  * Cache configuration for localStorage (matching useFlatLayGeneration.ts)
  */
-const CACHE_PREFIX = 'flat-lay-'
+const CACHE_PREFIX = 'flat-lay-v2-'
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 
 /**
@@ -150,6 +150,10 @@ export function OutfitDetail({
 
     try {
       const flatLayItems = transformToFlatLayItems(targetOutfit.items)
+      const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
+        return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
+      })
+      const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
 
       const response = await fetch('/api/generate-image', {
         method: 'POST',
@@ -157,7 +161,7 @@ export function OutfitDetail({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          generationType: 'flat-lay',
+          generationType,
           flatLayItems,
           occasionContext: targetOutfit.description || targetOutfit.title,
         }),

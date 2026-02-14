@@ -34,14 +34,19 @@ export async function searchProductsBySimilarity(
   queryEmbedding: number[],
   occasionFilter?: string,
   limit = 20,
+  genderFilter?: string,
 ) {
   const supabase = createServerClient()
 
+  // IMPORTANT: Always provide gender_filter (even if null) to disambiguate
+  // between the 4-param and 5-param versions of search_products RPC.
+  // Without this, Supabase throws PGRST203 function overloading error.
   const { data, error } = await supabase.rpc('search_products', {
     query_embedding: JSON.stringify(queryEmbedding),
-    occasion_filter: occasionFilter,
+    occasion_filter: occasionFilter || null,
     match_threshold: 0.25,
     match_count: limit,
+    gender_filter: genderFilter || null,
   })
 
   if (error) throw error

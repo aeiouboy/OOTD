@@ -8,6 +8,7 @@ import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import {
   findReplacementsForInconsistentProducts,
+  hasProblematicFlatLayImageUrl,
 } from '@/lib/utils/product-visual-validator'
 import { cleanProductNameForPrompt, extractColorFromProductName } from '@/lib/prompts/image-prompts'
 import { getMockOutfitResponse } from '@/lib/mock-data'
@@ -68,6 +69,8 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
   const [generatingImage, setGeneratingImage] = useState(false)
   const [imageGenerationError, setImageGenerationError] = useState<string | null>(null)
   const [allProducts, setAllProducts] = useState<Product[]>([])
+  const fallbackCatalogRef = useRef<Product[] | null>(null)
+  const fallbackCatalogPromiseRef = useRef<Promise<Product[]> | null>(null)
 
   const { profile } = useUserProfile()
 
@@ -108,6 +111,27 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
     }
   }, [])
 
+  const loadFallbackCatalog = useCallback(async (): Promise<Product[]> => {
+    if (fallbackCatalogRef.current) return fallbackCatalogRef.current
+    if (fallbackCatalogPromiseRef.current) return fallbackCatalogPromiseRef.current
+
+    fallbackCatalogPromiseRef.current = fetch('/api/products')
+      .then(async (res) => {
+        if (!res.ok) return []
+        const data = await res.json() as { products?: Product[] }
+        const products = Array.isArray(data.products) ? data.products : []
+        const filtered = products.filter((p) => p?.imageUrl && !hasProblematicFlatLayImageUrl(p.imageUrl))
+        fallbackCatalogRef.current = filtered
+        return filtered
+      })
+      .catch(() => [])
+      .finally(() => {
+        fallbackCatalogPromiseRef.current = null
+      })
+
+    return fallbackCatalogPromiseRef.current
+  }, [])
+
   // ── Clear chat ────────────────────────────────────────────────────────────
 
   const handleClearChat = useCallback(() => {
@@ -141,10 +165,23 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
     let effectiveOutfit = outfit
     let replacementsMade = new Map<string, Product>()
 
-    if (productCatalog && productCatalog.length > 0) {
+    let replacementCatalog: Product[] = productCatalog || []
+    if (replacementCatalog.length < 50) {
+      const fallbackCatalog = await loadFallbackCatalog()
+      if (fallbackCatalog.length > 0) {
+        const merged = new Map<string, Product>()
+        for (const p of replacementCatalog) merged.set(p.sku, p)
+        for (const p of fallbackCatalog) {
+          if (!merged.has(p.sku)) merged.set(p.sku, p)
+        }
+        replacementCatalog = Array.from(merged.values())
+      }
+    }
+
+    if (replacementCatalog.length > 0) {
       const replacementResult = findReplacementsForInconsistentProducts(
         outfit.items,
-        productCatalog,
+        replacementCatalog,
         { targetGender: 'women' }
       )
 
@@ -207,9 +244,15 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
         category,
         color: realColor,
         visualDescription: visualDesc,
+        sku: item.sku,
+        thumbnailUrl: item.imageUrl,
       }
     })
     const occasionContext = outfit.description
+    const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
+      return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
+    })
+    const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
 
     if (flatLayItems.length === 0) {
       console.log('[Chat] No items to generate flat-lay for')
@@ -222,7 +265,7 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
         headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           description: outfit.description || 'LOOKs Inspiration',
-          generationType: 'flat-lay',
+          generationType,
           flatLayItems,
           occasionContext,
         }),
@@ -302,7 +345,7 @@ export function ChatProvider({ children, onViewOutfit }: ChatProviderProps) {
         })
       )
     }
-  }, [applyProductReplacements])
+  }, [applyProductReplacements, loadFallbackCatalog])
 
   // ── Send message ──────────────────────────────────────────────────────────
 

@@ -8,13 +8,14 @@ import {
   validateFlatLayThumbnailMatch,
   findVisuallyConsistentReplacement,
   findReplacementsForInconsistentProducts,
+  hasProblematicFlatLayImageUrl,
   type ProductVisualConsistency,
 } from '@/lib/utils/product-visual-validator'
 
 /**
  * Cache configuration for localStorage
  */
-const CACHE_PREFIX = 'flat-lay-'
+const CACHE_PREFIX = 'flat-lay-v2-'
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days in milliseconds
 
 /**
@@ -33,6 +34,27 @@ interface QueuedRequest {
   execute: () => void
 }
 const generationQueue: QueuedRequest[] = []
+
+/**
+ * Shared client-side fallback catalog cache for replacement lookup.
+ */
+let fallbackCatalogPromise: Promise<Product[]> | null = null
+
+async function loadFallbackCatalog(): Promise<Product[]> {
+  if (fallbackCatalogPromise) return fallbackCatalogPromise
+
+  fallbackCatalogPromise = fetch('/api/products')
+    .then(async (res) => {
+      if (!res.ok) return []
+      const data = await res.json() as { products?: Product[] }
+      const products = Array.isArray(data.products) ? data.products : []
+      // Keep only usable items for flat-lay replacement.
+      return products.filter((p) => p?.imageUrl && !hasProblematicFlatLayImageUrl(p.imageUrl))
+    })
+    .catch(() => [])
+
+  return fallbackCatalogPromise
+}
 
 /**
  * Process the next item in the queue if a slot is available
@@ -575,9 +597,13 @@ export function useFlatLayGeneration({
     hasAttemptedRef.current = true
     currentGenerations++
 
-    // Transform products to flat-lay items with visual consistency validation
-    // Pass allProducts to enable automatic replacement of inconsistent items
-    const transformResult = transformToFlatLayItems(items, true, allProducts)
+    // Transform products to flat-lay items with visual consistency validation.
+    // Prefer caller-provided catalog; otherwise lazily fetch /api/products.
+    const replacementCatalog = allProducts && allProducts.length > 0
+      ? allProducts
+      : await loadFallbackCatalog()
+
+    const transformResult = transformToFlatLayItems(items, true, replacementCatalog)
 
     // Update replacement state
     setProductReplacements(transformResult.replacements)

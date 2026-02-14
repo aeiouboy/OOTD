@@ -4,7 +4,7 @@ This file provides guidance to Claude Code (claude.ai/code) when working with co
 
 ## Project Overview
 
-OOTDay is an AI-powered fashion assistant platform that helps Thai users with daily outfit decisions and connects fashion inspiration directly to Central Group purchase opportunities. The project combines a Next.js frontend application with a multi-agent task automation system.
+OOTDay is an AI-powered fashion assistant platform that helps Thai users with daily outfit decisions and connects fashion inspiration directly to Central Group purchase opportunities.
 
 ## Project Structure
 
@@ -19,7 +19,9 @@ OOTDay is an AI-powered fashion assistant platform that helps Thai users with da
 │   ├── guides/                 # Implementation guides
 │   └── bugs/                   # Bug reports
 ├── scripts/                    # Automation scripts
-│   └── adws/                   # AI Dev Workflows (multi-agent system)
+│   ├── classification/         # Product scraping & occasion classification
+│   ├── image_processing/       # Image processing utilities (Python)
+│   └── migration/              # Database migration scripts
 ├── data/                       # Data files
 │   ├── products/               # Product JSON data (fallback)
 │   ├── personas/               # AI persona definitions + knowledge base
@@ -130,11 +132,10 @@ SYSTEM_PROMPT_VERSION=v5.0       # Chat prompt version (v2.1, v3.0, v4.0, v5.0)
 | `search_products` | Semantic product search (pgvector, threshold 0.25) |
 | `search_knowledge` | Semantic knowledge search (pgvector, threshold 0.25) |
 
-### Multi-Agent Task System (scripts/adws/)
-Orchestrates multiple Claude Code agents for parallel development:
-- `adw_triggers/adw_trigger_cron_todone.py` - Scans tasks.md for pending work
-- `adw_build_update_task.py` - Simple build and update workflow
-- `adw_plan_implement_update_task.py` - Complex plan-build-update workflow
+### Utility Scripts (scripts/)
+- **classification/** - Product scraping and occasion classification for Central Group inventory
+- **image_processing/** - Python utilities for processing product images
+- **migration/** - Database migration scripts (e.g., `migrate_kb_attributes.py`)
 
 ## Development Commands
 
@@ -157,13 +158,6 @@ pnpm lint
 # Run tests (Vitest)
 pnpm test
 # or: pnpm vitest run
-```
-
-### Multi-Agent System
-```bash
-./scripts/adws/adw_triggers/adw_trigger_cron_todone.py
-./scripts/adws/adw_build_update_task.py
-./scripts/adws/adw_plan_implement_update_task.py
 ```
 
 ## Key File Locations

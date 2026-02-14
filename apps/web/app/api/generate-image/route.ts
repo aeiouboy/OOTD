@@ -14,6 +14,7 @@
 import { NextRequest, NextResponse } from 'next/server';
 import { OpenRouterImageClient } from '@/lib/services/image-generation-service';
 import { generateHybridFlatLayWithFallback } from '@/lib/services/hybrid-flat-lay-service';
+import { batchExtractDescriptions } from '@/lib/services/vision-description-service';
 import type { ImageGenerationRequest, FlatLayItem, BackgroundStyle, UserAesthetic } from '@/lib/types/image-types';
 import fs from 'fs';
 import path from 'path';
@@ -428,16 +429,40 @@ export async function POST(request: NextRequest) {
 
     // Route to appropriate generation method based on generationType
     let result;
-    if (generationType === 'hybrid-flat-lay' && flatLayItems) {
+
+    // Vision enrichment: Extract descriptions from images BEFORE any generation type
+    // This ensures both hybrid and AI-only flat-lays use vision-extracted descriptions
+    let enhancedFlatLayItems = flatLayItems;
+    if ((generationType === 'flat-lay' || generationType === 'hybrid-flat-lay') && flatLayItems) {
+      const useVisionDescriptions = process.env.FLAT_LAY_USE_VISION === 'true';
+
+      if (useVisionDescriptions) {
+        console.log('[API] Vision mode enabled - extracting product descriptions from images');
+        try {
+          enhancedFlatLayItems = await batchExtractDescriptions(flatLayItems, 3);
+          const enrichedCount = enhancedFlatLayItems.filter((item) => item.visualDescription).length;
+          console.log(`[API] Vision extraction: ${enrichedCount}/${flatLayItems.length} items enriched`);
+        } catch (visionError) {
+          console.warn('[API] Vision extraction failed, using original items:', visionError);
+          // Fallback to original items if vision fails
+          enhancedFlatLayItems = flatLayItems;
+        }
+      }
+    }
+
+    if (generationType === 'hybrid-flat-lay' && enhancedFlatLayItems) {
       // Hybrid flat-lay: AI background + real product images
+      // Uses vision-enriched items for better AI fallback descriptions
+      const allowHybridAIFallback = process.env.HYBRID_FLATLAY_ALLOW_AI_FALLBACK === 'true'
       const hybridResult = await generateHybridFlatLayWithFallback(
         {
-          items: flatLayItems,
+          items: enhancedFlatLayItems,
           backgroundStyle: backgroundStyle as BackgroundStyle | undefined,
           userAesthetic: userAesthetic as UserAesthetic | undefined,
           occasionContext: occasionContext,
         },
-        apiKey
+        apiKey,
+        allowHybridAIFallback
       );
 
       // Convert hybrid response to standard ImageGenerationResponse format
@@ -453,11 +478,12 @@ export async function POST(request: NextRequest) {
           prompt: `Hybrid flat-lay with ${hybridResult.processedProducts.length} products`,
         },
       };
-    } else if (generationType === 'flat-lay' && flatLayItems) {
+    } else if (generationType === 'flat-lay' && enhancedFlatLayItems) {
+      // Pure AI flat-lay generation with vision-enriched descriptions
       result = await imageClient.generateFlatLayImage({
-        items: flatLayItems,
+        items: enhancedFlatLayItems,
         occasionContext: occasionContext,
-        totalItems: flatLayItems.length,
+        totalItems: enhancedFlatLayItems.length,
       });
     } else if (generationType === 'fitting-model' && referenceImage) {
       result = await imageClient.generateFittingModelImage(description, referenceImage);

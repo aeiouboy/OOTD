@@ -81,12 +81,39 @@ const CATEGORY_TYPES: Record<string, 'main' | 'shoes' | 'accessory'> = {
   bracelet: 'accessory',
 };
 
+const NAME_TYPE_HINTS: Record<'main' | 'shoes' | 'accessory', string[]> = {
+  main: [
+    'dress', 'shirt', 'blouse', 'top', 'tee', 't-shirt', 'tshirt',
+    'pants', 'trouser', 'jeans', 'skirt', 'shorts', 'jacket', 'blazer',
+    'cardigan', 'sweater', 'coat', 'jumpsuit', 'romper',
+  ],
+  shoes: [
+    'shoe', 'sneaker', 'sandals', 'sandal', 'heels', 'heel', 'boots', 'boot',
+    'loafers', 'loafer', 'flats', 'flat', 'mule', 'pump', 'oxford',
+  ],
+  accessory: [
+    'bag', 'handbag', 'purse', 'belt', 'hat', 'scarf', 'watch',
+    'sunglasses', 'earring', 'necklace', 'bracelet',
+  ],
+};
+
 /**
- * Categorizes a product based on its category string
+ * Categorizes a product using category first, then product name hints.
+ * Many catalog rows use generic categories (e.g. "clothing"), so name hints
+ * prevent key items like pants from being laid out as accessories.
  */
-function categorizeProduct(category: string): 'main' | 'shoes' | 'accessory' {
-  const lowerCategory = category.toLowerCase().trim();
-  return CATEGORY_TYPES[lowerCategory] || 'accessory';
+function categorizeProduct(category: string, name?: string): 'main' | 'shoes' | 'accessory' {
+  const lowerCategory = (category || '').toLowerCase().trim();
+  if (CATEGORY_TYPES[lowerCategory]) {
+    return CATEGORY_TYPES[lowerCategory];
+  }
+
+  const haystack = `${lowerCategory} ${(name || '').toLowerCase()}`;
+  if (NAME_TYPE_HINTS.shoes.some((token) => haystack.includes(token))) return 'shoes';
+  if (NAME_TYPE_HINTS.main.some((token) => haystack.includes(token))) return 'main';
+  if (NAME_TYPE_HINTS.accessory.some((token) => haystack.includes(token))) return 'accessory';
+
+  return 'accessory';
 }
 
 /**
@@ -109,7 +136,7 @@ export function calculateFlatLayLayout(
   const accessoryItems: number[] = [];
 
   items.forEach((item, index) => {
-    const type = categorizeProduct(item.category);
+    const type = categorizeProduct(item.category, item.name);
     if (type === 'main') mainItems.push(index);
     else if (type === 'shoes') shoeItems.push(index);
     else accessoryItems.push(index);
@@ -139,8 +166,8 @@ export function calculateFlatLayLayout(
     };
   } else if (items.length === 2) {
     // Two items: side by side with slight rotation
-    const firstType = categorizeProduct(items[0].category);
-    const secondType = categorizeProduct(items[1].category);
+    const firstType = categorizeProduct(items[0].category, items[0].name);
+    const secondType = categorizeProduct(items[1].category, items[1].name);
 
     if (firstType === 'main') {
       layouts[0] = { x: 0.35, y: 0.45, rotation: -3, scale: 0.55, zIndex: 2 };
@@ -156,59 +183,73 @@ export function calculateFlatLayLayout(
       layouts[1] = { x: 0.7, y: 0.35, rotation: 6, scale: 0.3, zIndex: 1 };
     }
   } else {
-    // Three or more items: elegant diagonal composition
-    // Main garment: upper-left, prominent
-    // Shoes: bottom-left with rotation
-    // Accessories: top-right and middle-right
+    // Three or more items: deterministic non-overlapping arrangement.
+    // Goal: avoid heavy stacking that looks like pasted cards.
+    const primaryMain = mainItems[0];
+    const secondaryMain = mainItems[1];
+    const tertiaryMain = mainItems[2];
 
-    let positionIndex = 0;
+    if (items.length === 3) {
+      // Common case: top + bottom + shoes (or 2 garments + 1 accent)
+      if (typeof primaryMain === 'number') {
+        layouts[primaryMain] = { x: 0.38, y: 0.28, rotation: -2, scale: 0.42, zIndex: 3 };
+      }
+      if (typeof secondaryMain === 'number') {
+        layouts[secondaryMain] = { x: 0.38, y: 0.70, rotation: 2, scale: 0.34, zIndex: 2 };
+      }
+      if (shoeItems[0] !== undefined) {
+        layouts[shoeItems[0]] = { x: 0.73, y: 0.72, rotation: -5, scale: 0.27, zIndex: 2 };
+      }
+      if (accessoryItems[0] !== undefined) {
+        layouts[accessoryItems[0]] = { x: 0.73, y: 0.35, rotation: 5, scale: 0.22, zIndex: 2 };
+      }
+    } else {
+      // 4+ items: spread into stable slots to minimize occlusion.
+      if (typeof primaryMain === 'number') {
+        layouts[primaryMain] = { x: 0.30, y: 0.30, rotation: -3, scale: 0.40, zIndex: 4 };
+      }
+      if (typeof secondaryMain === 'number') {
+        layouts[secondaryMain] = { x: 0.62, y: 0.30, rotation: 3, scale: 0.36, zIndex: 3 };
+      }
+      if (typeof tertiaryMain === 'number') {
+        layouts[tertiaryMain] = { x: 0.46, y: 0.66, rotation: -2, scale: 0.30, zIndex: 2 };
+      }
 
-    // Position main items (upper-left area)
-    mainItems.forEach((itemIdx, i) => {
-      const yOffset = i * 0.15;
-      layouts[itemIdx] = {
-        x: 0.3 + i * 0.05,
-        y: 0.35 + yOffset,
-        rotation: -3 + i * 2,
-        scale: i === 0 ? 0.5 : 0.4,
-        zIndex: 4 - i,
-      };
-    });
-
-    // Position shoes (bottom-left)
-    shoeItems.forEach((itemIdx, i) => {
-      layouts[itemIdx] = {
-        x: 0.25 + i * 0.1,
-        y: 0.75 + i * 0.05,
-        rotation: -8 + i * 4,
-        scale: 0.35,
-        zIndex: 1,
-      };
-    });
-
-    // Position accessories (right side, scattered)
-    const accessoryPositions = [
-      { x: 0.75, y: 0.25, rotation: 6, scale: 0.25, zIndex: 2 },
-      { x: 0.72, y: 0.55, rotation: -4, scale: 0.28, zIndex: 2 },
-      { x: 0.8, y: 0.75, rotation: 8, scale: 0.22, zIndex: 1 },
-      { x: 0.6, y: 0.15, rotation: -6, scale: 0.2, zIndex: 1 },
-    ];
-
-    accessoryItems.forEach((itemIdx, i) => {
-      const pos = accessoryPositions[i % accessoryPositions.length];
-      layouts[itemIdx] = { ...pos };
-    });
-
-    // Fill any remaining items without layouts
-    items.forEach((_, idx) => {
-      if (!layouts[idx]) {
-        layouts[idx] = {
-          x: 0.5 + Math.random() * 0.3 - 0.15,
-          y: 0.5 + Math.random() * 0.3 - 0.15,
-          rotation: Math.random() * 10 - 5,
-          scale: 0.3,
+      shoeItems.forEach((itemIdx, i) => {
+        layouts[itemIdx] = {
+          x: i % 2 === 0 ? 0.26 : 0.70,
+          y: 0.73 + Math.min(i, 1) * 0.03,
+          rotation: i % 2 === 0 ? -6 : 6,
+          scale: 0.24,
           zIndex: 1,
         };
+      });
+
+      const accessoryPositions = [
+        { x: 0.80, y: 0.20, rotation: 6, scale: 0.20, zIndex: 2 },
+        { x: 0.18, y: 0.20, rotation: -6, scale: 0.20, zIndex: 2 },
+        { x: 0.82, y: 0.52, rotation: 4, scale: 0.20, zIndex: 2 },
+        { x: 0.16, y: 0.52, rotation: -4, scale: 0.20, zIndex: 2 },
+      ];
+
+      accessoryItems.forEach((itemIdx, i) => {
+        const pos = accessoryPositions[i % accessoryPositions.length];
+        layouts[itemIdx] = { ...pos };
+      });
+    }
+
+    // Fill remaining items with deterministic fallback slots (no randomness).
+    const fallbackSlots: ProductLayoutConfig[] = [
+      { x: 0.50, y: 0.50, rotation: 0, scale: 0.28, zIndex: 1 },
+      { x: 0.24, y: 0.46, rotation: -4, scale: 0.24, zIndex: 1 },
+      { x: 0.76, y: 0.46, rotation: 4, scale: 0.24, zIndex: 1 },
+      { x: 0.50, y: 0.80, rotation: 0, scale: 0.22, zIndex: 1 },
+    ];
+    let fallbackCursor = 0;
+    items.forEach((_, idx) => {
+      if (!layouts[idx]) {
+        layouts[idx] = fallbackSlots[fallbackCursor % fallbackSlots.length];
+        fallbackCursor++;
       }
     });
   }
@@ -331,6 +372,102 @@ async function transformImage(
   };
 }
 
+type PositionedLayer = {
+  id: string
+  sku: string
+  zIndex: number
+  buffer: Buffer
+  width: number
+  height: number
+  left: number
+  top: number
+}
+
+function clamp(value: number, min: number, max: number): number {
+  return Math.min(Math.max(value, min), max);
+}
+
+function getBox(layer: PositionedLayer) {
+  return {
+    left: layer.left,
+    top: layer.top,
+    right: layer.left + layer.width,
+    bottom: layer.top + layer.height,
+  };
+}
+
+function intersects(a: ReturnType<typeof getBox>, b: ReturnType<typeof getBox>): boolean {
+  return a.left < b.right && a.right > b.left && a.top < b.bottom && a.bottom > b.top;
+}
+
+/**
+ * Nudge lower-priority layers away from overlap to avoid heavy stacking.
+ */
+function resolveLayerCollisions(
+  layers: PositionedLayer[],
+  canvasWidth: number,
+  canvasHeight: number
+): PositionedLayer[] {
+  if (layers.length <= 1) return layers;
+
+  // Higher z-index and larger area stay more stable.
+  const sorted = [...layers].sort((a, b) => {
+    if (b.zIndex !== a.zIndex) return b.zIndex - a.zIndex;
+    return b.width * b.height - a.width * a.height;
+  });
+
+  const placed: PositionedLayer[] = [];
+  const step = 18;
+  const margin = 8;
+
+  for (const layer of sorted) {
+    const current = { ...layer };
+
+    for (let iter = 0; iter < 24; iter++) {
+      const currentBox = getBox(current);
+      const overlaps = placed.filter((p) => intersects(currentBox, getBox(p)));
+      if (overlaps.length === 0) break;
+
+      let pushX = 0;
+      let pushY = 0;
+      const cx = current.left + current.width / 2;
+      const cy = current.top + current.height / 2;
+
+      for (const other of overlaps) {
+        const ox = other.left + other.width / 2;
+        const oy = other.top + other.height / 2;
+        const dx = cx - ox;
+        const dy = cy - oy;
+        if (Math.abs(dx) < 1 && Math.abs(dy) < 1) {
+          pushX += cx < canvasWidth / 2 ? -1 : 1;
+          pushY += cy < canvasHeight / 2 ? -1 : 1;
+        } else {
+          pushX += dx;
+          pushY += dy;
+        }
+      }
+
+      if (Math.abs(pushX) < 0.001 && Math.abs(pushY) < 0.001) {
+        pushX = current.left < canvasWidth / 2 ? -1 : 1;
+        pushY = current.top < canvasHeight / 2 ? -1 : 1;
+      }
+
+      const len = Math.hypot(pushX, pushY) || 1;
+      current.left = Math.round(
+        clamp(current.left + (pushX / len) * step, margin, canvasWidth - current.width - margin)
+      );
+      current.top = Math.round(
+        clamp(current.top + (pushY / len) * step, margin, canvasHeight - current.height - margin)
+      );
+    }
+
+    placed.push(current);
+  }
+
+  const byId = new Map(placed.map((p) => [p.id, p]));
+  return layers.map((layer) => byId.get(layer.id) || layer);
+}
+
 /**
  * Composites multiple product images onto a background
  *
@@ -358,12 +495,7 @@ export async function compositeImages(
     .toBuffer();
 
   // Prepare composite operations sorted by z-index
-  interface CompositeOp {
-    zIndex: number;
-    operations: sharp.OverlayOptions[];
-  }
-
-  const compositeOps: CompositeOp[] = [];
+  const positionedLayers: PositionedLayer[] = [];
 
   for (let i = 0; i < products.length; i++) {
     const product = products[i];
@@ -385,37 +517,45 @@ export async function compositeImages(
     const left = Math.round(layout.x * canvasWidth - transformed.width / 2);
     const top = Math.round(layout.y * canvasHeight - transformed.height / 2);
 
-    const operations: sharp.OverlayOptions[] = [];
-    // Shadow is optional - if it fails, continue with product image.
+    positionedLayers.push({
+      id: `${i}:${product.sku}`,
+      sku: product.sku,
+      zIndex: layout.zIndex,
+      buffer: transformed.buffer,
+      width: transformed.width,
+      height: transformed.height,
+      left,
+      top,
+    });
+  }
+
+  const resolvedLayers = resolveLayerCollisions(positionedLayers, canvasWidth, canvasHeight);
+
+  // Build composite operations sorted by z-index
+  const sortedLayers = [...resolvedLayers].sort((a, b) => a.zIndex - b.zIndex);
+  const flattenedOps: sharp.OverlayOptions[] = [];
+
+  for (const layer of sortedLayers) {
     try {
-      const shadowBuffer = await createDropShadow(transformed.buffer);
-      operations.push({
+      const shadowBuffer = await createDropShadow(layer.buffer);
+      flattenedOps.push({
         input: shadowBuffer,
-        left: left + SHADOW_CONFIG.offsetX,
-        top: top + SHADOW_CONFIG.offsetY,
+        left: layer.left + SHADOW_CONFIG.offsetX,
+        top: layer.top + SHADOW_CONFIG.offsetY,
       });
     } catch (error) {
       console.warn(
-        `[ImageCompositor] Failed to create drop shadow for ${product.sku}, rendering without shadow:`,
+        `[ImageCompositor] Failed to create drop shadow for ${layer.sku}, rendering without shadow:`,
         error
       );
     }
 
-    operations.push({
-      input: transformed.buffer,
-      left,
-      top,
-    });
-
-    compositeOps.push({
-      zIndex: layout.zIndex,
-      operations,
+    flattenedOps.push({
+      input: layer.buffer,
+      left: layer.left,
+      top: layer.top,
     });
   }
-
-  // Sort by z-index and flatten operations
-  compositeOps.sort((a, b) => a.zIndex - b.zIndex);
-  const flattenedOps = compositeOps.flatMap((op) => op.operations);
 
   // Composite all layers
   const result = await sharp(background)

@@ -5,9 +5,9 @@ An AI-powered fashion assistant platform that helps users with daily outfit deci
 ## Overview
 
 OOTDay combines:
-- **AI Chat Interface**: Natural language fashion recommendations powered by Claude AI
+- **AI Chat Interface**: Natural language fashion recommendations powered by Gemini AI
 - **Product Matching**: Integration with Central Group inventory for direct purchases
-- **Multi-Agent Development**: Automated task processing with parallel Claude Code agents
+- **RAG Pipeline**: Supabase pgvector semantic search for fashion knowledge and products
 
 ## Quick Start
 
@@ -24,10 +24,12 @@ Open [http://localhost:3000](http://localhost:3000) to view the app.
 ### Environment Setup
 
 ```bash
+cd apps/web
 cp .env.sample .env
 # Add your API keys:
-# - ANTHROPIC_API_KEY for Claude AI
-# - Other integrations as needed
+# - OPENROUTER_API_KEY for AI models (Gemini, OpenAI embeddings)
+# - NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY for Supabase
+# - SUPABASE_SERVICE_ROLE_KEY for server-side operations
 ```
 
 ## Project Structure
@@ -42,7 +44,9 @@ cp .env.sample .env
 │   ├── architecture/           # System architecture
 │   └── guides/                 # Development guides
 ├── scripts/
-│   └── adws/                   # AI Dev Workflows (automation)
+│   ├── classification/         # Product scraping & occasion classification
+│   ├── image_processing/       # Image processing utilities
+│   └── migration/              # Database migration scripts
 ├── data/
 │   ├── products/               # Product data (JSON)
 │   ├── personas/               # AI persona definitions
@@ -55,57 +59,35 @@ cp .env.sample .env
 └── tasks.md                    # Central task tracking
 ```
 
-## Multi-Agent Task System
-
-The repository includes an automated multi-agent system for development tasks:
-
-### Task Format (tasks.md)
-
-```markdown
-## Git Worktree feature-name
-[] Pending task
-[🟡, adw_12345] In progress
-[✅ abc123, adw_12345] Completed
-[❌, adw_12345] Failed // reason
-[⏰] Blocked (waiting for dependencies)
-```
-
-### Running the Automation
-
-```bash
-# Trigger task processing
-./scripts/adws/adw_triggers/adw_trigger_cron_todone.py
-
-# Individual workflows
-./scripts/adws/adw_build_update_task.py
-./scripts/adws/adw_plan_implement_update_task.py
-```
-
 ## Tech Stack
 
 ### Frontend (apps/web/)
-- **Framework**: Next.js 14 with TypeScript
+- **Framework**: Next.js 14.2 with TypeScript, App Router
 - **UI**: Radix UI + shadcn/ui components
 - **Styling**: Tailwind CSS v4
-- **Testing**: Playwright for E2E tests
+- **Testing**: Vitest (1032+ tests), Playwright E2E
+- **Package Manager**: pnpm
+
+### Backend & AI
+- **Database**: Supabase (PostgreSQL + pgvector)
+- **AI Models**: OpenRouter (Gemini 3 Flash, Gemini 2.5 Flash Image, OpenAI embeddings)
+- **RAG**: Supabase pgvector (225 knowledge chunks, 1000+ products with embeddings)
+- **Image Generation**: Gemini vision-based flat-lay generation
 
 ### Development Tools
 - **AI Assistant**: Claude Code with custom skills
 - **Browser Automation**: Playwright MCP
-- **Task Orchestration**: Python-based ADW system
 
 ## Development Commands
 
 ```bash
 # Frontend
 cd apps/web
+pnpm install      # Install dependencies
 pnpm dev          # Development server
 pnpm build        # Production build
 pnpm lint         # Run linting
-pnpm test         # Run tests
-
-# Multi-agent automation
-./scripts/adws/adw_triggers/adw_trigger_cron_todone.py
+pnpm test         # Run tests (Vitest)
 ```
 
 ## Documentation

@@ -183,7 +183,8 @@ export async function POST(request: NextRequest) {
         const products = await searchProductsBySimilarity(
           embeddingResult.vector,
           occasion ?? undefined,
-          limit
+          limit,
+          undefined  // gender filter not available in suggestions API
         )
 
         return NextResponse.json({

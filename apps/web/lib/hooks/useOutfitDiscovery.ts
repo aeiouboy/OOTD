@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useMemo } from 'react'
+import { useState, useEffect, useMemo, useCallback } from 'react'
 import { useSearchParams, useRouter, usePathname } from 'next/navigation'
 import type { Outfit, FilterState } from '@/lib/types'
 import { filterOutfits } from '@/lib/utils/outfit-filter'
@@ -60,25 +60,25 @@ export function useOutfitDiscovery(allOutfits: Outfit[]) {
     }
   }, [filters, selectedOutfit, pathname])
 
-  // Handlers
-  const selectOutfit = (outfit: Outfit) => {
+  // Handlers - memoized to prevent infinite re-renders
+  const selectOutfit = useCallback((outfit: Outfit) => {
     setSelectedOutfit(outfit)
     setViewMode('detail')
-  }
+  }, [])
 
-  const backToChat = () => {
+  const backToChat = useCallback(() => {
     setSelectedOutfit(null)
     setViewMode('chat')
-  }
+  }, [])
 
-  const resetFilters = () => {
+  const resetFilters = useCallback(() => {
     setFilters({
       gender: profile?.gender || 'all',
       occasion: [],
       priceRange: { min: 0, max: 20000 },
       searchQuery: ''
     })
-  }
+  }, [profile?.gender])
 
   return {
     filters,

@@ -78,7 +78,13 @@ export function detectOccasion(message: string): string | undefined {
   const lowerMessage = message.toLowerCase();
 
   const occasionPatterns: Record<string, string[]> = {
-    work: ['work', 'office', 'meeting', 'presentation', 'ทำงาน', 'ออฟฟิศ', 'ประชุม', 'นำเสนอ'],
+    work: [
+      'work', 'office', 'meeting', 'presentation', 'interview', 'job interview',
+      'professional', 'corporate',
+      'ทำงาน', 'ออฟฟิศ', 'ประชุม', 'นำเสนอ',
+      'สัมภาษณ์งาน', 'สัมภาษณ์', 'ไปสัมภาษณ์', 'สมัครงาน', 'หางาน',
+      'ไปทำงาน', 'ชุดทำงาน', 'นำเสนองาน', 'พรีเซนต์',
+    ],
     chill: ['chill', 'relax', 'weekend', 'casual', 'วันหยุด', 'ชิลล์', 'สบายๆ', 'ผ่อนคลาย'],
     wedding: ['wedding', 'งานแต่ง', 'แต่งงาน', 'งานบวช'],
     sport: ['sport', 'gym', 'workout', 'exercise', 'ออกกำลัง', 'วิ่ง', 'ฟิตเนส', 'โยคะ'],

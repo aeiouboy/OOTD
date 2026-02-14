@@ -1,9 +1,12 @@
 /**
- * Retrieval Pipeline
+ * Retrieval Pipeline (Vectra-based)
  *
- * Handles query preprocessing, embedding generation, vector search,
- * and result formatting for the RAG system.
+ * ⚠️ DEPRECATED (Feb 2026): This file implements Vectra-based retrieval which is no longer used.
+ * RAG pipeline now uses Supabase pgvector exclusively (see supabase-retrieval.ts).
  *
+ * This file is kept for reference only and may be removed in future cleanup.
+ *
+ * @deprecated Use supabase-retrieval.ts instead
  * @version 1.0.0
  * @lastUpdated 2025-12-19
  */

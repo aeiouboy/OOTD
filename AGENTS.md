@@ -1,225 +1,252 @@
-# AGENTS.md
+# OOTDay Project Agents
 
-This file provides guidance to Claude Code (claude.ai/code) when working with code in this repository.
+This file provides guidance for Claude Code CLI when working on the OOTDay AI Fashion Assistant project.
+
+---
 
 ## Project Overview
 
-OOTDay is an AI-powered fashion assistant platform that helps Thai users with daily outfit decisions and connects fashion inspiration directly to Central Group purchase opportunities. The project combines a Next.js frontend application with a multi-agent task automation system.
+**OOTDay** is an AI-powered fashion assistant platform that helps users with daily outfit decisions and connects fashion inspiration directly to purchase opportunities through Central Group's e-commerce platform.
 
-## Project Structure
+### Quick Reference
+
+```bash
+# Frontend Development
+cd apps/web && pnpm dev          # Start dev server on localhost:3000
+
+# Testing
+pnpm test                        # Run Playwright E2E tests
+pnpm lint                        # Run linting
+```
+
+### Project Structure
 
 ```
 /
-├── apps/                       # Application code
-│   ├── web/                    # Main Next.js 14 frontend (TypeScript)
-│   └── sentiment_classification/ # ML sentiment classifier
-├── docs/                       # Documentation
-│   ├── prd/                    # Product requirements
-│   ├── architecture/           # Architecture docs
-│   ├── guides/                 # Implementation guides
-│   └── bugs/                   # Bug reports
-├── scripts/                    # Automation scripts
-│   └── adws/                   # AI Dev Workflows (multi-agent system)
-├── data/                       # Data files
-│   ├── products/               # Product JSON data (fallback)
-│   ├── personas/               # AI persona definitions + knowledge base
-│   ├── catalogs/               # Product catalog CSVs
-│   └── assets/                 # Images (onboarding, CJ)
-├── specs/                      # Feature specifications & implementation plans
-├── research/                   # Research documents
-├── test-result/                # Playwright E2E screenshots
-├── tasks/                      # Task definitions
-├── .claude/                    # Claude Code configuration
-├── tasks.md                    # Central task tracking
-└── README.md
+├── apps/web/                    # Next.js 14 frontend (main application)
+│   ├── app/                     # Next.js app router
+│   │   ├── [locale]/            # i18n routes
+│   │   ├── api/                 # API routes (chat, outfits, products)
+│   │   ├── onboarding/          # Onboarding flow
+│   │   └── page.tsx             # Main entry
+│   ├── components/              # React components
+│   │   ├── chat/                # Chat interface
+│   │   ├── outfit/              # Outfit display cards
+│   │   ├── product/             # Product modals
+│   │   ├── onboarding/          # Onboarding screens
+│   │   └── ui/                  # shadcn/ui components
+│   ├── lib/                     # Business logic
+│   │   ├── prompts/             # AI system prompts
+│   │   ├── rag/                 # RAG pipeline
+│   │   ├── services/            # API services
+│   │   ├── hooks/               # Custom React hooks
+│   │   ├── types/               # TypeScript types
+│   │   └── transformers/        # Data transformers
+│   ├── specs/                   # Feature specifications
+│   └── tests/                   # Playwright E2E tests
+├── data/products/               # 3,265+ Central Group products (JSON)
+├── specs/                       # 150+ feature/chore specs
+├── docs/                        # Documentation
+│   ├── architecture/            # System architecture
+│   ├── prd/                     # Product requirements
+│   └── guides/                  # Implementation guides
+├── scripts/                     # Automation scripts
+│   ├── image_processing/        # Image generation/processing
+│   └── classification/          # ML classification
+├── .claude/                     # Claude Code configuration
+│   ├── skills/                  # Custom skills (orchestrator, playwright-mcp)
+│   └── commands/                # Slash command templates
+└── tasks/                       # Task definitions
 ```
 
-## Key Architecture
+### Tech Stack
 
-### Frontend Application (apps/web/)
-- **Framework**: Next.js 14.2 with TypeScript, App Router
-- **UI Components**: Radix UI with shadcn/ui theming
-- **Styling**: Tailwind CSS v4
-- **State Management**: React hooks and custom hooks in `lib/hooks/`
-- **Package Manager**: pnpm
-- **Test Runner**: Vitest (1032+ tests across 45 files)
-- **Component Structure**:
-  - `components/chat/`: Chat interface (`ChatAssistant.tsx`) + outfit cards (`OutfitRecommendationCard.tsx`)
-  - `components/outfit/`: Outfit detail panel (`OutfitDetail.tsx`)
-  - `components/product/`: Product modal and details
-  - `components/occasion/`: Occasion suggestion grid
-  - `components/layout/`: Header and bottom navigation
-  - `components/ui/`: Base UI components (Pagination, etc.)
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 14, TypeScript 5.3+, Tailwind CSS v4 |
+| **UI Components** | Radix UI + shadcn/ui |
+| **State Management** | Zustand |
+| **Backend** | Azure Functions, Node.js/TypeScript |
+| **AI/ML** | Claude AI, n8n, Langflow |
+| **Database** | Azure Cosmos DB, Redis Cache |
+| **Storage** | Azure Blob Storage |
+| **Testing** | Playwright (E2E), Vitest |
+| **Auth** | Azure AD B2C |
+| **Product Data** | Central Group API |
 
-### Chat Pipeline (v5.0 — Current)
-The core AI fashion recommendation flow:
+---
 
-1. **Entry**: `POST /api/chat` → `app/api/chat/route.ts`
-2. **Product Loading**: Supabase (primary) → JSON fallback → transform via `db-product-to-enhanced.ts`
-3. **Processing**: `lib/services/ai-chat-service.ts::processAIChatRequestV5()`
-   - Guardrails check → Image request detection → User query analysis
-   - Occasion detection (hard keywords + Thai cultural matcher)
-   - Product filtering (semantic search + formality filter + budget + gender + color)
-   - RAG knowledge retrieval (Supabase pgvector + keyword fallback)
-   - AI prompt building (catalog + occasion instruction + knowledge context)
-   - AI call → Loop detection → Structured looks parsing → Anti-hallucination validation
-4. **Response**: `{ message, looks: ChatLook[], outfits: [], imageRequest }`
-5. **Frontend**: `ChatAssistant.tsx` converts `looks` → `Outfit[]` → renders `OutfitRecommendationCard`
-6. **Flat-lay**: Auto-generates outfit images via `google/gemini-2.5-flash-image`
+## Available Agents
 
-### Product Data
-- **Primary**: Supabase PostgreSQL — `products` table (1000+ items with pgvector embeddings)
-  - Occasion scores: `occasion_weekend_social`, `occasion_date_night`, `occasion_everyday_casual` (0-10)
-  - Thai market: `temple_appropriate`, `ac_friendly`, `thai_climate_rating`
-- **Fallback**: JSON files in `data/products/` (when `SUPABASE_PRODUCTS_ENABLED=false`)
-- **Type**: `EnhancedProduct` (full model) in `lib/types/product-types.ts`
-- **Transformer**: `lib/transformers/db-product-to-enhanced.ts` (DbProduct → EnhancedProduct)
+Use these agents by mentioning them naturally, e.g., "As dev, implement ..." or "As architect, design ...".
 
-### RAG Pipeline (3-tier fallback)
-1. **Supabase pgvector** — `knowledge_chunks` table (225 docs, 1536d embeddings)
-   - RPC: `search_knowledge()` + `search_products()`, threshold 0.25
-   - Categories: foundation (54), advanced (75), implementation (60), special (36)
-2. **Vectra in-memory** — local vector store at `data/vector-store/fashion-knowledge` (33 English docs)
-3. **Keyword fallback** — hardcoded topic detection (occasion, thai_culture, color, body_type, etc.)
-- Embedding model: `openai/text-embedding-3-small` via OpenRouter
-- Thai→English translation before embedding (Gemini 2.0 Flash)
-- Cross-language similarity scores ~0.23-0.30 (hence threshold 0.25, not 0.7)
+| Agent | Role | When To Use |
+|-------|------|-------------|
+| **pm** | Product Manager | Creating PRDs, product strategy, feature prioritization, roadmap planning |
+| **po** | Product Owner | Backlog management, story refinement, acceptance criteria, sprint planning |
+| **sm** | Scrum Master | Story creation, epic management, agile process guidance |
+| **architect** | Architect | System design, architecture documents, API design, infrastructure planning |
+| **ux-expert** | UX Expert | UI/UX design, wireframes, prototypes, front-end specifications |
+| **dev** | Full Stack Developer | Code implementation, debugging, refactoring, best practices |
+| **qa** | Test Architect | Test architecture review, quality gates, comprehensive quality assessment |
+| **analyst** | Business Analyst | Market research, competitive analysis, project briefs, discovery |
+| **orchestrator** | Master Orchestrator | Workflow coordination, multi-agent tasks, role switching guidance |
+| **master** | Master Task Executor | One-off tasks, comprehensive expertise across domains |
 
-### Occasion Detection & Filtering
-- **9 occasions**: work, chill, wedding, sport, travel, date, dinner, cafe, party
-- **Defined in**: `lib/constants/occasions.ts` with formality ranges (1-10 scale)
-- **Beach sub-occasion**: Keywords "ทะเล/ชายหาด/เกาะ" override travel formality to 1-3
-- **Hard formality filter**: Always applied, widens by ±2 as fallback (never completely skips)
-- **Occasion prompt injection**: `buildOccasionInstruction()` injects explicit AI rules (MUST/NEVER recommend)
+---
 
-### Flat-Lay Image Generation
-- **Orchestrator**: `lib/services/occasion-flat-lay-service.ts`
-- **Image model**: `google/gemini-2.5-flash-image` via OpenRouter (30s timeout, 2 retries)
-- **Flow**: AI curation → layout computation → image prompt building → generation
-- **Output**: Saved to `public/generated-images/outfit-{timestamp}.png`
-- **Intermittent**: Sometimes returns text instead of image (retry logic handles this)
+## Agent Details
 
-### AI Models Used (all via OpenRouter)
-| Purpose | Model |
-|---------|-------|
-| Chat/Recommendations | `google/gemini-3-flash-preview` (temp 0.7) |
-| Image Generation | `google/gemini-2.5-flash-image` |
-| Embeddings | `openai/text-embedding-3-small` (1536d) |
-| Query Translation | `google/gemini-2.0-flash-001` |
+### Product Manager (pm)
+- **Purpose**: Product strategy, PRD creation, roadmap planning
+- **Commands**: `*help`, `*create-prd`, `*create-epic`, `*shard-prd`, `*exit`
+- **Key Tasks**:
+  - `create-doc` - Create PRD from template
+  - `create-brownfield-prd` - Document existing projects
+  - `shard-doc` - Split large PRDs into sections
 
-### Environment Variables
-```env
-OPENROUTER_API_KEY=              # Server-side (preferred for chat, image gen, embeddings)
-NEXT_PUBLIC_OPENROUTER_API_KEY=  # Client-side fallback
-NEXT_PUBLIC_SUPABASE_URL=        # Supabase project URL
-NEXT_PUBLIC_SUPABASE_ANON_KEY=   # Supabase anonymous key
-SUPABASE_SERVICE_ROLE_KEY=       # Supabase server-side key
-SUPABASE_PRODUCTS_ENABLED=true   # Use Supabase products vs JSON fallback
-SUPABASE_RAG_ENABLED=true        # Use Supabase pgvector vs Vectra fallback
-SYSTEM_PROMPT_VERSION=v5.0       # Chat prompt version (v2.1, v3.0, v4.0, v5.0)
-```
+### Product Owner (po)
+- **Purpose**: Backlog management, story refinement, acceptance criteria
+- **Commands**: `*help`, `*create-story`, `*validate-story-draft`, `*shard-doc`, `*exit`
+- **Key Tasks**:
+  - `validate-next-story` - Validate story before implementation
+  - `shard-doc` - Split documentation into manageable sections
+  - `execute-checklist` - Run validation checklists
 
-### Supabase Tables & RPCs
-| Table | Purpose |
-|-------|---------|
-| `products` | 1000+ Central Group products with pgvector embeddings, occasion scores, Thai market flags |
-| `knowledge_chunks` | 225 fashion knowledge docs (styling rules, color theory, Thai culture, occasions) |
+### Scrum Master (sm)
+- **Purpose**: Story creation, epic management, agile process
+- **Commands**: `*help`, `*draft`, `*story-checklist`, `*correct-course`, `*exit`
+- **Key Tasks**:
+  - `create-next-story` - Create next story from epic
+  - `brownfield-create-epic` - Create epics for brownfield projects
+  - `brownfield-create-story` - Create stories for brownfield projects
+  - `execute-checklist` - Run story draft checklists
 
-| RPC | Purpose |
-|-----|---------|
-| `search_products` | Semantic product search (pgvector, threshold 0.25) |
-| `search_knowledge` | Semantic knowledge search (pgvector, threshold 0.25) |
+### Architect (architect)
+- **Purpose**: System design, architecture, API design, infrastructure
+- **Commands**: `*help`, `*create-full-stack-architecture`, `*create-front-end-architecture`, `*document-project`, `*exit`
+- **Key Tasks**:
+  - `create-doc` - Create architecture documents
+  - `document-project` - Document existing codebase
+  - `shard-doc` - Split architecture docs
 
-### Multi-Agent Task System (scripts/adws/)
-Orchestrates multiple Claude Code agents for parallel development:
-- `adw_triggers/adw_trigger_cron_todone.py` - Scans tasks.md for pending work
-- `adw_build_update_task.py` - Simple build and update workflow
-- `adw_plan_implement_update_task.py` - Complex plan-build-update workflow
+### UX Expert (ux-expert)
+- **Purpose**: UI/UX design, wireframes, prototypes
+- **Commands**: `*help`, `*create-front-end-spec`, `*generate-ui-prompt`, `*exit`
+- **Key Tasks**:
+  - `create-doc` - Create front-end specifications
+  - `generate-ai-frontend-prompt` - Generate prompts for AI UI tools
 
-## Development Commands
+### Full Stack Developer (dev)
+- **Purpose**: Code implementation, debugging, refactoring
+- **Commands**: `*help`, `*develop-story`, `*run-tests`, `*review-qa`, `*exit`
+- **Key Tasks**:
+  - `develop-story` - Implement a story from spec
+  - `apply-qa-fixes` - Apply fixes from QA review
+  - `execute-checklist` - Run DoD checklists
 
-### Frontend (apps/web/)
-```bash
-cd apps/web
+### Test Architect & Quality Advisor (qa)
+- **Purpose**: Test architecture, quality gates, risk assessment
+- **Commands**: `*help`, `*review`, `*gate`, `*test-design`, `*risk-profile`, `*exit`
+- **Key Tasks**:
+  - `review-story` - Comprehensive test architecture review
+  - `qa-gate` - Create/update quality gate decisions
+  - `test-design` - Create test scenarios
+  - `trace-requirements` - Map requirements to tests
+  - `risk-profile` - Generate risk assessment
+  - `nfr-assess` - Validate non-functional requirements
 
-# Install dependencies
-pnpm install
+### Business Analyst (analyst)
+- **Purpose**: Market research, analysis, project briefs
+- **Commands**: `*help`, `*brainstorm`, `*create-project-brief`, `*perform-market-research`, `*exit`
+- **Key Tasks**:
+  - `create-doc` - Create project briefs, competitor analysis, market research
+  - `facilitate-brainstorming-session` - Run brainstorming sessions
+  - `advanced-elicitation` - Deep requirements exploration
 
-# Run development server
-pnpm dev
+### Master Orchestrator (orchestrator)
+- **Purpose**: Workflow coordination, multi-agent tasks
+- **Commands**: `*help`, `*agent`, `*workflow`, `*status`, `*exit`
 
-# Build production
-pnpm build
+### Master Task Executor (master)
+- **Purpose**: One-off tasks, comprehensive expertise
+- **Commands**: `*help`, `*task`, `*create-doc`, `*execute-checklist`, `*exit`
 
-# Run linting
-pnpm lint
+---
 
-# Run tests (Vitest)
-pnpm test
-# or: pnpm vitest run
-```
+## Common Workflows
 
-### Multi-Agent System
-```bash
-./scripts/adws/adw_triggers/adw_trigger_cron_todone.py
-./scripts/adws/adw_build_update_task.py
-./scripts/adws/adw_plan_implement_update_task.py
-```
+### Starting a New Feature
 
-## Key File Locations
+1. **As pm**: Create PRD → `*create-prd`
+2. **As architect**: Create architecture → `*create-full-stack-architecture`
+3. **As sm**: Create stories → `*draft`
+4. **As dev**: Implement stories → `*develop-story`
+5. **As qa**: Review and gate → `*review`
 
-| File | Purpose |
-|------|---------|
-| `apps/web/app/api/chat/route.ts` | Chat API endpoint |
-| `apps/web/lib/services/ai-chat-service.ts` | Core v5 chat pipeline (processAIChatRequestV5) |
-| `apps/web/lib/prompts/system-prompt-v5.ts` | v5 system prompt |
-| `apps/web/lib/rag/supabase-retrieval.ts` | RAG retrieval from Supabase |
-| `apps/web/lib/supabase/products.ts` | Product queries (Supabase) |
-| `apps/web/lib/supabase/knowledge.ts` | Knowledge queries (Supabase) |
-| `apps/web/lib/utils/clarification-detector.ts` | Occasion/budget/gender extraction |
-| `apps/web/lib/utils/product-filters.ts` | Product filtering utilities |
-| `apps/web/lib/constants/occasions.ts` | Occasion definitions + formality ranges |
-| `apps/web/lib/transformers/db-product-to-enhanced.ts` | DB → EnhancedProduct transformer |
-| `apps/web/lib/services/occasion-flat-lay-service.ts` | Flat-lay image orchestration |
-| `apps/web/lib/services/image-generation-service.ts` | Gemini image generation client |
-| `apps/web/lib/matching/thai-cultural-matcher.ts` | Thai cultural occasion matching |
-| `apps/web/components/chat/ChatAssistant.tsx` | Main chat UI + looks→Outfit conversion |
-| `apps/web/components/chat/OutfitRecommendationCard.tsx` | Outfit card component |
-| `apps/web/next.config.mjs` | Next.js config (serverComponentsExternalPackages for vectra/gpt-3-encoder) |
+### Quick Bug Fix
 
-## Core Business Context
+1. **As master**: Execute the fix directly
+2. **As qa**: Quick review → `*gate {story}`
 
-The platform targets four main user segments:
-1. Fashion-Curious & Social Users (15-28)
-2. Fashion-Struggling Shoppers (18-35)
-3. Mobile-First Inspiration Seekers (20-35)
-4. Special Occasions & Professionals (25-45)
+### Brownfield Documentation
 
-MVP features:
-- Natural language chat (Thai + English) for fashion recommendations
-- AI-powered product matching with Central Group inventory (1000+ products)
-- Direct purchase links to central.co.th
-- Flat-lay outfit image generation
-- Occasion-based filtering with Thai cultural context
+1. **As architect**: Document existing project → `*document-project`
+2. **As pm**: Create brownfield PRD → `*create-brownfield-prd`
+3. **As sm**: Create brownfield stories → `*create-story`
+
+---
+
+## Project-Specific Guidelines
+
+### Feature Specifications
+
+- Store feature specs in `specs/` with naming convention:
+  - `chore-{id}-{description}.md` - Technical chores
+  - `feature-{id}-{description}.md` - New features
+
+### Testing
+
+- Save test results from Playwright to `test-result/`
+- Use Playwright MCP skill for browser automation
+
+### Research vs Implementation
+
+- Research documents go in `research/`
+- Implementation plans go in `specs/`
+
+### Plan Mode
+
+After a plan is approved, always save it to `specs/<descriptive-name>.md` before starting implementation.
+
+### Validation
+
+Always spin up validator to validate changes instead of using main agent to validate.
+
+---
 
 ## Integration Points
 
-- **Central Group**: Product inventory (Supabase), purchase links (central.co.th)
-- **OpenRouter**: AI chat (Gemini), image generation (Gemini), embeddings (OpenAI)
-- **Supabase**: PostgreSQL + pgvector for products & knowledge
-- **Playwright MCP**: Browser automation E2E testing
+| System | Purpose |
+|--------|---------|
+| **Central Group API** | Product catalog and inventory |
+| **Claude AI API** | Fashion recommendations and chat |
+| **Kling AI** | Virtual try-on image generation |
+| **Azure Functions** | Serverless backend APIs |
+| **Azure Cosmos DB** | Product and user data |
+| **Azure Blob Storage** | Images and media |
+| **Azure AD B2C** | User authentication |
+| **Playwright MCP** | Browser automation testing |
 
-## Guidelines
+---
 
-- Research documents go in `research/`, implementation plans in `specs/`
-- **Plan mode**: After a plan is approved, always save it to `specs/<descriptive-name>.md` before starting implementation
-- Save test results from Playwright screen capture to `test-result/`
-- **Testing**: Use Vitest with mocks/stubs — never use real API calls in tests
-- **E2E best practice**: Always click "ดูลุค" to inspect product items, not just chat text
-- **Thai cross-language**: Similarity threshold is 0.25 (not 0.7) due to Thai→English embedding scores
+## Target Users
 
-## Configuration
+1. **Fashion-Curious & Social Users** (15-28)
+2. **Fashion-Struggling Shoppers** (18-35)
+3. **Mobile-First Inspiration Seekers** (20-35)
+4. **Special Occasions & Professionals** (25-45)
 
-- `.claude/commands/` - Slash command templates
-- `.claude/skills/` - Skill definitions (orchestrator, playwright-mcp)
-- `.claude/agents/` - Agent configurations
+---
+
+*Last updated: 2026-02-12*
