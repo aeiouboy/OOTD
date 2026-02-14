@@ -199,7 +199,7 @@ A flat lay image.`;
   // ---------------------------------------------------------------------------
 
   describe('computeFlatLayLayout', () => {
-    it('assigns inverted triangle positions for 3 items', () => {
+    it('assigns organic triangular positions for 3 items', () => {
       const items: FlatLayItem[] = [
         { name: 'Dress', category: 'Dress', color: 'Red' },
         { name: 'Heels', category: 'Shoes', color: 'Black' },
@@ -209,12 +209,12 @@ A flat lay image.`;
       const layout = computeFlatLayLayout(items);
 
       expect(layout).toHaveLength(3);
-      expect(layout[0].position).toBe('TOP-CENTER');
-      expect(layout[1].position).toBe('BOTTOM-LEFT');
-      expect(layout[2].position).toBe('BOTTOM-RIGHT');
+      expect(layout[0].position).toContain('TOP-CENTER');
+      expect(layout[1].position).toContain('LOWER-LEFT');
+      expect(layout[2].position).toContain('LOWER-RIGHT');
     });
 
-    it('assigns 2x2 grid positions for 4 items', () => {
+    it('assigns editorial spread positions for 4 items', () => {
       const items: FlatLayItem[] = [
         { name: 'Blazer', category: 'Blazer', color: 'Navy' },
         { name: 'Pants', category: 'Pants', color: 'Grey' },
@@ -225,13 +225,13 @@ A flat lay image.`;
       const layout = computeFlatLayLayout(items);
 
       expect(layout).toHaveLength(4);
-      expect(layout[0].position).toBe('UPPER-LEFT');
-      expect(layout[1].position).toBe('UPPER-RIGHT');
-      expect(layout[2].position).toBe('LOWER-LEFT');
-      expect(layout[3].position).toBe('LOWER-RIGHT');
+      expect(layout[0].position).toContain('CENTER-LEFT');
+      expect(layout[1].position).toContain('CENTER-RIGHT');
+      expect(layout[2].position).toContain('LOWER-LEFT');
+      expect(layout[3].position).toContain('LOWER-RIGHT');
     });
 
-    it('assigns cross/diamond positions for 5 items', () => {
+    it('assigns radial positions for 5 items', () => {
       const items: FlatLayItem[] = [
         { name: 'Dress', category: 'Dress', color: 'Red' },
         { name: 'Jacket', category: 'Jacket', color: 'Black' },
@@ -243,14 +243,14 @@ A flat lay image.`;
       const layout = computeFlatLayLayout(items);
 
       expect(layout).toHaveLength(5);
-      expect(layout[0].position).toBe('CENTER');
-      expect(layout[1].position).toBe('UPPER-LEFT');
-      expect(layout[2].position).toBe('UPPER-RIGHT');
-      expect(layout[3].position).toBe('LOWER-LEFT');
-      expect(layout[4].position).toBe('LOWER-RIGHT');
+      expect(layout[0].position).toContain('CENTER');
+      expect(layout[1].position).toContain('UPPER-LEFT');
+      expect(layout[2].position).toContain('UPPER-RIGHT');
+      expect(layout[3].position).toContain('LOWER-LEFT');
+      expect(layout[4].position).toContain('LOWER-RIGHT');
     });
 
-    it('assigns 2x3 grid positions for 6 items', () => {
+    it('assigns editorial fan positions for 6 items', () => {
       const items: FlatLayItem[] = [
         { name: 'Top', category: 'Top', color: 'White' },
         { name: 'Skirt', category: 'Skirt', color: 'Black' },
@@ -263,12 +263,12 @@ A flat lay image.`;
       const layout = computeFlatLayLayout(items);
 
       expect(layout).toHaveLength(6);
-      expect(layout[0].position).toBe('UPPER-LEFT');
-      expect(layout[1].position).toBe('UPPER-CENTER');
-      expect(layout[2].position).toBe('UPPER-RIGHT');
-      expect(layout[3].position).toBe('LOWER-LEFT');
-      expect(layout[4].position).toBe('LOWER-CENTER');
-      expect(layout[5].position).toBe('LOWER-RIGHT');
+      expect(layout[0].position).toContain('CENTER-TOP');
+      expect(layout[1].position).toContain('UPPER-LEFT');
+      expect(layout[2].position).toContain('UPPER-RIGHT');
+      expect(layout[3].position).toContain('LOWER-LEFT');
+      expect(layout[4].position).toContain('LOWER-CENTER');
+      expect(layout[5].position).toContain('LOWER-RIGHT');
     });
 
     it('classifies sizes correctly: Dress=large, Shoes=medium, Jewelry=small', () => {
@@ -317,9 +317,9 @@ A flat lay image.`;
 
       const layout = computeFlatLayLayout(items);
 
-      // After sorting: Blazer (large) -> TOP-CENTER, Sneakers (medium) -> BOTTOM-LEFT, Ring (small) -> BOTTOM-RIGHT
+      // After sorting: Blazer (large) -> TOP-CENTER hero, Sneakers (medium) -> LOWER-LEFT, Ring (small) -> LOWER-RIGHT
       expect(layout[0].item.name).toBe('Blazer');
-      expect(layout[0].position).toBe('TOP-CENTER');
+      expect(layout[0].position).toContain('TOP-CENTER');
       expect(layout[1].item.name).toBe('Sneakers');
       expect(layout[2].item.name).toBe('Ring');
     });
@@ -330,7 +330,7 @@ A flat lay image.`;
   // ---------------------------------------------------------------------------
 
   describe('buildImagePromptFromItems', () => {
-    it('includes exact item count in the prompt', () => {
+    it('includes item count in the prompt', () => {
       const items: FlatLayItem[] = [
         { name: 'Silk Dress', category: 'Dress', color: 'Red', visualDescription: 'A silk dress' },
         { name: 'Heels', category: 'Shoes', color: 'Black', visualDescription: 'Black heels' },
@@ -339,7 +339,7 @@ A flat lay image.`;
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
-      expect(prompt).toContain('exactly 3 fashion items');
+      expect(prompt).toContain('All 3 fashion items');
       expect(prompt).toContain('All 3 items');
     });
 
@@ -352,9 +352,9 @@ A flat lay image.`;
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
-      // Anti-text instructions appear at the very beginning
-      const first100 = prompt.substring(0, 100);
-      expect(first100).toContain('NO text');
+      // Anti-text instructions appear near the beginning
+      const first150 = prompt.substring(0, 150);
+      expect(first150).toContain('NO text');
     });
 
     it('includes spatial position strings', () => {
@@ -367,8 +367,8 @@ A flat lay image.`;
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
       expect(prompt).toContain('TOP-CENTER');
-      expect(prompt).toContain('BOTTOM-LEFT');
-      expect(prompt).toContain('BOTTOM-RIGHT');
+      expect(prompt).toContain('LOWER-LEFT');
+      expect(prompt).toContain('LOWER-RIGHT');
     });
 
     it('includes size hints in the prompt', () => {
@@ -408,12 +408,12 @@ A flat lay image.`;
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
-      expect(prompt).toContain('exactly 5 fashion items');
-      expect(prompt).toContain('cross/diamond arrangement');
+      expect(prompt).toContain('All 5 fashion items');
+      expect(prompt).toContain('natural radial arrangement');
       expect(prompt).toContain('CENTER');
     });
 
-    it('uses inverted triangle layout for 3 items', () => {
+    it('uses organic triangular layout for 3 items', () => {
       const items: FlatLayItem[] = [
         { name: 'Dress', category: 'Dress', color: 'Red' },
         { name: 'Shoes', category: 'Shoes', color: 'Black' },
@@ -422,7 +422,7 @@ A flat lay image.`;
 
       const prompt = buildImagePromptFromItems(items, 'Date Night');
 
-      expect(prompt).toContain('inverted triangle arrangement');
+      expect(prompt).toContain('organic triangular grouping');
     });
 
     it('handles items without color gracefully', () => {
@@ -464,7 +464,7 @@ A flat lay image.`;
       expect(result.imageUrl).toBe('https://example.com/flat-lay.png');
       expect(result.curatedItems).toHaveLength(3);
       // imagePrompt is now the structured prompt built from curated items with spatial layout
-      expect(result.imagePrompt).toContain('exactly 3 fashion items');
+      expect(result.imagePrompt).toContain('All 3 fashion items');
       expect(result.imagePrompt).toContain('linen wrap dress');
       expect(result.imagePrompt).toContain('woven straw tote');
       expect(result.imagePrompt).toContain('leather slide sandals');
@@ -480,7 +480,7 @@ A flat lay image.`;
       // Verify image generation received structured prompt with spatial positions + anti-text
       expect(mockGenerateRawFlatLay).toHaveBeenCalledTimes(1);
       const imagePromptArg = mockGenerateRawFlatLay.mock.calls[0][0];
-      expect(imagePromptArg).toContain('exactly 3 fashion items');
+      expect(imagePromptArg).toContain('All 3 fashion items');
       expect(imagePromptArg).toContain('NO text');
       expect(imagePromptArg).toContain('TOP-CENTER');
     });
@@ -584,7 +584,7 @@ A high-resolution flat-lay photograph.`;
       expect(result.message).toContain('Model timeout');
       // Curated items and structured image prompt should still be present
       expect(result.curatedItems).toHaveLength(3);
-      expect(result.imagePrompt).toContain('exactly 3 fashion items');
+      expect(result.imagePrompt).toContain('All 3 fashion items');
     });
 
     it('handles empty AI curation response', async () => {

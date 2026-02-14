@@ -82,12 +82,12 @@ export function buildImagePromptFromItems(
   const count = curatedItems.length;
   const layout = computeFlatLayLayout(curatedItems);
 
-  // Determine layout pattern label
+  // Determine layout pattern label — organic, not grid-based
   let layoutPattern: string;
-  if (count <= 3) layoutPattern = 'inverted triangle arrangement';
-  else if (count === 4) layoutPattern = '2\u00D72 grid';
-  else if (count === 5) layoutPattern = 'cross/diamond arrangement';
-  else layoutPattern = '2\u00D73 grid';
+  if (count <= 3) layoutPattern = 'organic triangular grouping with the hero garment at top-center';
+  else if (count === 4) layoutPattern = 'styled editorial spread with the hero garment as the anchor piece';
+  else if (count === 5) layoutPattern = 'natural radial arrangement around the central hero garment';
+  else layoutPattern = 'editorial spread with items fanning outward from center';
 
   // Build item lines with spatial positions
   const itemLines = layout.map((entry) => {
@@ -98,7 +98,7 @@ export function buildImagePromptFromItems(
     return `- ${entry.position} (${entry.sizeHint}): a ${colorInfo}${entry.item.name.toLowerCase()} (${entry.item.category.toLowerCase()}), ${entry.presentationHint}${visualInfo}`;
   }).join('\n');
 
-  return `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image must contain products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. The image shows exactly ${count} fashion items arranged as a coordinated ${occasionLabel.toLowerCase()} outfit. Use a clean seamless studio backdrop in light neutral grey-white for clear contrast with white garments. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${count} items are fully visible with no overlap or cropping. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce studio-grade product photography quality. Square 1:1 format.`;
+  return `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${count} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a coordinated ${occasionLabel.toLowerCase()} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is at a slight casual angle as if placed by a fashion stylist. All ${count} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality. Square 1:1 format.`;
 }
 
 /**

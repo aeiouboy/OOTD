@@ -53,18 +53,18 @@ describe('buildFlatLayPrompt', () => {
     expect(prompt).toMatch(/e-commerce|product photography|fashion editorial/i)
   })
 
-  it('includes anti-text instructions at the start of the prompt', () => {
+  it('includes anti-text instructions near the start of the prompt', () => {
     const prompt = buildFlatLayPrompt(items)
-    const first100 = prompt.substring(0, 100)
-    expect(first100).toContain('NO text')
+    const first150 = prompt.substring(0, 150)
+    expect(first150).toContain('NO text')
   })
 
   it('includes spatial position strings', () => {
     const prompt = buildFlatLayPrompt(items)
-    // 3 items = inverted triangle: TOP-CENTER, BOTTOM-LEFT, BOTTOM-RIGHT
+    // 3 items = organic triangular: TOP-CENTER, LOWER-LEFT, LOWER-RIGHT
     expect(prompt).toContain('TOP-CENTER')
-    expect(prompt).toContain('BOTTOM-LEFT')
-    expect(prompt).toContain('BOTTOM-RIGHT')
+    expect(prompt).toContain('LOWER-LEFT')
+    expect(prompt).toContain('LOWER-RIGHT')
   })
 
   it('includes size hints in the prompt', () => {
@@ -118,7 +118,7 @@ describe('buildFlatLayPrompt', () => {
 
   it('includes layout pattern description', () => {
     const prompt = buildFlatLayPrompt(items)
-    expect(prompt).toContain('inverted triangle arrangement')
+    expect(prompt).toContain('organic triangular grouping')
   })
 })
 
@@ -154,12 +154,12 @@ describe('computeFlatLayLayout', () => {
       { name: 'Scarf', category: 'Scarf', color: 'Red' },
     ]
     const layout = computeFlatLayLayout(items)
-    // Large items get folding/flat hints
-    expect(layout[0].presentationHint).toMatch(/folded|laid flat/)
+    // Large items get laid-out hints with rotation
+    expect(layout[0].presentationHint).toMatch(/laid out fully open|rotated/)
     // Medium items get angled hints
-    expect(layout[1].presentationHint).toMatch(/angled|diagonal/)
-    // Small items get delicate hints
-    expect(layout[2].presentationHint).toMatch(/delicately|accent/)
+    expect(layout[1].presentationHint).toMatch(/angled|leaning/)
+    // Small items get accent hints with casual angle
+    expect(layout[2].presentationHint).toMatch(/accent|angle/)
   })
 })
 

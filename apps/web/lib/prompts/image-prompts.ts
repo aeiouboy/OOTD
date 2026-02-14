@@ -373,11 +373,21 @@ function classifyItemSize(category: string): ItemSizeClass {
 
 /**
  * Returns a presentation hint based on size class.
+ * Includes natural rotation angles for an organic, styled flat-lay look.
  */
 function getPresentationHint(size: ItemSizeClass, index: number): string {
-  const largeHints = ['neatly folded at a slight angle', 'laid flat with details visible'];
-  const mediumHints = ['angled toward center', 'positioned diagonally'];
-  const smallHints = ['placed delicately', 'arranged as an accent piece'];
+  const largeHints = [
+    'laid out fully open and unfolded showing the complete silhouette, rotated about 5 degrees clockwise',
+    'spread flat with sleeves and details fully visible, tilted roughly 8 degrees counter-clockwise',
+  ];
+  const mediumHints = [
+    'angled naturally at about 15 degrees toward the center of the composition',
+    'placed casually at roughly 10 degrees, leaning into the outfit grouping',
+  ];
+  const smallHints = [
+    'placed at a casual angle of about 20 degrees as a styling accent',
+    'set down at a relaxed angle of roughly 12 degrees',
+  ];
 
   switch (size) {
     case 'large':
@@ -391,29 +401,32 @@ function getPresentationHint(size: ItemSizeClass, index: number): string {
 
 /**
  * Returns the layout pattern label for a given item count.
+ * Uses organic, editorial descriptions instead of rigid grid names
+ * so the AI generates a natural styled flat-lay, not a collage.
  */
 function getLayoutPattern(count: number): string {
-  if (count <= 3) return 'inverted triangle arrangement';
-  if (count === 4) return '2\u00D72 grid';
-  if (count === 5) return 'cross/diamond arrangement';
-  return '2\u00D73 grid';
+  if (count <= 3) return 'organic triangular grouping with the hero garment at top-center';
+  if (count === 4) return 'styled editorial spread with the hero garment as the anchor piece';
+  if (count === 5) return 'natural radial arrangement around the central hero garment';
+  return 'editorial spread with items fanning outward from center';
 }
 
 /**
  * Returns position labels based on item count.
+ * Uses organic placement language instead of rigid grid coordinates.
  */
 function getPositionLabels(count: number): string[] {
   if (count <= 3) {
-    return ['TOP-CENTER', 'BOTTOM-LEFT', 'BOTTOM-RIGHT'];
+    return ['TOP-CENTER as hero piece', 'LOWER-LEFT tucked beside the hero', 'LOWER-RIGHT tucked beside the hero'];
   }
   if (count === 4) {
-    return ['UPPER-LEFT', 'UPPER-RIGHT', 'LOWER-LEFT', 'LOWER-RIGHT'];
+    return ['CENTER-LEFT as hero piece', 'CENTER-RIGHT beside the hero', 'LOWER-LEFT near the hero hem', 'LOWER-RIGHT as a finishing accent'];
   }
   if (count === 5) {
-    return ['CENTER', 'UPPER-LEFT', 'UPPER-RIGHT', 'LOWER-LEFT', 'LOWER-RIGHT'];
+    return ['CENTER as hero piece', 'UPPER-LEFT near the neckline area', 'UPPER-RIGHT balancing the opposite side', 'LOWER-LEFT near the hem area', 'LOWER-RIGHT as a finishing accent'];
   }
-  // 6+ items: 2x3 grid
-  return ['UPPER-LEFT', 'UPPER-CENTER', 'UPPER-RIGHT', 'LOWER-LEFT', 'LOWER-CENTER', 'LOWER-RIGHT'];
+  // 6+ items: editorial fan spread
+  return ['CENTER-TOP as hero piece', 'UPPER-LEFT beside the hero', 'UPPER-RIGHT beside the hero', 'LOWER-LEFT near the bottom', 'LOWER-CENTER beneath the hero', 'LOWER-RIGHT as a finishing accent'];
 }
 
 const SIZE_ORDER: Record<ItemSizeClass, number> = { large: 0, medium: 1, small: 2 };
@@ -477,7 +490,7 @@ export function buildFlatLayPrompt(
     return `- ${entry.position} (${entry.sizeHint}): a ${itemDesc}, ${entry.presentationHint}`;
   }).join('\n');
 
-  let prompt = `Generate a professional overhead flat-lay photograph with NO text, labels, watermarks, or written words of any kind. The image must contain products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. The image shows exactly ${itemCount} fashion items arranged as a ${occasionLabel} outfit on a clean seamless studio surface in light neutral grey-white for clear contrast. The layout is a balanced ${layoutPattern}:\n${itemLines}\nEach item is clearly separated with generous spacing between pieces. All ${itemCount} items are fully visible with no overlap or cropping. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting. Professional e-commerce studio-grade product photography quality. Square 1:1 format.`;
+  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is at a slight casual angle as if placed by a fashion stylist. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality. Square 1:1 format.`;
 
   // Append reference image mapping instructions when multi-modal images are provided
   if (hasReferenceImages) {
