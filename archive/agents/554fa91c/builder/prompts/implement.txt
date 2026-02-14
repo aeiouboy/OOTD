@@ -1,1 +1,0 @@
-/implement specs/chore-554fa91c-style-carousel-images.md

@@ -13,7 +13,6 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
-import { FlatLayComposite } from './FlatLayComposite'
 import { useFlatLayGeneration, useIntersectionObserver, cleanupExpiredCache } from '@/lib/hooks/useFlatLayGeneration'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { generateTryOnLooks } from '@/lib/services/fitting-model-service'
@@ -47,6 +46,7 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
     outfitId: outfit.id,
     items: outfit.items,
     occasionContext: outfit.title,
+    useHybridGeneration: true,
   })
 
   // Use intersection observer for lazy loading
@@ -260,8 +260,11 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
               unoptimized={displayImage.startsWith('data:')}
             />
           ) : showFallback ? (
-            // Fallback to CSS composite on error only
-            <FlatLayComposite items={outfit.items} />
+            // Avoid misleading fallback image when generation fails.
+            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 px-3">
+              <AlertCircle className="w-5 h-5 text-amber-600 mb-1.5" />
+              <p className="text-[11px] text-gray-600 text-center">สร้างภาพลุคไม่สำเร็จ</p>
+            </div>
           ) : null}
         </div>
 

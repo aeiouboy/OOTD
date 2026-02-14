@@ -1,1 +1,0 @@
-/implement specs/chore-0aa8df27-fix-intersection-observer-trigger.md

@@ -1,15 +1,38 @@
 /**
  * Product Enrichment
  * Enriches product data with inferred attributes and defaults
+ *
+ * Updated for chore-kb002: Skip enrichment when KB attributes present
  */
 
 import type { EnhancedProduct } from '../types/product-types'
 import type { FormalityLevel, OccasionType, SeasonType, StyleTag, OutfitRole } from '../types/enums'
 
 /**
+ * Check if product has KB expansion attributes
+ * Products with KB attributes should skip enrichment (they're already enriched via KB)
+ */
+export function hasKBAttributes(product: Partial<EnhancedProduct>): boolean {
+  const p = product as any
+  return !!(
+    p.thaiContext ||
+    p.visualMatching ||
+    p.crossProductCompatibility ||
+    p.priceIntelligence ||
+    p.socialProof
+  )
+}
+
+/**
  * Enrich product with inferred attributes (Task 3.5)
+ * Skips enrichment if product already has KB expansion attributes
  */
 export function enrichProductData(product: Partial<EnhancedProduct>): Partial<EnhancedProduct> {
+  // Skip enrichment if product already has KB attributes from v1 format
+  if (hasKBAttributes(product)) {
+    return product
+  }
+
   const enriched = { ...product }
 
   // Enrich category if missing

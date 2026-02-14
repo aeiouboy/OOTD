@@ -1,0 +1,466 @@
+[
+  {
+    "session_id": "1227cd8b-a44e-43f8-84f3-95f9087df12d",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/1227cd8b-a44e-43f8-84f3-95f9087df12d.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dfa14aea-b775-492b-9d04-182fe431c494.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dfa14aea-b775-492b-9d04-182fe431c494.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dfa14aea-b775-492b-9d04-182fe431c494.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dfa14aea-b775-492b-9d04-182fe431c494.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dfa14aea-b775-492b-9d04-182fe431c494",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dfa14aea-b775-492b-9d04-182fe431c494.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "56c60047-c8ff-4932-b083-543fa2a72c1f",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/56c60047-c8ff-4932-b083-543fa2a72c1f.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "5954c56d-7689-4fb2-b196-d9c92ba2eb05",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/5954c56d-7689-4fb2-b196-d9c92ba2eb05.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude Code needs your approval for the plan",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "dec0966d-3f66-4044-9614-c8b7b092cfad",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/dec0966d-3f66-4044-9614-c8b7b092cfad.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude Code needs your approval for the plan",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "b7c9d7f3-c432-47ac-b2af-31bdbf970fd1",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/b7c9d7f3-c432-47ac-b2af-31bdbf970fd1.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "b7c9d7f3-c432-47ac-b2af-31bdbf970fd1",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/b7c9d7f3-c432-47ac-b2af-31bdbf970fd1.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "b7c9d7f3-c432-47ac-b2af-31bdbf970fd1",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/b7c9d7f3-c432-47ac-b2af-31bdbf970fd1.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/4e962ac0-8ecd-4e9e-8edc-ea16a8c6cc5e.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/9577aefe-bf48-42c3-ae9b-137dd1df1353.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "c96f8e2b-bad0-4e08-a16c-12f2f621d11b",
+    "transcript_path": "/Users/naruechon/.claude/projects/-Users-naruechon-OOTD/c96f8e2b-bad0-4e08-a16c-12f2f621d11b.jsonl",
+    "cwd": "/Users/naruechon/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2c5842a0-b6fb-48e4-a507-f0e1a0696df8",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2c5842a0-b6fb-48e4-a507-f0e1a0696df8.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "651bc68c-6739-4bf4-a6a9-8f73013c19ae",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/651bc68c-6739-4bf4-a6a9-8f73013c19ae.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "c75c0af0-d71b-453d-a816-1d13952eccfd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/c75c0af0-d71b-453d-a816-1d13952eccfd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "08ef4a3a-163a-4be2-8dab-8564ce55df58",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/08ef4a3a-163a-4be2-8dab-8564ce55df58.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5bc3b1c9-3ab1-45c5-8ccb-b0786915c0fd.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude Code needs your approval for the plan",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "4b863620-487e-4bd8-8b72-e725c24e252c",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/4b863620-487e-4bd8-8b72-e725c24e252c.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude Code needs your approval for the plan",
+    "notification_type": "permission_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "dadc5f63-7198-4967-b797-81c13bd2d70a",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/dadc5f63-7198-4967-b797-81c13bd2d70a.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "d6ac29e0-c850-4792-8e60-582247732d05",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/d6ac29e0-c850-4792-8e60-582247732d05.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "5107a627-a136-4660-8db6-03d181160f52",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/5107a627-a136-4660-8db6-03d181160f52.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2bae3c8e-7fe2-47b5-a231-b210b1d88fe3",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2bae3c8e-7fe2-47b5-a231-b210b1d88fe3.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2bae3c8e-7fe2-47b5-a231-b210b1d88fe3",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2bae3c8e-7fe2-47b5-a231-b210b1d88fe3.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD",
+    "hook_event_name": "Notification",
+    "message": "Claude is waiting for your input",
+    "notification_type": "idle_prompt"
+  }
+]

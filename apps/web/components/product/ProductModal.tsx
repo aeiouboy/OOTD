@@ -122,12 +122,14 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
 
             <div className="aspect-square relative group">
               <img
-                src={`${product.imageUrl}?variant=${currentImageIndex}`}
+                src={product.imageUrl || "/placeholder.svg"}
                 alt={product.name}
-                className={`w-full h-full object-cover transition-transform cursor-zoom-in ${
-                  isZoomed ? "scale-150" : "scale-100"
-                }`}
+                className={`w-full h-full object-cover transition-transform cursor-zoom-in ${isZoomed ? "scale-150" : "scale-100"
+                  }`}
                 onClick={() => setIsZoomed(!isZoomed)}
+                onError={(e) => {
+                  e.currentTarget.src = "/placeholder.svg"
+                }}
               />
 
               {/* Image Navigation */}
@@ -163,9 +165,8 @@ export default function ProductModal({ product, isOpen, onClose }: ProductModalP
               {[0, 1, 2].map((index) => (
                 <button
                   key={index}
-                  className={`w-2 h-2 rounded-full transition-colors ${
-                    index === currentImageIndex ? "bg-white shadow-sm" : "bg-white/60"
-                  }`}
+                  className={`w-2 h-2 rounded-full transition-colors ${index === currentImageIndex ? "bg-white shadow-sm" : "bg-white/60"
+                    }`}
                   onClick={() => setCurrentImageIndex(index)}
                 />
               ))}

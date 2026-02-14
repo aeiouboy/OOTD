@@ -6,7 +6,8 @@
 import { NextRequest, NextResponse } from 'next/server'
 import type { EnhancedProduct } from '@/lib/types/product-types'
 import type { UserProfile } from '@/lib/types/user-profile-types'
-import { loadProductsServerSide } from '@/lib/server-product-loader'
+import { loadProductsServerSide, loadProductsFromSupabase } from '@/lib/server-product-loader'
+import { transformDbProductsToEnhanced } from '@/lib/transformers/db-product-to-enhanced'
 import {
   processAIChatRequest,
   getFallbackRecommendations,
@@ -14,6 +15,7 @@ import {
 } from '@/lib/services/ai-chat-service'
 import { generateOutfitsFromQuery } from '@/lib/enhanced-outfit-generator'
 import { getProductName, getProductPrice, getProductImageUrl } from '@/lib/utils/product-utils'
+import { VersionUtils } from '@/lib/prompts/prompt-version'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -34,8 +36,21 @@ export async function POST(request: NextRequest) {
       console.log(`[Chat API] Session has ${sessionContext.recommendedProductIds?.length || 0} previously recommended products`)
     }
 
-    // Load enhanced products (server-side)
-    const products = await loadProductsServerSide()
+    // Load enhanced products - prefer Supabase, fallback to JSON files
+    let products: EnhancedProduct[] = []
+
+    if (process.env.SUPABASE_PRODUCTS_ENABLED === 'true') {
+      const dbProducts = await loadProductsFromSupabase(undefined, 200)
+      if (dbProducts && dbProducts.length > 0) {
+        products = transformDbProductsToEnhanced(dbProducts)
+        console.log(`[Chat API] Using Supabase products (${products.length} items)`)
+      }
+    }
+
+    if (products.length === 0) {
+      products = await loadProductsServerSide()
+      console.log(`[Chat API] Using JSON products (${products.length} items)`)
+    }
 
     if (products.length === 0) {
       console.warn('[Chat API] No enhanced products available, falling back to mock data')
@@ -82,6 +97,40 @@ export async function POST(request: NextRequest) {
       }
     }
 
+    // v5.0: When v5 is active, return structured looks directly (no generateOutfitsFromQuery)
+    if (VersionUtils.isV5Active() && response.looks) {
+      console.log(`[Chat API v5] Returning ${response.looks.length} looks`)
+
+      return NextResponse.json({
+        message: response.message,
+        looks: response.looks.map(look => ({
+          lookNumber: look.lookNumber,
+          styleName: look.styleName,
+          items: look.items.map(item => ({
+            name: item.name,
+            brand: item.brand,
+            category: item.category,
+            color: item.color,
+            description: item.description,
+            sku: item.sku,
+            price: item.price,
+            url: item.url,
+            imageUrl: item.imageUrl,
+          })),
+          tip: look.tip,
+          totalPrice: look.totalPrice,
+          imageStatus: look.imageStatus || 'pending',
+        })),
+        outfits: [], // Empty for backward compatibility
+        occasion: response.occasion,
+        reasoning: response.reasoning,
+        sessionContext: response.sessionContext,
+        imageRequest: response.imageRequest,
+        outfitDescription: response.outfitDescription,
+      })
+    }
+
+    // v4 and below: Legacy outfit generation
     // Convert userPreferences to UserProfile if available
     const userProfile: UserProfile | null = userPreferences ? {
       userName: userPreferences.userName || '',

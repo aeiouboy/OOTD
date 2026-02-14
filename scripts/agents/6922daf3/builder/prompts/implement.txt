@@ -1,1 +1,0 @@
-/implement specs/chore-6922daf3-auto-crop-subject-try-on-images.md

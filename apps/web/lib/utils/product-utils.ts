@@ -11,7 +11,12 @@ export function getGenderSpecificUrl(product: Product | EnhancedProduct): string
     return product.centralIntegration?.productUrl || ''
   }
 
-  // Legacy Product structure - check category first
+  // Legacy Product structure - always prefer explicit product URL when available
+  if (product.onlineUrl) {
+    return product.onlineUrl
+  }
+
+  // Fallback by category
   const category = product.category?.toLowerCase() || ''
 
   // Check for women first (before men, since "women" contains "men")
@@ -22,11 +27,6 @@ export function getGenderSpecificUrl(product: Product | EnhancedProduct): string
   // Check for men (exact match or substring)
   if (category === 'men' || category.includes('men')) {
     return 'https://www.central.co.th/th/men'
-  }
-
-  // For unknown categories, use onlineUrl if available
-  if (product.onlineUrl) {
-    return product.onlineUrl
   }
 
   // Fallback to base URL for products without recognized category
@@ -129,4 +129,3 @@ export function legacyToEnhanced(product: Product): Partial<EnhancedProduct> {
     },
   }
 }
-

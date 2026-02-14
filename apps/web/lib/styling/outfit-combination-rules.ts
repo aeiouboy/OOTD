@@ -3,11 +3,14 @@
  *
  * Implements intelligent outfit combination logic based on Pinterest 2026 trends,
  * including layering rules, occasion-specific styling, and aesthetic matching
+ *
+ * chore-kb003: Added KB-powered validation for Thai cultural occasions and visual balance
  */
 
 import type { Product } from '../types'
 import type { OccasionType } from '../types/enums'
 import type { CategorizedProducts } from '../outfit-generator'
+import type { EnhancedProduct } from '../types/product-types'
 import {
   AestheticCategory,
   ColorPalette,
@@ -33,6 +36,20 @@ import {
   isVisuallyConsistentForWomen,
   getImageGenderCategory,
 } from '../utils/product-visual-validator'
+// KB003: Import matching modules for KB-powered validation
+import {
+  validateThaiOccasion,
+  type ThaiOccasion,
+  type ThaiValidationResult,
+} from '../matching/thai-cultural-matcher'
+import {
+  calculateVisualBalance,
+  type VisualBalanceScore,
+} from '../matching/visual-matching-scorer'
+import {
+  calculatePairingScore,
+  checkLayeringCompatibility,
+} from '../matching/cross-product-matcher'
 
 // ============================================================================
 // Type Definitions
@@ -483,6 +500,110 @@ export function validateOutfitComposition(items: Product[]): ValidationResult {
     isValid: issues.length === 0,
     issues,
     duplicateCategories: duplicateCategories.length > 0 ? duplicateCategories : undefined,
+  }
+}
+
+// ============================================================================
+// KB003: KB-Powered Validation
+// ============================================================================
+
+/**
+ * KB003: Comprehensive KB-based outfit validation result
+ */
+export interface KBValidationResult {
+  isValid: boolean
+  overallScore: number
+  thaiCultural: ThaiValidationResult | null
+  visualBalance: VisualBalanceScore | null
+  issues: string[]
+  warnings: string[]
+}
+
+/**
+ * KB003: Check if product has pattern mixing safety flag
+ */
+function isPatternMixingSafe(product: EnhancedProduct): boolean {
+  const cp = (product as any).crossProductCompatibility
+  return cp?.patternMixingSafe !== false
+}
+
+/**
+ * KB003: Validate outfit composition using KB attributes
+ * Combines Thai cultural validation, visual balance, and pattern safety
+ */
+export function validateKBComposition(
+  outfit: EnhancedProduct[],
+  options: {
+    thaiOccasion?: ThaiOccasion
+    requireVisualBalance?: boolean
+    minVisualBalanceScore?: number
+  } = {}
+): KBValidationResult {
+  const {
+    thaiOccasion,
+    requireVisualBalance = true,
+    minVisualBalanceScore = 60,
+  } = options
+
+  const issues: string[] = []
+  const warnings: string[] = []
+  let overallScore = 100
+
+  // 1. Thai Cultural Validation (if occasion specified)
+  let thaiCultural: ThaiValidationResult | null = null
+  if (thaiOccasion) {
+    thaiCultural = validateThaiOccasion(outfit, thaiOccasion)
+    if (!thaiCultural.valid) {
+      issues.push(...thaiCultural.issues)
+      overallScore -= (100 - thaiCultural.score) * 0.3 // 30% weight
+    }
+    warnings.push(...thaiCultural.suggestions)
+  }
+
+  // 2. Visual Balance Validation
+  let visualBalance: VisualBalanceScore | null = null
+  if (requireVisualBalance && outfit.length >= 2) {
+    visualBalance = calculateVisualBalance(outfit)
+    if (visualBalance.overall < minVisualBalanceScore) {
+      issues.push(`Visual balance score (${visualBalance.overall}) below threshold (${minVisualBalanceScore})`)
+      overallScore -= (minVisualBalanceScore - visualBalance.overall) * 0.25 // 25% weight
+    }
+
+    // Check individual balance components
+    if (visualBalance.patternBalance < 50) {
+      warnings.push('Pattern mixing may cause visual clutter - consider fewer patterns')
+    }
+    if (visualBalance.silhouetteBalance < 50) {
+      warnings.push('Silhouettes may not pair well - consider contrasting fits')
+    }
+  }
+
+  // 3. Pattern Mixing Safety Check
+  const unsafePatterns = outfit.filter(p => !isPatternMixingSafe(p))
+  if (unsafePatterns.length > 1) {
+    issues.push(`Multiple items with complex patterns (${unsafePatterns.length}) may clash`)
+    overallScore -= 15
+  }
+
+  // 4. Layering Compatibility Check
+  if (outfit.length >= 2) {
+    const layering = checkLayeringCompatibility(outfit)
+    if (!layering.valid) {
+      issues.push(...layering.issues)
+      overallScore -= (100 - layering.score) * 0.15 // 15% weight
+    }
+  }
+
+  // Normalize score
+  overallScore = Math.max(0, Math.round(overallScore))
+
+  return {
+    isValid: issues.length === 0 && overallScore >= 60,
+    overallScore,
+    thaiCultural,
+    visualBalance,
+    issues,
+    warnings,
   }
 }
 

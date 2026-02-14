@@ -1,0 +1,430 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Mobile Fashion Conversation Design</title>
+    <link rel="preconnect" href="https://fonts.googleapis.com">
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&display=swap" rel="stylesheet">
+    <style>
+        :root {
+            --primary-red: #D22D47;
+            --card-bg: #CF2E49;
+            --bg-overlay: rgba(255, 255, 255, 0.2);
+            --text-white: #FFFFFF;
+            --badge-yellow: #F4E08B;
+        }
+
+        * {
+            box-sizing: border-box;
+            margin: 0;
+            padding: 0;
+            font-family: 'Inter', sans-serif;
+        }
+
+        body {
+            background-color: #2a1b1b; /* Dark background to simulate the room/closet vibe */
+            background-image: linear-gradient(rgba(0,0,0,0.5), rgba(0,0,0,0.5)), url('https://images.unsplash.com/photo-1558769132-cb1aea458c5e?q=80&w=2574&auto=format&fit=crop'); 
+            background-size: cover;
+            background-position: center;
+            background-attachment: fixed;
+            min-height: 100vh;
+            display: flex;
+            justify-content: center;
+            align-items: flex-start;
+            padding: 20px 0;
+            color: var(--text-white);
+        }
+
+        /* Mobile Container Simulation */
+        .mobile-container {
+            width: 100%;
+            max-width: 390px; /* iPhone width */
+            background: rgba(255, 255, 255, 0.25);
+            backdrop-filter: blur(20px);
+            -webkit-backdrop-filter: blur(20px);
+            border-radius: 20px;
+            overflow: hidden;
+            box-shadow: 0 10px 30px rgba(0,0,0,0.3);
+            border: 1px solid rgba(255,255,255,0.3);
+            height: 90vh; /* Fixed height to simulate screen */
+            display: flex;
+            flex-direction: column;
+            position: relative;
+        }
+
+        /* Header */
+        .header {
+            padding: 16px;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            border-bottom: 1px solid rgba(255,255,255,0.1);
+        }
+        
+        .header h1 {
+            font-size: 18px;
+            font-weight: 600;
+        }
+
+        .close-btn {
+            background: none;
+            border: none;
+            color: white;
+            font-size: 24px;
+            cursor: pointer;
+        }
+
+        /* Scrollable Content */
+        .content {
+            flex: 1;
+            overflow-y: auto;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+        }
+
+        .content::-webkit-scrollbar {
+            width: 4px;
+        }
+        .content::-webkit-scrollbar-thumb {
+            background: rgba(255,255,255,0.3);
+            border-radius: 4px;
+        }
+
+        /* Card Styles */
+        .product-card {
+            background-color: var(--card-bg);
+            border-radius: 16px;
+            padding: 16px;
+            display: flex;
+            flex-direction: column;
+            gap: 12px;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.1);
+            position: relative;
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-start;
+        }
+
+        .product-name {
+            font-size: 16px;
+            font-weight: 700;
+            line-height: 1.2;
+            margin-bottom: 4px;
+        }
+
+        .product-price {
+            font-size: 16px;
+            font-weight: 600;
+            white-space: nowrap;
+        }
+
+        .product-desc {
+            font-size: 12px;
+            opacity: 0.9;
+            line-height: 1.4;
+            margin-bottom: 8px;
+        }
+
+        .image-container {
+            background: white;
+            border-radius: 8px;
+            padding: 12px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            height: 180px; /* Fixed height for image area */
+        }
+
+        .product-img {
+            max-width: 100%;
+            max-height: 100%;
+            object-fit: contain;
+            mix-blend-mode: multiply;
+        }
+
+        .action-btn {
+            background: white;
+            color: var(--primary-red);
+            border: none;
+            border-radius: 20px;
+            padding: 10px 20px;
+            font-size: 14px;
+            font-weight: 700;
+            cursor: pointer;
+            width: 100%;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            gap: 6px;
+            transition: transform 0.2s;
+        }
+
+        .action-btn:active {
+            transform: scale(0.98);
+        }
+
+        /* Special Card Styles */
+        .outfit-badge {
+            background-color: var(--badge-yellow);
+            color: #333;
+            font-size: 10px;
+            padding: 4px 8px;
+            border-radius: 12px;
+            font-weight: 700;
+            display: inline-block;
+            margin-left: 8px;
+        }
+
+        .sub-products {
+            display: flex;
+            gap: 10px;
+            margin-top: 12px;
+        }
+
+        .sub-card {
+            background: white; /* Slightly lighter or different? Image shows white boxes inside red */
+            /* Wait, the text says: 'Lolita - Tank Top B 645'. 
+               It looks like small white cards inside the red card? 
+               Or just image boxes with text below?
+               Let's assume small white cards. */
+            background: white;
+            border-radius: 8px;
+            padding: 8px;
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            gap: 6px;
+        }
+
+        .sub-card-img-box {
+            height: 80px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+        
+        .sub-card img {
+            max-height: 100%;
+            object-fit: contain;
+        }
+
+        .sub-card-text {
+            color: #333;
+            font-size: 10px;
+            font-weight: 600;
+            text-align: center;
+            line-height: tight;
+        }
+
+        .sub-card-btn {
+            background: var(--primary-red);
+            color: white;
+            border: none;
+            border-radius: 12px;
+            padding: 6px;
+            font-size: 10px;
+            font-weight: 700;
+            cursor: pointer;
+            margin-top: auto;
+        }
+
+        /* Floating Action Bar */
+        .fab-bar {
+            position: absolute;
+            right: 16px;
+            bottom: 24px;
+            background: rgba(255,255,255,0.2);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            padding: 8px;
+            display: flex;
+            flex-direction: column;
+            gap: 16px;
+            border: 1px solid rgba(255,255,255,0.3);
+        }
+
+        .icon-btn {
+            background: transparent;
+            border: none;
+            color: white;
+            width: 40px;
+            height: 40px;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            border-radius: 50%;
+            cursor: pointer;
+            transition: background 0.3s;
+        }
+        
+        .icon-btn:hover {
+            background: rgba(255,255,255,0.2);
+        }
+
+        /* Bottom Sheet Indicator */
+        .sheet-handle {
+            width: 40px;
+            height: 4px;
+            background: rgba(255,255,255,0.5);
+            border-radius: 2px;
+            align-self: center;
+            margin-top: 8px;
+            margin-bottom: 4px;
+        }
+
+    </style>
+</head>
+<body>
+
+    <div class="mobile-container">
+        <div class="header">
+            <h1>Recommended Looks</h1>
+            <button class="close-btn">&times;</button>
+        </div>
+        
+        <div class="content">
+            <!-- Card 1 -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <div class="product-name">Sienna Suede Bag</div>
+                        <div class="product-desc">Tote bag minimal perfect for everyday use.</div>
+                    </div>
+                    <div class="product-price">฿ 890</div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1584917865442-de89df76afd3?q=80&w=2670&auto=format&fit=crop" alt="Bag" class="product-img">
+                </div>
+                <button class="action-btn">Go to shop 🛍️</button>
+            </div>
+
+            <!-- Card 2 -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <div class="product-name">Mary-Jane Ballet Flat</div>
+                        <div class="product-desc">Classic black flats, comfortable and stylish.</div>
+                    </div>
+                    <div class="product-price">฿ 790</div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1543163521-1bf539c55dd2?q=80&w=2000&auto=format&fit=crop" alt="Shoes" class="product-img">
+                </div>
+                <button class="action-btn">Go to shop 🛍️</button>
+            </div>
+
+            <!-- Card 3 -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <div class="product-name">Brown Sunglasses</div>
+                        <div class="product-desc">Tortoise shell design, UV protection.</div>
+                    </div>
+                    <div class="product-price">฿ 590</div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1572635196237-14b3f281503f?q=80&w=2000&auto=format&fit=crop" alt="Sunglasses" class="product-img">
+                </div>
+                <button class="action-btn">Go to shop 🛍️</button>
+            </div>
+
+            <!-- Card 4 -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <div class="product-name">Trapeze Jacket</div>
+                        <div class="product-desc">Contrast collar, boxy fit, autumn essential.</div>
+                    </div>
+                    <div class="product-price">฿ 1,290</div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1591047139829-d91aecb6caea?q=80&w=2536&auto=format&fit=crop" alt="Jacket" class="product-img">
+                </div>
+                <button class="action-btn">Go to shop 🛍️</button>
+            </div>
+
+            <!-- Card 5 (Special) -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <span class="product-name">White Tank Top</span>
+                        <span class="outfit-badge">Outfit Idea ✨</span>
+                        <div class="product-desc" style="margin-top: 4px;">Versatile white top. Great for layering.</div>
+                    </div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=2680&auto=format&fit=crop" alt="Tank Top" class="product-img">
+                </div>
+                <button class="action-btn">Find Similar 🔍</button>
+
+                <div class="sub-products">
+                    <div class="sub-card">
+                        <div class="sub-card-img-box">
+                            <img src="https://images.unsplash.com/photo-1521572163474-6864f9cf17ab?q=80&w=2680&auto=format&fit=crop" alt="Lolita Tank" style="max-height:100%; max-width:100%;">
+                        </div>
+                        <div class="sub-card-text">Lolita - Tank Top<br>฿ 645</div>
+                        <button class="sub-card-btn">Go to shop 🛍️</button>
+                    </div>
+                    <div class="sub-card">
+                        <div class="sub-card-img-box">
+                            <img src="https://images.unsplash.com/photo-1618354691438-25bc04584c23?q=80&w=2515&auto=format&fit=crop" alt="Adidas Tank" style="max-height:100%; max-width:100%;">
+                        </div>
+                        <div class="sub-card-text">Adidas - Tank Top<br>฿ 1,300</div>
+                        <button class="sub-card-btn">Go to shop 🛍️</button>
+                    </div>
+                </div>
+            </div>
+
+            <!-- Card 6 -->
+            <div class="product-card">
+                <div class="card-header">
+                    <div>
+                        <div class="product-name">Straight Jeans</div>
+                        <div class="product-desc">High-waisted, straight leg fit.</div>
+                    </div>
+                    <div class="product-price">฿ 990</div>
+                </div>
+                <div class="image-container">
+                    <img src="https://images.unsplash.com/photo-1541099649105-f69ad21f3246?q=80&w=2573&auto=format&fit=crop" alt="Jeans" class="product-img">
+                </div>
+                <button class="action-btn">Go to shop 🛍️</button>
+            </div>
+            
+            <div style="height: 60px;"></div> <!-- Spacer -->
+        </div>
+
+        <div class="fab-bar">
+            <button class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M21 15a2 2 0 0 1-2 2H7l-4 4V5a2 2 0 0 1 2-2h14a2 2 0 0 1 2 2z"></path>
+                </svg>
+            </button>
+            <button class="icon-btn">
+                <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.38 3.4a1.6 1.6 0 0 0-2.22 0l-1.64 1.61 10.8 10.8 1.64-1.6a1.6 1.6 0 0 0 0-2.26 1.6 1.6 0 0 0-2.26 0l-1.42 1.4-9.3-9.3A1.99 1.99 0 0 0 13 3H3a1 1 0 0 0-1 1v10a2 2 0 0 0 .6 1.4l9.6 9.6a2 2 0 0 0 2.8 0l8.4-8.4a2 2 0 0 0 0-2.8L20.38 3.4z"></path> 
+                </svg> <!-- Using Tag icon as Hanger placeholder or close enough -->
+            </button>
+            <button class="icon-btn">
+                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20.84 4.61a5.5 5.5 0 0 0-7.78 0L12 5.67l-1.06-1.06a5.5 5.5 0 0 0-7.78 7.78l1.06 1.06L12 21.23l7.78-7.78 1.06-1.06a5.5 5.5 0 0 0 0-7.78z"></path>
+                </svg>
+            </button>
+            <button class="icon-btn">
+                 <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M20 21v-2a4 4 0 0 0-4-4H8a4 4 0 0 0-4 4v2"></path>
+                    <circle cx="12" cy="7" r="4"></circle>
+                </svg>
+            </button>
+        </div>
+
+    </div>
+
+</body>
+</html>

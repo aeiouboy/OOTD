@@ -303,6 +303,7 @@ export class ConversationStateMachine {
     const occasionKeywords = [
       // Work/Professional
       'ทำงาน', 'ออฟฟิศ', 'ประชุม', 'work', 'office', 'meeting', 'professional',
+      'สัมภาษณ์งาน', 'สัมภาษณ์', 'ไปสัมภาษณ์', 'interview', 'job interview',
 
       // Wedding/Formal
       'งานแต่ง', 'แต่งงาน', 'งานบวช', 'งานเลี้ยง', 'wedding', 'formal', 'ceremony',

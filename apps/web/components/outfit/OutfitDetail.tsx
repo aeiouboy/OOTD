@@ -14,7 +14,7 @@ import { ArrowLeft, Sparkles } from 'lucide-react'
 /**
  * Cache configuration for localStorage (matching useFlatLayGeneration.ts)
  */
-const CACHE_PREFIX = 'flat-lay-'
+const CACHE_PREFIX = 'flat-lay-v2-'
 const CACHE_TTL_MS = 7 * 24 * 60 * 60 * 1000 // 7 days
 
 /**
@@ -150,6 +150,10 @@ export function OutfitDetail({
 
     try {
       const flatLayItems = transformToFlatLayItems(targetOutfit.items)
+      const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
+        return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
+      })
+      const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
 
       const response = await fetch('/api/generate-image', {
         method: 'POST',
@@ -157,7 +161,7 @@ export function OutfitDetail({
           'Content-Type': 'application/json',
         },
         body: JSON.stringify({
-          generationType: 'flat-lay',
+          generationType,
           flatLayItems,
           occasionContext: targetOutfit.description || targetOutfit.title,
         }),
@@ -280,7 +284,7 @@ export function OutfitDetail({
           </p>
 
           {/* Outfit preview image - prioritize flat-lay images from chat */}
-          <div className="aspect-[3/4] bg-gray-100 rounded-lg mb-4 overflow-hidden">
+          <div className="aspect-[3/4] bg-gray-100 rounded-lg mb-4 overflow-hidden relative">
             {(outfit.flatLayImageUrl || outfit.flatLayImageBase64 || outfit.imageUrl) ? (
               <img
                 src={outfit.flatLayImageUrl || outfit.flatLayImageBase64 || outfit.imageUrl}
@@ -289,6 +293,13 @@ export function OutfitDetail({
               />
             ) : (
               <div className="w-full h-full bg-gray-300" />
+            )}
+            {outfit.hasApproximateColors && (outfit.flatLayImageUrl || outfit.flatLayImageBase64) && (
+              <div className="absolute bottom-2 left-2 right-2 bg-black/50 rounded-md px-2 py-1">
+                <p className="text-xs text-white/90 text-center">
+                  สีในภาพอาจแตกต่างจากสินค้าจริง กรุณาตรวจสอบสีจริงที่หน้าสินค้า
+                </p>
+              </div>
             )}
           </div>
 

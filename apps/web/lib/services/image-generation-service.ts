@@ -9,7 +9,8 @@
  * - Rate limiting awareness
  */
 
-import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest, FlatLayItem } from '../types/image-types';
+import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest } from '../types/image-types';
+import { buildFlatLayPrompt, buildFashionPrompt } from '../prompts/image-prompts';
 
 /**
  * OpenRouter API configuration
@@ -216,6 +217,57 @@ export class OpenRouterImageClient {
   }
 
   /**
+   * Generates a flat-lay image from a pre-built prompt (no wrapping).
+   * Sends the prompt directly to the image model with 1:1 aspect ratio.
+   * Used by the occasion flat-lay pipeline where the AI has already crafted the prompt.
+   *
+   * @param prompt - Complete image generation prompt (already formatted)
+   * @returns Promise resolving to image generation response
+   */
+  async generateRawFlatLay(prompt: string): Promise<ImageGenerationResponse> {
+    if (!prompt || typeof prompt !== 'string' || prompt.trim() === '') {
+      return {
+        success: false,
+        error: 'INVALID_PROMPT',
+        message: 'Flat-lay prompt is required',
+      };
+    }
+
+    if (!this.checkRateLimit()) {
+      return {
+        success: false,
+        error: 'RATE_LIMITED',
+        message: 'Too many requests. Please wait a moment before trying again.',
+      };
+    }
+
+    for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
+      try {
+        if (attempt > 0) {
+          const delay = OPENROUTER_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+          await this.sleep(delay);
+          console.log(`[ImageGen] Raw flat-lay retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
+        }
+
+        const result = await this.makeFlatLayRequest(prompt);
+        return result;
+      } catch (error) {
+        console.error(`[ImageGen] Raw flat-lay attempt ${attempt + 1} failed:`, error);
+
+        if (this.isNonRetryableError(error)) {
+          break;
+        }
+      }
+    }
+
+    return {
+      success: false,
+      error: 'GENERATION_FAILED',
+      message: 'Unable to generate flat-lay image. Please try again later.',
+    };
+  }
+
+  /**
    * Generates a flat-lay image showing recommended items individually placed on a white background.
    *
    * @param request - Flat-lay request containing items to display
@@ -262,7 +314,7 @@ export class OpenRouterImageClient {
           console.log(`[ImageGen] Flat-lay retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
         }
 
-        const prompt = this.buildFlatLayPrompt(request.items, request.occasionContext);
+        const prompt = buildFlatLayPrompt(request.items, request.occasionContext);
         const result = await this.makeFlatLayRequest(prompt);
         return result;
       } catch (error) {
@@ -284,158 +336,6 @@ export class OpenRouterImageClient {
   }
 
   /**
-   * Builds the flat-lay prompt from item array
-   * Based on the format from data/personas/prompt_gen/looks.md
-   *
-   * IMPORTANT: Uses generic item descriptions (category + color) instead of full product names
-   * to prevent the AI from rendering product names/SKUs as text labels on the image.
-   *
-   * @private
-   */
-  private buildFlatLayPrompt(items: FlatLayItem[], occasionContext?: string): string {
-    // Build item descriptions using ONLY category and color - never include product names/SKUs
-    // This prevents the AI from rendering text labels on the generated image
-    const itemDescriptions = items.map((item) => {
-      // Use visualDescription if provided (should be a clean visual description without product names)
-      if (item.visualDescription && !this.containsProductNameOrSku(item.visualDescription)) {
-        return `- ${item.category}: ${item.visualDescription}`;
-      }
-
-      // Otherwise, create a clean generic description from category and color only
-      const colorInfo = item.color ? `${item.color} ` : '';
-      const cleanCategory = this.cleanCategoryForPrompt(item.category);
-      return `- ${cleanCategory}: ${colorInfo}${cleanCategory.toLowerCase()}`;
-    }).join('\n');
-
-    // Build occasion context if provided
-    const contextLine = occasionContext
-      ? `\nOCCASION CONTEXT: ${occasionContext}\n`
-      : '';
-
-    // Count items for the prompt
-    const itemCount = items.length;
-
-    const prompt = `
-Generate a flat-lay fashion photograph showing exactly ONE complete outfit composed of ${itemCount} items laid flat on a pure white background.
-
-THIS IS A SINGLE OUTFIT - NOT MULTIPLE OUTFITS:
-The following ${itemCount} items are parts of ONE coordinated outfit that should be worn together:
-
-${itemDescriptions}
-${contextLine}
-CRITICAL REQUIREMENTS:
-- Generate exactly ONE outfit using ALL ${itemCount} items listed above
-- DO NOT create multiple outfit combinations or capsule wardrobe layouts
-- DO NOT show alternative styling options or multiple looks
-- Show only the ${itemCount} items listed - no additional items
-- Each item should be clearly visible and properly sized relative to each other
-- Items should be laid out in an organized, aesthetically pleasing flat-lay arrangement
-- Pure white background with no text or overlays
-- Professional product photography quality
-- Sharp focus on all items
-- Accurate color representation
-- High-end fashion editorial style
-- Items should not overlap significantly
-- DO NOT include any text, labels, product names, brand names, or watermarks
-
-COMPOSITION:
-- Square format (1:1 aspect ratio)
-- Flat-lay perspective (top-down view)
-- Balanced spacing between the ${itemCount} items
-- Elegant, minimalist styling typical of fashion e-commerce
-- NO TEXT OR LABELS ANYWHERE IN THE IMAGE
-`.trim();
-
-    return prompt;
-  }
-
-  /**
-   * Checks if a string contains what looks like a product name or SKU
-   * Product names often contain brand names, SKU codes, or marketing text
-   *
-   * @private
-   */
-  private containsProductNameOrSku(text: string): boolean {
-    // Check for SKU-like patterns (alphanumeric codes)
-    const skuPattern = /[A-Z]{2,}[0-9]{4,}|[0-9]{8,}/i;
-    if (skuPattern.test(text)) return true;
-
-    // Check for common product name indicators
-    const productNameIndicators = [
-      /\b(online exclusive|limited edition|new arrival)\b/i,
-      /\b(korea|korean|japan|japanese)\b/i, // Region markers often in product names
-      /[A-Z][a-z]+[A-Z]/, // CamelCase brand names
-      /\b\w{10,}\b/, // Very long words (likely brand names or codes)
-    ];
-
-    return productNameIndicators.some(pattern => pattern.test(text));
-  }
-
-  /**
-   * Cleans category name for use in prompt
-   * Normalizes categories to simple, clean fashion terms
-   *
-   * @private
-   */
-  private cleanCategoryForPrompt(category: string): string {
-    // Map common category variations to clean terms
-    const categoryMap: Record<string, string> = {
-      'dress': 'Dress',
-      'dresses': 'Dress',
-      'top': 'Top',
-      'tops': 'Top',
-      'blouse': 'Blouse',
-      'blouses': 'Blouse',
-      'shirt': 'Shirt',
-      'shirts': 'Shirt',
-      'pants': 'Pants',
-      'trousers': 'Pants',
-      'skirt': 'Skirt',
-      'skirts': 'Skirt',
-      'jacket': 'Jacket',
-      'jackets': 'Jacket',
-      'blazer': 'Blazer',
-      'blazers': 'Blazer',
-      'coat': 'Coat',
-      'coats': 'Coat',
-      'sweater': 'Sweater',
-      'sweaters': 'Sweater',
-      'cardigan': 'Cardigan',
-      'cardigans': 'Cardigan',
-      'shoes': 'Shoes',
-      'shoe': 'Shoes',
-      'footwear': 'Shoes',
-      'heels': 'Heels',
-      'sneakers': 'Sneakers',
-      'sandals': 'Sandals',
-      'boots': 'Boots',
-      'bag': 'Bag',
-      'bags': 'Bag',
-      'handbag': 'Handbag',
-      'handbags': 'Handbag',
-      'accessory': 'Accessory',
-      'accessories': 'Accessory',
-      'jewelry': 'Jewelry',
-      'watch': 'Watch',
-      'watches': 'Watch',
-      'belt': 'Belt',
-      'belts': 'Belt',
-      'scarf': 'Scarf',
-      'scarves': 'Scarf',
-      'hat': 'Hat',
-      'hats': 'Hat',
-      'leggings': 'Leggings',
-      'shorts': 'Shorts',
-      'jeans': 'Jeans',
-      'jumpsuit': 'Jumpsuit',
-      'romper': 'Romper',
-    };
-
-    const lowerCategory = category.toLowerCase().trim();
-    return categoryMap[lowerCategory] || category;
-  }
-
-  /**
    * Makes API request to OpenRouter for flat-lay generation
    *
    * @private
@@ -452,6 +352,7 @@ COMPOSITION:
       ],
       modalities: ['text', 'image'], // Required for image generation
       max_tokens: 4096,
+      image_config: { aspect_ratio: '1:1' as const },
     };
 
     console.log('[ImageGen] Sending flat-lay request to OpenRouter:', {
@@ -630,6 +531,7 @@ COMPOSITION:
       ],
       modalities: ['text', 'image'],
       max_tokens: 4096,
+      image_config: { aspect_ratio: '3:4' as const },
     };
 
     console.log('[ImageGen] Sending dual reference try-on request to OpenRouter:', {
@@ -728,6 +630,7 @@ COMPOSITION:
       ],
       modalities: ['text', 'image'], // Required for image generation output
       max_tokens: 4096,
+      image_config: { aspect_ratio: '3:4' as const },
     };
 
     console.log('[ImageGen] Sending fitting model request to OpenRouter:', {
@@ -805,7 +708,7 @@ COMPOSITION:
     options?: ImageGenerationRequest['style']
   ): Promise<ImageGenerationResponse> {
     // Build fashion-specific prompt
-    const prompt = this.buildFashionPrompt(description, options);
+    const prompt = buildFashionPrompt(description, options);
 
     // Create request payload - OpenRouter image generation requires messages format with modalities
     const requestBody = {
@@ -818,6 +721,7 @@ COMPOSITION:
       ],
       modalities: ['text', 'image'], // Required for image generation
       max_tokens: 4096, // For image generation
+      image_config: { aspect_ratio: '3:4' as const },
     };
 
     console.log('[ImageGen] Sending request to OpenRouter:', {
@@ -880,53 +784,6 @@ COMPOSITION:
 
       throw new Error('Unknown error during image generation');
     }
-  }
-
-  /**
-   * Builds fashion-specific prompt for image generation
-   * Applies professional photography style and Thai fashion aesthetic
-   *
-   * @private
-   */
-  private buildFashionPrompt(
-    description: string,
-    options?: ImageGenerationRequest['style']
-  ): string {
-    const photographyStyle = options?.photographyStyle || 'editorial fashion';
-    const composition = options?.composition || 'full-body model shoot';
-    const lighting = options?.lighting || 'studio';
-    const aesthetic = options?.aestheticContext || 'modern international';
-
-    // Fashion-specific prompt template
-    const promptTemplate = `
-Generate a high-quality fashion photograph of a real person wearing the outfit:
-
-OUTFIT DESCRIPTION: ${description}
-
-PHOTOGRAPHY STYLE: ${photographyStyle}
-COMPOSITION: ${composition}
-LIGHTING: ${lighting}
-AESTHETIC: ${aesthetic} fashion style
-
-REQUIREMENTS:
-- Professional product photography quality
-- Clear, well-lit composition
-- Clean background (white or minimal)
-- Sharp focus on outfit details
-- Accurate color representation
-- Suitable for fashion e-commerce
-- Thai contemporary fashion aesthetic
-- Elegant and modern presentation
-
-AVOID:
-- Blurry or low-resolution images
-- Cluttered backgrounds
-- Poor lighting or shadows
-- Distorted proportions
-- Unrealistic colors
-`.trim();
-
-    return promptTemplate;
   }
 
   /**

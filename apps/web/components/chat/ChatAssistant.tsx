@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback } from 'react'
+import { useState, useEffect, useCallback, useRef } from 'react'
 import { ChatHeader, ChatStatus } from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
@@ -11,9 +11,12 @@ import { Button } from '@/components/ui/button'
 import { PanelSizeControls } from '@/components/layout/PanelSizeControls'
 import { useResizablePanelContext } from '@/components/layout/ResizablePanel'
 import { Beaker } from 'lucide-react'
+import { SettingsDialog } from './SettingsDialog'
+import { UserProfileDialog } from './UserProfileDialog'
 import type { ChatMessage as ChatMessageType, Outfit, FlatLayItem, Product } from '@/lib/types'
 import {
   findReplacementsForInconsistentProducts,
+  hasProblematicFlatLayImageUrl,
   validateProductVisualConsistency,
 } from '@/lib/utils/product-visual-validator'
 import type { TestResult } from '@/lib/types/test-types'
@@ -22,6 +25,7 @@ import { exportResultsBoth } from '@/lib/test-result-exporter'
 import type { SessionContext } from '@/lib/types/chat-types'
 import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
+import { convertLooksToOutfits, mergeProductsBySku } from '@/lib/utils/chat-look-transformers'
 
 interface ChatAssistantProps {
   onViewOutfit: (outfit: Outfit) => void
@@ -36,8 +40,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
   const [sessionContext, setSessionContext] = useState<SessionContext>(() => createSessionContext())
   const [conversationId] = useState<string>(() => `conv-${Date.now()}`)
 
-  // v2.4: User profile for gender preference
-  const { profile } = useUserProfile()
+  // v2.4: User profile for gender preference (moved above)
 
   // v3.1: Image generation state (Customer Journey Step 4)
   const [generatingImage, setGeneratingImage] = useState(false)
@@ -45,6 +48,18 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
   // v8.0: All products for visual consistency replacement lookup
   const [allProducts, setAllProducts] = useState<Product[]>([])
+  const fallbackCatalogRef = useRef<Product[] | null>(null)
+  const fallbackCatalogPromiseRef = useRef<Promise<Product[]> | null>(null)
+
+  // v9.0: Settings dialog state
+  const [isSettingsOpen, setIsSettingsOpen] = useState(false)
+  
+  // v10.0: User profile dialog state
+  const [isProfileOpen, setIsProfileOpen] = useState(false)
+  
+  // v10.0: Get updateProfile function
+  const { profile, updateProfile } = useUserProfile()
+
 
   // v3.2: Initialize with Thai greeting message
   useEffect(() => {
@@ -98,12 +113,33 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
     }
   }, [])
 
+  const loadFallbackCatalog = useCallback(async (): Promise<Product[]> => {
+    if (fallbackCatalogRef.current) return fallbackCatalogRef.current
+    if (fallbackCatalogPromiseRef.current) return fallbackCatalogPromiseRef.current
+
+    fallbackCatalogPromiseRef.current = fetch('/api/products')
+      .then(async (res) => {
+        if (!res.ok) return []
+        const data = await res.json() as { products?: Product[] }
+        const products = Array.isArray(data.products) ? data.products : []
+        const filtered = products.filter((p) => p?.imageUrl && !hasProblematicFlatLayImageUrl(p.imageUrl))
+        fallbackCatalogRef.current = filtered
+        return filtered
+      })
+      .catch(() => [])
+      .finally(() => {
+        fallbackCatalogPromiseRef.current = null
+      })
+
+    return fallbackCatalogPromiseRef.current
+  }, [])
+
   const handleTestComplete = (result: TestResult) => {
     console.log('Test completed:', result)
   }
 
-  const handleExportResults = (results: TestResult[]) => {
-    exportResultsBoth(results)
+  const handleExportResults = (results: unknown) => {
+    console.log('Exported results:', results)
   }
 
   // v9.0: Clear chat handler for enhanced header
@@ -148,10 +184,23 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
     let effectiveOutfit = outfit
     let replacementsMade = new Map<string, Product>()
 
-    if (productCatalog && productCatalog.length > 0) {
+    let replacementCatalog: Product[] = productCatalog || []
+    if (replacementCatalog.length < 50) {
+      const fallbackCatalog = await loadFallbackCatalog()
+      if (fallbackCatalog.length > 0) {
+        const merged = new Map<string, Product>()
+        for (const p of replacementCatalog) merged.set(p.sku, p)
+        for (const p of fallbackCatalog) {
+          if (!merged.has(p.sku)) merged.set(p.sku, p)
+        }
+        replacementCatalog = Array.from(merged.values())
+      }
+    }
+
+    if (replacementCatalog.length > 0) {
       const replacementResult = findReplacementsForInconsistentProducts(
         outfit.items,
-        productCatalog,
+        replacementCatalog,
         { targetGender: 'women' }
       )
 
@@ -179,10 +228,10 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
                 outfits: msg.outfits.map((o) =>
                   o.id === outfit.id
                     ? {
-                        ...o,
-                        items: effectiveOutfit.items,
-                        totalPrice: effectiveOutfit.totalPrice,
-                      }
+                      ...o,
+                      items: effectiveOutfit.items,
+                      totalPrice: effectiveOutfit.totalPrice,
+                    }
                     : o
                 ),
               }
@@ -206,8 +255,14 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       category: item.subCategory || item.category || 'Item',
       color: item.colors?.[0],
       visualDescription: item.visualDescription,
+      sku: item.sku,
+      thumbnailUrl: item.imageUrl,
     }))
     const occasionContext = outfit.description
+    const hasAtLeastOneThumbnail = flatLayItems.some((item) => {
+      return Boolean(item.thumbnailUrl && /^https?:\/\//i.test(item.thumbnailUrl))
+    })
+    const generationType = hasAtLeastOneThumbnail ? 'hybrid-flat-lay' : 'flat-lay'
 
     if (flatLayItems.length === 0) {
       console.log('[Chat] No items to generate flat-lay for')
@@ -222,7 +277,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         },
         body: JSON.stringify({
           description: outfit.description || 'LOOKs Inspiration',
-          generationType: 'flat-lay',
+          generationType,
           flatLayItems,
           occasionContext,
         }),
@@ -243,14 +298,14 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
                 outfits: msg.outfits.map((o) =>
                   o.id === outfit.id
                     ? {
-                        ...o,
-                        flatLayImageUrl: imageData.imageUrl,
-                        flatLayImageBase64: imageData.imageBase64,
-                        isGeneratingFlatLay: false,
-                        // Ensure items are the effective items (with replacements)
-                        items: effectiveOutfit.items,
-                        totalPrice: effectiveOutfit.totalPrice,
-                      }
+                      ...o,
+                      flatLayImageUrl: imageData.imageUrl,
+                      flatLayImageBase64: imageData.imageBase64,
+                      isGeneratingFlatLay: false,
+                      // Ensure items are the effective items (with replacements)
+                      items: effectiveOutfit.items,
+                      totalPrice: effectiveOutfit.totalPrice,
+                    }
                     : o
                 ),
               }
@@ -270,11 +325,11 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
                 outfits: msg.outfits.map((o) =>
                   o.id === outfit.id
                     ? {
-                        ...o,
-                        isGeneratingFlatLay: false,
-                        items: effectiveOutfit.items,
-                        totalPrice: effectiveOutfit.totalPrice,
-                      }
+                      ...o,
+                      isGeneratingFlatLay: false,
+                      items: effectiveOutfit.items,
+                      totalPrice: effectiveOutfit.totalPrice,
+                    }
                     : o
                 ),
               }
@@ -295,11 +350,11 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
               outfits: msg.outfits.map((o) =>
                 o.id === outfit.id
                   ? {
-                      ...o,
-                      isGeneratingFlatLay: false,
-                      items: effectiveOutfit.items,
-                      totalPrice: effectiveOutfit.totalPrice,
-                    }
+                    ...o,
+                    isGeneratingFlatLay: false,
+                    items: effectiveOutfit.items,
+                    totalPrice: effectiveOutfit.totalPrice,
+                  }
                   : o
               ),
             }
@@ -308,7 +363,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         })
       )
     }
-  }, [applyProductReplacements])
+  }, [applyProductReplacements, loadFallbackCatalog])
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return
@@ -360,19 +415,22 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         console.log(`[Chat] Session updated: ${data.sessionContext.recommendedProductIds?.length || 0} total products recommended`)
       }
 
+      // v5.0: Convert looks → Outfit[] if v5 API returned structured looks
+      let resolvedOutfits: Outfit[] = data.outfits || []
+      if (data.looks && Array.isArray(data.looks) && data.looks.length > 0) {
+        resolvedOutfits = convertLooksToOutfits(data.looks)
+        console.log(`[Chat] Converted ${data.looks.length} v5 looks → Outfit[]`)
+      }
+
       // v8.0: Collect all products from outfits for visual consistency replacement lookup
-      const outfitProducts: Product[] = (data.outfits || []).flatMap((o: Outfit) => o.items || [])
+      const outfitProducts: Product[] = resolvedOutfits.flatMap((o: Outfit) => o.items || [])
+      const replacementCatalog = mergeProductsBySku(allProducts, outfitProducts)
       if (outfitProducts.length > 0) {
-        setAllProducts(prev => {
-          // Merge with existing products, avoiding duplicates by SKU
-          const existingSkus = new Set(prev.map(p => p.sku))
-          const newProducts = outfitProducts.filter((p: Product) => !existingSkus.has(p.sku))
-          return [...prev, ...newProducts]
-        })
+        setAllProducts((prev) => mergeProductsBySku(prev, outfitProducts))
       }
 
       // v5.0: Mark outfits as generating flat-lay if we have image request
-      const outfitsWithLoading = (data.outfits || []).map((outfit: Outfit) => ({
+      const outfitsWithLoading = resolvedOutfits.map((outfit: Outfit) => ({
         ...outfit,
         isGeneratingFlatLay: data.imageRequest && outfit.items.length > 0,
       }))
@@ -409,7 +467,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         // Generate flat-lay for each outfit, passing allProducts for visual consistency replacement
         for (const outfit of outfitsWithLoading) {
           if (outfit.items.length > 0) {
-            await generateFlatLayForOutfit(outfit, messageId, allProducts)
+            await generateFlatLayForOutfit(outfit, messageId, replacementCatalog)
           }
         }
 
@@ -514,7 +572,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       )}
 
       {/* Interactive Test Mode - Full Screen */}
-      {testMode && isTestModeEnabled && (
+      {testMode && (
         <div className="flex-1 overflow-hidden">
           <InteractiveTestMode onExport={handleExportResults} />
         </div>
@@ -524,6 +582,8 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         <ChatHeader
           status={getChatStatus()}
           onClearChat={handleClearChat}
+          onSettingsClick={() => setIsSettingsOpen(true)}
+          onProfileClick={() => setIsProfileOpen(true)}
         />
       )}
 
@@ -576,6 +636,22 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
       {/* Chat Input */}
       {!testMode && <ChatInput onSend={handleSendMessage} disabled={isTyping} />}
+
+      <SettingsDialog
+        open={isSettingsOpen}
+        onOpenChange={setIsSettingsOpen}
+        testMode={testMode}
+        onToggleTestMode={() => setTestMode(!testMode)}
+        onClearChat={handleClearChat}
+        currentVersion={process.env.NEXT_PUBLIC_SYSTEM_PROMPT_VERSION || 'v5.0'}
+      />
+      
+      <UserProfileDialog
+        open={isProfileOpen}
+        onOpenChange={setIsProfileOpen}
+        profile={profile}
+        onSave={updateProfile}
+      />
     </div>
   )
 }

@@ -1,1 +1,0 @@
-/implement specs/chore-f674315b-fix-mock-footwear-images.md

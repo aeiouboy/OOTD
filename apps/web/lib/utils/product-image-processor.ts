@@ -26,7 +26,135 @@ const PROCESSOR_CONFIG = {
   minDimension: 50,
   /** Target dimension for processed images */
   targetDimension: 512,
+  /** Reject likely model/person shots to keep item-only flat-lay */
+  rejectLikelyModelShots: true,
+  /** Skin ratio threshold for model-shot rejection (lower = stricter) */
+  modelShotSkinRatioThreshold: (() => {
+    const parsed = Number(process.env.PRODUCT_IMAGE_MODEL_SKIN_THRESHOLD || '0.02');
+    if (!Number.isFinite(parsed)) return 0.02;
+    // Clamp to a safe operating window.
+    return Math.min(Math.max(parsed, 0.01), 0.08);
+  })(),
 };
+
+/**
+ * Background removal is optional.
+ * If rembg is not installed, we auto-disable it for this process and continue
+ * with original product images so hybrid generation still works.
+ */
+const DISABLE_PRODUCT_BG_REMOVAL = process.env.DISABLE_PRODUCT_BG_REMOVAL === 'true';
+let isBackgroundRemovalEnabled = !DISABLE_PRODUCT_BG_REMOVAL;
+let hasLoggedBackgroundRemovalDisabled = false;
+
+/**
+ * Prefer a project-local Python venv for image scripts so rembg/pillow
+ * do not depend on the system-wide python3 environment.
+ */
+const PROJECT_ROOT = path.join(process.cwd(), '..', '..');
+const IMAGE_PROCESSING_DIR = path.join(PROJECT_ROOT, 'scripts', 'image_processing');
+
+function resolvePythonBinary(): string {
+  const configured = process.env.PRODUCT_IMAGE_PYTHON_BIN?.trim();
+  if (configured) {
+    return configured;
+  }
+
+  const candidates = process.platform === 'win32'
+    ? [path.join(IMAGE_PROCESSING_DIR, '.venv', 'Scripts', 'python.exe')]
+    : [
+      path.join(IMAGE_PROCESSING_DIR, '.venv', 'bin', 'python3'),
+      path.join(IMAGE_PROCESSING_DIR, '.venv', 'bin', 'python'),
+    ];
+
+  for (const candidate of candidates) {
+    if (fs.existsSync(candidate)) {
+      return candidate;
+    }
+  }
+
+  return 'python3';
+}
+
+const PYTHON_BINARY = resolvePythonBinary();
+
+function isRembgMissingError(message: string): boolean {
+  const lower = message.toLowerCase();
+  return (
+    lower.includes("no module named 'rembg'") ||
+    lower.includes('required library not found') ||
+    lower.includes('install required libraries with: pip install rembg')
+  );
+}
+
+function isClothingCategory(category: string): boolean {
+  const c = (category || '').toLowerCase();
+  return (
+    c.includes('dress') ||
+    c.includes('shirt') ||
+    c.includes('blouse') ||
+    c.includes('top') ||
+    c.includes('pants') ||
+    c.includes('trouser') ||
+    c.includes('skirt') ||
+    c.includes('jeans') ||
+    c.includes('jumpsuit') ||
+    c.includes('romper') ||
+    c.includes('clothing') ||
+    c.includes('shoe') ||
+    c.includes('footwear') ||
+    c.includes('sandal') ||
+    c.includes('heel') ||
+    c.includes('boot') ||
+    c.includes('sneaker')
+  );
+}
+
+function isLikelySkinPixel(r: number, g: number, b: number): boolean {
+  // Conservative skin heuristic in RGB + YCbCr space.
+  // Tight bounds reduce false positives on beige garments.
+  if (!(r > 95 && g > 40 && b > 20 && r > g && r > b && Math.abs(r - g) > 15)) {
+    return false;
+  }
+  const cb = 128 - 0.168736 * r - 0.331264 * g + 0.5 * b;
+  const cr = 128 + 0.5 * r - 0.418688 * g - 0.081312 * b;
+  return cb >= 80 && cb <= 123 && cr >= 136 && cr <= 173;
+}
+
+async function detectLikelyModelShot(inputBuffer: Buffer): Promise<{ likelyModelShot: boolean; skinRatio: number }> {
+  try {
+    const sharpModule = await import('sharp');
+    const sharp = sharpModule.default;
+    const { data, info } = await sharp(inputBuffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const pixels = info.width * info.height;
+    if (!pixels) return { likelyModelShot: false, skinRatio: 0 };
+
+    let opaque = 0;
+    let skin = 0;
+    for (let i = 0; i < pixels; i++) {
+      const idx = i * 4;
+      const a = data[idx + 3];
+      if (a < 20) continue;
+      opaque++;
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      if (isLikelySkinPixel(r, g, b)) {
+        skin++;
+      }
+    }
+
+    if (!opaque) return { likelyModelShot: false, skinRatio: 0 };
+    const skinRatio = skin / opaque;
+    // Visible skin on isolated product shot is usually near zero.
+    return { likelyModelShot: skinRatio > PROCESSOR_CONFIG.modelShotSkinRatioThreshold, skinRatio };
+  } catch {
+    return { likelyModelShot: false, skinRatio: 0 };
+  }
+}
 
 /**
  * Fetches a product image from URL and returns it as a buffer
@@ -35,11 +163,36 @@ const PROCESSOR_CONFIG = {
  * @returns Promise resolving to image buffer
  */
 export async function fetchProductImage(url: string): Promise<Buffer> {
+  const normalizeProductImageUrl = (inputUrl: string): string => {
+    try {
+      const parsed = new URL(inputUrl);
+      if (!parsed.pathname.includes('/_next/image')) return inputUrl;
+
+      const rawSource = parsed.searchParams.get('url');
+      if (!rawSource) return inputUrl;
+
+      let decoded = rawSource;
+      try {
+        decoded = decodeURIComponent(rawSource);
+      } catch {
+        // keep rawSource
+      }
+
+      if (decoded.startsWith('//')) return `https:${decoded}`;
+      if (decoded.startsWith('/')) return `${parsed.origin}${decoded}`;
+      if (/^https?:\/\//i.test(decoded)) return decoded;
+      return inputUrl;
+    } catch {
+      return inputUrl;
+    }
+  };
+
+  const sourceUrl = normalizeProductImageUrl(url);
   const controller = new AbortController();
   const timeoutId = setTimeout(() => controller.abort(), PROCESSOR_CONFIG.fetchTimeout);
 
   try {
-    const response = await fetch(url, {
+    let response = await fetch(sourceUrl, {
       signal: controller.signal,
       headers: {
         'User-Agent': 'OOTDay-Fashion-Assistant/1.0',
@@ -47,10 +200,21 @@ export async function fetchProductImage(url: string): Promise<Buffer> {
       },
     });
 
+    // Fallback to original URL if normalized source fails.
+    if (!response.ok && sourceUrl !== url) {
+      response = await fetch(url, {
+        signal: controller.signal,
+        headers: {
+          'User-Agent': 'OOTDay-Fashion-Assistant/1.0',
+          Accept: 'image/*',
+        },
+      });
+    }
+
     clearTimeout(timeoutId);
 
     if (!response.ok) {
-      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText}`);
+      throw new Error(`Failed to fetch image: ${response.status} ${response.statusText} (${sourceUrl})`);
     }
 
     const arrayBuffer = await response.arrayBuffer();
@@ -82,16 +246,16 @@ export async function removeProductBackground(inputBuffer: Buffer): Promise<Buff
     // Write input buffer to temp file
     fs.writeFileSync(inputPath, inputBuffer);
 
-    // Path to the rembg script (relative to apps/web)
-    const scriptPath = path.join(process.cwd(), '..', '..', 'scripts', 'image_processing', 'remove_bg_rembg.py');
+    const scriptPath = path.join(IMAGE_PROCESSING_DIR, 'remove_bg_rembg.py');
 
     console.log('[ProductImageProcessor] Running background removal:', {
       inputPath,
       outputPath,
       scriptPath,
+      python: PYTHON_BINARY,
     });
 
-    const python = spawn('python3', [scriptPath, inputPath, outputPath]);
+    const python = spawn(PYTHON_BINARY, [scriptPath, inputPath, outputPath]);
 
     let stderr = '';
     const timeout = setTimeout(() => {
@@ -124,8 +288,19 @@ export async function removeProductBackground(inputBuffer: Buffer): Promise<Buff
         resolve(outputBuffer);
       } else {
         cleanup();
-        console.error('[ProductImageProcessor] Background removal failed:', stderr);
-        reject(new Error(`Background removal failed with code ${code}: ${stderr}`));
+        const errorMessage = `Background removal failed with code ${code}: ${stderr}`;
+        if (isRembgMissingError(errorMessage)) {
+          // Avoid spamming full traceback logs when rembg is missing.
+          if (!hasLoggedBackgroundRemovalDisabled) {
+            console.warn(
+              '[ProductImageProcessor] rembg dependency is missing. ' +
+              'Background removal will be skipped and original product images will be used.'
+            );
+          }
+        } else {
+          console.error('[ProductImageProcessor] Background removal failed:', stderr);
+        }
+        reject(new Error(errorMessage));
       }
     });
 
@@ -154,11 +329,15 @@ export async function autoCropToSubject(inputBuffer: Buffer): Promise<Buffer> {
 
     fs.writeFileSync(inputPath, inputBuffer);
 
-    const scriptPath = path.join(process.cwd(), '..', '..', 'scripts', 'image_processing', 'auto_crop_subject.py');
+    const scriptPath = path.join(IMAGE_PROCESSING_DIR, 'auto_crop_subject.py');
 
-    console.log('[ProductImageProcessor] Running auto-crop:', { inputPath, outputPath });
+    console.log('[ProductImageProcessor] Running auto-crop:', {
+      inputPath,
+      outputPath,
+      python: PYTHON_BINARY,
+    });
 
-    const python = spawn('python3', [scriptPath, inputPath, outputPath]);
+    const python = spawn(PYTHON_BINARY, [scriptPath, inputPath, outputPath]);
 
     let stderr = '';
     const timeout = setTimeout(() => {
@@ -207,12 +386,249 @@ export async function autoCropToSubject(inputBuffer: Buffer): Promise<Buffer> {
 }
 
 /**
+ * Trims uniform white-ish outer borders when background removal is unavailable.
+ * This reduces card-like white margins from catalog images.
+ */
+async function trimUniformBorders(inputBuffer: Buffer): Promise<Buffer> {
+  try {
+    const sharpModule = await import('sharp');
+    const sharp = sharpModule.default;
+
+    const originalMeta = await sharp(inputBuffer).metadata();
+    if (!originalMeta.width || !originalMeta.height) return inputBuffer;
+
+    const trimmedBuffer = await sharp(inputBuffer)
+      .trim({
+        background: { r: 255, g: 255, b: 255 },
+        threshold: 12,
+      })
+      .png()
+      .toBuffer();
+
+    const trimmedMeta = await sharp(trimmedBuffer).metadata();
+    if (!trimmedMeta.width || !trimmedMeta.height) return inputBuffer;
+
+    const originalArea = originalMeta.width * originalMeta.height;
+    const trimmedArea = trimmedMeta.width * trimmedMeta.height;
+    const areaRatio = trimmedArea / originalArea;
+
+    // Keep conservative bounds to avoid over-trimming white garments.
+    if (areaRatio > 0.98 || areaRatio < 0.2) {
+      return inputBuffer;
+    }
+
+    return trimmedBuffer;
+  } catch {
+    return inputBuffer;
+  }
+}
+
+/**
+ * Measures how much of the image is already transparent.
+ */
+async function getTransparencyRatio(inputBuffer: Buffer): Promise<number> {
+  try {
+    const sharpModule = await import('sharp');
+    const sharp = sharpModule.default;
+    const { data, info } = await sharp(inputBuffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const totalPixels = info.width * info.height;
+    if (!totalPixels) return 0;
+
+    let transparent = 0;
+    for (let i = 0; i < totalPixels; i++) {
+      if (data[i * 4 + 3] < 20) transparent++;
+    }
+    return transparent / totalPixels;
+  } catch {
+    return 0;
+  }
+}
+
+/**
+ * Removes light edge background via flood-fill from borders.
+ * Helps when rembg keeps a full white/gray card around the product.
+ */
+async function removeEdgeBackgroundByFloodFill(inputBuffer: Buffer): Promise<Buffer> {
+  try {
+    const sharpModule = await import('sharp');
+    const sharp = sharpModule.default;
+
+    const { data, info } = await sharp(inputBuffer)
+      .ensureAlpha()
+      .raw()
+      .toBuffer({ resolveWithObject: true });
+
+    const width = info.width;
+    const height = info.height;
+    if (!width || !height) return inputBuffer;
+
+    const pixelCount = width * height;
+    const visited = new Uint8Array(pixelCount);
+
+    const patchSize = Math.max(4, Math.min(14, Math.floor(Math.min(width, height) / 24)));
+    const samplePatch = (startX: number, startY: number) => {
+      let r = 0;
+      let g = 0;
+      let b = 0;
+      let count = 0;
+      for (let y = startY; y < Math.min(startY + patchSize, height); y++) {
+        for (let x = startX; x < Math.min(startX + patchSize, width); x++) {
+          const idx = (y * width + x) * 4;
+          if (data[idx + 3] < 20) continue;
+          r += data[idx];
+          g += data[idx + 1];
+          b += data[idx + 2];
+          count++;
+        }
+      }
+      if (!count) return { r: 240, g: 240, b: 240 };
+      return { r: r / count, g: g / count, b: b / count };
+    };
+
+    const cornerMeans = [
+      samplePatch(0, 0),
+      samplePatch(Math.max(0, width - patchSize), 0),
+      samplePatch(0, Math.max(0, height - patchSize)),
+      samplePatch(Math.max(0, width - patchSize), Math.max(0, height - patchSize)),
+    ];
+
+    const colorDistanceSq = (r: number, g: number, b: number, c: { r: number; g: number; b: number }) => {
+      const dr = r - c.r;
+      const dg = g - c.g;
+      const db = b - c.b;
+      return dr * dr + dg * dg + db * db;
+    };
+
+    const isBackgroundLike = (idx: number): boolean => {
+      const a = data[idx + 3];
+      if (a < 20) return false;
+
+      const r = data[idx];
+      const g = data[idx + 1];
+      const b = data[idx + 2];
+      const maxC = Math.max(r, g, b);
+      const minC = Math.min(r, g, b);
+      const brightness = (r + g + b) / 3;
+
+      if (brightness < 165) return false;
+      if (maxC - minC > 42) return false;
+
+      let minDistanceSq = Infinity;
+      for (const c of cornerMeans) {
+        const d = colorDistanceSq(r, g, b, c);
+        if (d < minDistanceSq) minDistanceSq = d;
+      }
+
+      return minDistanceSq <= 52 * 52;
+    };
+
+    const queue: number[] = [];
+    const enqueue = (x: number, y: number) => {
+      if (x < 0 || y < 0 || x >= width || y >= height) return;
+      const index = y * width + x;
+      if (visited[index]) return;
+      const idx = index * 4;
+      if (!isBackgroundLike(idx)) return;
+      visited[index] = 1;
+      queue.push(index);
+    };
+
+    for (let x = 0; x < width; x++) {
+      enqueue(x, 0);
+      enqueue(x, height - 1);
+    }
+    for (let y = 0; y < height; y++) {
+      enqueue(0, y);
+      enqueue(width - 1, y);
+    }
+
+    // Seed detached "paper/card" regions: scan from each border to first opaque
+    // pixel and test that pixel as potential removable background.
+    const rayStep = Math.max(1, Math.floor(Math.min(width, height) / 128));
+    for (let x = 0; x < width; x += rayStep) {
+      for (let y = 0; y < height; y++) {
+        const idx = (y * width + x) * 4;
+        if (data[idx + 3] >= 20) {
+          enqueue(x, y);
+          break;
+        }
+      }
+      for (let y = height - 1; y >= 0; y--) {
+        const idx = (y * width + x) * 4;
+        if (data[idx + 3] >= 20) {
+          enqueue(x, y);
+          break;
+        }
+      }
+    }
+    for (let y = 0; y < height; y += rayStep) {
+      for (let x = 0; x < width; x++) {
+        const idx = (y * width + x) * 4;
+        if (data[idx + 3] >= 20) {
+          enqueue(x, y);
+          break;
+        }
+      }
+      for (let x = width - 1; x >= 0; x--) {
+        const idx = (y * width + x) * 4;
+        if (data[idx + 3] >= 20) {
+          enqueue(x, y);
+          break;
+        }
+      }
+    }
+
+    let removed = 0;
+    while (queue.length > 0) {
+      const index = queue.pop() as number;
+      const idx = index * 4;
+      if (data[idx + 3] >= 20) {
+        data[idx + 3] = 0;
+        removed++;
+      }
+
+      const x = index % width;
+      const y = Math.floor(index / width);
+      enqueue(x - 1, y);
+      enqueue(x + 1, y);
+      enqueue(x, y - 1);
+      enqueue(x, y + 1);
+    }
+
+    if (removed < pixelCount * 0.01) {
+      return inputBuffer;
+    }
+
+    return await sharp(data, {
+      raw: {
+        width,
+        height,
+        channels: 4,
+      },
+    }).png().toBuffer();
+  } catch {
+    return inputBuffer;
+  }
+}
+
+/**
  * Processes a single product image through the full pipeline
  *
  * @param item - Flat-lay item with thumbnail URL
  * @returns Promise resolving to processed product image
  */
 export async function processProductImage(item: FlatLayItem): Promise<ProcessedProductImage> {
+  return processProductImageInternal(item, { skipModelShotCheck: false });
+}
+
+async function processProductImageInternal(
+  item: FlatLayItem,
+  options: { skipModelShotCheck: boolean }
+): Promise<ProcessedProductImage> {
   const result: ProcessedProductImage = {
     sku: item.sku || 'unknown',
     name: item.name,
@@ -234,13 +650,67 @@ export async function processProductImage(item: FlatLayItem): Promise<ProcessedP
     const imageBuffer = await fetchProductImage(item.thumbnailUrl);
     console.log(`[ProductImageProcessor] Fetched ${imageBuffer.length} bytes`);
 
-    // Step 2: Remove background
-    const bgRemovedBuffer = await removeProductBackground(imageBuffer);
-    console.log(`[ProductImageProcessor] Background removed, ${bgRemovedBuffer.length} bytes`);
+    // Step 2: Remove background (optional, fallback to original image if unavailable)
+    let bgRemovedBuffer = imageBuffer;
+    let usedBackgroundRemoval = false;
+    if (isBackgroundRemovalEnabled) {
+      try {
+        bgRemovedBuffer = await removeProductBackground(imageBuffer);
+        usedBackgroundRemoval = true;
+        console.log(`[ProductImageProcessor] Background removed, ${bgRemovedBuffer.length} bytes`);
+      } catch (error) {
+        const errorMessage = error instanceof Error ? error.message : String(error);
 
-    // Step 3: Auto-crop to subject
-    const croppedBuffer = await autoCropToSubject(bgRemovedBuffer);
+        if (isRembgMissingError(errorMessage)) {
+          isBackgroundRemovalEnabled = false;
+          if (!hasLoggedBackgroundRemovalDisabled) {
+            console.warn(
+              '[ProductImageProcessor] rembg is not installed; background removal disabled for this run. ' +
+              'Using original product images instead.'
+            );
+            hasLoggedBackgroundRemovalDisabled = true;
+          }
+        } else {
+          console.warn(
+            `[ProductImageProcessor] Background removal failed for "${item.name}", using original image: ${errorMessage}`
+          );
+        }
+      }
+    }
+
+    // Step 3: If no alpha mask is available, trim white-ish borders first.
+    const preparedBuffer = usedBackgroundRemoval
+      ? bgRemovedBuffer
+      : await trimUniformBorders(bgRemovedBuffer);
+
+    // If image is still mostly opaque after background removal, try an extra
+    // border flood-fill pass to remove white/gray catalog cards.
+    let workingBuffer = preparedBuffer;
+    const transparencyBefore = await getTransparencyRatio(workingBuffer);
+    if (transparencyBefore < 0.98) {
+      const edgeCleaned = await removeEdgeBackgroundByFloodFill(workingBuffer);
+      const transparencyAfter = await getTransparencyRatio(edgeCleaned);
+      if (transparencyAfter > transparencyBefore + 0.005) {
+        workingBuffer = edgeCleaned;
+        console.log(
+          `[ProductImageProcessor] Edge background cleanup improved transparency: ${transparencyBefore.toFixed(3)} -> ${transparencyAfter.toFixed(3)}`
+        );
+      }
+    }
+
+    // Step 4: Auto-crop to subject
+    const croppedBuffer = await autoCropToSubject(workingBuffer);
     console.log(`[ProductImageProcessor] Cropped, ${croppedBuffer.length} bytes`);
+
+    // Step 5: Reject model/person shots for clothing items (we need item-only flat-lay assets)
+    if (!options.skipModelShotCheck && PROCESSOR_CONFIG.rejectLikelyModelShots && isClothingCategory(item.category)) {
+      const modelCheck = await detectLikelyModelShot(croppedBuffer);
+      if (modelCheck.likelyModelShot) {
+        throw new Error(
+          `Likely model-shot image detected (skinRatio=${modelCheck.skinRatio.toFixed(3)}), rejecting for flat-lay`
+        );
+      }
+    }
 
     // Convert to base64
     result.imageBase64 = `data:image/png;base64,${croppedBuffer.toString('base64')}`;
@@ -277,18 +747,18 @@ export async function processProductImage(item: FlatLayItem): Promise<ProcessedP
 export async function processProductImagesParallel(
   items: FlatLayItem[]
 ): Promise<ProcessedProductImage[]> {
-  const results: ProcessedProductImage[] = [];
-  const queue = [...items];
+  const results: Array<ProcessedProductImage | undefined> = new Array(items.length);
+  const queue = items.map((item, index) => ({ item, index }));
   const inProgress: Promise<void>[] = [];
 
   console.log(`[ProductImageProcessor] Processing ${items.length} items with concurrency ${PROCESSOR_CONFIG.maxConcurrency}`);
 
   const processNext = async (): Promise<void> => {
-    const item = queue.shift();
-    if (!item) return;
+    const queued = queue.shift();
+    if (!queued) return;
 
-    const result = await processProductImage(item);
-    results.push(result);
+    const result = await processProductImageInternal(queued.item, { skipModelShotCheck: false });
+    results[queued.index] = result;
 
     // Process next item if queue not empty
     if (queue.length > 0) {
@@ -305,16 +775,24 @@ export async function processProductImagesParallel(
   // Wait for all operations to complete
   await Promise.all(inProgress);
 
-  // Sort results to match input order
-  const orderedResults: ProcessedProductImage[] = [];
-  for (const item of items) {
-    const result = results.find((r) => r.sku === (item.sku || 'unknown'));
-    if (result) {
-      orderedResults.push(result);
-    }
-  }
+  // Preserve exact input order, even when SKUs are duplicated.
+  const orderedResults: ProcessedProductImage[] = results.map((result, index) => {
+    if (result) return result;
+
+    const item = items[index];
+    return {
+      sku: item.sku || 'unknown',
+      name: item.name,
+      category: item.category,
+      imageBase64: '',
+      originalDimensions: { width: 0, height: 0 },
+      success: false,
+      error: 'Processing did not return a result',
+    };
+  });
 
   const successCount = orderedResults.filter((r) => r.success).length;
+
   console.log(`[ProductImageProcessor] Completed: ${successCount}/${items.length} successful`);
 
   return orderedResults;

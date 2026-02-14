@@ -1,0 +1,10 @@
+{
+  "session_id": "28ea0690-ed2b-4a48-aff8-2e6412fa5fcd",
+  "prompts": [
+    "/cook specs/improve-rag-pipeline-accuracy.md",
+    "push",
+    "push",
+    "restart local dev"
+  ],
+  "agent_name": "Axiom"
+}

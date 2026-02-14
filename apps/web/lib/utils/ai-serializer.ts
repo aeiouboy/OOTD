@@ -171,3 +171,64 @@ export function parseAIOutfitResponse(response: string): string[] {
 
   return [...new Set(productIds)] // Remove duplicates
 }
+
+// ============================================================================
+// v5.0: Pipe-delimited catalog serialization for anti-hallucination
+// ============================================================================
+
+/**
+ * Serialize a single product for v5 pipe-delimited format
+ * Format: SKU|Name|Brand|Category|Role|Price|Color|URL
+ */
+export function serializeProductForV5(product: EnhancedProduct): string {
+  const sku = product.sku || product.id || 'UNKNOWN';
+  const name = product.name?.en || product.name?.th || 'Unknown Product';
+  const brand = product.brand || 'Unknown';
+  const category = product.classification?.category?.category ||
+                   product.classification?.category?.department || 'Clothing';
+  const role = product.classification?.role || 'unknown';
+  const price = product.pricing?.currentPrice || 0;
+  const color = product.style?.colors?.primary || 'unknown';
+  const url = product.centralIntegration?.productUrl || '';
+
+  // Escape pipes in field values to prevent parsing issues
+  const escapePipe = (s: string) => s.replace(/\|/g, '/');
+
+  return [
+    escapePipe(sku),
+    escapePipe(name),
+    escapePipe(brand),
+    escapePipe(category),
+    escapePipe(role),
+    price.toString(),
+    escapePipe(color),
+    url,  // Don't escape URL (pipes shouldn't appear in URLs)
+  ].join('|');
+}
+
+/**
+ * Serialize product catalog for v5 prompt injection
+ * Creates pipe-delimited format with header and footer
+ *
+ * Output format:
+ * ```
+ * === PRODUCT CATALOG (Use ONLY these products. Copy URLs exactly.) ===
+ * SKU|Name|Brand|Category|Role|Price|Color|URL
+ * SKU001|White Cotton Tee|CPS|Tops|top|790|White|https://central.co.th/...
+ * ...
+ * === END CATALOG (N products) ===
+ * ```
+ */
+export function serializeCatalogForV5(products: EnhancedProduct[]): string {
+  if (!products || products.length === 0) {
+    return '=== PRODUCT CATALOG (Use ONLY these products. Copy URLs exactly.) ===\n=== END CATALOG (0 products) ===';
+  }
+
+  const header = '=== PRODUCT CATALOG (Use ONLY these products. Copy URLs exactly.) ===';
+  const columnHeader = 'SKU|Name|Brand|Category|Role|Price|Color|URL';
+  const footer = `=== END CATALOG (${products.length} products) ===`;
+
+  const productLines = products.map(p => serializeProductForV5(p));
+
+  return [header, columnHeader, ...productLines, footer].join('\n');
+}

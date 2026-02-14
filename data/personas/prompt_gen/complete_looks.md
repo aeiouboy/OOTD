@@ -1,44 +1,21 @@
-Apply ALL fashion items from Image 1 onto the person in Image 2, creating a photorealistic image where the person wears the complete styled outfit.
+# Dual-Reference Try-On Prompt Template
 
-MANDATORY TRANSFER CHECKLIST - EVERY ITEM MUST APPEAR
-GLASSES HANDLING:
-- IF both Image 1 (outfit) AND Image 2 (person) contain glasses:
-  → Remove the glasses from Image 2
-  → Apply the glasses from Image 1 onto the person
-  → Position glasses naturally on the person's face with correct perspective
-- IF only one image contains glasses, keep them as-is
-- Ensure glasses sit properly on nose bridge and ears with realistic shadows
+> Source of truth: `apps/web/lib/prompts/image-prompts.ts` -- `buildDualReferenceTryOnPrompt()`
 
-REALISM REQUIREMENTS:
-- Preserve person's face, skin tone, hair, body proportions from Image 2
-- Maintain Image 2's white/neutral background and lighting
-- Generate natural shadows and highlights on ALL outfit pieces
-- Ensure fabric draping responds to body position and gravity
-- Match color accuracy
-- Proper layering and depth
+## Narrative Template (example with items)
 
-BODY & POSE:
-- Keep person's standing pose from Image 2
-- Feet positioned naturally
-- Arms positioned to hold/carry handbag naturally
+Transfer all fashion items from IMAGE 2 onto the person shown in IMAGE 1, creating a professional e-commerce fashion catalog photograph. The person's face, skin tone, hair, and body proportions from IMAGE 1 are preserved exactly. The model fills 90-95% of the vertical frame in a centred full-body standing pose. Every garment, accessory, and footwear piece visible in IMAGE 2 appears on the model with accurate colours, natural fabric draping, realistic shadows, and proper layering depth. Set against a pure white infinity cove studio backdrop with matching high-key softbox lighting and no visible floor or backdrop shadows. Items being shown: white blouse, black tailored pants, nude heels, structured tote bag (Office Chic). Portrait 3:4 format.
 
-COMPLETE OUTFIT CHECKLIST:
-✓ Top/Upper garment
-✓ Bottom/Lower garment or Dress
-✓ Outerwear (if present)
-✓ Footwear/Shoes (MANDATORY if in Image 1)
-✓ Accessories (bags, belts, jewelry if visible)
-✓ Glasses (if applicable)
+## Single-Reference Variant
 
-REJECT IF MISSING:
-❌ Any clothing item from Image 1
-❌ Any accessories (bag, sunglasses, watch, earrings)
-❌ Person still wearing Image 2's original outfit pieces
+> Source: `buildTryOnPrompt()`
 
-OUTPUT SPECIFICATIONS:
-- Resolution: 8K (7680 × 4320 pixels) for maximum detail and quality
-- Photo quality: High-resolution, professional photography standard
-- Realism: 100%+ photorealistic
-- Lighting: Match Image 2's studio lighting
-- Face preservation: 100%+ similarity to Image 2
-- Complete outfit: 100% of items from Image 1 present
+A professional e-commerce fashion catalog photograph of the person from the reference image wearing white blouse, black tailored pants, nude heels (Office Chic). The model's face, skin tone, hair, and body proportions are preserved exactly from the reference. The model stands in a confident forward-facing pose with feet together, filling 90-95% of the vertical frame. The outfit drapes naturally on the body with realistic fabric behavior, accurate colours, and proper layering. Set against a pure white infinity cove studio backdrop with high-key softbox lighting and no visible floor, ground, or backdrop shadows. Clean, cutout-ready product photo quality. Portrait 3:4 format.
+
+## Key Design Decisions
+
+- **"Transfer" directive** -- The dual-reference prompt opens with an explicit transfer instruction ("Transfer all fashion items from IMAGE 2 onto the person shown in IMAGE 1") which Gemini responds to better than a passive description.
+- **Frame fill mandate** -- "fills 90-95% of the vertical frame" prevents the common failure mode of tiny models with excessive whitespace.
+- **Layering depth** -- Explicitly calls for "proper layering depth" to ensure multi-piece outfits render correctly.
+- **No checklists or rejection criteria** -- The old prompt used emoji checklists and "REJECT IF MISSING" blocks; these are removed in favour of positive, narrative instructions.
+- **Portrait 3:4** -- Consistent with fitting-model output for seamless compositing in the UI.

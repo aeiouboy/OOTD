@@ -1,0 +1,11 @@
+{
+  "session_id": "28ea0690-ed2b-4a48-aff8-2e6412fa5fcd",
+  "prompts": [
+    "what's next?",
+    "what the RAG said in this case?",
+    "why they ask gender, user already told us as port of onbaording process",
+    "and what prompt we sent after  mergeRAGResults",
+    "spin a team to fix a pending point",
+    "yes pls"
+  ]
+}

@@ -12,6 +12,15 @@ export type { FlatLayItem }
 // Re-export EnhancedMockProduct and ColorTone from mock-data02.ts for enhanced outfit generation
 export type { EnhancedMockProduct, ColorTone } from './mock-data02'
 
+// Export Inspiration-First Architecture types
+export * from './types/inspiration'
+
+// KB Expansion Feb 2026 - Thai Cultural Context Types
+export * from './types/thai-context-types'
+
+// KB Expansion Feb 2026 - AI Matching Types
+export * from './types/ai-matching-types'
+
 // Legacy interfaces maintained for backward compatibility
 // These will gradually be replaced by EnhancedProduct
 export interface OutfitRequest {
@@ -43,6 +52,8 @@ export interface Outfit {
   flatLayImageBase64?: string
   /** Flag indicating flat-lay image is being generated (v5.0) */
   isGeneratingFlatLay?: boolean
+  /** True when some item colors in flat-lay couldn't be determined from product name */
+  hasApproximateColors?: boolean
   /** Try-on image URL for fitting model visualization (v6.0) */
   tryOnImageUrl?: string
   /** Try-on image as base64 fallback (v6.0) */
@@ -94,6 +105,25 @@ export interface ChatMessage {
   displayMode?: 'portrait' | 'flat-lay'
   /** Recommended items for flat-lay display (v4.0) */
   recommendedItems?: FlatLayItem[]
+  /** v5.0: Structured looks with per-look items */
+  looks?: Array<{
+    lookNumber: number
+    styleName: string
+    items: Array<{
+      name: string
+      brand: string
+      category: string
+      color: string
+      price: number
+      url: string
+      sku: string
+    }>
+    tip?: string
+    totalPrice: number
+    imageUrl?: string
+    imageBase64?: string
+    imageStatus?: 'pending' | 'generating' | 'done' | 'error'
+  }>
 }
 
 export interface ConversationStarter {

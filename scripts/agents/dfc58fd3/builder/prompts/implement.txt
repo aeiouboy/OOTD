@@ -1,1 +1,0 @@
-/implement specs/chore-dfc58fd3-remove-remaining-gemini-watermark.md

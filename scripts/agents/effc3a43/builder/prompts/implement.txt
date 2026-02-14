@@ -1,1 +1,0 @@
-/implement specs/chore-effc3a43-fix-outfit-product-list-visual-consistency.md

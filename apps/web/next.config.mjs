@@ -25,6 +25,14 @@ const nextConfig = {
       },
     ],
   },
+  experimental: {
+    // Exclude packages that use fs.readFileSync at module init from webpack bundling
+    serverComponentsExternalPackages: ['vectra', 'gpt-3-encoder'],
+  },
+  webpack: (config) => {
+    config.cache = false;
+    return config;
+  },
 }
 
 export default withNextIntl(nextConfig);

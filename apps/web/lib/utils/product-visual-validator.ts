@@ -53,6 +53,22 @@ const DEFAULT_CONFIG: VisualValidationConfig = {
 }
 
 /**
+ * Detect known non-product asset URLs that break flat-lay compositing
+ * (marketing overlays, lookbook composites, etc.).
+ */
+export function hasProblematicFlatLayImageUrl(imageUrl: string | undefined): boolean {
+  if (!imageUrl) return true
+  const url = imageUrl.toLowerCase()
+  return (
+    url.includes('product-overlay') ||
+    url.includes('%2fproduct-overlay%2f') ||
+    url.includes('/lookbook/') ||
+    url.includes('/campaign/') ||
+    url.includes('/editorial/')
+  )
+}
+
+/**
  * Masculine footwear patterns in image URLs
  */
 const MASCULINE_IMAGE_PATTERNS = [
@@ -230,6 +246,11 @@ export function validateProductVisualConsistency(
   const name = (product.name || '').toLowerCase()
   const imageUrl = (product.imageUrl || '').toLowerCase()
 
+  if (hasProblematicFlatLayImageUrl(product.imageUrl)) {
+    issues.push('Product image URL appears to be a marketing/overlay asset (not a clean item shot)')
+    confidence = Math.min(confidence, 0.15)
+  }
+
   // "Heels" in name but oxford/derby in image URL
   if (name.includes('heel') && (imageUrl.includes('oxford') || imageUrl.includes('derby') || imageUrl.includes('brogue'))) {
     issues.push('Product named "heels" but image URL contains masculine shoe pattern')
@@ -278,6 +299,10 @@ export function isVisuallyConsistentForWomen(
   product: Product,
   config: VisualValidationConfig = DEFAULT_CONFIG
 ): boolean {
+  if (hasProblematicFlatLayImageUrl(product.imageUrl)) {
+    return false
+  }
+
   const validation = validateProductVisualConsistency(product, config)
 
   // Reject if there are gender mismatches and image suggests masculine
@@ -363,6 +388,14 @@ export function validateFlatLayThumbnailMatch(
   recommendation?: 'include' | 'exclude' | 'replace' | 'use-text-only'
 } {
   const validation = validateProductVisualConsistency(product, config)
+
+  if (hasProblematicFlatLayImageUrl(product.imageUrl)) {
+    return {
+      matches: false,
+      reason: `Product "${product.name}" uses a non-product overlay image URL`,
+      recommendation: 'replace',
+    }
+  }
 
   if (validation.isConsistent) {
     return { matches: true, recommendation: 'include' }
@@ -452,6 +485,21 @@ export function getSimilarityScore(original: Product, candidate: Product): numbe
   return score
 }
 
+type ProductFamily = 'dress' | 'top' | 'bottom' | 'outerwear' | 'shoes' | 'accessory' | 'unknown'
+
+function inferProductFamily(product: Product): ProductFamily {
+  const text = `${product.name || ''} ${product.subCategory || ''} ${product.category || ''}`.toLowerCase()
+
+  if (/\b(heel|pump|shoe|sneaker|sandal|boot|loafer|mule|oxford)\b/.test(text)) return 'shoes'
+  if (/\b(dress|gown|jumpsuit|romper)\b/.test(text)) return 'dress'
+  if (/\b(pants|trouser|jeans|skirt|shorts)\b/.test(text)) return 'bottom'
+  if (/\b(blazer|jacket|coat|cardigan|outerwear)\b/.test(text)) return 'outerwear'
+  if (/\b(top|shirt|blouse|tee|t-shirt|polo|cami|sweater|knit)\b/.test(text)) return 'top'
+  if (/\b(bag|belt|hat|scarf|watch|necklace|earring|bracelet|accessor)\b/.test(text)) return 'accessory'
+
+  return 'unknown'
+}
+
 /**
  * Find a visually consistent replacement product when original has visual mismatch
  *
@@ -491,6 +539,7 @@ export function findVisuallyConsistentReplacement(
   const productSubCategory = (product.subCategory || '').toLowerCase()
   const productCategory = (product.category || '').toLowerCase()
   const productOccasions = product.occasion || []
+  const productFamily = inferProductFamily(product)
 
   // Pre-filter candidates based on basic criteria
   const candidates = allProducts.filter(candidate => {
@@ -503,6 +552,13 @@ export function findVisuallyConsistentReplacement(
     // Must have same or similar category
     const candSubCategory = (candidate.subCategory || '').toLowerCase()
     const candCategory = (candidate.category || '').toLowerCase()
+    const candidateFamily = inferProductFamily(candidate)
+
+    // Hard guard: don't replace across garment families (e.g. pants -> dress)
+    if (productFamily !== 'unknown' && candidateFamily !== 'unknown' && productFamily !== candidateFamily) {
+      return false
+    }
+
     const categoryMatch =
       candSubCategory === productSubCategory ||
       candCategory.includes(productCategory) ||

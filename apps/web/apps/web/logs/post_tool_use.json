@@ -1,0 +1,83 @@
+[
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd apps/web && grep -n \"FLAT_LAY\" .env.local 2>/dev/null || echo \"No FLAT_LAY variables found in .env.local\"",
+      "description": "Check FLAT_LAY variables in .env.local"
+    },
+    "tool_response": {
+      "stdout": "No FLAT_LAY variables found in .env.local",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false,
+      "noOutputExpected": false
+    },
+    "tool_use_id": "toolu_01EtzN3KpGTghibaZXD71Nug"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "ps aux | grep -E \"(next|node|pnpm)\" | grep -v grep | head -10",
+      "description": "Check running Next.js/Node processes"
+    },
+    "tool_response": {
+      "stdout": "tachongrak        1274   1.0  0.2 1892243728  62512   ??  S    12:13AM   6:46.44 /Applications/Antigravity.app/Contents/Frameworks/Antigravity Helper.app/Contents/MacOS/Antigravity Helper --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --user-data-dir=/Users/tachongrak/Library/Application Support/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files --field-trial-handle=1718379636,r,5812092819535331408,12639626101775090160,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker,ScreenCaptureKitPickerScreen,ScreenCaptureKitStreamPickerSonoma --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,MacWebContentsOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TimeoutHangingVideoCaptureStarts,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708997556373682\ntachongrak       47365   1.0  2.2 488845232 544512 s019  R+   10:30PM   0:35.60 next-server (v14.2.16) \ntachongrak        1273   1.0  0.7 1892241008 188336   ??  S    12:13AM  28:18.18 /Applications/Antigravity.app/Contents/Frameworks/Antigravity Helper (Plugin).app/Contents/MacOS/Antigravity Helper (Plugin) --type=utility --utility-sub-type=node.mojom.NodeService --lang=en-US --service-sandbox-type=none --dns-result-order=ipv4first --experimental-network-inspection --inspect-port=0 --user-data-dir=/Users/tachongrak/Library/Application Support/Antigravity --standard-schemes=vscode-webview,vscode-file --enable-sandbox --secure-schemes=vscode-webview,vscode-file --cors-schemes=vscode-webview,vscode-file --fetch-schemes=vscode-webview,vscode-file --service-worker-schemes=vscode-webview --code-cache-schemes=vscode-webview,vscode-file --shared-files --field-trial-handle=1718379636,r,5812092819535331408,12639626101775090160,262144 --enable-features=DocumentPolicyIncludeJSCallStacksInCrashReports,EarlyEstablishGpuChannel,EstablishGpuChannelAsync,PdfUseShowSaveFilePicker,ScreenCaptureKitPickerScreen,ScreenCaptureKitStreamPickerSonoma --disable-features=CalculateNativeWinOcclusion,LocalNetworkAccessChecks,MacWebContentsOcclusion,ScreenAIOCREnabled,SpareRendererForSitePerProcess,TimeoutHangingVideoCaptureStarts,TraceSiteInstanceGetProcessCreation --variations-seed-version --trace-process-track-uuid=3190708996619331833\ntachongrak        1287   0.3  0.6 1890433536 149136   ??  S    12:13AM   6:20.92 /Applications/Antigravity.app/Contents/Frameworks/Antigravity Helper (Plugin).app/Contents/MacOS/Antigravity Helper (Plugin) --max-old-space-size=3072 /Applications/Antigravity.app/Contents/Resources/app/extensions/node_modules/typescript/lib/tsserver.js --useInferredProjectPerProjectRoot --enableTelemetry --cancellationPipeName /var/folders/fn/gdlcz_p10psghxnt68y7dhmc0000gp/T/vscode-typescript502/2a625bcde7a7b20f434f/tscancellation-04c276349c8edec11335.tmp* --locale en --noGetErrOnBackgroundUpdate --canUseWatchEvents --validateDefaultNpmLocation --useNodeIpc\ntachongrak       83981   0.1  0.1 444750000  22928 s003  S+    1:39PM   1:04.84 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp\ntachongrak       58722   0.0  0.0 444565872   4160   ??  S     6:38PM   0:01.36 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp\ntachongrak       41231   0.0  0.0 444566192   4160   ??  S     6:06PM   0:00.98 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp\ntachongrak       39026   0.0  0.0 444565792   4144   ??  S     6:04PM   0:00.93 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp\ntachongrak       16325   0.0  0.0 444566176   4144   ??  S     5:35PM   0:01.17 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/9833c18b2d85bc59/node_modules/.bin/playwright-mcp\ntachongrak       84006   0.0  0.0 444545584   4144 s003  S+    1:39PM   0:00.47 node /Users/tachongrak/tmp-mcp/.npm-cache/_npx/12b05d58670d8359/node_modules/.bin/firecrawl-mcp",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false,
+      "noOutputExpected": false
+    },
+    "tool_use_id": "toolu_0163dv86fHFS5YqB14MHiysh"
+  },
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd apps/web && ls -lht logs/*.json 2>/dev/null | head -10 || echo \"No log files found\"",
+      "description": "List recent log files"
+    },
+    "tool_response": {
+      "stdout": "No log files found\n(eval):cd:1: no such file or directory: apps/web",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false,
+      "noOutputExpected": false
+    },
+    "tool_use_id": "toolu_01HJ96W6hUtGxFAqrg2undRh"
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PostToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd apps/web && pnpm test 2>&1 | grep -E \"Test Files|Tests|failed|passed\" | tail -5",
+      "timeout": 120000,
+      "description": "Quick test summary"
+    },
+    "tool_response": {
+      "stdout": "Error: Transform failed with 1 error:\n\u23af\u23af\u23af\u23af\u23af\u23af Failed Tests 12 \u23af\u23af\u23af\u23af\u23af\u23af\u23af\n Test Files  5 failed | 41 passed (46)\n      Tests  12 failed | 1025 passed (1037)\n\u2009ELIFECYCLE\u2009 Test failed. See above for more details.",
+      "stderr": "",
+      "interrupted": false,
+      "isImage": false,
+      "noOutputExpected": false
+    },
+    "tool_use_id": "toolu_01241P5epXAy9aR19i5nd59H"
+  }
+]

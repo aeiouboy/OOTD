@@ -1,0 +1,15 @@
+[
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/data/products",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "PreToolUse",
+    "tool_name": "Bash",
+    "tool_input": {
+      "command": "cd /Users/tachongrak/Projects/OOTD && python3 -c \"\nimport json\nwith open('data/products/central-women-master.json', 'r') as f:\n    data = json.load(f)\nprint('Top-level keys:', list(data.keys()))\nprint()\nif 'products' in data:\n    print('Products count:', len(data['products']))\n    if len(data['products']) > 0:\n        print('First product keys:', list(data['products'][0].keys()))\n        print('First product:', json.dumps(data['products'][0], indent=2, ensure_ascii=False)[:1000])\nelse:\n    # Check all keys for lists\n    for k, v in data.items():\n        if isinstance(v, list):\n            print(f'{k}: list of {len(v)} items')\n            if len(v) > 0:\n                print(f'  First item keys: {list(v[0].keys()) if isinstance(v[0], dict) else type(v[0])}')\n        elif isinstance(v, dict):\n            print(f'{k}: dict with keys {list(v.keys())[:5]}...')\n        else:\n            print(f'{k}: {v}')\n\"\n",
+      "description": "Examine master JSON structure"
+    },
+    "tool_use_id": "toolu_01K6fonMNihVmoNzWg28qDf1"
+  }
+]

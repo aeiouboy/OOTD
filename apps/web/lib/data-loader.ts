@@ -18,7 +18,7 @@ export async function loadEnhancedProducts(): Promise<EnhancedProduct[]> {
     // Determine the correct URL based on context
     const url = typeof window !== 'undefined'
       ? '/api/products' // Client-side: relative URL
-      : `http://localhost:${process.env.PORT || 3002}/api/products` // Server-side: absolute URL
+      : `http://localhost:${process.env.PORT || 3000}/api/products` // Server-side: absolute URL
 
     // Fetch products from API
     const response = await fetch(url, {
@@ -107,7 +107,7 @@ export async function initializeProductCatalog(): Promise<{
     // Determine the correct URL based on context
     const url = typeof window !== 'undefined'
       ? '/api/products' // Client-side: relative URL
-      : `http://localhost:${process.env.PORT || 3002}/api/products` // Server-side: absolute URL
+      : `http://localhost:${process.env.PORT || 3000}/api/products` // Server-side: absolute URL
 
     // Fetch legacy products
     const response = await fetch(url, {

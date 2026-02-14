@@ -1,9 +1,13 @@
 /**
  * Vector Store Wrapper using Vectra
  *
- * Handles vector storage and similarity search for the RAG system.
- * Provides CRUD operations and similarity search with filtering.
+ * ⚠️ DEPRECATED (Feb 2026): This file is no longer used in production.
+ * RAG pipeline now uses Supabase pgvector exclusively (see supabase-retrieval.ts).
+ * Vectra dependency removed from package.json to avoid errors.
  *
+ * This file is kept for reference only and may be removed in future cleanup.
+ *
+ * @deprecated Use supabase-retrieval.ts instead
  * @version 1.0.0
  * @lastUpdated 2025-12-19
  */

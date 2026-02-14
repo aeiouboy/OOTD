@@ -1,1 +1,0 @@
-/implement specs/chore-d45ce391-fix-onboarding-style-card-image-layout.md

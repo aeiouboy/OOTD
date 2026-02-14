@@ -1,0 +1,10 @@
+[
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/data/products",
+    "hook_event_name": "SessionStart",
+    "source": "compact",
+    "model": "claude-opus-4-6"
+  }
+]

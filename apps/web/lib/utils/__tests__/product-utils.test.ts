@@ -35,6 +35,21 @@ describe('getGenderSpecificUrl', () => {
     expect(getGenderSpecificUrl(womenProduct)).toBe('https://www.central.co.th/th/women')
   })
 
+  it('should prefer product onlineUrl over category landing page when available', () => {
+    const womenProductWithUrl: Product = {
+      sku: 'TEST-W-URL-001',
+      name: 'Test Women Product',
+      brand: 'Test Brand',
+      price: 1500,
+      imageUrl: 'https://example.com/image.jpg',
+      availability: 'in_stock',
+      category: 'Women',
+      onlineUrl: 'https://www.central.co.th/th/product/specific-item',
+    }
+
+    expect(getGenderSpecificUrl(womenProductWithUrl)).toBe('https://www.central.co.th/th/product/specific-item')
+  })
+
   it('should return fallback URL for products without category', () => {
     const productWithoutCategory: Product = {
       sku: 'TEST-U-001',

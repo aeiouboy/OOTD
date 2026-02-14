@@ -1,1 +1,0 @@
-/implement specs/chore-46958c49-fix-description-length-validation.md

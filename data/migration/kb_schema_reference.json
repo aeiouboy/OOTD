@@ -1,0 +1,579 @@
+{
+  "_description": "KB Expansion Schema Reference - extracted from mock-data04.ts",
+  "_version": "v1.0 - Feb 2026",
+  "_total_attributes": "~120 per product (65 base + 54 KB expansion sub-attributes)",
+  "sample_product": {
+    "_note": "Sample product CG001 with complete attribute structure",
+    "category": "women_clothing",
+    "price": "1290",
+    "original_price": "1290",
+    "brand": "Central",
+    "product_name": "Classic White Button Shirt",
+    "link": "https://central.co.th/product/cg001",
+    "image_url": "/white-button-shirt.png",
+    "availability": "In Stock",
+    "product_description": "A timeless classic white button-down shirt",
+    "thaiContext": {
+      "_description": "Thai climate and cultural appropriateness (KB Sections 01, 02, 07, 12)",
+      "_sub_attribute_count": 11,
+      "thaiClimateRating": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "Overall suitability for Thai tropical climate",
+        "_example": 8
+      },
+      "acFriendly": {
+        "_type": "boolean",
+        "_description": "Suitable for air-conditioned environments",
+        "_example": true
+      },
+      "monthSuitability": {
+        "_type": "array<number>",
+        "_length": 12,
+        "_description": "Month-by-month suitability scores (1-10), index 0 = January",
+        "_example": [
+          9,
+          9,
+          8,
+          7,
+          8,
+          8,
+          8,
+          8,
+          8,
+          9,
+          9,
+          9
+        ]
+      },
+      "templeAppropriate": {
+        "_type": "boolean",
+        "_description": "Appropriate for temple visits (requires covered shoulders and knees)",
+        "_example": true
+      },
+      "weddingAppropriate": {
+        "_type": "enum",
+        "_values": [
+          "any",
+          "morning",
+          "evening",
+          "outdoor",
+          "indoor",
+          "none"
+        ],
+        "_description": "Wedding guest appropriateness",
+        "_example": "any"
+      },
+      "funeralAppropriate": {
+        "_type": "boolean",
+        "_description": "Funeral appropriateness (typically black required)",
+        "_example": false
+      },
+      "songkranSuitable": {
+        "_type": "enum",
+        "_values": [
+          "temple-morning",
+          "water-play",
+          "both",
+          "neither"
+        ],
+        "_description": "Songkran (Thai New Year) suitability",
+        "_example": "temple-morning"
+      },
+      "loyKrathongSuitable": {
+        "_type": "boolean",
+        "_description": "Loy Krathong suitability",
+        "_example": true
+      },
+      "cnySuitable": {
+        "_type": "enum",
+        "_values": [
+          "suitable",
+          "unsuitable",
+          "neutral"
+        ],
+        "_description": "Chinese New Year suitability (red/gold = suitable, black/white/blue = unsuitable)",
+        "_example": "unsuitable"
+      },
+      "coverage": {
+        "_type": "object",
+        "_description": "Body coverage for temple/formal compliance",
+        "shoulders": {
+          "_type": "enum",
+          "_values": [
+            "covered",
+            "partially-covered",
+            "exposed"
+          ],
+          "_example": "covered"
+        },
+        "knees": {
+          "_type": "enum",
+          "_values": [
+            "covered",
+            "partially-covered",
+            "exposed"
+          ],
+          "_example": "partially-covered"
+        }
+      },
+      "thaiDayColors": {
+        "_type": "array<enum>",
+        "_values": [
+          "sunday",
+          "monday",
+          "tuesday",
+          "wednesday",
+          "thursday",
+          "friday",
+          "saturday"
+        ],
+        "_description": "Days this color is auspicious for",
+        "_example": [
+          "monday",
+          "friday"
+        ]
+      }
+    },
+    "visualMatching": {
+      "_description": "Visual attributes for AI image-to-product matching (KB Section 15)",
+      "_sub_attribute_count": 13,
+      "silhouetteShape": {
+        "_type": "enum",
+        "_values": [
+          "a-line",
+          "h-line",
+          "x-line",
+          "i-line",
+          "o-line",
+          "fitted",
+          "oversized",
+          "boxy",
+          "relaxed",
+          "structured"
+        ],
+        "_description": "Overall silhouette shape",
+        "_example": "h-line"
+      },
+      "silhouetteFit": {
+        "_type": "enum",
+        "_values": [
+          "fitted",
+          "semi-fitted",
+          "relaxed",
+          "oversized",
+          "boxy",
+          "structured",
+          "fluid"
+        ],
+        "_description": "Garment fit classification",
+        "_example": "semi-fitted"
+      },
+      "silhouetteVolume": {
+        "_type": "enum",
+        "_values": [
+          "low",
+          "medium",
+          "high"
+        ],
+        "_description": "Volume level derived from fit",
+        "_example": "low"
+      },
+      "visualWeightScore": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "Visual weight score (1=airy, 10=heavy)",
+        "_example": 3
+      },
+      "visualWeightLevel": {
+        "_type": "enum",
+        "_values": [
+          "light",
+          "medium",
+          "heavy"
+        ],
+        "_description": "Visual weight category",
+        "_example": "light"
+      },
+      "proportionRatio": {
+        "_type": "enum",
+        "_values": [
+          "top-heavy",
+          "balanced",
+          "bottom-heavy"
+        ],
+        "_description": "Where visual weight is concentrated",
+        "_example": "balanced"
+      },
+      "proportionEffect": {
+        "_type": "object",
+        "_description": "How garment affects body proportions",
+        "torsoLengthening": {
+          "_type": "number",
+          "_range": "-5 to +5",
+          "_example": 0
+        },
+        "legLengthening": {
+          "_type": "number",
+          "_range": "-5 to +5",
+          "_example": 0
+        },
+        "heightEffect": {
+          "_type": "number",
+          "_range": "-5 to +5",
+          "_example": 1
+        },
+        "widthEffect": {
+          "_type": "number",
+          "_range": "-5 to +5",
+          "_example": 0
+        }
+      },
+      "patternComplexity": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "Pattern complexity score (1=solid, 10=complex)",
+        "_example": 1
+      },
+      "textureType": {
+        "_type": "enum",
+        "_values": [
+          "matte",
+          "sheen",
+          "glossy",
+          "textured",
+          "mixed"
+        ],
+        "_description": "Surface texture type",
+        "_example": "matte"
+      },
+      "outfitRoleType": {
+        "_type": "enum",
+        "_values": [
+          "anchor",
+          "supporting",
+          "accent",
+          "statement"
+        ],
+        "_description": "Role in outfit composition",
+        "_example": "supporting"
+      },
+      "thaiProportionScore": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "Suitability for Thai body proportions",
+        "_example": 8
+      },
+      "statementPotential": {
+        "_type": "boolean",
+        "_description": "Can serve as statement piece",
+        "_example": false
+      },
+      "styleMoods": {
+        "_type": "array<string>",
+        "_description": "Mood/vibe keywords",
+        "_example": [
+          "professional",
+          "polished",
+          "confident",
+          "clean"
+        ]
+      }
+    },
+    "crossProductCompatibility": {
+      "_description": "Product pairing rules and compatibility scores (KB Section 17)",
+      "_sub_attribute_count": 10,
+      "pairingScore": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Overall pairing compatibility score",
+        "_example": 95
+      },
+      "essentialPairings": {
+        "_type": "array<string>",
+        "_description": "Required companion categories",
+        "_example": [
+          "bottom"
+        ]
+      },
+      "avoidPairings": {
+        "_type": "array<string>",
+        "_description": "Categories/styles to avoid",
+        "_example": [
+          "athletic-wear",
+          "distressed-denim"
+        ]
+      },
+      "versatilityScore": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "How many outfits possible",
+        "_example": 9
+      },
+      "layerCompatibility": {
+        "_type": "array<enum>",
+        "_values": [
+          "fitted",
+          "structured",
+          "loose"
+        ],
+        "_description": "Compatible layering styles",
+        "_example": [
+          "fitted",
+          "structured"
+        ]
+      },
+      "outfitCompleteness": {
+        "_type": "enum",
+        "_values": [
+          "standalone",
+          "needs-top",
+          "needs-bottom",
+          "needs-both",
+          "needs-layer",
+          "needs-accessories"
+        ],
+        "_description": "What's needed to complete outfit",
+        "_example": "needs-bottom"
+      },
+      "formalityTolerance": {
+        "_type": "number",
+        "_range": "0-5",
+        "_description": "Formality tolerance for pairing (±range)",
+        "_example": 2
+      },
+      "patternMixingSafe": {
+        "_type": "boolean",
+        "_description": "Safe to mix with patterns",
+        "_example": true
+      },
+      "perfectMatchSkus": {
+        "_type": "array<string>",
+        "_description": "SKUs of perfect match products",
+        "_example": [
+          "CG002",
+          "SF002"
+        ]
+      },
+      "commonPairings": {
+        "_type": "array<object>",
+        "_description": "Relationship type with commonly paired items",
+        "_example": [
+          {
+            "sku": "CG002",
+            "relationship": "perfect-match",
+            "score": 98
+          },
+          {
+            "sku": "CG003",
+            "relationship": "great-pair",
+            "score": 85
+          }
+        ]
+      }
+    },
+    "priceIntelligence": {
+      "_description": "Value assessment and investment metrics (KB Section 13)",
+      "_sub_attribute_count": 11,
+      "costPerWear": {
+        "_type": "number",
+        "_description": "Calculated cost per wear (price / expected wears)",
+        "_example": 12.9
+      },
+      "costPerWearTier": {
+        "_type": "enum",
+        "_values": [
+          "excellent",
+          "good",
+          "moderate",
+          "poor"
+        ],
+        "_description": "Cost per wear tier classification",
+        "_example": "excellent"
+      },
+      "investmentScore": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Investment value score",
+        "_example": 85
+      },
+      "qualityTier": {
+        "_type": "number",
+        "_range": "1-5",
+        "_description": "Quality tier",
+        "_example": 4
+      },
+      "timelessScore": {
+        "_type": "number",
+        "_range": "1-10",
+        "_description": "Timelessness score (10=never goes out of style)",
+        "_example": 10
+      },
+      "isInvestmentPiece": {
+        "_type": "boolean",
+        "_description": "Qualifies as investment piece",
+        "_example": true
+      },
+      "isCapsuleWardrobe": {
+        "_type": "boolean",
+        "_description": "Suitable for capsule wardrobe",
+        "_example": true
+      },
+      "saleLikelihood": {
+        "_type": "enum",
+        "_values": [
+          "rare",
+          "seasonal",
+          "frequent"
+        ],
+        "_description": "How often this goes on sale",
+        "_example": "seasonal"
+      },
+      "bestPurchaseTiming": {
+        "_type": "string",
+        "_description": "Best time to purchase",
+        "_example": "Mid-year sale (May-June)"
+      },
+      "expectedWears": {
+        "_type": "number",
+        "_description": "Expected number of wears",
+        "_example": 100
+      },
+      "valueTier": {
+        "_type": "enum",
+        "_values": [
+          "exceptional",
+          "fair",
+          "premium",
+          "overpriced"
+        ],
+        "_description": "Value tier (quality relative to price)",
+        "_example": "exceptional"
+      }
+    },
+    "socialProof": {
+      "_description": "Popularity and trend indicators (KB Special Topics)",
+      "_sub_attribute_count": 10,
+      "popularityScore": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Overall popularity score",
+        "_example": 75
+      },
+      "popularityTier": {
+        "_type": "enum",
+        "_values": [
+          "viral",
+          "hot",
+          "popular",
+          "steady",
+          "niche",
+          "new"
+        ],
+        "_description": "Popularity tier classification",
+        "_example": "popular"
+      },
+      "trendStatus": {
+        "_type": "enum",
+        "_values": [
+          "emerging",
+          "trending",
+          "peak",
+          "classic",
+          "timeless",
+          "declining",
+          "revival"
+        ],
+        "_description": "Current trend lifecycle stage",
+        "_example": "timeless"
+      },
+      "trendConfidence": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Confidence in trend assessment",
+        "_example": 95
+      },
+      "celebrityAssociations": {
+        "_type": "array<string>",
+        "_description": "Celebrity/influencer associations",
+        "_example": [
+          "Victoria Beckham",
+          "Amal Clooney"
+        ]
+      },
+      "hashtagTrending": {
+        "_type": "array<string>",
+        "_description": "Trending hashtags associated with this item",
+        "_example": [
+          "#whiteShirt",
+          "#workwear",
+          "#capsulewardrobe"
+        ]
+      },
+      "reviewSentiment": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Average review sentiment (100=positive)",
+        "_example": 85
+      },
+      "reviewCount": {
+        "_type": "number",
+        "_description": "Total review count",
+        "_example": 234
+      },
+      "recommendRate": {
+        "_type": "number",
+        "_range": "0-100",
+        "_description": "Recommendation rate (% who would recommend)",
+        "_example": 88
+      },
+      "influencerFeatures": {
+        "_type": "number",
+        "_description": "Number of influencer features",
+        "_example": 12
+      }
+    }
+  },
+  "kb_groups_summary": {
+    "thaiContext": {
+      "kb_sections": [
+        "01 - Fashion Fundamentals",
+        "02 - Thai Culture & Fashion",
+        "07 - Festivals & Holidays",
+        "12 - Thai Micro-Seasons"
+      ],
+      "sub_attributes": 11,
+      "purpose": "Thai climate and cultural appropriateness"
+    },
+    "visualMatching": {
+      "kb_sections": [
+        "15 - Visual Matching Intelligence"
+      ],
+      "sub_attributes": 13,
+      "purpose": "Visual attributes for AI image-to-product matching"
+    },
+    "crossProductCompatibility": {
+      "kb_sections": [
+        "16 - Outfit Composition Rules",
+        "17 - Cross-Product Compatibility"
+      ],
+      "sub_attributes": 10,
+      "purpose": "Product pairing rules and compatibility scores"
+    },
+    "priceIntelligence": {
+      "kb_sections": [
+        "13 - Price Intelligence"
+      ],
+      "sub_attributes": 11,
+      "purpose": "Value assessment and investment metrics"
+    },
+    "socialProof": {
+      "kb_sections": [
+        "Special Topics - Social Proof Signals"
+      ],
+      "sub_attributes": 10,
+      "purpose": "Popularity and trend indicators"
+    }
+  },
+  "total_sub_attributes": 55
+}

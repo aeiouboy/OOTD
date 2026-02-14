@@ -10,7 +10,7 @@ import type { Product } from './types'
 import type { UserProfile } from './types/user-profile-types'
 import { mapProductToOccasions } from './categorization/occasion-mapper'
 import { getProductName, getProductPrice, getProductImageUrl } from './utils/product-utils'
-import { filterByGender, filterByOccasion } from './utils/product-filters'
+import { filterByGender, filterByOccasion, filterByThaiOccasion, filterByMonthSuitability } from './utils/product-filters'
 import {
   validateOutfitComposition,
   deduplicateOutfitCategories,
@@ -20,6 +20,34 @@ import {
   personalizeOutfitTitle,
   type UserPreferenceContext,
 } from './utils/user-preference-mapper'
+// KB003: Import matching modules for KB-powered scoring
+import {
+  validateThaiOccasion,
+  detectThaiOccasion,
+  getThaiClimateScore,
+  type ThaiOccasion,
+  type ThaiValidationResult,
+} from './matching/thai-cultural-matcher'
+import {
+  calculateVisualBalance,
+  getSilhouetteCompatibility,
+  type VisualBalanceScore,
+} from './matching/visual-matching-scorer'
+import {
+  calculatePairingScore,
+  calculateOutfitCompatibility,
+  checkOutfitCompleteness,
+} from './matching/cross-product-matcher'
+import {
+  calculateValueScore,
+  calculateOutfitCostPerWear,
+  optimizeOutfitBudget,
+} from './matching/price-intelligence-optimizer'
+import {
+  calculateTrendScore,
+  getPopularityScore,
+  rankByTrendStatus,
+} from './matching/social-proof-ranker'
 
 export interface EnhancedOutfit {
   id: string
@@ -40,6 +68,117 @@ interface CategorizedEnhancedProducts {
   footwear: EnhancedProduct[]
   accessory: EnhancedProduct[]
   bag: EnhancedProduct[]
+}
+
+/**
+ * KB003: Outfit context for KB-powered scoring
+ */
+interface OutfitContext {
+  occasion?: OccasionType
+  thaiOccasion?: ThaiOccasion
+  month?: number
+  maxBudget?: number
+  preferTrending?: boolean
+}
+
+/**
+ * KB003: KB-powered outfit scoring result
+ */
+export interface KBOutfitScore {
+  overall: number
+  thaiCultural: number
+  visualBalance: number
+  crossProduct: number
+  priceValue: number
+  socialProof: number
+  issues: string[]
+}
+
+/**
+ * KB003: Check if product has KB attributes
+ */
+function hasKBAttributes(product: EnhancedProduct): boolean {
+  const p = product as any
+  return !!(p.thaiContext || p.visualMatching || p.crossProductCompatibility || p.priceIntelligence || p.socialProof)
+}
+
+/**
+ * KB003: Score outfit using KB attributes with weighted scoring
+ * Weights: Thai 30%, Visual 25%, Cross-Product 20%, Price 15%, Social 10%
+ */
+export function scoreOutfitWithKB(outfit: EnhancedProduct[], context: OutfitContext = {}): KBOutfitScore {
+  const issues: string[] = []
+
+  // Default scores if no KB data
+  let thaiCultural = 70
+  let visualBalance = 70
+  let crossProduct = 70
+  let priceValue = 70
+  let socialProof = 70
+
+  // Check if any products have KB attributes
+  const hasKB = outfit.some(hasKBAttributes)
+
+  if (!hasKB) {
+    // Return default scores for v0 products
+    return {
+      overall: 70,
+      thaiCultural,
+      visualBalance,
+      crossProduct,
+      priceValue,
+      socialProof,
+      issues: ['Products missing KB attributes - using default scoring'],
+    }
+  }
+
+  // 1. Thai Cultural Score (30%)
+  if (context.thaiOccasion) {
+    const thaiResult = validateThaiOccasion(outfit, context.thaiOccasion)
+    thaiCultural = thaiResult.score
+    if (!thaiResult.valid) {
+      issues.push(...thaiResult.issues)
+    }
+  } else {
+    // Use climate score as fallback
+    thaiCultural = getThaiClimateScore(outfit) * 10 // Scale 1-10 to 10-100
+  }
+
+  // 2. Visual Balance Score (25%)
+  const visualResult = calculateVisualBalance(outfit)
+  visualBalance = visualResult.overall
+
+  // 3. Cross-Product Compatibility (20%)
+  const compatResult = calculateOutfitCompatibility(outfit)
+  crossProduct = compatResult.score
+  if (!compatResult.completeness.complete) {
+    issues.push(...compatResult.completeness.suggestions)
+  }
+
+  // 4. Price Value Score (15%)
+  priceValue = calculateValueScore(outfit)
+
+  // 5. Social Proof Score (10%)
+  socialProof = calculateTrendScore(outfit)
+
+  // Calculate weighted overall score
+  const overall = Math.round(
+    thaiCultural * 0.30 +
+    visualBalance * 0.25 +
+    crossProduct * 0.20 +
+    priceValue * 0.15 +
+    socialProof * 0.10
+  )
+
+  return {
+    overall,
+    thaiCultural,
+    visualBalance,
+    crossProduct,
+    priceValue,
+    socialProof,
+    issues,
+  }
 }
 
 /**
@@ -110,9 +249,10 @@ export function generateEnhancedOutfit(
     maxPrice?: number
     formalityLevel?: number
     userProfile?: UserProfile | null
+    thaiOccasion?: ThaiOccasion
   } = {}
 ): EnhancedOutfit | null {
-  const { occasion, gender, maxPrice, formalityLevel, userProfile } = options
+  const { occasion, gender, maxPrice, formalityLevel, userProfile, thaiOccasion } = options
 
   // Get user preference context if profile exists
   const userContext: UserPreferenceContext | null = userProfile ? getUserPreferenceContext(userProfile) : null
@@ -212,6 +352,20 @@ export function generateEnhancedOutfit(
 
   // Check if outfit exceeds max price
   if (maxPrice && totalPrice > maxPrice) {
+    return null
+  }
+
+  // KB003: Score outfit with KB attributes
+  const kbScore = scoreOutfitWithKB(products, {
+    occasion,
+    thaiOccasion,
+    month: new Date().getMonth(),
+    maxBudget: maxPrice,
+  })
+
+  // KB003: Skip outfits with poor KB scores (below 50)
+  if (kbScore.overall < 50) {
+    console.warn('[EnhancedOutfitGenerator] KB score too low:', kbScore.overall, kbScore.issues)
     return null
   }
 
@@ -353,9 +507,11 @@ export function generateEnhancedOutfits(
     minFormality?: number
     maxFormality?: number
     userProfile?: UserProfile | null
+    thaiOccasion?: ThaiOccasion
+    applyMonthFilter?: boolean
   } = {}
 ): EnhancedOutfit[] {
-  const { count = 5, occasion, gender, maxPrice, minFormality, maxFormality, userProfile } = options
+  const { count = 5, occasion, gender, maxPrice, minFormality, maxFormality, userProfile, thaiOccasion, applyMonthFilter = true } = options
 
   // Get user preference context if profile exists
   const userContext = userProfile ? getUserPreferenceContext(userProfile) : null
@@ -369,6 +525,19 @@ export function generateEnhancedOutfits(
   // Filter by gender
   if (targetGender) {
     filtered = filterByGender(filtered, targetGender)
+  }
+
+  // KB003: Filter by Thai occasion if specified
+  if (thaiOccasion) {
+    filtered = filterByThaiOccasion(filtered, thaiOccasion)
+    console.log(`[EnhancedOutfitGenerator] Thai occasion filter (${thaiOccasion}): ${filtered.length} products`)
+  }
+
+  // KB003: Filter by current month suitability
+  if (applyMonthFilter) {
+    const currentMonth = new Date().getMonth()
+    filtered = filterByMonthSuitability(filtered, currentMonth, 5) // Min score 5
+    console.log(`[EnhancedOutfitGenerator] Month filter (month ${currentMonth}): ${filtered.length} products`)
   }
 
   // Filter by occasion
@@ -410,6 +579,7 @@ export function generateEnhancedOutfits(
       maxPrice,
       formalityLevel: minFormality,
       userProfile,
+      thaiOccasion,
     })
 
     if (outfit) {
@@ -428,6 +598,24 @@ export function generateEnhancedOutfits(
     attempts++
   }
 
+  // KB003: Rank outfits by trend status if we have enough
+  if (outfits.length > 1) {
+    const outfitProducts = outfits.map(o => o.products)
+    const ranked = rankByTrendStatus(outfitProducts)
+
+    // Re-order outfits based on trend ranking
+    const rankedOutfits: EnhancedOutfit[] = []
+    for (const rankedOutfit of ranked.outfits) {
+      const matching = outfits.find(o =>
+        o.products.map(p => p.id).sort().join('-') ===
+        rankedOutfit.products.map(p => p.id).sort().join('-')
+      )
+      if (matching) rankedOutfits.push(matching)
+    }
+
+    return rankedOutfits.length > 0 ? rankedOutfits : outfits
+  }
+
   return outfits
 }
 
@@ -442,6 +630,12 @@ export function generateOutfitsFromQuery(
   userProfile?: UserProfile | null
 ): EnhancedOutfit[] {
   const lowerQuery = query.toLowerCase()
+
+  // KB003: Detect Thai cultural occasion first
+  const thaiOccasion = detectThaiOccasion(query)
+  if (thaiOccasion) {
+    console.log(`[EnhancedOutfitGenerator] Detected Thai occasion: ${thaiOccasion}`)
+  }
 
   // Detect occasion
   let occasion: OccasionType | undefined
@@ -483,5 +677,6 @@ export function generateOutfitsFromQuery(
     gender,
     maxPrice,
     userProfile,
+    thaiOccasion: thaiOccasion || undefined,
   })
 }

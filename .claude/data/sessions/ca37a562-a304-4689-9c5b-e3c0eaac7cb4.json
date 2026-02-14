@@ -1,0 +1,8 @@
+{
+  "session_id": "ca37a562-a304-4689-9c5b-e3c0eaac7cb4",
+  "prompts": [
+    "--continue",
+    "/playwright-mcp test after fix"
+  ],
+  "agent_name": "Oracle"
+}

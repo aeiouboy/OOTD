@@ -30,7 +30,7 @@ function estimateTokens(text: string): number {
 /**
  * Category display names and icons
  */
-const CATEGORY_DISPLAY: Record<KnowledgeCategory, { name: string; icon: string }> = {
+const CATEGORY_DISPLAY: Record<string, { name: string; icon: string }> = {
   styling_rules: { name: 'Styling Rules', icon: '👗' },
   color_theory: { name: 'Color Theory', icon: '🎨' },
   body_types: { name: 'Body Types', icon: '💪' },
@@ -38,7 +38,21 @@ const CATEGORY_DISPLAY: Record<KnowledgeCategory, { name: string; icon: string }
   thai_culture: { name: 'Thai Culture', icon: '🇹🇭' },
   brand_intelligence: { name: 'Brand Intelligence', icon: '🏬' },
   seasonal_trends: { name: 'Seasonal Trends', icon: '🌡️' },
+  // Supabase knowledge_chunks categories
+  foundation: { name: 'Foundation', icon: '📋' },
+  advanced: { name: 'Advanced', icon: '🎓' },
+  implementation: { name: 'Implementation', icon: '🔧' },
+  special: { name: 'Special', icon: '✨' },
 };
+
+const DEFAULT_CATEGORY_INFO = { name: 'Knowledge', icon: '📄' };
+
+/**
+ * Safely get category display info with fallback for unknown categories
+ */
+function getCategoryDisplay(category: string): { name: string; icon: string } {
+  return CATEGORY_DISPLAY[category] || DEFAULT_CATEGORY_INFO;
+}
 
 /**
  * Format a single document for prompt injection
@@ -53,7 +67,7 @@ function formatDocument(
   score: number,
   includeMetadata: boolean = true
 ): string {
-  const categoryInfo = CATEGORY_DISPLAY[document.category];
+  const categoryInfo = getCategoryDisplay(document.category);
   const lines: string[] = [];
 
   // Header with category
@@ -131,7 +145,7 @@ export function formatDocumentsAsContext(
       if (remainingTokens > 100) {
         // Truncate content to fit
         const truncatedContent = truncateToTokens(document.content, remainingTokens - 50);
-        const truncatedDoc = `### ${CATEGORY_DISPLAY[document.category].icon} ${document.title}\n${truncatedContent}...\n_[truncated]_`;
+        const truncatedDoc = `### ${getCategoryDisplay(document.category).icon} ${document.title}\n${truncatedContent}...\n_[truncated]_`;
         formattedDocs.push(truncatedDoc);
         sourceIds.push(document.id);
         categoriesSet.add(document.category);
@@ -163,7 +177,7 @@ export function formatDocumentsAsContext(
   });
 
   byCategory.forEach((docs, category) => {
-    const categoryInfo = CATEGORY_DISPLAY[category];
+    const categoryInfo = getCategoryDisplay(category);
     contextParts.push(`\n## ${categoryInfo.icon} ${categoryInfo.name}\n`);
     contextParts.push(docs.join('\n\n---\n\n'));
   });
@@ -343,7 +357,7 @@ export function buildMinimalContext(
 
   for (let i = 0; i < retrievalResult.documents.length; i++) {
     const doc = retrievalResult.documents[i];
-    const categoryInfo = CATEGORY_DISPLAY[doc.category];
+    const categoryInfo = getCategoryDisplay(doc.category);
 
     // Create a one-line summary
     const summary = `${categoryInfo.icon} ${doc.title}: ${doc.content.split('.')[0]}.`;

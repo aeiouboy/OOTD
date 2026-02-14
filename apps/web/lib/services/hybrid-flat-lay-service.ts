@@ -12,12 +12,14 @@
 
 import type {
   FlatLayItem,
+  ProcessedProductImage,
   BackgroundStyle,
   UserAesthetic,
   HybridFlatLayRequest,
   HybridFlatLayResponse,
 } from '@/lib/types/image-types';
 import { processProductImagesParallel } from '@/lib/utils/product-image-processor';
+import { hasProblematicFlatLayImageUrl } from '@/lib/utils/product-visual-validator';
 import {
   compositeImages,
   createWhiteBackground,
@@ -25,6 +27,7 @@ import {
   bufferToBase64,
 } from '@/lib/utils/image-compositor';
 import { OpenRouterImageClient } from './image-generation-service';
+import { buildBackgroundPrompt } from '../prompts/image-prompts';
 
 /**
  * Default canvas dimensions for hybrid flat-lay
@@ -49,93 +52,122 @@ const AESTHETIC_TO_BACKGROUND: Record<UserAesthetic, BackgroundStyle> = {
   'romantic': 'linen-natural',
 };
 
-/**
- * Background style to AI prompt mapping
- */
-const BACKGROUND_PROMPTS: Record<BackgroundStyle, string> = {
-  'white-clean': `
-Generate a pure white background image for flat-lay photography.
-REQUIREMENTS:
-- Completely flat, solid white background (#FFFFFF)
-- No textures, patterns, or variations
-- No shadows or gradients
-- Perfect for product photography
-- Square format (1:1 aspect ratio)
-- Completely empty, no objects or elements
-`.trim(),
+function inferItemFamily(text: string): 'main' | 'shoes' | 'accessory' | 'unknown' {
+  const t = text.toLowerCase();
+  if (/\b(dress|shirt|blouse|top|tee|t-shirt|pants|trouser|jeans|skirt|jumpsuit|romper|shorts|clothing)\b/.test(t)) return 'main';
+  if (/\b(shoe|sandal|sneaker|heel|boot|loafer|pump|mule)\b/.test(t)) return 'shoes';
+  if (/\b(bag|belt|hat|scarf|watch|necklace|earring|bracelet|accessor)\b/.test(t)) return 'accessory';
+  return 'unknown';
+}
 
-  'marble-white': `
-Generate a luxurious white marble texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Elegant white Carrara marble surface
-- Subtle grey veining patterns
-- Soft, sophisticated look
-- High-end luxury aesthetic
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for quiet-luxury fashion styling
-`.trim(),
+function isMainGarmentProduct(product: ProcessedProductImage): boolean {
+  const text = `${product.category} ${product.name}`.toLowerCase();
+  return inferItemFamily(text) === 'main';
+}
 
-  'marble-grey': `
-Generate a sophisticated grey marble texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Refined grey marble surface
-- Elegant dark veining patterns
-- Professional, corporate aesthetic
-- Timeless and sophisticated look
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for business fashion styling
-`.trim(),
+async function loadReplacementCandidates(
+  originalItems: FlatLayItem[],
+  maxCandidates = 80
+): Promise<FlatLayItem[]> {
+  try {
+    const { loadProductsServerSide } = await import('@/lib/server-product-loader');
+    const enhancedProducts = await loadProductsServerSide();
+    if (!enhancedProducts.length) return [];
 
-  'wood-light': `
-Generate a natural light wood texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Warm, light oak or birch wood surface
-- Natural wood grain patterns
-- Organic, natural aesthetic
-- Soft, inviting warmth
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for bohemian or natural fashion styling
-`.trim(),
+    const usedSkus = new Set(originalItems.map((i) => i.sku).filter(Boolean));
+    const preferredFamilies = new Set(
+      originalItems.map((i) => inferItemFamily(`${i.category} ${i.name}`)).filter((f) => f !== 'unknown')
+    );
 
-  'wood-dark': `
-Generate a rich dark wood texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Deep walnut or mahogany wood surface
-- Sophisticated dark wood grain
-- Dark academia aesthetic
-- Scholarly, refined atmosphere
-- Square format (1:1 aspect ratio)
-- Clean surface with no objects
-- Perfect for dark academia fashion styling
-`.trim(),
+    const fallbackItems: Array<FlatLayItem & { __family?: 'main' | 'shoes' | 'accessory' | 'unknown' }> = [];
+    for (const product of enhancedProducts as any[]) {
+      const imageUrl: string | undefined = product?.centralIntegration?.images?.primary;
+      if (!imageUrl || hasProblematicFlatLayImageUrl(imageUrl)) continue;
 
-  'linen-natural': `
-Generate a natural linen fabric texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Soft, natural linen texture
-- Warm beige/cream color
-- Clean-girl aesthetic
-- Fresh, organic feel
-- Square format (1:1 aspect ratio)
-- Flat surface with no folds or wrinkles
-- Perfect for effortless chic fashion styling
-`.trim(),
+      const sku = product?.sku || product?.id;
+      if (!sku || usedSkus.has(sku)) continue;
 
-  'linen-grey': `
-Generate a sophisticated grey linen fabric texture background for flat-lay fashion photography.
-REQUIREMENTS:
-- Elegant grey linen texture
-- Subtle weave pattern
-- Casual-chic aesthetic
-- Modern, understated elegance
-- Square format (1:1 aspect ratio)
-- Flat surface with no folds or wrinkles
-- Perfect for casual everyday fashion styling
-`.trim(),
-};
+      const name = product?.name?.en || product?.name?.th || product?.name || '';
+      if (!name) continue;
+
+      const category =
+        product?.classification?.category?.subCategory ||
+        product?.classification?.category?.primary ||
+        product?.classification?.category?.main ||
+        product?.classification?.category ||
+        'clothing';
+
+      const family = inferItemFamily(`${category} ${name}`);
+      if (preferredFamilies.size > 0 && family !== 'unknown' && !preferredFamilies.has(family)) {
+        continue;
+      }
+
+      const color = product?.style?.colors?.primary;
+      const visualDescription = product?.description?.en || product?.description?.th || undefined;
+
+      fallbackItems.push({
+        name,
+        category: typeof category === 'string' ? category : 'clothing',
+        color: typeof color === 'string' ? color : undefined,
+        visualDescription: typeof visualDescription === 'string' ? visualDescription : undefined,
+        sku,
+        thumbnailUrl: imageUrl,
+        __family: family,
+      });
+
+      if (fallbackItems.length >= maxCandidates) break;
+    }
+
+    // Prefer main garments first to satisfy quality gate earlier.
+    fallbackItems.sort((a, b) => {
+      const rank = (f?: string) => (f === 'main' ? 0 : f === 'shoes' ? 1 : f === 'accessory' ? 2 : 3);
+      return rank(a.__family) - rank(b.__family);
+    });
+
+    return fallbackItems.map(({ __family: _ignore, ...item }) => item);
+  } catch (error) {
+    console.warn('[HybridFlatLay] Failed to load replacement candidates:', error);
+    return [];
+  }
+}
+
+async function gatherSuccessfulCandidates(
+  candidates: FlatLayItem[],
+  neededCount: number,
+  needsMainGarment: boolean
+): Promise<ProcessedProductImage[]> {
+  if (neededCount <= 0 && !needsMainGarment) return [];
+
+  const successful: ProcessedProductImage[] = [];
+  const triedSkus = new Set<string>();
+  const BATCH_SIZE = 6;
+  const MAX_TOTAL_TRIES = 30;
+
+  for (let start = 0; start < candidates.length && triedSkus.size < MAX_TOTAL_TRIES; start += BATCH_SIZE) {
+    const batch = candidates
+      .slice(start, start + BATCH_SIZE)
+      .filter((item) => {
+        const sku = item.sku || '';
+        if (!sku || triedSkus.has(sku)) return false;
+        triedSkus.add(sku);
+        return true;
+      });
+
+    if (batch.length === 0) continue;
+
+    const processed = await processProductImagesParallel(batch);
+    for (const product of processed) {
+      if (!product.success) continue;
+      successful.push(product);
+      const hasMain = successful.some((p) => isMainGarmentProduct(p));
+      if (successful.length >= neededCount && (!needsMainGarment || hasMain)) {
+        return successful;
+      }
+    }
+  }
+
+  return successful;
+}
 
 /**
  * Maps user aesthetic to background style
@@ -148,16 +180,6 @@ export function mapAestheticToBackground(aesthetic?: UserAesthetic): BackgroundS
     return 'white-clean';
   }
   return AESTHETIC_TO_BACKGROUND[aesthetic] || 'white-clean';
-}
-
-/**
- * Builds the AI prompt for background generation
- *
- * @param style - Background style to generate
- * @returns Prompt string for AI generation
- */
-export function buildBackgroundPrompt(style: BackgroundStyle): string {
-  return BACKGROUND_PROMPTS[style] || BACKGROUND_PROMPTS['white-clean'];
 }
 
 /**
@@ -177,12 +199,10 @@ async function generateAIBackground(
 
   const client = new OpenRouterImageClient(apiKey);
 
-  // Make request using the existing flat-lay method which handles image generation
-  const response = await client.generateOutfitImage(prompt, {
-    composition: 'flat-lay',
-    lighting: 'studio',
-    photographyStyle: 'product',
-  });
+  // IMPORTANT: Use raw flat-lay generation here.
+  // generateOutfitImage() wraps the prompt with a model-worn fashion prompt,
+  // which can inject a person into the background image.
+  const response = await client.generateRawFlatLay(prompt);
 
   if (!response.success || !response.imageBase64) {
     throw new Error(response.error || 'Failed to generate background');
@@ -227,20 +247,25 @@ export async function generateHybridFlatLay(
     // Determine background style
     const effectiveBackgroundStyle = backgroundStyle || mapAestheticToBackground(userAesthetic);
     response.backgroundStyle = effectiveBackgroundStyle;
+    const useAIBackground = process.env.HYBRID_FLATLAY_USE_AI_BACKGROUND === 'true';
 
     console.log(`[HybridFlatLay] Starting hybrid generation:`, {
       itemCount: items.length,
       backgroundStyle: effectiveBackgroundStyle,
+      useAIBackground,
       canvas: `${canvasWidth}x${canvasHeight}`,
     });
 
     // Step 1 & 2: Generate background and process products in parallel
+    const backgroundPromise = useAIBackground
+      ? generateAIBackground(effectiveBackgroundStyle, apiKey).catch((err) => {
+          console.warn(`[HybridFlatLay] Background generation failed, using white:`, err.message);
+          return createWhiteBackground(canvasWidth, canvasHeight);
+        })
+      : createWhiteBackground(canvasWidth, canvasHeight);
+
     const [backgroundBuffer, processedProducts] = await Promise.all([
-      // Generate AI background (or fallback to white)
-      generateAIBackground(effectiveBackgroundStyle, apiKey).catch((err) => {
-        console.warn(`[HybridFlatLay] Background generation failed, using white:`, err.message);
-        return createWhiteBackground(canvasWidth, canvasHeight);
-      }),
+      backgroundPromise,
       // Process product images
       processProductImagesParallel(items),
     ]);
@@ -255,10 +280,58 @@ export async function generateHybridFlatLay(
     }
 
     // Check if we have any successful products
-    const successfulProducts = processedProducts.filter((p) => p.success);
+    let successfulProducts = processedProducts.filter((p) => p.success);
+
+    // Log detailed failure reasons for debugging
+    if (response.failedProducts.length > 0) {
+      const failureReasons = processedProducts
+        .filter((p) => !p.success)
+        .map((p) => `${p.name}: ${p.error || 'unknown error'}`)
+        .join('; ');
+      console.warn(`[HybridFlatLay] ${response.failedProducts.length} products failed:`, failureReasons);
+    }
+
+    // Quality gate: avoid generating misleading "flat-lay" with too few surviving items.
+    const minRequiredItems = items.length === 1 ? 1 : Math.max(2, Math.ceil(items.length * 0.5));
+    let hasMainGarment = successfulProducts.some((p) => isMainGarmentProduct(p));
+
+    // Auto-reselect: try adding alternative catalog items when current set is insufficient.
+    if (successfulProducts.length < minRequiredItems || !hasMainGarment) {
+      const missingItems = Math.max(0, minRequiredItems - successfulProducts.length);
+      const candidateItems = await loadReplacementCandidates(items, Math.max(40, missingItems * 25));
+
+      if (candidateItems.length > 0) {
+        const candidateSuccess = await gatherSuccessfulCandidates(
+          candidateItems,
+          missingItems,
+          !hasMainGarment
+        );
+
+        for (const candidate of candidateSuccess) {
+          if (successfulProducts.length >= minRequiredItems && hasMainGarment) break;
+          successfulProducts.push(candidate);
+          response.processedProducts.push(candidate.sku);
+          hasMainGarment = hasMainGarment || isMainGarmentProduct(candidate);
+        }
+      }
+    }
+
     if (successfulProducts.length === 0) {
       response.error = 'All product images failed to process';
       response.message = 'Could not process any product images. Please try again.';
+      return response;
+    }
+
+    if (successfulProducts.length < minRequiredItems || !hasMainGarment) {
+      response.error = `Insufficient valid product images (${successfulProducts.length}/${items.length}, need ${minRequiredItems})`;
+      response.message = 'Not enough clean product cutouts for reliable hybrid flat-lay.';
+      console.warn('[HybridFlatLay] Quality gate failed:', {
+        requested: items.length,
+        successful: successfulProducts.length,
+        minRequired: minRequiredItems,
+        hasMainGarment,
+        failureRate: `${((response.failedProducts.length / items.length) * 100).toFixed(0)}%`,
+      });
       return response;
     }
 
@@ -267,7 +340,7 @@ export async function generateHybridFlatLay(
     // Step 3: Composite products onto background
     const compositeBuffer = await compositeImages(
       backgroundBuffer,
-      processedProducts, // Pass all, compositor will skip failed ones
+      successfulProducts,
       undefined, // Let compositor calculate layout
       canvasWidth,
       canvasHeight
@@ -288,8 +361,16 @@ export async function generateHybridFlatLay(
     const duration = Date.now() - startTime;
     console.error(`[HybridFlatLay] Failed after ${duration}ms:`, error);
 
-    response.error = error instanceof Error ? error.message : 'Unknown error';
-    response.message = 'Failed to generate hybrid flat-lay. Please try again.';
+    const errorMessage = error instanceof Error ? error.message : 'Unknown error';
+    response.error = errorMessage;
+    // Preserve connection error details for better debugging
+    const isConnectionError = errorMessage.toLowerCase().includes('connection') ||
+      errorMessage.toLowerCase().includes('network') ||
+      errorMessage.toLowerCase().includes('fetch');
+
+    response.message = isConnectionError
+      ? `Connection error: ${errorMessage}`
+      : 'Failed to generate hybrid flat-lay. Please try again.';
   }
 
   return response;
@@ -317,6 +398,19 @@ export async function generateHybridFlatLayWithFallback(
 
   // If fallback is disabled or no items, return the failure
   if (!fallbackToAIOnly || !request.items || request.items.length === 0) {
+    return result;
+  }
+
+  // Do NOT fallback to AI-only for product-asset quality failures.
+  // AI-only fallback often introduces hallucinated/model images and breaks
+  // "shop this look" consistency with catalog items.
+  const errorText = `${result.error || ''} ${result.message || ''}`.toLowerCase();
+  const isQualityFailure =
+    errorText.includes('insufficient valid product images') ||
+    errorText.includes('all product images failed to process') ||
+    errorText.includes('not enough clean product cutouts') ||
+    errorText.includes('model-shot');
+  if (isQualityFailure) {
     return result;
   }
 
@@ -350,6 +444,8 @@ export async function generateHybridFlatLayWithFallback(
   // Both attempts failed
   return {
     ...result,
-    message: 'Both hybrid and AI-only generation failed. Please try again.',
+    message: result.error?.toLowerCase().includes('connection')
+      ? result.message // Keep the connection error message from the hybrid attempt
+      : 'Both hybrid and AI-only generation failed. Please try again.',
   };
 }

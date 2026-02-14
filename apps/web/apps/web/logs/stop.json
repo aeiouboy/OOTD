@@ -1,0 +1,18 @@
+[
+  {
+    "session_id": "f256aa11-7687-45c7-b577-8d653d62e859",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/f256aa11-7687-45c7-b577-8d653d62e859.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "Stop",
+    "stop_hook_active": false
+  },
+  {
+    "session_id": "2d829146-b58b-4b23-9f77-5e65ecb75b21",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/2d829146-b58b-4b23-9f77-5e65ecb75b21.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/apps/web/apps/web",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "Stop",
+    "stop_hook_active": false
+  }
+]

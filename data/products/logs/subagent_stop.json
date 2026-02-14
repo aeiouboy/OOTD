@@ -1,0 +1,13 @@
+[
+  {
+    "session_id": "78d35ac8-7c5d-4c31-9269-0b3da3f18dc5",
+    "transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5.jsonl",
+    "cwd": "/Users/tachongrak/Projects/OOTD/data/products",
+    "permission_mode": "bypassPermissions",
+    "hook_event_name": "SubagentStop",
+    "stop_hook_active": false,
+    "agent_id": "a463fe6",
+    "agent_transcript_path": "/Users/tachongrak/.claude/projects/-Users-tachongrak-Projects-OOTD/78d35ac8-7c5d-4c31-9269-0b3da3f18dc5/subagents/agent-a463fe6.jsonl",
+    "agent_type": ""
+  }
+]

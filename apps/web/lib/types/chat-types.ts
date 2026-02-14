@@ -206,3 +206,51 @@ export interface SystemPromptMetadata {
   description: string;
   enhancements?: string[];
 }
+
+// ============================================================================
+// v5.0: Chat Look Types for Per-Look Flat-Lay Generation
+// ============================================================================
+
+/**
+ * Individual item within a chat look (v5.0)
+ * Represents a product recommended by the AI, validated against the catalog
+ */
+export interface ChatLookItem {
+  name: string;
+  brand: string;
+  category: string;
+  color: string;
+  description: string;
+  sku: string;
+  price: number;
+  url: string;
+  imageUrl?: string;
+  colors?: string[];
+  sizes?: string[];
+}
+
+/**
+ * A complete look recommended by the AI (v5.0)
+ * Contains items, styling tip, and total price
+ */
+export interface ChatLook {
+  lookNumber: number;
+  styleName: string;
+  items: ChatLookItem[];
+  tip?: string;
+  totalPrice: number;
+  /** Flat-lay image (populated async after initial response) */
+  imageBase64?: string;
+  imageUrl?: string;
+  imageStatus?: 'pending' | 'generating' | 'done' | 'error';
+}
+
+/**
+ * Parsed result from AI response containing looks data (v5.0)
+ */
+export interface ParsedLooksResponse {
+  /** Conversational text (Thai) before the structured block */
+  text: string;
+  /** Parsed looks from the ---LOOKS_DATA--- block */
+  looks: ChatLook[];
+}

@@ -1,0 +1,8 @@
+{
+  "session_id": "9577aefe-bf48-42c3-ae9b-137dd1df1353",
+  "prompts": [
+    "spin a team to implement claude code /slash command for prompt optimizer with argentment = $prompt",
+    "spin a team to implement claude code /slash command for prompt optimizer with argentment = $prompt save to /Users/naruechon/OOTD/.claude/commands/prompt-optimzer.md"
+  ],
+  "agent_name": "Helix"
+}

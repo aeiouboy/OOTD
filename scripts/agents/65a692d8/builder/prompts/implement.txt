@@ -1,1 +1,0 @@
-/implement specs/chore-65a692d8-update-onboarding-welcome-logo.md
