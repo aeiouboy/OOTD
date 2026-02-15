@@ -48,8 +48,9 @@ export function OutfitRecommendationCard({
   // v9.0: Check if outfit already has a flat-lay image from parent (ChatAssistant)
   const existingFlatLay = outfit.flatLayImageUrl || outfit.flatLayImageBase64
 
-  // v9.0: Use flat-lay generation hook for automatic generation with caching and retries
-  // This ensures flat-lay images are generated even if parent (ChatAssistant) fails
+  // v10: Use flat-lay generation hook as FALLBACK only
+  // ChatAssistant is the primary generator; this hook only fires if ChatAssistant
+  // hasn't produced a result after a 5-second grace period.
   const {
     isGenerating: isHookGenerating,
     isQueued,
@@ -60,18 +61,32 @@ export function OutfitRecommendationCard({
     outfitId: outfit.id,
     items: outfit.items,
     occasionContext: outfit.title,
-    useHybridGeneration: true,
   })
 
-  // v9.0: Use intersection observer for lazy loading - trigger generation when card becomes visible
+  // v10: Track whether ChatAssistant has provided a flat-lay via a ref
+  // so the delayed fallback setTimeout can read the latest value (avoids stale closure)
+  const hasParentFlatLayRef = useRef(false)
+
+  useEffect(() => {
+    if (outfit.flatLayImageBase64 || outfit.flatLayImageUrl) {
+      hasParentFlatLayRef.current = true
+    }
+  }, [outfit.flatLayImageBase64, outfit.flatLayImageUrl])
+
+  // v10: Intersection observer with delayed fallback generation
   const observerRef = useIntersectionObserver(
     () => {
-      console.log(`[OutfitCard] Card visible: ${outfit.id}, existingFlatLay: ${!!existingFlatLay}, hookImage: ${!!hookGeneratedImage}, parentGenerating: ${!!outfit.isGeneratingFlatLay}`)
-      // Only trigger generation if no existing flat-lay image, hook hasn't generated one,
-      // AND parent (ChatAssistant) is not already generating for this outfit
+      // Only consider fallback if no image exists and parent isn't actively generating
       if (!existingFlatLay && !hookGeneratedImage && !outfit.isGeneratingFlatLay) {
-        console.log(`[OutfitCard] Triggering flat-lay generation for: ${outfit.id}`)
-        generateFlatLay()
+        // Delay fallback generation to avoid racing with ChatAssistant
+        // ChatAssistant typically finishes in 3-4 seconds
+        setTimeout(() => {
+          // Re-check using ref: ChatAssistant may have finished by now
+          if (!hasParentFlatLayRef.current) {
+            console.log(`[OutfitCard] Fallback flat-lay generation for: ${outfit.id}`)
+            generateFlatLay()
+          }
+        }, 5000)
       }
     },
     { threshold: 0.1 }

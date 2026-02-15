@@ -3,14 +3,6 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { Product } from '@/lib/types'
 import type { FlatLayItem, ImageGenerationResponse, BackgroundStyle, UserAesthetic } from '@/lib/types/image-types'
-import {
-  validateProductVisualConsistency,
-  validateFlatLayThumbnailMatch,
-  findVisuallyConsistentReplacement,
-  findReplacementsForInconsistentProducts,
-  hasProblematicFlatLayImageUrl,
-  type ProductVisualConsistency,
-} from '@/lib/utils/product-visual-validator'
 
 /**
  * Cache configuration for localStorage
@@ -35,27 +27,6 @@ interface QueuedRequest {
   execute: () => void
 }
 const generationQueue: QueuedRequest[] = []
-
-/**
- * Shared client-side fallback catalog cache for replacement lookup.
- */
-let fallbackCatalogPromise: Promise<Product[]> | null = null
-
-async function loadFallbackCatalog(): Promise<Product[]> {
-  if (fallbackCatalogPromise) return fallbackCatalogPromise
-
-  fallbackCatalogPromise = fetch('/api/products')
-    .then(async (res) => {
-      if (!res.ok) return []
-      const data = await res.json() as { products?: Product[] }
-      const products = Array.isArray(data.products) ? data.products : []
-      // Keep only usable items for flat-lay replacement.
-      return products.filter((p) => p?.imageUrl && !hasProblematicFlatLayImageUrl(p.imageUrl))
-    })
-    .catch(() => [])
-
-  return fallbackCatalogPromise
-}
 
 /**
  * Process the next item in the queue if a slot is available
@@ -101,10 +72,6 @@ interface UseFlatLayGenerationOptions {
   items: Product[]
   /** Occasion context for the generation */
   occasionContext?: string
-  /** Full product catalog for finding replacements (optional) */
-  allProducts?: Product[]
-  /** Callback when products are replaced for visual consistency */
-  onProductsReplaced?: (replacements: Map<string, Product>, updatedProducts: Product[]) => void
   /**
    * Enable hybrid flat-lay generation (AI background + real product images)
    * When true, uses the hybrid-flat-lay API endpoint instead of AI-only flat-lay
@@ -138,10 +105,6 @@ interface UseFlatLayGenerationResult {
   generateFlatLay: () => void
   /** Whether the image was loaded from cache */
   isFromCache: boolean
-  /** Map of original SKU to replacement product (for visual consistency fixes) */
-  productReplacements: Map<string, Product>
-  /** Products that were used for generation (with replacements applied) */
-  effectiveProducts: Product[]
 }
 
 /**
@@ -348,155 +311,6 @@ function evictOldestCacheEntries(count: number = 1): number {
 }
 
 /**
- * Result of transforming products to flat-lay items with validation
- */
-interface TransformResult {
-  items: FlatLayItem[]
-  validationIssues: Array<{ sku: string; name: string; issues: string[] }>
-  hasInconsistentItems: boolean
-  /** Map of original SKU to replacement product */
-  replacements: Map<string, Product>
-  /** SKUs of items that couldn't be replaced */
-  excludedSkus: string[]
-  /** Products after replacement (these products were used for FlatLayItems) */
-  effectiveProducts: Product[]
-}
-
-/**
- * Transforms Product array to FlatLayItem array for API request
- * Includes visual consistency validation to detect mismatches between
- * product descriptions and product thumbnails
- *
- * When allProducts is provided and mismatches are detected, this function
- * attempts to find visually consistent replacement products.
- *
- * @param items - Products to transform
- * @param enableValidation - Whether to run visual consistency checks (default: true)
- * @param allProducts - Full product catalog for finding replacements (optional)
- */
-function transformToFlatLayItems(
-  items: Product[],
-  enableValidation: boolean = true,
-  allProducts?: Product[]
-): TransformResult {
-  const validationIssues: Array<{ sku: string; name: string; issues: string[] }> = []
-  let hasInconsistentItems = false
-  const replacements = new Map<string, Product>()
-  const excludedSkus: string[] = []
-
-  // First pass: identify inconsistent items and find replacements if catalog provided
-  let effectiveProducts: Product[] = items
-
-  if (enableValidation && allProducts && allProducts.length > 0) {
-    // Use the batch replacement function for efficiency
-    const replacementResult = findReplacementsForInconsistentProducts(
-      items,
-      allProducts,
-      { targetGender: 'women' }
-    )
-
-    effectiveProducts = replacementResult.products
-    hasInconsistentItems = replacementResult.inconsistentCount > 0
-
-    // Copy replacements to our map
-    replacementResult.replacements.forEach((replacement, originalSku) => {
-      replacements.set(originalSku, replacement)
-    })
-
-    // Track unreplaceable items
-    excludedSkus.push(...replacementResult.unreplaceableSkus)
-
-    // Log replacements
-    if (replacements.size > 0) {
-      console.log(
-        `[useFlatLayGeneration] Replaced ${replacements.size} visually inconsistent products:`,
-        Array.from(replacements.entries()).map(([origSku, replacement]) => ({
-          originalSku: origSku,
-          replacementSku: replacement.sku,
-          replacementName: replacement.name,
-        }))
-      )
-    }
-
-    if (excludedSkus.length > 0) {
-      console.warn(
-        `[useFlatLayGeneration] ${excludedSkus.length} items could not be replaced (will be included but may have visual mismatch):`,
-        excludedSkus
-      )
-    }
-  }
-
-  // Transform products to FlatLayItems (using effective products which may include replacements)
-  const flatLayItems = effectiveProducts.map((item, index) => {
-    const originalItem = items[index]
-    const wasReplaced = originalItem && replacements.has(originalItem.sku)
-
-    // Run visual consistency validation on the effective item
-    let isVisuallyConsistent = true
-    if (enableValidation) {
-      const validation = validateProductVisualConsistency(item, { enableLogging: false })
-      const thumbnailMatch = validateFlatLayThumbnailMatch(item, { enableLogging: false })
-
-      if (!validation.isConsistent || !thumbnailMatch.matches) {
-        isVisuallyConsistent = false
-        if (!wasReplaced) {
-          // Only track as issue if this item wasn't already replaced
-          hasInconsistentItems = true
-          validationIssues.push({
-            sku: item.sku,
-            name: item.name,
-            issues: [
-              ...validation.issues,
-              ...(thumbnailMatch.reason ? [thumbnailMatch.reason] : []),
-            ],
-          })
-
-          console.warn(
-            `[useFlatLayGeneration] Visual mismatch detected for product "${item.name}" (${item.sku}):`,
-            {
-              textGender: validation.textGender,
-              imageGender: validation.imageGender,
-              issues: validation.issues,
-              recommendation: thumbnailMatch.recommendation,
-            }
-          )
-        }
-      } else if (wasReplaced) {
-        // Replacement is visually consistent - success!
-        isVisuallyConsistent = true
-      }
-    }
-
-    return {
-      name: item.name,
-      category: item.subCategory || item.category || 'clothing',
-      color: item.colors?.[0],
-      visualDescription: item.visualDescription,
-      sku: item.sku,
-      thumbnailUrl: item.imageUrl,
-      isVisuallyConsistent,
-    }
-  })
-
-  // Log summary if there are remaining issues after replacement attempts
-  if (hasInconsistentItems && validationIssues.length > 0) {
-    console.warn(
-      `[useFlatLayGeneration] ${validationIssues.length} of ${items.length} items still have visual inconsistencies after replacement attempts`,
-      validationIssues
-    )
-  }
-
-  return {
-    items: flatLayItems,
-    validationIssues,
-    hasInconsistentItems,
-    replacements,
-    excludedSkus,
-    effectiveProducts,
-  }
-}
-
-/**
  * Custom hook for lazy flat-lay image generation with caching
  *
  * Features:
@@ -510,11 +324,6 @@ export function useFlatLayGeneration({
   outfitId,
   items,
   occasionContext,
-  allProducts,
-  onProductsReplaced,
-  useHybridGeneration = false,
-  backgroundStyle,
-  userAesthetic,
 }: UseFlatLayGenerationOptions): UseFlatLayGenerationResult {
   // Initialize state synchronously from cache to prevent flicker
   const [flatLayImageBase64, setFlatLayImageBase64] = useState<string | undefined>(() => {
@@ -528,8 +337,6 @@ export function useFlatLayGeneration({
   const [isQueued, setIsQueued] = useState(false)
   const [queuePosition, setQueuePosition] = useState(0)
   const [error, setError] = useState<string | undefined>(undefined)
-  const [productReplacements, setProductReplacements] = useState<Map<string, Product>>(new Map())
-  const [effectiveProducts, setEffectiveProducts] = useState<Product[]>(items)
 
   // Track if generation has been attempted for this outfit
   const hasAttemptedRef = useRef(false)
@@ -598,7 +405,6 @@ export function useFlatLayGeneration({
   const performGeneration = useCallback(async () => {
     if (!isMountedRef.current) return
 
-    // Mark as generating, not queued
     setIsQueued(false)
     setQueuePosition(0)
     setIsGenerating(true)
@@ -606,31 +412,15 @@ export function useFlatLayGeneration({
     hasAttemptedRef.current = true
     currentGenerations++
 
-    // Transform products to flat-lay items.
-    // v8.2: Disable cross-catalog replacement to prevent cross-look contamination.
-    // Each look's flat-lay must only contain items from that look.
-    const transformResult = transformToFlatLayItems(items, false)
-
-    // Update replacement state
-    setProductReplacements(transformResult.replacements)
-    setEffectiveProducts(transformResult.effectiveProducts)
-
-    // Notify parent component of replacements if callback provided
-    if (transformResult.replacements.size > 0 && onProductsReplaced) {
-      onProductsReplaced(transformResult.replacements, transformResult.effectiveProducts)
-    }
-
-    // Log visual consistency warnings
-    if (transformResult.hasInconsistentItems && transformResult.excludedSkus.length > 0) {
-      console.warn(
-        '[useFlatLayGeneration] Some visual consistency issues remain after replacement attempts. ' +
-        'Flat-lay image may not perfectly match product thumbnails for these items:',
-        transformResult.excludedSkus
-      )
-    }
-
-    // Extract just the items for the API call
-    const flatLayItems = transformResult.items
+    // Direct mapping — no replacement, no validation, no cross-catalog contamination
+    const flatLayItems: FlatLayItem[] = items.map((item) => ({
+      name: item.name,
+      category: item.subCategory || item.category || 'clothing',
+      color: item.colors?.[0],
+      visualDescription: item.visualDescription,
+      sku: item.sku,
+      thumbnailUrl: item.imageUrl,
+    }))
 
     // Retry logic with exponential backoff
     const maxRetries = 1
@@ -639,16 +429,13 @@ export function useFlatLayGeneration({
     for (let attempt = 0; attempt <= maxRetries; attempt++) {
       try {
         if (attempt > 0) {
-          // Exponential backoff: 2^attempt * 1000ms
           const delay = Math.pow(2, attempt) * 1000
           await new Promise(resolve => setTimeout(resolve, delay))
         }
 
         const response = await fetch('/api/generate-image', {
           method: 'POST',
-          headers: {
-            'Content-Type': 'application/json',
-          },
+          headers: { 'Content-Type': 'application/json' },
           body: JSON.stringify({
             generationType: 'flat-lay',
             flatLayItems,
@@ -660,7 +447,7 @@ export function useFlatLayGeneration({
 
         if (!isMountedRef.current) {
           currentGenerations--
-          processQueue() // Allow next in queue to proceed
+          processQueue()
           return
         }
 
@@ -668,11 +455,10 @@ export function useFlatLayGeneration({
           setFlatLayImageBase64(result.imageBase64)
           setIsFromCache(false)
           setError(undefined)
-          // Cache the generated image
           setCachedImage(outfitId, result.imageBase64)
           currentGenerations--
           setIsGenerating(false)
-          processQueue() // Process next in queue
+          processQueue()
           return
         } else {
           lastError = result.message || result.error || 'Generation failed'
@@ -689,8 +475,8 @@ export function useFlatLayGeneration({
       setIsGenerating(false)
     }
     currentGenerations--
-    processQueue() // Process next in queue even on failure
-  }, [outfitId, items, occasionContext, allProducts, onProductsReplaced, useHybridGeneration, backgroundStyle, userAesthetic])
+    processQueue()
+  }, [outfitId, items, occasionContext])
 
   /**
    * Generate flat-lay image via API
@@ -736,8 +522,6 @@ export function useFlatLayGeneration({
     error,
     generateFlatLay,
     isFromCache,
-    productReplacements,
-    effectiveProducts,
   }
 }
 
