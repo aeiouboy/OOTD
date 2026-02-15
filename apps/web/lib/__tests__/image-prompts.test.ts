@@ -120,6 +120,26 @@ describe('buildFlatLayPrompt', () => {
     const prompt = buildFlatLayPrompt(items)
     expect(prompt).toContain('organic triangular grouping')
   })
+
+  it('uses config-driven color normalization for prompt colors', () => {
+    const thaiColorItems: FlatLayItem[] = [
+      { name: 'Dress', category: 'Dresses', color: 'สีแดง' },
+      { name: 'Heels', category: 'Shoes', color: 'สีดำ' },
+      { name: 'Bag', category: 'Bags', color: 'สีขาว' },
+    ]
+
+    const prompt = buildFlatLayPrompt(thaiColorItems)
+    expect(prompt).toMatch(/red dress/i)
+    expect(prompt).toMatch(/black shoes/i)
+    expect(prompt).toMatch(/white bag/i)
+  })
+
+  it('includes color fidelity map derived from item colors', () => {
+    const prompt = buildFlatLayPrompt(items)
+    expect(prompt).toContain('Color fidelity map:')
+    expect(prompt).toContain('TOP-CENTER')
+    expect(prompt).toContain('navy blue')
+  })
 })
 
 // ---------------------------------------------------------------------------

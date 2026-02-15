@@ -1,11 +1,37 @@
 'use client'
 
+import type { ReactNode } from 'react'
 import { Sparkles } from 'lucide-react'
 import type { ChatMessage as ChatMessageType } from '@/lib/types'
 import { LooksInspiration } from './LooksInspiration'
 
 interface ChatMessageProps {
   message: ChatMessageType
+}
+
+function renderInlineFormatting(line: string): ReactNode[] {
+  const parts = line.split(/(\*\*[^*\n]+\*\*)/g)
+  return parts.map((part, index) => {
+    if (part.startsWith('**') && part.endsWith('**') && part.length > 4) {
+      return (
+        <strong key={`bold-${index}`}>
+          {part.slice(2, -2)}
+        </strong>
+      )
+    }
+
+    return <span key={`text-${index}`}>{part}</span>
+  })
+}
+
+function renderFormattedText(text: string): ReactNode[] {
+  const lines = text.split('\n')
+  return lines.map((line, index) => (
+    <span key={`line-${index}`}>
+      {renderInlineFormatting(line)}
+      {index < lines.length - 1 && <br />}
+    </span>
+  ))
 }
 
 export function ChatMessage({ message }: ChatMessageProps) {
@@ -62,7 +88,9 @@ export function ChatMessage({ message }: ChatMessageProps) {
               : 'bg-[var(--chat-assistant)] text-foreground mr-auto border border-border'
           }`}
         >
-          <p className="text-sm">{message.content}</p>
+          <div className="text-sm break-words">
+            {renderFormattedText(message.content)}
+          </div>
           <p className={`text-xs mt-1 text-muted-foreground`}>
             {formatTime(message.timestamp)}
           </p>

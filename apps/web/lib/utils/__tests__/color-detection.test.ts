@@ -2,12 +2,8 @@
  * Unit Tests for Color Detection in Follow-up Handler & Clarification Detector
  *
  * Tests:
- * 1. analyzeUserQuery() — basic field detection (no color support in current impl)
+ * 1. analyzeUserQuery() — field detection + config-driven color detection
  * 2. detectFollowUpRequest() — color_change follow-up with Thai/English phrases
- *
- * Note: The current implementation does NOT have a standalone `detectColors()` function.
- * Color detection for follow-ups is handled by keyword matching in `detectFollowUpRequest`
- * and parameter extraction in `extractFollowUpParameters`.
  */
 
 import { analyzeUserQuery, getClarificationsNeeded } from '../clarification-detector';
@@ -53,6 +49,12 @@ describe('analyzeUserQuery() field detection', () => {
     expect(result.detectedOccasion).toBe('work');
   });
 
+  it('should detect colors from Thai query and normalize to canonical color names', () => {
+    const result = analyzeUserQuery('หาชุดไปปาร์ตี้ สีแดง');
+    expect(result.hasColors).toBe(true);
+    expect(result.detectedColors).toContain('red');
+  });
+
   it('should not ask occasion clarification for interview request', () => {
     const query = analyzeUserQuery('อยากได้ชุดไปสัมภาษณ์งานวันศุกร์นี้');
     const clarifications = getClarificationsNeeded(
@@ -73,30 +75,28 @@ describe('detectFollowUpRequest() with Thai color phrases', () => {
     const result = detectFollowUpRequest('อยากได้สีเบจ', true);
     expect(result.isFollowUp).toBe(true);
     expect(result.type).toBe('color_change');
-    // "เบจ" is not in extractFollowUpParameters color list, so newColor is undefined
-    expect(result.parameters.newColor).toBeUndefined();
+    expect(result.parameters.newColor).toBe('beige');
   });
 
   it('should detect "เอาสีดำแทน" as color_change and extract Thai color', () => {
     const result = detectFollowUpRequest('เอาสีดำแทน', true);
     expect(result.isFollowUp).toBe(true);
     expect(result.type).toBe('color_change');
-    // extractFollowUpParameters returns the Thai color word "ดำ"
-    expect(result.parameters.newColor).toBe('ดำ');
+    expect(result.parameters.newColor).toBe('black');
   });
 
   it('should detect "อยากได้สีขาว" as color_change and extract Thai color', () => {
     const result = detectFollowUpRequest('อยากได้สีขาว', true);
     expect(result.isFollowUp).toBe(true);
     expect(result.type).toBe('color_change');
-    expect(result.parameters.newColor).toBe('ขาว');
+    expect(result.parameters.newColor).toBe('white');
   });
 
   it('should detect "สีดำ" keyword match as color_change', () => {
     const result = detectFollowUpRequest('ขอสีดำหน่อย', true);
     expect(result.isFollowUp).toBe(true);
     expect(result.type).toBe('color_change');
-    expect(result.parameters.newColor).toBe('ดำ');
+    expect(result.parameters.newColor).toBe('black');
   });
 
   it('should NOT detect as follow-up when hasProvidedRecommendations is false', () => {

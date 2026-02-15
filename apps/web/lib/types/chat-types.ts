@@ -56,6 +56,7 @@ export interface SessionContext {
     occasion?: string;
     destination?: string;
     budget?: number;
+    colors?: string[];
   };
   /**
    * Current dialogue phase (v2.1 - Loop Prevention)
@@ -141,6 +142,8 @@ export interface UserQuery {
   hasOccasion: boolean;
   /** Whether budget was mentioned */
   hasBudget: boolean;
+  /** Whether colors were mentioned */
+  hasColors: boolean;
   /** Whether destination was mentioned (for travel queries) */
   hasDestination: boolean;
   /** Whether this is a travel-related query */
@@ -153,6 +156,8 @@ export interface UserQuery {
   detectedBudget?: number;
   /** Detected destination (if any) */
   detectedDestination?: string;
+  /** Detected preferred colors (canonical English names) */
+  detectedColors?: string[];
 }
 
 /**

@@ -9,6 +9,7 @@ import type { EnhancedProduct, ProductFilterCriteria, ProductSortField } from '.
 import type { OccasionType, Gender, FormalityLevel, TrendLifecycle, VisualWeightLevel } from '../types/enums'
 import type { ThaiOccasion } from '../matching/thai-cultural-matcher'
 import { OCCASIONS } from '../constants/occasions'
+import { expandColorMatchTokens } from './color-normalizer'
 
 /**
  * Filter by occasion (Task 5.2)
@@ -192,11 +193,14 @@ export function applyFilters(products: EnhancedProduct[], criteria: ProductFilte
 
   // Color filter
   if (criteria.colors && criteria.colors.length > 0) {
+    const colorTokens = expandColorMatchTokens(criteria.colors)
     filtered = filtered.filter((product) => {
       const primaryColor = product.style?.colors?.primary?.toLowerCase() || ''
       const secondaryColors = (product.style?.colors?.secondary || []).map((c) => c.toLowerCase())
-      return criteria.colors!.some(
-        (color) => primaryColor.includes(color.toLowerCase()) || secondaryColors.some((sc) => sc.includes(color.toLowerCase()))
+      return colorTokens.some(
+        (token) =>
+          primaryColor.includes(token.toLowerCase()) ||
+          secondaryColors.some((sc) => sc.includes(token.toLowerCase()))
       )
     })
   }

@@ -406,7 +406,10 @@ export class OpenRouterImageClient {
       const data = await response.json();
 
       // Parse response and extract image
-      const imageData = this.parseImageResponse(data);
+      const imageData = this.ensureImagePayload(
+        this.parseImageResponse(data),
+        'flat-lay generation'
+      );
 
       return {
         success: true,
@@ -588,7 +591,10 @@ export class OpenRouterImageClient {
       }
 
       const data = await response.json();
-      const imageData = this.parseImageResponse(data);
+      const imageData = this.ensureImagePayload(
+        this.parseImageResponse(data),
+        'dual reference try-on generation'
+      );
 
       return {
         success: true,
@@ -688,7 +694,10 @@ export class OpenRouterImageClient {
       const data = await response.json();
 
       // Parse response and extract image using existing method
-      const imageData = this.parseImageResponse(data);
+      const imageData = this.ensureImagePayload(
+        this.parseImageResponse(data),
+        'fitting model generation'
+      );
 
       return {
         success: true,
@@ -776,7 +785,10 @@ export class OpenRouterImageClient {
 
       // Parse response and extract image
       // Note: Gemini 2.5 Flash Preview returns image as base64 in content
-      const imageData = this.parseImageResponse(data);
+      const imageData = this.ensureImagePayload(
+        this.parseImageResponse(data),
+        'image generation'
+      );
 
       return {
         success: true,
@@ -809,6 +821,77 @@ export class OpenRouterImageClient {
    *
    * @private
    */
+  private ensureImagePayload(
+    imageData: { base64?: string; url?: string },
+    context: string
+  ): { base64?: string; url?: string } {
+    if (imageData.base64 || imageData.url) {
+      return imageData;
+    }
+
+    throw new Error(`OpenRouter returned no image payload for ${context}`);
+  }
+
+  private parseImageCandidate(candidate: any): { base64?: string; url?: string } | null {
+    if (!candidate) {
+      return null;
+    }
+
+    if (typeof candidate === 'string') {
+      if (candidate.startsWith('data:image')) {
+        return { base64: candidate };
+      }
+      if (/^https?:\/\//i.test(candidate)) {
+        return { url: candidate };
+      }
+      return null;
+    }
+
+    if (typeof candidate === 'object') {
+      if (candidate.image_url?.url && typeof candidate.image_url.url === 'string') {
+        const imageUrl = candidate.image_url.url;
+        if (imageUrl.startsWith('data:image')) {
+          return { base64: imageUrl };
+        }
+        return { url: imageUrl };
+      }
+
+      if (candidate.b64_json && typeof candidate.b64_json === 'string') {
+        return { base64: `data:image/png;base64,${candidate.b64_json}` };
+      }
+
+      if (candidate.base64 && typeof candidate.base64 === 'string') {
+        return {
+          base64: candidate.base64.startsWith('data:')
+            ? candidate.base64
+            : `data:image/png;base64,${candidate.base64}`,
+        };
+      }
+
+      if (candidate.url && typeof candidate.url === 'string') {
+        return { url: candidate.url };
+      }
+    }
+
+    return null;
+  }
+
+  private parseImageFromText(content: string): { base64?: string; url?: string } | null {
+    const base64Match = content.match(/data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+/);
+    if (base64Match) {
+      console.log('[ImageGen] Found base64 image in content');
+      return { base64: base64Match[0] };
+    }
+
+    const urlMatch = content.match(/(https?:\/\/[^\s<>"]+\.(png|jpg|jpeg|gif|webp))/i);
+    if (urlMatch) {
+      console.log('[ImageGen] Found URL in content');
+      return { url: urlMatch[0] };
+    }
+
+    return null;
+  }
+
   private parseImageResponse(data: any): { base64?: string; url?: string } {
     // OpenRouter returns images as base64 data URLs in the 'images' array
     // Format: { choices: [{ message: { content: "...", images: ["data:image/png;base64,..."] } }] }
@@ -824,61 +907,52 @@ export class OpenRouterImageClient {
           const imageData = message.images[0];
           console.log('[ImageGen] Found image in images array, type:', typeof imageData);
 
-          // Images are returned as data URLs (data:image/png;base64,...)
-          if (typeof imageData === 'string' && imageData.startsWith('data:image')) {
-            return { base64: imageData };
-          }
-
-          // Or as object with nested structure: {"type":"image_url","image_url":{"url":"data:..."}}
-          if (typeof imageData === 'object') {
-            // Check for image_url.url format (OpenRouter Gemini format)
-            if (imageData.image_url?.url) {
-              console.log('[ImageGen] Found image in image_url.url format');
-              const url = imageData.image_url.url;
-              if (url.startsWith('data:image')) {
-                return { base64: url };
-              }
-              return { url };
-            }
-            // Check for b64_json format
-            if (imageData.b64_json) {
-              return { base64: `data:image/png;base64,${imageData.b64_json}` };
-            }
-            // Check for direct base64/url
-            if (imageData.base64) {
-              return { base64: imageData.base64.startsWith('data:') ? imageData.base64 : `data:image/png;base64,${imageData.base64}` };
-            }
-            if (imageData.url) {
-              return { url: imageData.url };
-            }
+          const parsedFromImages = this.parseImageCandidate(imageData);
+          if (parsedFromImages) {
+            return parsedFromImages;
           }
         }
 
         // Check content for embedded base64 or URLs
         const content = message.content;
-        if (typeof content === 'string') {
-          // Check if content contains base64 image data
-          const base64Match = content.match(/data:image\/(png|jpeg|jpg|webp);base64,[A-Za-z0-9+/=]+/);
-          if (base64Match) {
-            console.log('[ImageGen] Found base64 image in content');
-            return { base64: base64Match[0] };
-          }
+        if (Array.isArray(content)) {
+          for (const part of content) {
+            const parsedPart = this.parseImageCandidate(part);
+            if (parsedPart) {
+              return parsedPart;
+            }
 
-          // Check for URL in content
-          const urlMatch = content.match(/(https?:\/\/[^\s<>"]+\.(png|jpg|jpeg|gif|webp))/i);
-          if (urlMatch) {
-            console.log('[ImageGen] Found URL in content');
-            return { url: urlMatch[0] };
+            if (part && typeof part === 'object' && typeof part.text === 'string') {
+              const parsedFromTextPart = this.parseImageFromText(part.text);
+              if (parsedFromTextPart) {
+                return parsedFromTextPart;
+              }
+            } else if (typeof part === 'string') {
+              const parsedFromStringPart = this.parseImageFromText(part);
+              if (parsedFromStringPart) {
+                return parsedFromStringPart;
+              }
+            }
+          }
+        }
+
+        if (typeof content === 'string') {
+          const parsedFromContent = this.parseImageFromText(content);
+          if (parsedFromContent) {
+            return parsedFromContent;
           }
         }
 
         // Check for structured image data (fallback)
         if (message.image) {
           console.log('[ImageGen] Found image in message.image');
-          return {
-            base64: message.image.base64 || (message.image.b64_json ? `data:image/png;base64,${message.image.b64_json}` : undefined),
-            url: message.image.url,
-          };
+          const parsedFromMessageImage =
+            this.parseImageCandidate(message.image) ??
+            this.parseImageCandidate(message.image.url) ??
+            this.parseImageCandidate(message.image.base64);
+          if (parsedFromMessageImage) {
+            return parsedFromMessageImage;
+          }
         }
       }
 

@@ -16,6 +16,7 @@ import {
 import { generateOutfitsFromQuery } from '@/lib/enhanced-outfit-generator'
 import { getProductName, getProductPrice, getProductImageUrl } from '@/lib/utils/product-utils'
 import { VersionUtils } from '@/lib/prompts/prompt-version'
+import { detectColorsInMessage } from '@/lib/utils/color-normalizer'
 
 export const runtime = 'nodejs'
 export const dynamic = 'force-dynamic'
@@ -38,9 +39,16 @@ export async function POST(request: NextRequest) {
 
     // Load enhanced products - prefer Supabase, fallback to JSON files
     let products: EnhancedProduct[] = []
+    const detectedColors = detectColorsInMessage(message)
+    const parsedDefaultLimit = Number(process.env.SUPABASE_CHAT_PRODUCT_LIMIT)
+    const parsedColorLimit = Number(process.env.SUPABASE_CHAT_COLOR_PRODUCT_LIMIT)
+    const defaultSupabaseLimit = Number.isFinite(parsedDefaultLimit) && parsedDefaultLimit > 0 ? parsedDefaultLimit : 200
+    const colorAwareSupabaseLimit = Number.isFinite(parsedColorLimit) && parsedColorLimit > 0 ? parsedColorLimit : 1000
+    const supabaseLimit = detectedColors.length > 0 ? colorAwareSupabaseLimit : defaultSupabaseLimit
 
     if (process.env.SUPABASE_PRODUCTS_ENABLED === 'true') {
-      const dbProducts = await loadProductsFromSupabase(undefined, 200)
+      console.log(`[Chat API] Supabase load limit: ${supabaseLimit} (colors: ${detectedColors.join(', ') || 'none'})`)
+      const dbProducts = await loadProductsFromSupabase(undefined, supabaseLimit)
       if (dbProducts && dbProducts.length > 0) {
         products = transformDbProductsToEnhanced(dbProducts)
         console.log(`[Chat API] Using Supabase products (${products.length} items)`)

@@ -15,7 +15,12 @@ import {
 } from '@/components/ui/dialog'
 import { useFlatLayGeneration, useIntersectionObserver, cleanupExpiredCache } from '@/lib/hooks/useFlatLayGeneration'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
-import { generateTryOnLooks } from '@/lib/services/fitting-model-service'
+import { buildTryOnPromptItems } from '@/lib/utils/styling-completion'
+import {
+  generateDefaultFittingModel,
+  generateFittingModel,
+  generateTryOnLooks,
+} from '@/lib/services/fitting-model-service'
 import { Eye, Shirt, Heart, Share2, Loader2, RefreshCw, AlertCircle } from 'lucide-react'
 
 interface SimilarOutfitsProps {
@@ -69,8 +74,27 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
   const [tryOnError, setTryOnError] = useState<string | undefined>()
 
   // Get user profile for fitting model
-  const { profile } = useUserProfile()
-  const hasFittingModel = !!profile?.fittingModelUrl
+  const { profile, updateProfile } = useUserProfile()
+
+  const prepareFittingModel = useCallback(async (): Promise<{ url?: string; errorMessage?: string }> => {
+    if (profile?.fittingModelUrl) {
+      return { url: profile.fittingModelUrl }
+    }
+
+    const generationResult = profile?.userPhoto
+      ? await generateFittingModel(profile.userPhoto)
+      : await generateDefaultFittingModel()
+
+    if (generationResult.success && (generationResult.imageUrl || generationResult.imageBase64)) {
+      const url = generationResult.imageUrl || generationResult.imageBase64
+      updateProfile({ fittingModelUrl: url })
+      return { url }
+    }
+
+    return {
+      errorMessage: generationResult.message || 'ไม่สามารถเตรียมโมเดลลองใส่ได้ กรุณาลองอีกครั้ง',
+    }
+  }, [profile?.fittingModelUrl, profile?.userPhoto, updateProfile])
 
   // Try-on image to display
   const tryOnImage = tryOnImageUrl || tryOnImageBase64
@@ -95,30 +119,29 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
       return
     }
 
-    // Check if user has a fitting model
-    if (!hasFittingModel || !profile?.fittingModelUrl) {
-      setTryOnError('กรุณาอัปโหลดรูปภาพในขั้นตอนการตั้งค่าเพื่อใช้ฟีเจอร์ลองใส่')
-      setShowTryOnModal(true)
-      return
-    }
-
     // Start generation
     setIsGeneratingTryOn(true)
     setTryOnError(undefined)
     setShowTryOnModal(true)
 
     try {
-      // Extract outfit items for the prompt
-      const outfitItems = outfit.items.map(item => ({
-        name: item.name,
-        category: item.category || item.subCategory || 'clothing',
-        color: item.colors?.[0],
-      }))
+      const { url: fittingModelImageUrl, errorMessage } = await prepareFittingModel()
+      if (!fittingModelImageUrl) {
+        setTryOnError(errorMessage || 'ไม่สามารถเตรียมโมเดลลองใส่ได้ กรุณาลองอีกครั้ง')
+        return
+      }
+
+      const outfitItems = buildTryOnPromptItems({
+        outfitTitle: outfit.title,
+        outfitDescription: outfit.description,
+        catalogItems: outfit.items,
+        stylingItems: outfit.stylingItems || [],
+      })
 
       // Pass flat-lay image for dual reference mode (outfit consistency)
       // Use hook-generated flatLayImageBase64 as fallback when outfit prop doesn't have one
       const result = await generateTryOnLooks({
-        fittingModelImageUrl: profile.fittingModelUrl,
+        fittingModelImageUrl,
         outfitItems,
         outfitTitle: outfit.title,
         flatLayImageUrl: outfit.flatLayImageUrl,
@@ -138,7 +161,7 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
     } finally {
       setIsGeneratingTryOn(false)
     }
-  }, [tryOnImage, hasFittingModel, profile?.fittingModelUrl, outfit, flatLayImageBase64])
+  }, [tryOnImage, outfit, flatLayImageBase64, prepareFittingModel])
 
   /**
    * Handle regenerate try-on image
@@ -150,23 +173,24 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
     setIsGeneratingTryOn(true)
     setTryOnError(undefined)
 
-    if (!profile?.fittingModelUrl) {
-      setTryOnError('กรุณาอัปโหลดรูปภาพในขั้นตอนการตั้งค่าเพื่อใช้ฟีเจอร์ลองใส่')
-      setIsGeneratingTryOn(false)
-      return
-    }
-
     try {
-      const outfitItems = outfit.items.map(item => ({
-        name: item.name,
-        category: item.category || item.subCategory || 'clothing',
-        color: item.colors?.[0],
-      }))
+      const { url: fittingModelImageUrl, errorMessage } = await prepareFittingModel()
+      if (!fittingModelImageUrl) {
+        setTryOnError(errorMessage || 'ไม่สามารถเตรียมโมเดลลองใส่ได้ กรุณาลองอีกครั้ง')
+        return
+      }
+
+      const outfitItems = buildTryOnPromptItems({
+        outfitTitle: outfit.title,
+        outfitDescription: outfit.description,
+        catalogItems: outfit.items,
+        stylingItems: outfit.stylingItems || [],
+      })
 
       // Pass flat-lay image for dual reference mode (outfit consistency)
       // Use hook-generated flatLayImageBase64 as fallback when outfit prop doesn't have one
       const result = await generateTryOnLooks({
-        fittingModelImageUrl: profile.fittingModelUrl,
+        fittingModelImageUrl,
         outfitItems,
         outfitTitle: outfit.title,
         flatLayImageUrl: outfit.flatLayImageUrl,
@@ -186,7 +210,7 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
     } finally {
       setIsGeneratingTryOn(false)
     }
-  }, [profile?.fittingModelUrl, outfit, flatLayImageBase64])
+  }, [outfit, flatLayImageBase64, prepareFittingModel])
 
   // Determine which image to display
   const displayImage = existingFlatLay || flatLayImageBase64
@@ -295,7 +319,7 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
               disabled={isGeneratingTryOn}
               className="h-7 px-1.5 text-xs gap-0.5"
               aria-label="ลองใส่ outfit นี้"
-              title={hasFittingModel ? 'ลองใส่' : 'กรุณาอัปโหลดรูปภาพก่อน'}
+              title="ลองใส่"
             >
               {isGeneratingTryOn ? (
                 <Loader2 className="w-3 h-3 animate-spin" />
@@ -359,17 +383,15 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
                 <div className="text-center">
                   <AlertCircle className="w-12 h-12 text-red-400 mx-auto mb-3" />
                   <p className="text-sm text-gray-600 mb-4">{tryOnError}</p>
-                  {hasFittingModel && (
-                    <Button
-                      size="sm"
-                      variant="outline"
-                      onClick={handleRegenerate}
-                      className="gap-2"
-                    >
-                      <RefreshCw className="w-4 h-4" />
-                      ลองอีกครั้ง
-                    </Button>
-                  )}
+                  <Button
+                    size="sm"
+                    variant="outline"
+                    onClick={handleRegenerate}
+                    className="gap-2"
+                  >
+                    <RefreshCw className="w-4 h-4" />
+                    ลองอีกครั้ง
+                  </Button>
                 </div>
               </div>
             ) : tryOnImage ? (

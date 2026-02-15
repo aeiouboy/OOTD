@@ -146,8 +146,8 @@ export interface ChatResponse {
   looks?: ChatLook[]
 }
 
-const MAX_CHAT_MESSAGE_CHARS = 420
-const MAX_CHAT_MESSAGE_LINES = 4
+const MAX_CHAT_MESSAGE_CHARS = 160
+const MAX_CHAT_MESSAGE_LINES = 3
 
 /**
  * Keep assistant text concise for chat bubbles.
@@ -182,7 +182,8 @@ function shortenAssistantMessage(rawMessage: string): string {
     return limitedLines
   }
 
-  const cutoff = limitedLines.slice(0, MAX_CHAT_MESSAGE_CHARS)
+  const maxContentChars = Math.max(1, MAX_CHAT_MESSAGE_CHARS - 3)
+  const cutoff = limitedLines.slice(0, maxContentChars)
   const breakpoints = [
     cutoff.lastIndexOf('\n'),
     cutoff.lastIndexOf('.'),
@@ -191,9 +192,9 @@ function shortenAssistantMessage(rawMessage: string): string {
     cutoff.lastIndexOf(' '),
   ]
   const bestBreakpoint = Math.max(...breakpoints)
-  const safeCutoff = bestBreakpoint > MAX_CHAT_MESSAGE_CHARS * 0.6
+  const safeCutoff = bestBreakpoint > maxContentChars * 0.6
     ? bestBreakpoint
-    : MAX_CHAT_MESSAGE_CHARS
+    : maxContentChars
 
   return `${cutoff.slice(0, safeCutoff).trimEnd()}...`
 }
@@ -211,6 +212,7 @@ function sanitizeConversationalText(rawMessage: string): string {
     .replace(/\(\s*https?:\/\/[^\s)]+\s*\)/gi, '')
     // Strip "Look N:" / "**Look N:" prefixes — look details are in cards, not chat text
     .replace(/\*{0,2}Look\s*\d+\s*[:.]?\s*\*{0,2}\s*/gi, '')
+    .replace(/\b(?:ลุค|look)\s*(?:ที่)?\s*(?:\d+|แรก|สอง|สาม)\s*[:.]?\s*/gi, '')
 
   const noisyPatterns = [
     /🔗/i,
@@ -220,17 +222,34 @@ function sanitizeConversationalText(rawMessage: string): string {
     /฿\s*\d/i,
     /\d[\d,]*(\.\d+)?\s*บาท/i,
   ]
+  const productDescriptionPattern = /\b(dress|top|skirt|blazer|heels?|sneakers?|pants?|shorts?|blouse|shirt|jacket|รองเท้า|เดรส|กระโปรง|เสื้อ|กางเกง|กระเป๋า)\b/i
+  const brandPattern = /\b(expressions?|lacoste|cps|zara|uniqlo|h&m|nike|adidas)\b/i
+  const explicitItemLinePattern = /^([•*-]|\d+\.)\s*\*{0,2}[^*]{2,120}\*{0,2}\s*[:|-]/
 
   const cleanedLines = withoutLinks
     .split('\n')
-    .map((line) => line.trim())
-    .filter((line) => line.length > 0)
-    .filter((line) => {
-      // Drop bullet/numbered product lines that leak price/link metadata.
-      const isListLine = /^([*-]|\d+\.)\s*/.test(line)
-      const hasNoise = noisyPatterns.some((pattern) => pattern.test(line))
-      return !(isListLine && hasNoise)
+    .map((originalLine) => {
+      const trimmedOriginal = originalLine.trim()
+      return {
+        hadListPrefix: /^([•*-]|\d+\.)\s*/.test(trimmedOriginal),
+        line: trimmedOriginal.replace(/^([•*-]|\d+\.)\s*/, '').trim(),
+      }
     })
+    .filter(({ line }) => line.length > 0)
+    .filter(({ line, hadListPrefix }) => {
+      const hasNoise = noisyPatterns.some((pattern) => pattern.test(line))
+      if (hasNoise) return false
+
+      // Drop explicit per-item detail lines (name + detail separator)
+      if (explicitItemLinePattern.test(line)) return false
+
+      // Drop long lines that look like product descriptions.
+      const productLike = productDescriptionPattern.test(line) || brandPattern.test(line)
+      if (productLike && line.length > 60) return false
+
+      return !hadListPrefix || line.length <= 45
+    })
+    .map(({ line }) => line)
 
   return cleanedLines.join('\n').trim()
 }
@@ -243,8 +262,8 @@ function getV5TemplateInstruction(category: 'CLOTHS' | 'OTHER'): string {
   if (category === 'CLOTHS') {
     return `[CATEGORY: CLOTHS - v5]
 Provide outfit recommendations in RECOMMENDATION MODE.
-- Conversational text: short summary only (2-3 sentences), no product list format
-- Conversational text MUST NOT include prices or URLs
+- Conversational text: max 2 short lines, max 120 characters, no product list format
+- Conversational text MUST NOT include product names, brands, SKUs, prices, or URLs
 - Put all product details (SKU, price, URL) only in ---LOOKS_DATA--- block
 - Each look should have unique outfit roles (avoid duplicate tops/bottoms/shoes in one look)
 - CRITICAL: Each LOOK must have AT LEAST 3 ITEM lines (e.g., dress + shoes + bag, or top + pants + shoes). A look with only 1-2 items is INCOMPLETE.
@@ -587,6 +606,7 @@ export function filterProductsForRequest(
   colors?: string[]
 ): EnhancedProduct[] {
   const { message, userPreferences } = request
+  const hasColorConstraint = !!(colors && colors.length > 0)
 
   // Extract budget from message if not in preferences
   const budget = userPreferences?.budget || extractBudget(message)
@@ -616,19 +636,22 @@ export function filterProductsForRequest(
     filtered = monthFiltered
   }
 
-  // Apply color filter if colors are specified (only if result still has >= 3 products)
+  // Apply color filter if colors are specified
   if (colors && colors.length > 0) {
     const colorFiltered = applyFilters(filtered, { colors })
-    if (colorFiltered.length >= 3) {
+    if (colorFiltered.length > 0) {
       filtered = colorFiltered
       console.log(`[AI Chat v5] Applied color filter (${colors.join(', ')}): ${filtered.length} products`)
     } else {
-      console.log(`[AI Chat v5] Color filter (${colors.join(', ')}) would leave ${colorFiltered.length} products, skipping`)
+      filtered = []
+      console.log(`[AI Chat v5] Color filter (${colors.join(', ')}) found 0 exact matches`)
     }
   }
 
   // If no results and we have an occasion, try graduated fallback
-  if (filtered.length === 0 && occasion) {
+  // NOTE: Skip this fallback when user explicitly requested a color,
+  // otherwise we can leak non-color-matching products back in.
+  if (filtered.length === 0 && occasion && !hasColorConstraint) {
     // Try 1: formality range filter (use occasion's formality range instead of tags)
     const formalityRange = OCCASIONS[occasion]?.formalityRange
     if (formalityRange) {
@@ -665,6 +688,10 @@ export function filterProductsForRequest(
 
   // If still no results, return all available products
   if (filtered.length === 0) {
+    if (hasColorConstraint) {
+      console.log(`[AI Chat v5] Keeping strict color constraint (${colors!.join(', ')}) with 0 matches`)
+      return []
+    }
     filtered = applyFilters(products, {
       availability: ['in_stock', 'low_stock'],
     })
@@ -935,9 +962,13 @@ async function processAIChatRequestV5(
     }
   }
 
-  // STEP 4: Detect occasion
-  const occasion = detectOccasion(request.message)
+  // STEP 4: Detect occasion (fall back to session context from previous turns)
+  const occasionFromMessage = detectOccasion(request.message)
+  const occasion = occasionFromMessage || (sessionContext.conversationContext.occasion as OccasionType | undefined)
   const thaiOccasion = detectThaiOccasionFromMessage(request.message)
+  if (occasion && !occasionFromMessage) {
+    console.log(`[AI Chat v5] Occasion carried from session context: ${occasion}`)
+  }
   if (thaiOccasion) {
     console.log(`[AI Chat v5] Thai occasion detected: ${thaiOccasion}`)
   }
@@ -1040,6 +1071,19 @@ async function processAIChatRequestV5(
         noExactOccasionMatch = true
         console.log(`[AI Chat v5] No products match even widened formality, using all ${filteredProducts.length} products with no-match flag`)
       }
+    }
+  }
+
+  // Re-apply explicit color constraints after semantic merge + occasion filtering.
+  // This prevents non-matching colors from being reintroduced by semantic supplementation.
+  if (resolvedColors.length > 0 && filteredProducts.length > 0) {
+    const colorConstrained = applyFilters(filteredProducts, { colors: resolvedColors })
+    if (colorConstrained.length > 0) {
+      filteredProducts = colorConstrained
+      console.log(`[AI Chat v5] Re-applied strict color filter (${resolvedColors.join(', ')}): ${filteredProducts.length} products`)
+    } else {
+      filteredProducts = []
+      console.log(`[AI Chat v5] Strict color filter (${resolvedColors.join(', ')}) removed all candidates after semantic merge`)
     }
   }
 

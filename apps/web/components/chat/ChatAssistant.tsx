@@ -21,6 +21,7 @@ import type { SessionContext } from '@/lib/types/chat-types'
 import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { convertLooksToOutfits } from '@/lib/utils/chat-look-transformers'
+import { ensureFootwearStyling } from '@/lib/utils/styling-completion'
 
 interface ChatAssistantProps {
   onViewOutfit: (outfit: Outfit) => void
@@ -136,8 +137,15 @@ export function ChatAssistant({
       thumbnailUrl: item.imageUrl,
     }))
 
-    // Add styling items (accessories from fashion knowledge) for flat-lay visualization only
-    const stylingFlatLayItems: FlatLayItem[] = (outfit.stylingItems || []).map((s) => ({
+    const completedStylingItems = ensureFootwearStyling({
+      outfitTitle: outfit.title,
+      outfitDescription: outfit.description,
+      catalogItems: outfit.items,
+      stylingItems: outfit.stylingItems || [],
+    })
+
+    // Add styling items (knowledge-based) for flat-lay visualization only
+    const stylingFlatLayItems: FlatLayItem[] = completedStylingItems.map((s) => ({
       name: s.description,
       category: s.category || 'Accessory',
       visualDescription: s.description,

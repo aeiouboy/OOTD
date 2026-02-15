@@ -12,6 +12,7 @@
  */
 
 import type { UserQuery, ClarificationNeeded } from '../types/chat-types';
+import { detectColorsInMessage } from './color-normalizer';
 
 /**
  * Analyzes user message to detect missing information
@@ -20,18 +21,20 @@ import type { UserQuery, ClarificationNeeded } from '../types/chat-types';
  * @returns UserQuery object with detection results
  */
 export function analyzeUserQuery(message: string): UserQuery {
-  const lowerMessage = message.toLowerCase();
+  const detectedColors = detectColorsInMessage(message);
 
   return {
     message,
     hasGender: detectGender(message) !== undefined,
     hasOccasion: detectOccasion(message) !== undefined,
     hasBudget: detectBudget(message) !== undefined,
+    hasColors: detectedColors.length > 0,
     hasDestination: detectDestination(message) !== undefined,
     isTravelQuery: isTravelQuery(message),
     detectedGender: detectGender(message),
     detectedOccasion: detectOccasion(message),
     detectedBudget: detectBudget(message),
+    detectedColors,
     detectedDestination: detectDestination(message),
   };
 }

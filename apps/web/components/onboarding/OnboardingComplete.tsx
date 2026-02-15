@@ -104,6 +104,13 @@ export function OnboardingComplete({
   fittingModelError,
   onRetryFittingModel,
 }: OnboardingCompleteProps) {
+  const canCompleteOnboarding = !!fittingModelUrl && !isFittingModelLoading && !fittingModelError;
+  const completeButtonLabel = isFittingModelLoading
+    ? 'กำลังเตรียมโมเดล...'
+    : fittingModelError
+      ? 'กรุณากด Retry ก่อน'
+      : 'Time to Chat';
+
   // Determine what to display in the image area
   const renderImageArea = () => {
     // Loading state
@@ -198,9 +205,10 @@ export function OnboardingComplete({
         {/* Complete Button */}
         <Button
           onClick={onComplete}
+          disabled={!canCompleteOnboarding}
           className="w-full bg-[var(--onboarding-primary)] hover:bg-[var(--onboarding-primary-hover)] text-white text-lg py-6 rounded-full"
         >
-          Time to Chat
+          {completeButtonLabel}
         </Button>
       </div>
     </div>

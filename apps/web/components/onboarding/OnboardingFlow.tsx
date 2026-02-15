@@ -103,6 +103,9 @@ export function OnboardingFlow({ onComplete }: OnboardingFlowProps) {
   }, [profile?.userPhoto, triggerFittingModelGeneration]);
 
   const handleComplete = () => {
+    if (isFittingModelLoading || !fittingModelUrl || fittingModelError) {
+      return;
+    }
     completeOnboarding();
     onComplete();
   };

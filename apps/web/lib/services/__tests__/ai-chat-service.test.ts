@@ -76,7 +76,7 @@ vi.mock('../../utils/category-detector', () => ({
 }));
 
 vi.mock('../../utils/follow-up-handler', () => ({
-  detectFollowUpRequest: vi.fn().mockReturnValue({ isFollowUp: false, type: null }),
+  detectFollowUpRequest: vi.fn().mockReturnValue({ isFollowUp: false, type: null, parameters: {} }),
   generateFollowUpInstruction: vi.fn().mockReturnValue(''),
   formatFollowUpDetection: vi.fn().mockReturnValue('[Follow-up: none]'),
 }));
@@ -183,6 +183,14 @@ vi.mock('../../parsers/looks-parser', () => ({
   validateLooksAgainstCatalog: vi.fn().mockReturnValue([]),
 }));
 
+vi.mock('../../utils/text-hallucination-cleaner', () => ({
+  cleanHallucinatedProductMentions: vi.fn().mockImplementation((text: string) => ({
+    text,
+    removedMentions: [],
+    removedLookNames: [],
+  })),
+}));
+
 // Mock global fetch for OpenRouter API calls
 const mockFetch = vi.fn();
 global.fetch = mockFetch;
@@ -206,6 +214,8 @@ import { applyFilters, filterByThaiOccasion, filterByMonthSuitability } from '..
 import { detectThaiOccasion as detectThaiOccasionMatcher } from '../../matching/thai-cultural-matcher';
 import { filterAndValidateProducts } from '../../utils/duplicate-filter';
 import { getClarificationsNeeded, analyzeUserQuery } from '../../utils/clarification-detector';
+import { VersionUtils } from '../../prompts/prompt-version';
+import { parseLooksData } from '../../parsers/looks-parser';
 
 // ---------------------------------------------------------------------------
 // Test Helpers
@@ -884,6 +894,28 @@ describe('ai-chat-service', () => {
       expect(filterByMonthSuitability).toHaveBeenCalled();
     });
 
+    it('applies color filter even when fewer than 3 products match', () => {
+      vi.mocked(applyFilters)
+        .mockReturnValueOnce(products) // base filters
+        .mockReturnValueOnce([products[0]]); // color filters
+
+      const request = createMockRequest({ message: 'party look สีแดง' });
+      const result = filterProductsForRequest(products, request, undefined, undefined, ['red']);
+
+      expect(result).toEqual([products[0]]);
+    });
+
+    it('keeps explicit color constraint when there are no color matches', () => {
+      vi.mocked(applyFilters)
+        .mockReturnValueOnce(products) // base filters
+        .mockReturnValueOnce([]); // color filters
+
+      const request = createMockRequest({ message: 'party look สีแดง' });
+      const result = filterProductsForRequest(products, request, undefined, undefined, ['red']);
+
+      expect(result).toEqual([]);
+    });
+
     it('falls back without occasion filter when filtered result is empty and occasion is set', () => {
       // First call (with occasion) returns empty, second call (without) returns products
       vi.mocked(applyFilters)
@@ -1235,6 +1267,41 @@ describe('ai-chat-service', () => {
       await processAIChatRequest(request, products);
 
       expect(mockFetch).not.toHaveBeenCalled();
+    });
+
+    it('v5 sanitizes product-heavy conversational text for chat bubble', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: `มาแล้วจ้า 2 ลุคให้แล้ว 🔥
+• **Red Glamour Queen** เดรสยาวสีแดงพร้อมรองเท้าส้นสูงสีดำ ราคา 5,990 บาท
+- **Expressionsevening Maxi Dress**: เดรสหรูมาก https://central.co.th/p/sku01
+ลองดูแล้วบอกนะว่าชอบแบบไหน`,
+        looks: [],
+      });
+
+      const request = createMockRequest({ message: 'show me outfits' });
+      const result = await processAIChatRequest(request, products);
+      const lines = result.message.split('\n').filter(Boolean);
+
+      expect(result.message).not.toContain('Red Glamour Queen');
+      expect(result.message).not.toContain('Expressionsevening');
+      expect(result.message).not.toContain('ราคา');
+      expect(result.message).not.toContain('http');
+      expect(lines.length).toBeLessThanOrEqual(3);
+      expect(result.message.length).toBeLessThanOrEqual(160);
+    });
+
+    it('v5 trims long conversational text to 160 characters max', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: 'มาแล้วจ้า '.repeat(50),
+        looks: [],
+      });
+
+      const request = createMockRequest({ message: 'show me outfits' });
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.message.length).toBeLessThanOrEqual(160);
     });
   });
 });

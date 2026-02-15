@@ -9,6 +9,7 @@
  * @version 1.0.0
  * @created 2025-10-26
  */
+import { detectColorsInMessage } from './color-normalizer';
 
 /**
  * Follow-up request types
@@ -344,17 +345,9 @@ function extractFollowUpParameters(
   }
 
   if (type === 'color_change') {
-    // Extract color if mentioned
-    const colors = [
-      'ดำ', 'ขาว', 'แดง', 'น้ำเงิน', 'เขียว', 'เหลือง', 'ชมพู', 'ม่วง', 'ส้ม', 'เทา', 'น้ำตาล',
-      'black', 'white', 'red', 'blue', 'green', 'yellow', 'pink', 'purple', 'orange', 'grey', 'gray', 'brown', 'navy', 'beige',
-    ];
-
-    for (const color of colors) {
-      if (lowerMessage.includes(color.toLowerCase())) {
-        params.newColor = color;
-        break;
-      }
+    const detectedColors = detectColorsInMessage(message);
+    if (detectedColors.length > 0) {
+      params.newColor = detectedColors[0];
     }
   }
 

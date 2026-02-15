@@ -10,6 +10,7 @@
  */
 
 import type { FlatLayItem, BackgroundStyle, ImageConfig } from '@/lib/types/image-types';
+import { normalizeColorToken } from '@/lib/utils/color-normalizer';
 
 // ---------------------------------------------------------------------------
 // Utility helpers (moved from image-generation-service.ts)
@@ -476,37 +477,66 @@ export function buildFlatLayPrompt(
   const layout = computeFlatLayLayout(items);
   const layoutPattern = getLayoutPattern(itemCount);
   const occasionLabel = occasionContext || 'coordinated';
+  const colorResolvedLayout = layout.map((entry) => ({
+    ...entry,
+    resolvedColor: resolvePromptColor(entry.item.color),
+    cleanedCategory: cleanCategoryForPrompt(entry.item.category),
+  }));
 
   // Build item descriptions with spatial positions
-  const itemLines = layout.map((entry) => {
-    const colorInfo = entry.item.color ? `${entry.item.color.toLowerCase()} ` : '';
+  const itemLines = colorResolvedLayout.map((entry) => {
+    const colorInfo = entry.resolvedColor ? `${entry.resolvedColor} ` : '';
     let itemDesc: string;
     if (entry.item.visualDescription && !containsProductNameOrSku(entry.item.visualDescription)) {
       itemDesc = `${colorInfo}${entry.item.visualDescription}`;
     } else {
-      const clean = cleanCategoryForPrompt(entry.item.category);
-      itemDesc = `${colorInfo}${clean.toLowerCase()}`;
+      itemDesc = `${colorInfo}${entry.cleanedCategory.toLowerCase()}`;
     }
     return `- ${entry.position} (${entry.sizeHint}): a ${itemDesc}, ${entry.presentationHint}`;
   }).join('\n');
 
-  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is laid perfectly flat and straight, viewed from directly above. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality. Square 1:1 format.`;
+  const colorMappedItems = colorResolvedLayout.filter((entry) => entry.resolvedColor);
+  const colorConsistencySection = colorMappedItems.length > 0
+    ? `\n\nColor fidelity map:\n${colorMappedItems
+      .map((entry) => `- ${entry.position}: ${entry.cleanedCategory.toLowerCase()} in ${entry.resolvedColor}`)
+      .join('\n')}\nKeep each item's hue and tone aligned with this map for consistent styling.`
+    : '';
+
+  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is laid perfectly flat and straight, viewed from directly above. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality.${colorConsistencySection} Square 1:1 format.`;
 
   // Append reference image mapping instructions when multi-modal images are provided
   if (hasReferenceImages) {
-    const itemsWithImages = layout.filter(entry => entry.item.thumbnailUrl?.startsWith('https://')).slice(0, 5);
+    const itemsWithImages = colorResolvedLayout.filter(entry => entry.item.thumbnailUrl?.startsWith('https://')).slice(0, 5);
     if (itemsWithImages.length > 0) {
       const imageMapping = itemsWithImages.map((entry, idx) => {
-        const colorInfo = entry.item.color ? `${entry.item.color.toLowerCase()} ` : '';
-        const clean = cleanCategoryForPrompt(entry.item.category);
-        return `- Reference Image ${idx + 1} shows the ${colorInfo}${clean.toLowerCase()} at ${entry.position}`;
+        const colorInfo = entry.resolvedColor ? `${entry.resolvedColor} ` : '';
+        return `- Reference Image ${idx + 1} shows the ${colorInfo}${entry.cleanedCategory.toLowerCase()} at ${entry.position}`;
       }).join('\n');
 
-      prompt += `\n\nReference product images are provided below in order. Match the EXACT color, pattern, texture, and silhouette from each reference image:\n${imageMapping}`;
+      prompt += `\n\nReference product images are provided below in order. Match the exact color, pattern, texture, and silhouette from each reference image:\n${imageMapping}`;
     }
   }
 
   return prompt;
+}
+
+function resolvePromptColor(color?: string): string | null {
+  if (!color || !color.trim()) {
+    return null;
+  }
+
+  const raw = color.trim().toLowerCase();
+  const canonical = normalizeColorToken(color);
+  if (canonical) {
+    // Keep explicit Latin color phrases (e.g., "navy blue", "burgundy")
+    // to preserve shade specificity. Convert non-Latin aliases via canonical config.
+    if (/[a-z]/i.test(raw)) {
+      return raw;
+    }
+    return canonical.toLowerCase();
+  }
+
+  return raw;
 }
 
 // ---------------------------------------------------------------------------
