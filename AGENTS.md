@@ -209,6 +209,10 @@ Use these agents by mentioning them naturally, e.g., "As dev, implement ..." or 
 
 - Save test results from Playwright to `test-result/`
 - Use Playwright MCP skill for browser automation
+- Codex works collaboratively with Claude agent; repository files may change during execution.
+- Before running any test command (`pnpm test`, `pnpm lint`, Playwright E2E, or ad-hoc test scripts), always check for newly updated files first (for example with `git status --short`) and inspect relevant changes before testing.
+- Do not add new hard-coded business rules in services; implement behavior via config-driven sources or Supabase RAG data.
+- When reporting test execution, always include actual evidence from the run (executed command, pass/fail summary, and key logs or screenshots for E2E) instead of only giving a high-level summary.
 
 ### Research vs Implementation
 
@@ -249,4 +253,56 @@ Always spin up validator to validate changes instead of using main agent to vali
 
 ---
 
-*Last updated: 2026-02-12*
+---
+
+## Cross-Agent Communication Board
+
+> This section is used for async collaboration between Claude Code and Codex agents.
+> Each entry has a timestamp, author, and context so the other agent can pick up quickly.
+
+### [2026-02-15 19:50] Claude Code → Codex: Flat-lay cross-look contamination context
+
+**Issue**: ผู้ใช้แจ้งว่า flat-lay สร้าง item หลายลุคซ้ำกัน (cross-look contamination ยังเกิดอยู่)
+
+**What I've already done (commit `d25e12d`):**
+
+1. **Modified `ai-chat-service.ts` template instruction** (line 269-272):
+   - Changed from "each LOOK must have AT LEAST 3 ITEM lines" → now limits to **max 2 garment ITEMs** per look
+   - Added rule: "NEVER mix two different main garments in one look (e.g. two dresses, or dress + jumpsuit)"
+   - Changed: "Use STYLING lines to complete missing pieces (footwear/bag/jewelry) instead of adding extra garment ITEM lines"
+   - This reduces the surface area for cross-look garment leakage
+
+2. **`ChatAssistant.tsx`** (line 130, 149-155):
+   - `selectCatalogFlatLayItems(outfit.items, 5)` scopes catalog items per-look
+   - `selectFlatLaySupplements()` adds only non-garment accessories (footwear/bag/jewelry)
+   - `sanitizeFlatLayStylingItems()` rejects garments from styling items
+   - Each flat-lay is generated independently per look (line 324)
+
+**Where contamination might still leak:**
+
+1. **AI model itself** — Gemini may generate the same product in multiple looks. The `validateLooksAgainstCatalog()` function validates items against the catalog but does NOT deduplicate across looks. Check `apps/web/lib/parsers/looks-parser.ts:472` which has a comment about cross-look contamination.
+
+2. **Flat-lay image generation prompt** — The Gemini image model receives `flatLayItems` per look but may hallucinate extra items from the "professional work outfit" context. Check `apps/web/app/api/generate-image/route.ts` and `apps/web/lib/services/image-generation-service.ts:346`.
+
+3. **Styling supplements** — `selectFlatLaySupplements()` in `apps/web/lib/utils/styling-completion.ts` generates context-based fallback items (shoes, bag, jewelry). These are the same for similar looks (e.g., both "Green Power Professional" and "Blue Monday Success" get similar shoes/bag/jewelry since they share the "work" occasion).
+
+**Key files to investigate:**
+
+| File | Purpose |
+|------|---------|
+| `apps/web/components/chat/ChatAssistant.tsx:122-180` | Flat-lay generation per outfit |
+| `apps/web/lib/parsers/looks-parser.ts` | Parses LOOKS_DATA from AI → may allow duplicate items across looks |
+| `apps/web/lib/utils/styling-completion.ts` | Generates styling supplements (shoes/bag/jewelry) — same for similar occasion looks |
+| `apps/web/app/api/generate-image/route.ts` | Image generation API — receives flat-lay items |
+| `apps/web/lib/services/image-generation-service.ts:346` | Default mode excludes garment references |
+| `apps/web/lib/services/ai-chat-service.ts:269-272` | Template instructions limiting ITEM lines |
+
+**Suggested fix approach:**
+
+- Add **cross-look dedup** in `looks-parser.ts` or after `validateLooksAgainstCatalog()`: if the same SKU appears in multiple looks, keep it only in the first look and let the AI pick an alternative for subsequent looks
+- OR add a prompt instruction telling AI "Each product SKU may only appear in ONE look"
+- For styling supplements, consider varying the fallback items per look index (e.g., look 1 gets heels, look 2 gets loafers)
+
+---
+
+*Last updated: 2026-02-15*
