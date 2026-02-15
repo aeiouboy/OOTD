@@ -1,10 +1,14 @@
 /**
  * Occasion Definitions
  * Aligned with occasion_expertise.py from Python backend
+ *
+ * OCCASIONS constant is the hardcoded fallback.
+ * Use getOccasionsFromDB() for data-driven occasion config from Supabase.
  */
 
 import type { OccasionType, FormalityLevel } from '../types/enums'
 import type { LocalizedText } from '../types/localization-types'
+import { loadOccasionConfig, type OccasionConfig } from '@/lib/supabase/occasions'
 
 export interface OccasionDefinition {
   type: OccasionType
@@ -271,4 +275,45 @@ export function matchOccasionFromText(text: string): OccasionType | null {
   }
 
   return null
+}
+
+/**
+ * Convert Supabase OccasionConfig to OccasionDefinition format
+ */
+function configToDefinition(config: OccasionConfig): OccasionDefinition {
+  return {
+    type: config.occasion_type as OccasionType,
+    name: { th: config.name_th, en: config.name_en },
+    description: { th: config.description_th || '', en: config.description_en || '' },
+    formalityRange: {
+      min: config.formality_min as FormalityLevel,
+      max: config.formality_max as FormalityLevel,
+    },
+    keywords: config.keywords,
+    styleGuidelines: {
+      keyPieces: config.key_pieces,
+      avoidItems: config.avoid_items,
+      colorSuggestions: config.color_suggestions,
+    },
+  }
+}
+
+/**
+ * Async loader - prefers Supabase occasion_config table, falls back to hardcoded OCCASIONS
+ */
+export async function getOccasionsFromDB(): Promise<Record<OccasionType, OccasionDefinition>> {
+  try {
+    const configs = await loadOccasionConfig()
+    if (configs.length > 0) {
+      const result: Partial<Record<OccasionType, OccasionDefinition>> = {}
+      for (const config of configs) {
+        result[config.occasion_type as OccasionType] = configToDefinition(config)
+      }
+      console.log(`[Occasions] Using ${configs.length} occasions from Supabase`)
+      return result as Record<OccasionType, OccasionDefinition>
+    }
+  } catch (err) {
+    console.warn('[Occasions] Failed to load from Supabase, using fallback:', err)
+  }
+  return OCCASIONS
 }

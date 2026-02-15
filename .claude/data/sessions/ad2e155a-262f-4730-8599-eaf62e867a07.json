@@ -1,7 +1,0 @@
-{
-  "session_id": "ad2e155a-262f-4730-8599-eaf62e867a07",
-  "prompts": [
-    "run script npx tsx apps/web/lib/supabase/seeds/004_generate_product_embeddings.ts\n  npx tsx apps/web/lib/supabase/seeds/005_generate_knowledge_embeddings.ts"
-  ],
-  "agent_name": "Cipher"
-}

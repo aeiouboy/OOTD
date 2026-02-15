@@ -1,8 +1,0 @@
-{
-  "session_id": "1cd6e671-fbd4-45f4-a674-a54dee018fec",
-  "prompts": [
-    "do not use openrounter api for testing script",
-    " GET /api/suggestions?occasion=everyday_casual&limit=20 it must have pagginate"
-  ],
-  "agent_name": "Axiom"
-}

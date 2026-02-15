@@ -373,20 +373,20 @@ function classifyItemSize(category: string): ItemSizeClass {
 
 /**
  * Returns a presentation hint based on size class.
- * Includes natural rotation angles for an organic, styled flat-lay look.
+ * Items are laid flat and straight for a clean, professional flat-lay look.
  */
 function getPresentationHint(size: ItemSizeClass, index: number): string {
   const largeHints = [
-    'laid out fully open and unfolded showing the complete silhouette, rotated about 5 degrees clockwise',
-    'spread flat with sleeves and details fully visible, tilted roughly 8 degrees counter-clockwise',
+    'laid out fully open and unfolded showing the complete silhouette, placed straight and flat',
+    'spread flat with sleeves and details fully visible, aligned neatly',
   ];
   const mediumHints = [
-    'angled naturally at about 15 degrees toward the center of the composition',
-    'placed casually at roughly 10 degrees, leaning into the outfit grouping',
+    'placed neatly near the center of the composition, facing straight up',
+    'positioned cleanly alongside the main garment, facing forward',
   ];
   const smallHints = [
-    'placed at a casual angle of about 20 degrees as a styling accent',
-    'set down at a relaxed angle of roughly 12 degrees',
+    'placed neatly as a styling accent, facing straight up',
+    'set down cleanly beside the outfit pieces',
   ];
 
   switch (size) {
@@ -490,7 +490,7 @@ export function buildFlatLayPrompt(
     return `- ${entry.position} (${entry.sizeHint}): a ${itemDesc}, ${entry.presentationHint}`;
   }).join('\n');
 
-  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is at a slight casual angle as if placed by a fashion stylist. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality. Square 1:1 format.`;
+  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is laid perfectly flat and straight, viewed from directly above. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality. Square 1:1 format.`;
 
   // Append reference image mapping instructions when multi-modal images are provided
   if (hasReferenceImages) {

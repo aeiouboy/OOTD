@@ -230,6 +230,17 @@ export interface ChatLookItem {
 }
 
 /**
+ * A styling suggestion from fashion knowledge (not a catalog product).
+ * Used only for flat-lay image generation -- NOT shown in "Shop this look".
+ */
+export interface ChatLookStyling {
+  /** Descriptive text, e.g. "Structured black leather tote bag" */
+  description: string;
+  /** Category, e.g. "Bag", "Hat", "Jewelry", "Belt", "Scarf" */
+  category: string;
+}
+
+/**
  * A complete look recommended by the AI (v5.0)
  * Contains items, styling tip, and total price
  */
@@ -237,6 +248,8 @@ export interface ChatLook {
   lookNumber: number;
   styleName: string;
   items: ChatLookItem[];
+  /** Styling accessories from fashion knowledge -- for flat-lay image only, not purchasable */
+  stylingItems?: ChatLookStyling[];
   tip?: string;
   totalPrice: number;
   /** Flat-lay image (populated async after initial response) */

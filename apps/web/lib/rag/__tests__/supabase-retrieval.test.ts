@@ -152,7 +152,8 @@ describe('retrieveFromSupabase', () => {
     expect(mockSearchKnowledge).toHaveBeenCalledWith(
       expect.any(Array),     // embedding
       'color_theory',        // category filter
-      3                       // topK
+      3,                     // topK
+      0.25                   // matchThreshold (default)
     )
   })
 
@@ -164,7 +165,8 @@ describe('retrieveFromSupabase', () => {
     expect(mockSearchKnowledge).toHaveBeenCalledWith(
       expect.any(Array),
       undefined,  // no category filter
-      5           // default topK
+      5,          // default topK
+      0.25        // matchThreshold (default)
     )
   })
 
@@ -316,7 +318,8 @@ describe('searchProductsFromSupabase', () => {
     expect(mockSearchProducts).toHaveBeenCalledWith(
       expect.any(Array),   // embedding
       'date_night',        // occasion filter
-      10                    // limit
+      10,                  // limit
+      undefined            // genderFilter
     )
   })
 
@@ -328,7 +331,8 @@ describe('searchProductsFromSupabase', () => {
     expect(mockSearchProducts).toHaveBeenCalledWith(
       expect.any(Array),
       undefined,   // no occasion filter
-      20           // default limit
+      20,          // default limit
+      undefined    // genderFilter
     )
   })
 

@@ -1,9 +1,0 @@
-{
-  "session_id": "3c781d9b-a9ab-4c8a-a376-668fda68716d",
-  "prompts": [
-    "push it",
-    "<task-notification>\n<task-id>b2f5588</task-id>\n<output-file>/private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/b2f5588.output</output-file>\n<status>completed</status>\n<summary>Background command \"Start Next.js dev server\" completed (exit code 0)</summary>\n</task-notification>\nRead the output file to retrieve the result: /private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/b2f5588.output",
-    "<task-notification>\n<task-id>b5f5a43</task-id>\n<output-file>/private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/b5f5a43.output</output-file>\n<status>killed</status>\n<summary>Background command \"Start Next.js dev server\" was stopped</summary>\n</task-notification>\nRead the output file to retrieve the result: /private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/b5f5a43.output"
-  ],
-  "agent_name": "Catalyst"
-}

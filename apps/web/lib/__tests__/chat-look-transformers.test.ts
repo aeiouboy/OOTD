@@ -34,6 +34,7 @@ describe('chat-look-transformers', () => {
         description: 'Add light accessories',
         totalPrice: 3200,
         imageUrl: 'https://example.com/look.jpg',
+        stylingItems: [],
         items: [
           {
             sku: 'SKU-01',

@@ -119,7 +119,7 @@ describe('Occasion Mapper', () => {
       expect(formality).toBe(7)
     })
 
-    it('should rate polo as 6', () => {
+    it('should rate polo as 3 (casual)', () => {
       const input: OccasionMappingInput = {
         name: 'Polo Shirt',
         formalityLevel: 5,
@@ -127,7 +127,7 @@ describe('Occasion Mapper', () => {
 
       const formality = calculateFormalityLevel(input)
 
-      expect(formality).toBe(6)
+      expect(formality).toBe(3)
     })
 
     it('should rate t-shirt as 3', () => {

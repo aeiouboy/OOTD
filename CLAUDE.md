@@ -10,31 +10,41 @@ OOTDay is an AI-powered fashion assistant platform that helps Thai users with da
 
 ```
 /
-├── apps/                       # Application code
-│   ├── web/                    # Main Next.js 14 frontend (TypeScript)
-│   └── sentiment_classification/ # ML sentiment classifier
-├── docs/                       # Documentation
-│   ├── prd/                    # Product requirements
-│   ├── architecture/           # Architecture docs
-│   ├── guides/                 # Implementation guides
-│   └── bugs/                   # Bug reports
-├── scripts/                    # Automation scripts
-│   ├── classification/         # Product scraping & occasion classification
-│   ├── image_processing/       # Image processing utilities (Python)
-│   └── migration/              # Database migration scripts
-├── data/                       # Data files
-│   ├── products/               # Product JSON data (fallback)
-│   ├── personas/               # AI persona definitions + knowledge base
-│   ├── catalogs/               # Product catalog CSVs
-│   └── assets/                 # Images (onboarding, CJ)
-├── specs/                      # Feature specifications & implementation plans
-├── research/                   # Research documents
-├── test-result/                # Playwright E2E screenshots
-├── tasks/                      # Task definitions
-├── .claude/                    # Claude Code configuration
-├── tasks.md                    # Central task tracking
-└── README.md
+├── apps/
+│   ├── web/                        # Main Next.js 14 frontend (TypeScript)
+│   │   ├── components/             # React components (chat, outfit, occasion, ui)
+│   │   ├── lib/                    # Core logic (services, hooks, utils, types)
+│   │   ├── tests/                  # Test suites
+│   │   │   ├── e2e/                # Playwright E2E specs
+│   │   │   ├── fixtures/           # Mock data & test fixtures
+│   │   │   └── utils/              # Test utilities (evaluator, scenarios, exporter)
+│   │   └── scripts/                # Standalone scripts (seeding, testing)
+│   └── sentiment_classification/   # ML sentiment classifier
+├── docs/                           # Documentation
+│   ├── architecture/               # System design & analysis docs
+│   ├── prd/                        # Product requirements
+│   ├── guides/                     # Development & testing guides
+│   └── bugs/                       # Bug reports
+├── scripts/                        # Automation scripts
+│   ├── classification/             # Product scraping & occasion classification
+│   ├── image_processing/           # Image processing (Python)
+│   └── migration/                  # DB migration scripts
+├── data/                           # Data files
+│   ├── products/                   # Product JSON (fallback)
+│   ├── personas/                   # AI persona definitions + knowledge base
+│   ├── catalogs/                   # Product catalog CSVs
+│   └── assets/                     # Static images
+├── specs/                          # Feature specs & implementation plans
+├── tasks/                          # Task definitions
+├── research/                       # Research documents
+└── .claude/                        # Claude Code config (agents, skills, commands)
 ```
+
+**Not tracked in git** (via `.gitignore`):
+- `apps/web/public/generated-images/` — runtime flat-lay output (1400+ images)
+- `logs/`, `apps/web/logs/` — Claude Code hook logs
+- `test-result/` — Playwright E2E screenshots (committed selectively)
+- `.claude/data/sessions/` — Claude session data
 
 ## Key Architecture
 
@@ -77,12 +87,11 @@ The core AI fashion recommendation flow:
 - **Type**: `EnhancedProduct` (full model) in `lib/types/product-types.ts`
 - **Transformer**: `lib/transformers/db-product-to-enhanced.ts` (DbProduct → EnhancedProduct)
 
-### RAG Pipeline (3-tier fallback)
+### RAG Pipeline (Supabase + keyword fallback)
 1. **Supabase pgvector** — `knowledge_chunks` table (225 docs, 1536d embeddings)
    - RPC: `search_knowledge()` + `search_products()`, threshold 0.25
    - Categories: foundation (54), advanced (75), implementation (60), special (36)
-2. **Vectra in-memory** — local vector store at `data/vector-store/fashion-knowledge` (33 English docs)
-3. **Keyword fallback** — hardcoded topic detection (occasion, thai_culture, color, body_type, etc.)
+2. **Keyword fallback** — hardcoded topic detection (occasion, thai_culture, color, body_type, etc.)
 - Embedding model: `openai/text-embedding-3-small` via OpenRouter
 - Thai→English translation before embedding (Gemini 2.0 Flash)
 - Cross-language similarity scores ~0.23-0.30 (hence threshold 0.25, not 0.7)

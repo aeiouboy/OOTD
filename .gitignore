@@ -38,6 +38,24 @@ __pycache__/
 *.pyo
 .pytest_cache/
 
+# Generated flat-lay images (runtime output, not committed)
+apps/web/public/generated-images/
+
+# Claude Code logs (duplicated in multiple locations)
+logs/
+apps/web/logs/
+
+# Claude session data
+.claude/data/sessions/
+apps/web/.claude/data/sessions/
+
+# Test output images (committed selectively, not bulk)
+test-result/
+
+# Stray test output
+apps/web/public/test-output.png
+apps/web/public/ref_dialog.png
+
 # Misc
 *.log
 .cache/

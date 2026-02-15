@@ -4,10 +4,10 @@
  */
 
 import { describe, it, expect, beforeAll, afterAll, vi } from 'vitest';
-import { evaluateResponse } from '../test-evaluator';
-import { createCustomScenario, detectQueryCategory } from '../test-scenarios';
+import { evaluateResponse } from '../../tests/utils/test-evaluator';
+import { createCustomScenario, detectQueryCategory } from '../../tests/utils/test-scenarios';
 import { calculateCost, getAllModels } from '../cost-calculator';
-import { exportToMarkdown } from '../test-result-exporter';
+import { exportToMarkdown } from '../../tests/utils/test-result-exporter';
 
 describe('LLM Model Testing Integration', () => {
   describe('Test Evaluator', () => {

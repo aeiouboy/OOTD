@@ -144,6 +144,7 @@ describe('Supabase product queries', () => {
         occasion_filter: 'date_night',
         match_threshold: 0.25,
         match_count: 10,
+        gender_filter: null,
       })
       expect(data).toHaveLength(1)
       expect(data![0].similarity).toBe(0.85)

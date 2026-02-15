@@ -1,49 +1,84 @@
 'use client'
 
 import { cn } from '@/lib/utils'
-import type { OccasionType } from '@/lib/supabase/types'
-import { Calendar, Heart, Coffee } from 'lucide-react'
+import type { OccasionType } from '@/lib/types/enums'
+import type { OccasionFilter } from '@/lib/hooks/useOccasionSuggestions'
+import { OCCASIONS } from '@/lib/constants/occasions'
+import {
+  Briefcase,
+  Sun,
+  Gem,
+  Dumbbell,
+  Plane,
+  Heart,
+  UtensilsCrossed,
+  Coffee,
+  PartyPopper,
+} from 'lucide-react'
+import type { LucideIcon } from 'lucide-react'
 
 interface OccasionFilterChipsProps {
-  selected: OccasionType | null
-  onSelect: (occasion: OccasionType | null) => void
+  selected: OccasionFilter | null
+  onSelect: (occasion: OccasionFilter | null) => void
 }
 
-const occasions = [
-  { id: 'weekend_social' as OccasionType, label: 'Weekend & Social', labelTh: '\u0e2a\u0e38\u0e14\u0e2a\u0e31\u0e1b\u0e14\u0e32\u0e2b\u0e4c', icon: Calendar, color: 'purple' },
-  { id: 'date_night' as OccasionType, label: 'Date Night', labelTh: '\u0e40\u0e14\u0e17\u0e44\u0e19\u0e17\u0e4c', icon: Heart, color: 'pink' },
-  { id: 'everyday_casual' as OccasionType, label: 'Everyday Casual', labelTh: '\u0e41\u0e04\u0e0a\u0e0a\u0e27\u0e25', icon: Coffee, color: 'blue' },
-] as const
+const occasionChips: Array<{
+  id: OccasionType
+  icon: LucideIcon
+  color: string
+}> = [
+  { id: 'work', icon: Briefcase, color: 'slate' },
+  { id: 'chill', icon: Sun, color: 'amber' },
+  { id: 'wedding', icon: Gem, color: 'rose' },
+  { id: 'sport', icon: Dumbbell, color: 'green' },
+  { id: 'travel', icon: Plane, color: 'sky' },
+  { id: 'date', icon: Heart, color: 'pink' },
+  { id: 'dinner', icon: UtensilsCrossed, color: 'purple' },
+  { id: 'cafe', icon: Coffee, color: 'orange' },
+  { id: 'party', icon: PartyPopper, color: 'violet' },
+]
 
 const activeStyles: Record<string, string> = {
-  purple: 'bg-purple-50 border-purple-300 text-purple-700',
-  pink: 'bg-pink-50 border-pink-300 text-pink-700',
-  blue: 'bg-blue-50 border-blue-300 text-blue-700',
+  slate: 'bg-slate-50 border-slate-400 text-slate-700',
+  amber: 'bg-amber-50 border-amber-400 text-amber-700',
+  rose: 'bg-rose-50 border-rose-400 text-rose-700',
+  green: 'bg-green-50 border-green-400 text-green-700',
+  sky: 'bg-sky-50 border-sky-400 text-sky-700',
+  pink: 'bg-pink-50 border-pink-400 text-pink-700',
+  purple: 'bg-purple-50 border-purple-400 text-purple-700',
+  orange: 'bg-orange-50 border-orange-400 text-orange-700',
+  violet: 'bg-violet-50 border-violet-400 text-violet-700',
 }
 
 export function OccasionFilterChips({ selected, onSelect }: OccasionFilterChipsProps) {
   return (
-    <div role="group" aria-label="Filter by occasion" className="flex gap-2 overflow-x-auto scrollbar-hide py-2 px-1">
-      {occasions.map((occasion) => {
-        const isActive = selected === occasion.id
-        const Icon = occasion.icon
+    <div
+      role="group"
+      aria-label="Filter by occasion"
+      className="flex gap-2 overflow-x-auto scrollbar-hide py-2 px-1"
+    >
+      {occasionChips.map((chip) => {
+        const isActive = selected === chip.id
+        const Icon = chip.icon
+        const occasion = OCCASIONS[chip.id]
 
         return (
           <button
-            key={occasion.id}
-            onClick={() => onSelect(isActive ? null : occasion.id)}
+            key={chip.id}
+            onClick={() => onSelect(isActive ? null : chip.id)}
             className={cn(
               'flex items-center gap-2 rounded-full px-4 py-2 border text-sm font-medium whitespace-nowrap transition-colors flex-shrink-0',
               isActive
-                ? activeStyles[occasion.color]
+                ? activeStyles[chip.color]
                 : 'border-gray-200 bg-white text-gray-600 hover:bg-gray-50'
             )}
             aria-pressed={isActive}
+            aria-label={`${occasion.name.en} - ${occasion.name.th}`}
           >
             <Icon className="w-4 h-4" />
             <span className="flex flex-col items-start leading-tight">
-              <span>{occasion.label}</span>
-              <span className="text-[10px] opacity-70">{occasion.labelTh}</span>
+              <span>{occasion.name.en}</span>
+              <span className="text-[10px] opacity-70">{occasion.name.th}</span>
             </span>
           </button>
         )

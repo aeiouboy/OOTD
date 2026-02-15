@@ -6,9 +6,11 @@ import type { EnhancedProduct } from '@/lib/types/product-types'
 // Mock supabase-retrieval (the adapter we test indirectly)
 const mockRetrieveFromSupabase = vi.fn()
 const mockSearchProductsFromSupabase = vi.fn(() => Promise.resolve([])) // Default to empty array
+const mockRetrieveOccasionRules = vi.fn(() => Promise.resolve('')) // Default to empty string (no RAG occasion rules)
 vi.mock('@/lib/rag/supabase-retrieval', () => ({
   retrieveFromSupabase: (...args: unknown[]) => mockRetrieveFromSupabase(...args),
   searchProductsFromSupabase: (...args: unknown[]) => mockSearchProductsFromSupabase(...args),
+  retrieveOccasionRules: (...args: unknown[]) => mockRetrieveOccasionRules(...args),
 }))
 
 // Mock transformer
@@ -405,7 +407,7 @@ describe('AI Chat Service - Supabase RAG Knowledge Retrieval', () => {
     expect(result).toBeDefined()
   })
 
-  it('falls back to Vectra when Supabase returns no documents', async () => {
+  it('degrades gracefully when Supabase returns no documents', async () => {
     process.env.SUPABASE_RAG_ENABLED = 'true'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
@@ -422,41 +424,13 @@ describe('AI Chat Service - Supabase RAG Knowledge Retrieval', () => {
       },
     }
 
-    const vectraResult: RetrievalResult = {
-      documents: [
-        {
-          id: 'vectra-1',
-          title: 'Vectra Doc',
-          content: 'Vectra content',
-          category: 'general_fashion',
-          metadata: {
-            topics: [],
-            lastUpdated: '2025-01-01',
-            priority: 1,
-          },
-        },
-      ],
-      scores: [0.8],
-      totalFound: 1,
-      metadata: {
-        retrievalTimeMs: 40,
-        query: 'test',
-        normalizedQuery: 'test',
-        appliedFilters: {},
-        tokenCount: 5,
-      },
-    }
-
     mockRetrieveFromSupabase.mockResolvedValue(emptyResult)
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue(vectraResult),
-    })
-    mockBuildFashionContext.mockReturnValue('Vectra context')
+    mockBuildFashionContext.mockReturnValue('')
     mockLoadProductsServerSide.mockResolvedValue(createMockProducts())
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
 
-    await processAIChatRequest(
+    const result = await processAIChatRequest(
       {
         message: 'women test query',
         userPreferences: {
@@ -468,33 +442,19 @@ describe('AI Chat Service - Supabase RAG Knowledge Retrieval', () => {
     )
 
     expect(mockRetrieveFromSupabase).toHaveBeenCalled()
-    expect(mockGetRAGService).toHaveBeenCalled()
+    expect(result).toBeDefined()
   })
 
-  it('falls back to Vectra when Supabase throws error', async () => {
+  it('degrades gracefully when Supabase throws error', async () => {
     process.env.SUPABASE_RAG_ENABLED = 'true'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
     mockRetrieveFromSupabase.mockRejectedValue(new Error('Supabase connection failed'))
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 20,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
-    })
     mockLoadProductsServerSide.mockResolvedValue(createMockProducts())
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
 
-    await processAIChatRequest(
+    const result = await processAIChatRequest(
       {
         message: 'error test for women',
         userPreferences: {
@@ -506,34 +466,32 @@ describe('AI Chat Service - Supabase RAG Knowledge Retrieval', () => {
     )
 
     expect(mockRetrieveFromSupabase).toHaveBeenCalled()
-    expect(mockGetRAGService).toHaveBeenCalled()
+    expect(result).toBeDefined()
   })
 
-  it('skips Supabase and uses Vectra when SUPABASE_RAG_ENABLED=false', async () => {
+  it('still uses Supabase knowledge retrieval when SUPABASE_RAG_ENABLED=false (flag only gates semantic product search)', async () => {
     process.env.SUPABASE_RAG_ENABLED = 'false'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 15,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'test',
+        normalizedQuery: 'test',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
     mockLoadProductsServerSide.mockResolvedValue(createMockProducts())
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
 
-    await processAIChatRequest(
+    const result = await processAIChatRequest(
       {
-        message: 'vectra only test for women',
+        message: 'no supabase test for women',
         userPreferences: {
           gender: 'women',
         },
@@ -542,8 +500,11 @@ describe('AI Chat Service - Supabase RAG Knowledge Retrieval', () => {
       createMockProducts()
     )
 
-    expect(mockRetrieveFromSupabase).not.toHaveBeenCalled()
-    expect(mockGetRAGService).toHaveBeenCalled()
+    // Knowledge retrieval always uses Supabase (SUPABASE_RAG_ENABLED only gates semantic product search)
+    expect(mockRetrieveFromSupabase).toHaveBeenCalled()
+    // Semantic product search should NOT be called
+    expect(mockSearchProductsFromSupabase).not.toHaveBeenCalled()
+    expect(result).toBeDefined()
   })
 })
 
@@ -564,19 +525,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     mockSearchProductsFromSupabase.mockResolvedValue(mockSemanticProducts)
     mockTransformDbProductsToEnhanced.mockReturnValue(mockEnhancedSemantic)
     mockLoadProductsServerSide.mockResolvedValue(createMockProducts())
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'floral dress',
-          normalizedQuery: 'floral dress',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'floral dress',
+        normalizedQuery: 'floral dress',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -592,7 +551,7 @@ describe('AI Chat Service - Semantic Product Search', () => {
       createMockProducts()
     )
 
-    expect(mockSearchProductsFromSupabase).toHaveBeenCalledWith('women floral dress', undefined, 30)
+    expect(mockSearchProductsFromSupabase).toHaveBeenCalledWith('women floral dress', undefined, 30, 'women')
   })
 
   it('merges semantic and heuristic results without duplicates', async () => {
@@ -605,19 +564,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
 
     mockSearchProductsFromSupabase.mockResolvedValue([semanticProduct])
     mockTransformDbProductsToEnhanced.mockReturnValue([heuristicProduct])
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'test',
+        normalizedQuery: 'test',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -642,19 +599,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     process.env.OPENROUTER_API_KEY = 'test-key'
 
     mockSearchProductsFromSupabase.mockResolvedValue([])
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'empty test',
-          normalizedQuery: 'empty test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'empty test',
+        normalizedQuery: 'empty test',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const heuristicProduct = createMockEnhancedProduct({ sku: 'HEUR-001' })
@@ -680,19 +635,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     process.env.OPENROUTER_API_KEY = 'test-key'
 
     mockSearchProductsFromSupabase.mockRejectedValue(new Error('Search failed'))
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'error test',
-          normalizedQuery: 'error test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'error test',
+        normalizedQuery: 'error test',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const heuristicProduct = createMockEnhancedProduct({ sku: 'HEUR-002' })
@@ -717,19 +670,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     process.env.SUPABASE_RAG_ENABLED = 'false'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'no semantic',
-          normalizedQuery: 'no semantic',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'no semantic',
+        normalizedQuery: 'no semantic',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -748,19 +699,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     process.env.SUPABASE_RAG_ENABLED = 'true'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'hi',
-          normalizedQuery: 'hi',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'hi',
+        normalizedQuery: 'hi',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -780,19 +729,17 @@ describe('AI Chat Service - Semantic Product Search', () => {
     process.env.OPENROUTER_API_KEY = 'test-key'
 
     mockSearchProductsFromSupabase.mockResolvedValue([])
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'date night dress',
-          normalizedQuery: 'date night dress',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'date night dress',
+        normalizedQuery: 'date night dress',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -838,19 +785,17 @@ describe('Feature Flag Behavior', () => {
       },
     })
     mockSearchProductsFromSupabase.mockResolvedValue([])
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: {
+        retrievalTimeMs: 10,
+        query: 'test',
+        normalizedQuery: 'test',
+        appliedFilters: {},
+        tokenCount: 0,
+      },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -870,23 +815,16 @@ describe('Feature Flag Behavior', () => {
     expect(mockSearchProductsFromSupabase).toHaveBeenCalled()
   })
 
-  it('SUPABASE_RAG_ENABLED=false disables both features', async () => {
+  it('SUPABASE_RAG_ENABLED=false disables semantic product search but knowledge retrieval still uses Supabase', async () => {
     process.env.SUPABASE_RAG_ENABLED = 'false'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockLoadProductsServerSide.mockResolvedValue(createMockProducts())
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: { retrievalTimeMs: 5, query: '', normalizedQuery: '', appliedFilters: {}, tokenCount: 0 },
     })
 
     const { processAIChatRequest } = await import('@/lib/services/ai-chat-service')
@@ -902,7 +840,9 @@ describe('Feature Flag Behavior', () => {
       createMockProducts()
     )
 
-    expect(mockRetrieveFromSupabase).not.toHaveBeenCalled()
+    // Knowledge retrieval always uses Supabase regardless of flag
+    expect(mockRetrieveFromSupabase).toHaveBeenCalled()
+    // Semantic product search is gated by SUPABASE_RAG_ENABLED
     expect(mockSearchProductsFromSupabase).not.toHaveBeenCalled()
   })
 
@@ -918,31 +858,22 @@ describe('Feature Flag Behavior', () => {
 
     await POST(request)
 
-    // Products from Supabase, but RAG from Vectra
+    // Products loaded from Supabase
     expect(mockLoadProductsFromSupabase).toHaveBeenCalled()
-    expect(mockRetrieveFromSupabase).not.toHaveBeenCalled()
   })
 
-  it('flags are independent: can have Supabase products with Vectra RAG', async () => {
+  it('flags are independent: can have Supabase products without semantic search', async () => {
     process.env.SUPABASE_PRODUCTS_ENABLED = 'true'
     process.env.SUPABASE_RAG_ENABLED = 'false'
     process.env.OPENROUTER_API_KEY = 'test-key'
 
     mockLoadProductsFromSupabase.mockResolvedValue([createMockDbProduct()])
     mockTransformDbProductsToEnhanced.mockReturnValue(createMockProducts())
-    mockGetRAGService.mockReturnValue({
-      retrieve: vi.fn().mockResolvedValue({
-        documents: [],
-        scores: [],
-        totalFound: 0,
-        metadata: {
-          retrievalTimeMs: 10,
-          query: 'test',
-          normalizedQuery: 'test',
-          appliedFilters: {},
-          tokenCount: 0,
-        },
-      }),
+    mockRetrieveFromSupabase.mockResolvedValue({
+      documents: [],
+      scores: [],
+      totalFound: 0,
+      metadata: { retrievalTimeMs: 5, query: '', normalizedQuery: '', appliedFilters: {}, tokenCount: 0 },
     })
 
     const { POST } = await import('@/app/api/chat/route')
@@ -955,7 +886,10 @@ describe('Feature Flag Behavior', () => {
     await POST(request)
 
     expect(mockLoadProductsFromSupabase).toHaveBeenCalled()
-    expect(mockGetRAGService).toHaveBeenCalled()
+    // Knowledge retrieval uses Supabase regardless
+    expect(mockRetrieveFromSupabase).toHaveBeenCalled()
+    // Semantic product search is disabled
+    expect(mockSearchProductsFromSupabase).not.toHaveBeenCalled()
   })
 
   it('flags are independent: can have JSON products with Supabase RAG', async () => {

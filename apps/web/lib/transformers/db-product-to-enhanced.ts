@@ -108,12 +108,13 @@ function inferSpecificCategory(name: string, genericCategory: string): string {
  * Transform a single DbProduct row into an EnhancedProduct.
  */
 export function transformDbProductToEnhanced(dbProduct: DbProduct): EnhancedProduct {
-  const gender = inferGender(dbProduct.category)
+  // Prefer DB columns, fallback to computed values
+  const gender = (dbProduct.gender as Gender) || inferGender(dbProduct.category)
   const extractedColor = extractColorFromProductName(dbProduct.product_name) || 'unknown'
-  const specificCategory = inferSpecificCategory(dbProduct.product_name, dbProduct.category)
+  const specificCategory = dbProduct.specific_category || inferSpecificCategory(dbProduct.product_name, dbProduct.category)
 
-  // Calculate formality level from product attributes instead of hardcoding 5
-  const formalityLevel = calculateFormalityLevel({
+  // Prefer DB formality_level, fallback to calculated value
+  const formalityLevel = (dbProduct.formality_level as FormalityLevel) || calculateFormalityLevel({
     name: dbProduct.product_name,
     description: dbProduct.product_description || undefined,
     formalityLevel: 5 as FormalityLevel, // seed value for the calculator

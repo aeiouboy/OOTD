@@ -1,7 +1,0 @@
-{
-  "session_id": "2e1f295c-1134-41ad-8401-b0ca1fc8cd08",
-  "prompts": [
-    "spin a team to fix this issues: [webpack.cache.PackFileCacheStrategy] Caching failed for pack: Error: ENOENT: no such file or directory, rename '/Users/tachongrak/Projects/OOTD/apps/web/.next/cache/webpack/client-development/0.pack.gz_' -> '/Users/tachongrak/Projects/OOTD/apps/web/.next/cache/webpack/client-development/0.pack.gz'"
-  ],
-  "agent_name": "Flux"
-}

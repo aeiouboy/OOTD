@@ -1,8 +1,0 @@
-{
-  "session_id": "5954c56d-7689-4fb2-b196-d9c92ba2eb05",
-  "prompts": [
-    "test supabase mcp accesss OOTD product",
-    "install mcp again: claude mcp add --scope project --transport http supabase \"https://mcp.supabase.com/mcp\""
-  ],
-  "agent_name": "Helix"
-}

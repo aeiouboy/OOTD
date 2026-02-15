@@ -6,7 +6,7 @@
  */
 
 import type { EnhancedProduct } from '../types/product-types';
-import type { ChatLook, ChatLookItem, ParsedLooksResponse } from '../types/chat-types';
+import type { ChatLook, ChatLookItem, ChatLookStyling, ParsedLooksResponse } from '../types/chat-types';
 
 const LOOKS_START_MARKER = '---LOOKS_DATA---';
 const LOOKS_END_MARKER = '---END_LOOKS_DATA---';
@@ -137,6 +137,27 @@ export function parseLooksData(fullResponse: string): ParsedLooksResponse {
       const total = parseFloat(totalStr);
       if (!isNaN(total)) {
         currentLook.totalPrice = total;
+      }
+    } else if (line.startsWith('STYLING:') && currentLook) {
+      const stylingData = line.substring(8); // Remove 'STYLING:'
+      const pipeIdx = stylingData.indexOf('|');
+
+      if (pipeIdx !== -1) {
+        const description = stylingData.substring(0, pipeIdx).trim();
+        const category = stylingData.substring(pipeIdx + 1).trim();
+
+        if (description) {
+          if (!currentLook.stylingItems) {
+            currentLook.stylingItems = [];
+          }
+          currentLook.stylingItems.push({ description, category: category || 'Accessory' });
+        }
+      } else if (stylingData.trim()) {
+        // No pipe -- treat the whole string as description
+        if (!currentLook.stylingItems) {
+          currentLook.stylingItems = [];
+        }
+        currentLook.stylingItems.push({ description: stylingData.trim(), category: 'Accessory' });
       }
     }
     // Unknown lines are silently ignored

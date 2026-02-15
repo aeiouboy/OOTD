@@ -154,12 +154,12 @@ describe('computeFlatLayLayout', () => {
       { name: 'Scarf', category: 'Scarf', color: 'Red' },
     ]
     const layout = computeFlatLayLayout(items)
-    // Large items get laid-out hints with rotation
-    expect(layout[0].presentationHint).toMatch(/laid out fully open|rotated/)
-    // Medium items get angled hints
-    expect(layout[1].presentationHint).toMatch(/angled|leaning/)
-    // Small items get accent hints with casual angle
-    expect(layout[2].presentationHint).toMatch(/accent|angle/)
+    // Large items get laid-out hints
+    expect(layout[0].presentationHint).toMatch(/laid out fully open|spread flat/)
+    // Medium items get neat placement hints
+    expect(layout[1].presentationHint).toMatch(/neatly|cleanly|alongside/)
+    // Small items get accent hints
+    expect(layout[2].presentationHint).toMatch(/accent|neatly|cleanly/)
   })
 })
 

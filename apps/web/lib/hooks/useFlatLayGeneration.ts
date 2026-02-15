@@ -606,13 +606,10 @@ export function useFlatLayGeneration({
     hasAttemptedRef.current = true
     currentGenerations++
 
-    // Transform products to flat-lay items with visual consistency validation.
-    // Prefer caller-provided catalog; otherwise lazily fetch /api/products.
-    const replacementCatalog = allProducts && allProducts.length > 0
-      ? allProducts
-      : await loadFallbackCatalog()
-
-    const transformResult = transformToFlatLayItems(items, true, replacementCatalog)
+    // Transform products to flat-lay items.
+    // v8.2: Disable cross-catalog replacement to prevent cross-look contamination.
+    // Each look's flat-lay must only contain items from that look.
+    const transformResult = transformToFlatLayItems(items, false)
 
     // Update replacement state
     setProductReplacements(transformResult.replacements)

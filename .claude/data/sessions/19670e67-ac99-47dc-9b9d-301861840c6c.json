@@ -1,9 +1,0 @@
-{
-  "session_id": "19670e67-ac99-47dc-9b9d-301861840c6c",
-  "prompts": [
-    "build teammate to \"write a test for ai-chat-service.ts\"",
-    "<task-notification>\n<task-id>abb2233</task-id>\n<status>failed</status>\n<summary>Agent \"Write ai-chat-service tests\" failed: classifyHandoffIfNeeded is not defined</summary>\n</task-notification>\nFull transcript available at: /private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/abb2233.output",
-    "how I use script"
-  ],
-  "agent_name": "Axiom"
-}

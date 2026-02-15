@@ -17,6 +17,19 @@ export async function searchKnowledge(
   return data ?? []
 }
 
+export async function getKnowledgeByOccasion(
+  occasion: string,
+  limit: number = 5
+) {
+  const supabase = createServerClient()
+  const { data, error } = await supabase.rpc('search_knowledge_by_occasion', {
+    occasion_type: occasion,
+    max_results: limit,
+  })
+  if (error) throw error
+  return data ?? []
+}
+
 export async function getKnowledgeByCategory(category: string) {
   const supabase = createServerClient()
   const { data, error } = await supabase

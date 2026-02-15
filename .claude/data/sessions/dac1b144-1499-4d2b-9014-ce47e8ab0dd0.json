@@ -1,7 +1,0 @@
-{
-  "session_id": "dac1b144-1499-4d2b-9014-ce47e8ab0dd0",
-  "prompts": [
-    "api a team to fix bug: [API] Background removal: Error: Required library not found: No module named 'rembg'\nInstall required libraries with: pip install rembg pillow\n[API] Background removal failed with code: 1\n[API] stderr: Error: Required library not found: No module named 'rembg'\nInstall required libraries with: pip install rembg pillow"
-  ],
-  "agent_name": "Axiom"
-}

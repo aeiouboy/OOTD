@@ -139,6 +139,93 @@ ITEM:Product|Cat|Color|Desc|SKU1|999|https://url`;
     expect(result.looks[0].items).toHaveLength(1);
   });
 
+  it('should parse STYLING lines as stylingItems', () => {
+    const input = `Some text
+
+---LOOKS_DATA---
+LOOK:1|Office Chic
+ITEM:Navy Dress|Dress|Navy|Elegant dress|SKU001|4990|https://central.co.th/dress
+ITEM:Black Heels|Footwear|Black|Classic heels|SKU002|3990|https://central.co.th/heels
+STYLING:Structured black leather tote bag|Bag
+STYLING:Gold minimalist stud earrings|Jewelry
+TIP:Perfect for important meetings
+TOTAL:8980
+---END_LOOKS_DATA---`;
+
+    const result = parseLooksData(input);
+    expect(result.looks).toHaveLength(1);
+    expect(result.looks[0].items).toHaveLength(2);
+    expect(result.looks[0].stylingItems).toHaveLength(2);
+    expect(result.looks[0].stylingItems![0]).toEqual({
+      description: 'Structured black leather tote bag',
+      category: 'Bag',
+    });
+    expect(result.looks[0].stylingItems![1]).toEqual({
+      description: 'Gold minimalist stud earrings',
+      category: 'Jewelry',
+    });
+    // Total should NOT include styling items
+    expect(result.looks[0].totalPrice).toBe(8980);
+  });
+
+  it('should handle STYLING lines without category pipe', () => {
+    const input = `Test
+
+---LOOKS_DATA---
+LOOK:1|Minimal Look
+ITEM:White Tee|Tops|White|Basic|SKU001|500|https://url
+STYLING:Simple leather watch
+TIP:Keep it simple
+TOTAL:500
+---END_LOOKS_DATA---`;
+
+    const result = parseLooksData(input);
+    expect(result.looks[0].stylingItems).toHaveLength(1);
+    expect(result.looks[0].stylingItems![0]).toEqual({
+      description: 'Simple leather watch',
+      category: 'Accessory',
+    });
+  });
+
+  it('should not create stylingItems when no STYLING lines exist', () => {
+    const input = `Test
+
+---LOOKS_DATA---
+LOOK:1|Basic Look
+ITEM:Shirt|Tops|White|Tee|SKU001|500|https://url
+TOTAL:500
+---END_LOOKS_DATA---`;
+
+    const result = parseLooksData(input);
+    expect(result.looks[0].stylingItems).toBeUndefined();
+  });
+
+  it('should parse STYLING lines across multiple looks without contamination', () => {
+    const input = `Test
+
+---LOOKS_DATA---
+LOOK:1|Office
+ITEM:Blazer|Outerwear|Navy|Linen|SKU001|3000|https://url1
+STYLING:Structured tote bag|Bag
+TIP:Office ready
+TOTAL:3000
+LOOK:2|Weekend
+ITEM:T-shirt|Tops|White|Cotton|SKU002|500|https://url2
+STYLING:Canvas crossbody|Bag
+STYLING:Straw hat|Hat
+TIP:Chill vibes
+TOTAL:500
+---END_LOOKS_DATA---`;
+
+    const result = parseLooksData(input);
+    expect(result.looks).toHaveLength(2);
+    expect(result.looks[0].stylingItems).toHaveLength(1);
+    expect(result.looks[0].stylingItems![0].description).toBe('Structured tote bag');
+    expect(result.looks[1].stylingItems).toHaveLength(2);
+    expect(result.looks[1].stylingItems![0].description).toBe('Canvas crossbody');
+    expect(result.looks[1].stylingItems![1].description).toBe('Straw hat');
+  });
+
   it('should parse prices with commas', () => {
     const response = `Hi
 

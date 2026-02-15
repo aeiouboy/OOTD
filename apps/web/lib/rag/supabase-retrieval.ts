@@ -8,7 +8,7 @@
  */
 
 import { generateEmbedding } from './embeddings'
-import { searchKnowledge } from '../supabase/knowledge'
+import { searchKnowledge, getKnowledgeByOccasion } from '../supabase/knowledge'
 import { searchProductsBySimilarity } from '../supabase/products'
 import type {
   RetrievalResult,
@@ -139,4 +139,22 @@ export async function searchProductsFromSupabase(
     )
     return []
   }
+}
+
+/**
+ * Retrieve occasion-specific knowledge from Supabase using metadata filter.
+ *
+ * No embedding needed — filters `knowledge_chunks` by `metadata->'occasions'`.
+ * Returns a formatted instruction block for injection into the AI prompt,
+ * or an empty string if no results are found.
+ */
+export async function retrieveOccasionRules(
+  occasion: string
+): Promise<string> {
+  const rows = await getKnowledgeByOccasion(occasion, 6)
+
+  if (rows.length === 0) return ''
+
+  const content = rows.map((r: { content: string }) => r.content).join('\n\n')
+  return `[OCCASION KNOWLEDGE — ${occasion}]\n${content}\n[END OCCASION KNOWLEDGE]`
 }

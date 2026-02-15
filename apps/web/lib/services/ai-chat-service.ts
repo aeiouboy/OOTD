@@ -105,7 +105,7 @@ import {
   extractOutfitDescription,
 } from '../utils/image-trigger-detector'
 // Supabase RAG integration (v4.0)
-import { retrieveFromSupabase, searchProductsFromSupabase } from '../rag/supabase-retrieval'
+import { retrieveFromSupabase, searchProductsFromSupabase, retrieveOccasionRules } from '../rag/supabase-retrieval'
 import { transformDbProductsToEnhanced } from '../transformers/db-product-to-enhanced'
 // v5.1: Query translator for hybrid search
 import { translateQueryForRAG } from '../rag/query-translator'
@@ -209,6 +209,8 @@ function sanitizeConversationalText(rawMessage: string): string {
     .replace(/\[คลิกดูสินค้า[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi, '')
     .replace(/https?:\/\/[^\s)]+/gi, '')
     .replace(/\(\s*https?:\/\/[^\s)]+\s*\)/gi, '')
+    // Strip "Look N:" / "**Look N:" prefixes — look details are in cards, not chat text
+    .replace(/\*{0,2}Look\s*\d+\s*[:.]?\s*\*{0,2}\s*/gi, '')
 
   const noisyPatterns = [
     /🔗/i,
@@ -244,7 +246,9 @@ Provide outfit recommendations in RECOMMENDATION MODE.
 - Conversational text: short summary only (2-3 sentences), no product list format
 - Conversational text MUST NOT include prices or URLs
 - Put all product details (SKU, price, URL) only in ---LOOKS_DATA--- block
-- Each look should have unique outfit roles (avoid duplicate tops/bottoms/shoes in one look)`
+- Each look should have unique outfit roles (avoid duplicate tops/bottoms/shoes in one look)
+- CRITICAL: Each LOOK must have AT LEAST 3 ITEM lines (e.g., dress + shoes + bag, or top + pants + shoes). A look with only 1-2 items is INCOMPLETE.
+- CRITICAL: Each LOOK must also have 1-2 STYLING lines for accessories not in the catalog (bag, jewelry, hat, belt, scarf)`
   }
 
   return `[CATEGORY: OTHER - v5]
@@ -755,11 +759,11 @@ async function callOpenRouter(
  * Build explicit occasion instruction block for injection into AI prompt.
  * Tells the AI exactly what to recommend (and what NOT to recommend) for the detected occasion.
  */
-function buildOccasionInstruction(occasion: OccasionType, message: string): string {
+async function buildOccasionInstruction(occasion: OccasionType, message: string): Promise<string> {
   const occasionDef = OCCASIONS[occasion]
   if (!occasionDef) return ''
 
-  // Beach sub-occasion override
+  // Beach sub-occasion override (formality override — keep hardcoded)
   const beachKeywords = ['ทะเล', 'ชายหาด', 'เกาะ', 'ริมทะเล', 'ริมหาด', 'beach', 'island', 'seaside']
   const isBeach = beachKeywords.some(kw => message.toLowerCase().includes(kw))
 
@@ -774,7 +778,7 @@ YOUR RESPONSE TEXT MUST mention beach/ทะเล. DO NOT describe the outfit a
 If no products in the catalog match beach wear, say so honestly: "ตอนนี้ยังไม่มีชุดทะเลโดยเฉพาะ แต่มีตัวเลือกที่ใส่ไปเที่ยวทะเลได้".`
   }
 
-  // Mountain/hiking sub-occasion
+  // Mountain/hiking sub-occasion override (formality override — keep hardcoded)
   const mountainKeywords = ['ภูเขา', 'ปีนเขา', 'เขาใหญ่', 'mountain', 'hiking']
   const isMountain = mountainKeywords.some(kw => message.toLowerCase().includes(kw))
 
@@ -788,9 +792,33 @@ YOUR RESPONSE TEXT MUST mention mountain/ภูเขา. DO NOT describe the ou
 If no products in the catalog match this occasion, say so honestly and suggest closest alternatives.`
   }
 
-  // General occasion instruction from OCCASIONS definition
-  const { keyPieces, avoidItems } = occasionDef.styleGuidelines
   const fRange = occasionDef.formalityRange
+
+  // Try RAG-based occasion knowledge first
+  let ragKnowledge = ''
+  try {
+    ragKnowledge = await retrieveOccasionRules(occasion)
+    if (ragKnowledge) {
+      console.log(`[AI Chat] RAG occasion knowledge retrieved for: ${occasion} (${ragKnowledge.length} chars)`)
+    }
+  } catch (err) {
+    console.warn('[AI Chat] RAG occasion retrieval failed, using fallback:', err)
+  }
+
+  if (ragKnowledge) {
+    // RAG-driven: inject retrieved knowledge as the occasion context
+    return `[MANDATORY OCCASION CONTEXT — READ THIS BEFORE RESPONDING]
+User's occasion: ${occasionDef.name.th} / ${occasionDef.name.en}
+Formality range: ${fRange.min}-${fRange.max}
+
+${ragKnowledge}
+
+YOUR RESPONSE TEXT MUST reference the user's stated occasion (${occasionDef.name.th}). DO NOT substitute a different occasion.
+If no products in the catalog match this occasion, say so honestly and suggest closest alternatives.`
+  }
+
+  // Minimal fallback (if RAG fails or returns empty) — use hardcoded styleGuidelines
+  const { keyPieces, avoidItems } = occasionDef.styleGuidelines
 
   return `[MANDATORY OCCASION CONTEXT — READ THIS BEFORE RESPONDING]
 User's occasion: ${occasionDef.name.th} / ${occasionDef.name.en}
@@ -1098,7 +1126,7 @@ async function processAIChatRequestV5(
   // Placed RIGHT BEFORE the user message for maximum attention (recency bias)
   let occasionInstruction = ''
   if (occasion) {
-    occasionInstruction = buildOccasionInstruction(occasion, request.message)
+    occasionInstruction = await buildOccasionInstruction(occasion, request.message)
     console.log(`[AI Chat v5] Occasion instruction injected for: ${occasion}`)
   }
 

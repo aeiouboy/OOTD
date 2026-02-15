@@ -117,6 +117,7 @@ export async function POST(request: NextRequest) {
             url: item.url,
             imageUrl: item.imageUrl,
           })),
+          stylingItems: look.stylingItems || [],
           tip: look.tip,
           totalPrice: look.totalPrice,
           imageStatus: look.imageStatus || 'pending',

@@ -1,11 +1,10 @@
 "use client"
 
-import { useState, useEffect } from "react"
+import { useState, useEffect, useCallback } from "react"
 
 import OutfitDetails from "@/components/outfit/OutfitDetails"
 import { Button } from "@/components/ui/button"
 import { NavigationFilters } from "@/components/navigation/NavigationFilters"
-import { OutfitDiscovery } from "@/components/outfit/OutfitDiscovery"
 import { ChatAssistant } from "@/components/chat/ChatAssistant"
 import { OutfitDetail } from "@/components/outfit/OutfitDetail"
 import { ResizablePanel } from "@/components/layout/ResizablePanel"
@@ -15,14 +14,16 @@ import { loadProducts, fetchOutfits } from "@/lib/services/outfit-service"
 import type { Product, Outfit } from "@/lib/types"
 import { getGenderSpecificUrl, getSimilarOutfits } from "@/lib/utils/product-utils"
 import { initializeProductCatalog } from "@/lib/data-loader"
-import { MessageCircle, Sparkles, Bell, SlidersHorizontal, Grid3x3 } from "lucide-react"
+import { MessageCircle, Sparkles, Bell, SlidersHorizontal, Grid3x3, Heart, ArrowLeft } from "lucide-react"
 import { OnboardingFlow } from "@/components/onboarding/OnboardingFlow"
 import { useUserProfile } from "@/lib/hooks/useUserProfile"
 import { OccasionFilterChips, OccasionSuggestionGrid } from "@/components/occasion"
 import { useOccasionSuggestions } from "@/lib/hooks/useOccasionSuggestions"
-import type { SuggestionProduct } from "@/lib/hooks/useOccasionSuggestions"
-import type { OccasionType } from "@/lib/supabase/types"
+import type { SuggestionProduct, OccasionFilter } from "@/lib/hooks/useOccasionSuggestions"
+import type { OccasionType } from "@/lib/types/enums"
 import ProductModal from "@/components/product/ProductModal"
+import { useWishlist } from "@/lib/hooks/useWishlist"
+import { WishlistGrid } from "@/components/wishlist/WishlistGrid"
 
 export default function HomePage() {
   const [selectedProduct, setSelectedProduct] = useState<Product | null>(null)
@@ -33,10 +34,11 @@ export default function HomePage() {
   const [isLoadingProducts, setIsLoadingProducts] = useState(true)
   const [isLoadingOutfits, setIsLoadingOutfits] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(true)
-  const [selectedOccasion, setSelectedOccasion] = useState<OccasionType | null>(null)
+  const [selectedOccasion, setSelectedOccasion] = useState<OccasionFilter | null>(null)
+  const [showWishlist, setShowWishlist] = useState(false)
 
-  // Occasion suggestions hook
-  const { products: occasionProducts, isLoading: isLoadingOccasion, error: occasionError, refetch: refetchOccasion, page: occasionPage, totalPages: occasionTotalPages, setPage: setOccasionPage } = useOccasionSuggestions(selectedOccasion)
+  // Wishlist hook
+  const wishlist = useWishlist()
 
   // User profile hook for onboarding
   const { profile, isLoading: isLoadingProfile } = useUserProfile()
@@ -47,11 +49,9 @@ export default function HomePage() {
   // Check onboarding status after profile loads
   useEffect(() => {
     if (!isLoadingProfile) {
-      // Only hide onboarding if profile exists AND onboarding is completed
       if (profile?.onboardingCompleted) {
         setShowOnboarding(false)
       }
-      // If no profile or onboarding not completed, keep showOnboarding as true
     }
   }, [profile, isLoadingProfile])
 
@@ -62,7 +62,6 @@ export default function HomePage() {
 
   // Load products on mount
   useEffect(() => {
-    // Initialize product catalog (loads both legacy and enhanced products)
     initializeProductCatalog()
       .then(({ legacy, enhanced }) => {
         console.log(`[HomePage] Loaded ${legacy.length} legacy products, ${enhanced.length} enhanced products`)
@@ -70,7 +69,6 @@ export default function HomePage() {
       })
       .catch(err => {
         console.error('Failed to load products:', err)
-        // Fallback to old loadProducts method
         loadProducts()
           .then(setProducts)
           .catch(() => console.error('Failed to load products'))
@@ -90,11 +88,22 @@ export default function HomePage() {
     resetFilters
   } = useOutfitDiscovery(allOutfits)
 
+  // Occasion suggestions hook - pass sidebar filters (gender + price) through
+  const { products: occasionProducts, isLoading: isLoadingOccasion, error: occasionError, refetch: refetchOccasion, page: occasionPage, totalPages: occasionTotalPages, setPage: setOccasionPage } = useOccasionSuggestions(selectedOccasion, undefined, {
+    gender: filters.gender,
+    priceMin: filters.priceRange?.min,
+    priceMax: filters.priceRange?.max,
+  })
+
+  // Handle occasion chip selection (top bar chips only — sidebar no longer has occasion filter)
+  const handleOccasionChipSelect = useCallback((occasion: OccasionFilter | null) => {
+    setSelectedOccasion(occasion)
+  }, [])
+
   // Generate outfits when products load or filters change
   useEffect(() => {
     if (products.length === 0) return
 
-    // Check cache first
     const cached = getFromCache(filters)
     if (cached && cached.length > 0) {
       setAllOutfits(cached)
@@ -117,7 +126,6 @@ export default function HomePage() {
   // Keyboard navigation support
   useEffect(() => {
     const handleKeyDown = (e: KeyboardEvent) => {
-      // ESC key to close product detail or outfit details
       if (e.key === "Escape") {
         if (selectedProduct) {
           setSelectedProduct(null)
@@ -160,7 +168,6 @@ export default function HomePage() {
 
   const handleBuyAll = () => {
     if (!selectedOutfit) return
-    // Open first product's URL as default
     const firstProduct = selectedOutfit.items[0]
     if (firstProduct) {
       handleBuyProduct(firstProduct)
@@ -172,14 +179,75 @@ export default function HomePage() {
     return getSimilarOutfits(selectedOutfit, filteredOutfits, 6)
   }
 
+
+  // Middle panel content renderer (shared between desktop and mobile)
+  const renderMiddlePanel = () => {
+    if (showWishlist) {
+      return (
+        <div>
+          <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between">
+            <div className="flex items-center gap-2">
+              <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+              <h2 className="text-lg font-bold">รายการที่ถูกใจ</h2>
+              <span className="text-sm text-muted-foreground">{wishlist.count} looks saved</span>
+            </div>
+            <Button
+              variant="ghost"
+              size="sm"
+              onClick={() => setShowWishlist(false)}
+            >
+              <ArrowLeft className="w-4 h-4 mr-1" />
+              กลับ
+            </Button>
+          </div>
+          <WishlistGrid
+            items={wishlist.items}
+            onViewOutfit={selectOutfit}
+            onRemove={wishlist.removeFromWishlist}
+          />
+        </div>
+      )
+    }
+
+    return (
+      <>
+        {/* Top bar with title and wishlist button */}
+        <div className="sticky top-0 z-10 bg-background border-b px-4 py-3 flex items-center justify-between">
+          <h2 className="text-lg font-bold">Discover Products</h2>
+          <Button
+            variant="ghost"
+            size="sm"
+            onClick={() => setShowWishlist(true)}
+            className="relative"
+            aria-label={`Wishlist: ${wishlist.count} items`}
+          >
+            <Heart className={`w-5 h-5 ${wishlist.count > 0 ? 'text-red-500' : 'text-gray-400'}`} />
+            {wishlist.count > 0 && (
+              <span className="absolute -top-1 -right-1 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                {wishlist.count}
+              </span>
+            )}
+          </Button>
+        </div>
+
+        {/* Product grid */}
+        <OccasionSuggestionGrid
+          products={occasionProducts}
+          isLoading={isLoadingOccasion}
+          occasion={selectedOccasion}
+          onProductClick={handleOccasionProductClick}
+          error={occasionError}
+          onRetry={refetchOccasion}
+          page={occasionPage}
+          totalPages={occasionTotalPages}
+          onPageChange={setOccasionPage}
+        />
+      </>
+    )
+  }
+
   // Desktop three-panel layout
   const renderDesktopLayout = () => (
-    // Full-width responsive layout that expands to fill the viewport
-    // - Left Panel: Fixed 280px width for consistent navigation experience
-    // - Middle Panel: Flexible (flex-1) to take remaining space
-    // - Right Panel: Fixed 420px width for chat/details
-    // This ensures the layout always fills 100% viewport width without max-width constraints
-
     <div className="hidden lg:flex h-screen w-full">
       {/* Left Panel - Navigation & Filters */}
       <div className="w-[280px] flex-shrink-0">
@@ -187,34 +255,14 @@ export default function HomePage() {
           filters={filters}
           onFilterChange={setFilters}
           onResetFilters={resetFilters}
+          selectedOccasion={selectedOccasion}
+          onOccasionSelect={handleOccasionChipSelect}
         />
       </div>
 
-      {/* Middle Panel - Outfit Discovery (Flexible, takes remaining space) */}
-      <main className="flex-1 min-w-0 overflow-y-auto" aria-label="Outfit Recommendations">
-        <div className="px-4 pt-3">
-          <OccasionFilterChips selected={selectedOccasion} onSelect={setSelectedOccasion} />
-        </div>
-        {selectedOccasion ? (
-          <OccasionSuggestionGrid
-            products={occasionProducts}
-            isLoading={isLoadingOccasion}
-            occasion={selectedOccasion}
-            onProductClick={handleOccasionProductClick}
-            error={occasionError}
-            onRetry={refetchOccasion}
-            page={occasionPage}
-            totalPages={occasionTotalPages}
-            onPageChange={setOccasionPage}
-          />
-        ) : (
-          <OutfitDiscovery
-            outfits={filteredOutfits}
-            onSelectOutfit={selectOutfit}
-            onClearFilters={resetFilters}
-            isLoading={isLoadingProducts || isLoadingOutfits}
-          />
-        )}
+      {/* Middle Panel - Product Discovery / Wishlist (Flexible, takes remaining space) */}
+      <main className="flex-1 min-w-0 overflow-y-auto" aria-label="Product Discovery">
+        {renderMiddlePanel()}
       </main>
 
       {/* Right Panel - Resizable Chat Assistant + Details */}
@@ -226,7 +274,11 @@ export default function HomePage() {
         ariaLabel="Chat and outfit details"
       >
         <div className={viewMode === "chat" ? "h-full" : "h-full hidden"}>
-          <ChatAssistant onViewOutfit={selectOutfit} />
+          <ChatAssistant
+            onViewOutfit={selectOutfit}
+            isInWishlist={wishlist.isInWishlist}
+            onToggleWishlist={wishlist.toggleWishlist}
+          />
         </div>
         <div className={viewMode === "detail" && selectedOutfit ? "h-full" : "hidden"}>
           <OutfitDetail
@@ -236,6 +288,8 @@ export default function HomePage() {
             onBuyProduct={handleBuyProduct}
             onBuyAll={handleBuyAll}
             onSelectSimilar={selectOutfit}
+            isInWishlist={selectedOutfit ? wishlist.isInWishlist(selectedOutfit.id) : false}
+            onToggleWishlist={selectedOutfit ? () => wishlist.toggleWishlist(selectedOutfit) : undefined}
           />
         </div>
       </ResizablePanel>
@@ -252,73 +306,103 @@ export default function HomePage() {
             <Sparkles className="w-7 h-7 text-primary" />
             <h1 className="text-xl font-bold">OOTDay</h1>
           </div>
-          <Button variant="ghost" size="sm" className="h-10 w-10">
-            <Bell className="w-5 h-5" />
-          </Button>
+          <div className="flex items-center gap-2">
+            <Button
+              variant="ghost"
+              size="sm"
+              className="h-10 w-10 relative"
+              onClick={() => {
+                setShowWishlist(!showWishlist)
+                if (!showWishlist) setActiveTab("outfits")
+              }}
+              aria-label={`Wishlist: ${wishlist.count} items`}
+            >
+              <Heart className={`w-5 h-5 ${wishlist.count > 0 ? 'text-red-500' : ''}`} />
+              {wishlist.count > 0 && (
+                <span className="absolute top-0 right-0 bg-red-500 text-white text-[10px] font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                  {wishlist.count}
+                </span>
+              )}
+            </Button>
+            <Button variant="ghost" size="sm" className="h-10 w-10">
+              <Bell className="w-5 h-5" />
+            </Button>
+          </div>
         </div>
       </header>
 
       {/* Main Content */}
       <main className="flex-1 overflow-y-auto">
-        <div className={activeTab === "outfits" ? "block" : "hidden"}>
-          <div className="px-5 pt-3">
-            <OccasionFilterChips selected={selectedOccasion} onSelect={setSelectedOccasion} />
-          </div>
-          {selectedOccasion ? (
-            <OccasionSuggestionGrid
-              products={occasionProducts}
-              isLoading={isLoadingOccasion}
-              occasion={selectedOccasion}
-              onProductClick={handleOccasionProductClick}
-              error={occasionError}
-              onRetry={refetchOccasion}
-              page={occasionPage}
-              totalPages={occasionTotalPages}
-              onPageChange={setOccasionPage}
-            />
-          ) : (
-            <div className="p-5">
-              <div className="grid grid-cols-2 gap-4">
-                {filteredOutfits.map((outfit) => (
-                  <div
-                    key={outfit.id}
-                    className="cursor-pointer hover:shadow-lg transition-shadow border rounded-lg overflow-hidden"
-                    onClick={() => selectOutfit(outfit)}
-                  >
-                    <div className="aspect-[3/4] bg-gray-100"></div>
-                    <div className="p-3">
-                      <h3 className="font-medium text-sm line-clamp-1">{outfit.title}</h3>
-                      <p className="text-primary font-bold text-sm mt-1">฿{outfit.totalPrice.toLocaleString()}</p>
-                    </div>
-                  </div>
-                ))}
+        {showWishlist ? (
+          <div>
+            <div className="px-5 py-3 flex items-center justify-between border-b">
+              <div className="flex items-center gap-2">
+                <Heart className="w-5 h-5 text-red-500 fill-red-500" />
+                <span className="font-bold">รายการที่ถูกใจ</span>
+                <span className="text-sm text-muted-foreground">{wishlist.count} looks</span>
               </div>
+              <Button variant="ghost" size="sm" onClick={() => setShowWishlist(false)}>
+                <ArrowLeft className="w-4 h-4 mr-1" />
+                กลับ
+              </Button>
             </div>
-          )}
-        </div>
+            <WishlistGrid
+              items={wishlist.items}
+              onViewOutfit={selectOutfit}
+              onRemove={wishlist.removeFromWishlist}
+            />
+          </div>
+        ) : (
+          <>
+            <div className={activeTab === "outfits" ? "block" : "hidden"}>
+              <div className="px-5 pt-3">
+                <OccasionFilterChips selected={selectedOccasion} onSelect={handleOccasionChipSelect} />
+              </div>
+              <OccasionSuggestionGrid
+                products={occasionProducts}
+                isLoading={isLoadingOccasion}
+                occasion={selectedOccasion}
+                onProductClick={handleOccasionProductClick}
+                error={occasionError}
+                onRetry={refetchOccasion}
+                page={occasionPage}
+                totalPages={occasionTotalPages}
+                onPageChange={setOccasionPage}
+              />
+            </div>
 
-        <div className={activeTab === "chat" ? "block h-full" : "hidden"}>
-          <ChatAssistant onViewOutfit={selectOutfit} />
-        </div>
+            <div className={activeTab === "chat" ? "block h-full" : "hidden"}>
+              <ChatAssistant
+                onViewOutfit={selectOutfit}
+                isInWishlist={wishlist.isInWishlist}
+                onToggleWishlist={wishlist.toggleWishlist}
+              />
+            </div>
 
-        {activeTab === "filters" && (
-          <NavigationFilters
-            filters={filters}
-            onFilterChange={setFilters}
-            onResetFilters={resetFilters}
-          />
+            {activeTab === "filters" && (
+              <NavigationFilters
+                filters={filters}
+                onFilterChange={setFilters}
+                onResetFilters={resetFilters}
+                selectedOccasion={selectedOccasion}
+                onOccasionSelect={handleOccasionChipSelect}
+              />
+            )}
+          </>
         )}
       </main>
 
       {/* Bottom Navigation */}
-      <nav className="border-t bg-background">
+      <nav className="border-t bg-background" role="tablist">
         <div className="flex items-center justify-around py-3">
           <Button
             variant="ghost"
             size="sm"
+            role="tab"
+            aria-selected={activeTab === "filters"}
             className={`flex flex-col items-center gap-1.5 h-auto py-2 ${activeTab === "filters" ? "text-primary" : "text-gray-600"
               }`}
-            onClick={() => setActiveTab("filters")}
+            onClick={() => { setActiveTab("filters"); setShowWishlist(false) }}
           >
             <SlidersHorizontal className="w-6 h-6" />
             <span className="text-xs font-medium">กรอง</span>
@@ -327,9 +411,11 @@ export default function HomePage() {
           <Button
             variant="ghost"
             size="sm"
+            role="tab"
+            aria-selected={activeTab === "outfits"}
             className={`flex flex-col items-center gap-1.5 h-auto py-2 ${activeTab === "outfits" ? "text-primary" : "text-gray-600"
               }`}
-            onClick={() => setActiveTab("outfits")}
+            onClick={() => { setActiveTab("outfits"); setShowWishlist(false) }}
           >
             <Grid3x3 className="w-6 h-6" />
             <span className="text-xs font-medium">ชุด</span>
@@ -338,9 +424,11 @@ export default function HomePage() {
           <Button
             variant="ghost"
             size="sm"
+            role="tab"
+            aria-selected={activeTab === "chat"}
             className={`flex flex-col items-center gap-1.5 h-auto py-2 ${activeTab === "chat" ? "text-primary" : "text-gray-600"
               }`}
-            onClick={() => setActiveTab("chat")}
+            onClick={() => { setActiveTab("chat"); setShowWishlist(false) }}
           >
             <MessageCircle className="w-6 h-6" />
             <span className="text-xs font-medium">แชท</span>
@@ -352,7 +440,7 @@ export default function HomePage() {
 
   // Show loading state while profile is being loaded
   if (isLoadingProfile) {
-    return null // or a loading spinner if desired
+    return null
   }
 
   // Show onboarding if user hasn't completed it

@@ -1,5 +1,5 @@
 import { useState, useEffect, useCallback } from 'react'
-import type { OccasionType } from '@/lib/supabase/types'
+import type { OccasionType } from '@/lib/types/enums'
 
 export interface SuggestionProduct {
   id: string
@@ -12,10 +12,22 @@ export interface SuggestionProduct {
   link: string | null
   availability: string | null
   product_description: string | null
-  primary_occasion: OccasionType | null
+  primary_occasion: string | null
 }
 
-export function useOccasionSuggestions(occasion: OccasionType | null, query?: string) {
+export interface SuggestionFilters {
+  gender?: 'all' | 'women' | 'men'
+  priceMin?: number
+  priceMax?: number
+}
+
+export type OccasionFilter = OccasionType | 'everyday_casual' | 'date_night' | 'weekend_social'
+
+export function useOccasionSuggestions(
+  occasion: OccasionFilter | null,
+  query?: string,
+  filters?: SuggestionFilters
+) {
   const [products, setProducts] = useState<SuggestionProduct[]>([])
   const [isLoading, setIsLoading] = useState(false)
   const [error, setError] = useState<string | null>(null)
@@ -26,24 +38,29 @@ export function useOccasionSuggestions(occasion: OccasionType | null, query?: st
   // Reset page when filters change
   useEffect(() => {
     setPage(1)
-  }, [occasion, query])
+  }, [occasion, query, filters?.gender, filters?.priceMin, filters?.priceMax])
 
   const fetchSuggestions = useCallback(async () => {
-    if (!occasion) {
-      setProducts([])
-      setTotal(0)
-      setTotalPages(0)
-      return
-    }
-
     setIsLoading(true)
     setError(null)
 
     try {
-      const params = new URLSearchParams({ occasion, limit: '20' })
+      const params = new URLSearchParams({ limit: '20' })
       params.set('page', String(page))
+      if (occasion) {
+        params.set('occasion', occasion)
+      }
       if (query) {
         params.set('query', query)
+      }
+      if (filters?.gender && filters.gender !== 'all') {
+        params.set('gender', filters.gender)
+      }
+      if (filters?.priceMin != null && filters.priceMin > 0) {
+        params.set('price_min', String(filters.priceMin))
+      }
+      if (filters?.priceMax != null && filters.priceMax < 20000) {
+        params.set('price_max', String(filters.priceMax))
       }
       const res = await fetch(`/api/suggestions?${params}`)
       if (!res.ok) throw new Error('Failed to fetch suggestions')
@@ -57,7 +74,7 @@ export function useOccasionSuggestions(occasion: OccasionType | null, query?: st
     } finally {
       setIsLoading(false)
     }
-  }, [occasion, query, page])
+  }, [occasion, query, page, filters?.gender, filters?.priceMin, filters?.priceMax])
 
   useEffect(() => {
     fetchSuggestions()

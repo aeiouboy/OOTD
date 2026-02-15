@@ -22,11 +22,15 @@ import { Eye, Heart, Share2, Shirt, Loader2, RefreshCw, AlertCircle } from 'luci
 interface OutfitRecommendationCardProps {
   outfit: Outfit
   onViewOutfit: (outfit: Outfit) => void
+  isInWishlist?: boolean
+  onToggleWishlist?: (outfit: Outfit) => void
 }
 
 export function OutfitRecommendationCard({
   outfit,
-  onViewOutfit
+  onViewOutfit,
+  isInWishlist: externalIsInWishlist,
+  onToggleWishlist,
 }: OutfitRecommendationCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageError, setImageError] = useState(false)
@@ -62,9 +66,10 @@ export function OutfitRecommendationCard({
   // v9.0: Use intersection observer for lazy loading - trigger generation when card becomes visible
   const observerRef = useIntersectionObserver(
     () => {
-      console.log(`[OutfitCard] Card visible: ${outfit.id}, existingFlatLay: ${!!existingFlatLay}, hookImage: ${!!hookGeneratedImage}`)
-      // Only trigger generation if no existing flat-lay image and hook hasn't generated one
-      if (!existingFlatLay && !hookGeneratedImage) {
+      console.log(`[OutfitCard] Card visible: ${outfit.id}, existingFlatLay: ${!!existingFlatLay}, hookImage: ${!!hookGeneratedImage}, parentGenerating: ${!!outfit.isGeneratingFlatLay}`)
+      // Only trigger generation if no existing flat-lay image, hook hasn't generated one,
+      // AND parent (ChatAssistant) is not already generating for this outfit
+      if (!existingFlatLay && !hookGeneratedImage && !outfit.isGeneratingFlatLay) {
         console.log(`[OutfitCard] Triggering flat-lay generation for: ${outfit.id}`)
         generateFlatLay()
       }
@@ -317,11 +322,17 @@ export function OutfitRecommendationCard({
             <Button
               size="sm"
               variant="ghost"
-              onClick={() => setIsLiked(!isLiked)}
+              onClick={() => {
+                if (onToggleWishlist) {
+                  onToggleWishlist(outfit)
+                } else {
+                  setIsLiked(!isLiked)
+                }
+              }}
               className="h-8 w-8 p-0"
-              aria-label={isLiked ? "Unlike outfit" : "Like outfit"}
+              aria-label={(externalIsInWishlist || isLiked) ? "Unlike outfit" : "Like outfit"}
             >
-              <Heart className={`w-4 h-4 ${isLiked ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
+              <Heart className={`w-4 h-4 ${(externalIsInWishlist || isLiked) ? "fill-red-500 text-red-500" : "text-gray-600"}`} />
             </Button>
             <Button
               size="sm"

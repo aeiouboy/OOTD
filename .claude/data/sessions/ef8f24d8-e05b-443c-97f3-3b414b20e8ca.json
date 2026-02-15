@@ -1,9 +1,0 @@
-{
-  "session_id": "ef8f24d8-e05b-443c-97f3-3b414b20e8ca",
-  "prompts": [
-    "/playwright-mcp test it",
-    "The fallback parser is working. The AI responded with inline markdown (no ---LOOKS_DATA--- markers), and the fallback parser successfully extracted the products and created outfit cards. <<<<< this is the main issues\\\n\\\nthink about friend we do not text long to friend use /lean to see what we need to prompt and respones shuld be",
-    "yes, plan the v5.1 prompt rewrite for teammate"
-  ],
-  "agent_name": "Quantum"
-}

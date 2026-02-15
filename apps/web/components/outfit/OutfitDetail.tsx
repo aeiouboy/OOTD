@@ -76,6 +76,8 @@ interface OutfitDetailProps {
   onBuyProduct: (product: Product) => void
   onBuyAll: () => void
   onSelectSimilar?: (outfit: Outfit) => void
+  isInWishlist?: boolean
+  onToggleWishlist?: () => void
 }
 
 export function OutfitDetail({
@@ -84,7 +86,9 @@ export function OutfitDetail({
   onBack,
   onBuyProduct,
   onBuyAll,
-  onSelectSimilar
+  onSelectSimilar,
+  isInWishlist,
+  onToggleWishlist,
 }: OutfitDetailProps) {
   // Get resize controls from ResizablePanel context (optional - only if in resizable panel)
   let panelWidth = 420
@@ -320,6 +324,8 @@ export function OutfitDetail({
       <StickyPurchaseSection
         totalPrice={outfit.totalPrice}
         onBuyAll={onBuyAll}
+        isInWishlist={isInWishlist}
+        onToggleWishlist={onToggleWishlist}
       />
     </div>
   )

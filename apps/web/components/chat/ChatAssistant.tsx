@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect, useCallback, useRef } from 'react'
+import { useState, useEffect, useCallback } from 'react'
 import { ChatHeader, ChatStatus } from './ChatHeader'
 import { ChatMessage } from './ChatMessage'
 import { ChatInput } from './ChatInput'
@@ -14,24 +14,25 @@ import { Beaker } from 'lucide-react'
 import { SettingsDialog } from './SettingsDialog'
 import { UserProfileDialog } from './UserProfileDialog'
 import type { ChatMessage as ChatMessageType, Outfit, FlatLayItem, Product } from '@/lib/types'
-import {
-  findReplacementsForInconsistentProducts,
-  hasProblematicFlatLayImageUrl,
-  validateProductVisualConsistency,
-} from '@/lib/utils/product-visual-validator'
 import type { TestResult } from '@/lib/types/test-types'
 import { getMockOutfitResponse } from '@/lib/mock-data'
 import { exportResultsBoth } from '@/lib/test-result-exporter'
 import type { SessionContext } from '@/lib/types/chat-types'
 import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
-import { convertLooksToOutfits, mergeProductsBySku } from '@/lib/utils/chat-look-transformers'
+import { convertLooksToOutfits } from '@/lib/utils/chat-look-transformers'
 
 interface ChatAssistantProps {
   onViewOutfit: (outfit: Outfit) => void
+  isInWishlist?: (outfitId: string) => boolean
+  onToggleWishlist?: (outfit: Outfit) => void
 }
 
-export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
+export function ChatAssistant({
+  onViewOutfit,
+  isInWishlist,
+  onToggleWishlist,
+}: ChatAssistantProps) {
   const [messages, setMessages] = useState<ChatMessageType[]>([])
   const [isTyping, setIsTyping] = useState(false)
   const [testMode, setTestMode] = useState(false)
@@ -46,10 +47,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
   const [generatingImage, setGeneratingImage] = useState(false)
   const [imageGenerationError, setImageGenerationError] = useState<string | null>(null)
 
-  // v8.0: All products for visual consistency replacement lookup
-  const [allProducts, setAllProducts] = useState<Product[]>([])
-  const fallbackCatalogRef = useRef<Product[] | null>(null)
-  const fallbackCatalogPromiseRef = useRef<Promise<Product[]> | null>(null)
+  // v8.0: (Removed) All products state and replacement catalog removed to fix cross-look contamination
 
   // v9.0: Settings dialog state
   const [isSettingsOpen, setIsSettingsOpen] = useState(false)
@@ -87,52 +85,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
   const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE === 'true'
 
-  /**
-   * v8.0: Apply product replacements to an outfit for visual consistency
-   * Creates a new outfit with items array where mismatched items are replaced
-   * Recalculates totalPrice based on replacement prices
-   */
-  const applyProductReplacements = useCallback((
-    outfit: Outfit,
-    replacements: Map<string, Product>
-  ): Outfit => {
-    if (replacements.size === 0) return outfit
-
-    const updatedItems = outfit.items.map(item => {
-      const replacement = replacements.get(item.sku)
-      return replacement || item
-    })
-
-    // Recalculate total price
-    const newTotalPrice = updatedItems.reduce((sum, item) => sum + (item.price || 0), 0)
-
-    return {
-      ...outfit,
-      items: updatedItems,
-      totalPrice: newTotalPrice,
-    }
-  }, [])
-
-  const loadFallbackCatalog = useCallback(async (): Promise<Product[]> => {
-    if (fallbackCatalogRef.current) return fallbackCatalogRef.current
-    if (fallbackCatalogPromiseRef.current) return fallbackCatalogPromiseRef.current
-
-    fallbackCatalogPromiseRef.current = fetch('/api/products')
-      .then(async (res) => {
-        if (!res.ok) return []
-        const data = await res.json() as { products?: Product[] }
-        const products = Array.isArray(data.products) ? data.products : []
-        const filtered = products.filter((p) => p?.imageUrl && !hasProblematicFlatLayImageUrl(p.imageUrl))
-        fallbackCatalogRef.current = filtered
-        return filtered
-      })
-      .catch(() => [])
-      .finally(() => {
-        fallbackCatalogPromiseRef.current = null
-      })
-
-    return fallbackCatalogPromiseRef.current
-  }, [])
+  // v8.0: (Removed) applyProductReplacements and loadFallbackCatalog removed to fix cross-look contamination
 
   const handleTestComplete = (result: TestResult) => {
     console.log('Test completed:', result)
@@ -165,92 +118,16 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
   /**
    * v5.0: Generate flat-lay image for an outfit and update the message
-   * v8.0: Enhanced with visual consistency validation and product replacement
-   *
-   * This function:
-   * 1. Validates visual consistency between product text and thumbnails
-   * 2. Replaces visually inconsistent products with consistent alternatives
-   * 3. Generates flat-lay image using the corrected products
-   * 4. Updates both the flat-lay image AND the product list in the message
+   * v8.1: Simplified -- no cross-look replacement, includes stylingItems for total look
    */
   const generateFlatLayForOutfit = useCallback(async (
     outfit: Outfit,
     messageId: string,
-    productCatalog?: Product[]
   ) => {
     console.log(`[Chat] Generating flat-lay for outfit ${outfit.id}...`)
 
-    // v8.0: Check for visual inconsistencies and find replacements if catalog provided
-    let effectiveOutfit = outfit
-    let replacementsMade = new Map<string, Product>()
-
-    let replacementCatalog: Product[] = productCatalog || []
-    if (replacementCatalog.length < 50) {
-      const fallbackCatalog = await loadFallbackCatalog()
-      if (fallbackCatalog.length > 0) {
-        const merged = new Map<string, Product>()
-        for (const p of replacementCatalog) merged.set(p.sku, p)
-        for (const p of fallbackCatalog) {
-          if (!merged.has(p.sku)) merged.set(p.sku, p)
-        }
-        replacementCatalog = Array.from(merged.values())
-      }
-    }
-
-    if (replacementCatalog.length > 0) {
-      const replacementResult = findReplacementsForInconsistentProducts(
-        outfit.items,
-        replacementCatalog,
-        { targetGender: 'women' }
-      )
-
-      if (replacementResult.replacements.size > 0) {
-        console.log(
-          `[Chat] Replacing ${replacementResult.replacements.size} visually inconsistent products in outfit ${outfit.id}:`,
-          Array.from(replacementResult.replacements.entries()).map(([origSku, replacement]) => ({
-            original: origSku,
-            replacement: replacement.sku,
-            name: replacement.name,
-          }))
-        )
-
-        // Apply replacements to create the effective outfit
-        effectiveOutfit = applyProductReplacements(outfit, replacementResult.replacements)
-        replacementsMade = replacementResult.replacements
-
-        // Update the message with corrected product list BEFORE generating flat-lay
-        // This ensures the product thumbnails shown match the flat-lay image
-        setMessages((prev) =>
-          prev.map((msg) => {
-            if (msg.id === messageId && msg.outfits) {
-              return {
-                ...msg,
-                outfits: msg.outfits.map((o) =>
-                  o.id === outfit.id
-                    ? {
-                      ...o,
-                      items: effectiveOutfit.items,
-                      totalPrice: effectiveOutfit.totalPrice,
-                    }
-                    : o
-                ),
-              }
-            }
-            return msg
-          })
-        )
-      }
-
-      if (replacementResult.unreplaceableSkus.length > 0) {
-        console.warn(
-          `[Chat] ${replacementResult.unreplaceableSkus.length} items in outfit ${outfit.id} have visual mismatches but no replacement found:`,
-          replacementResult.unreplaceableSkus
-        )
-      }
-    }
-
-    // Extract FlatLayItem array from effective outfit items (with replacements applied)
-    const flatLayItems: FlatLayItem[] = effectiveOutfit.items.slice(0, 5).map((item: Product) => ({
+    // Build flat-lay items from catalog products (max 5)
+    const catalogFlatLayItems: FlatLayItem[] = outfit.items.slice(0, 5).map((item: Product) => ({
       name: item.name,
       category: item.subCategory || item.category || 'Item',
       color: item.colors?.[0],
@@ -258,6 +135,17 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       sku: item.sku,
       thumbnailUrl: item.imageUrl,
     }))
+
+    // Add styling items (accessories from fashion knowledge) for flat-lay visualization only
+    const stylingFlatLayItems: FlatLayItem[] = (outfit.stylingItems || []).map((s) => ({
+      name: s.description,
+      category: s.category || 'Accessory',
+      visualDescription: s.description,
+      // No sku, no thumbnailUrl -- these are knowledge-based, not catalog products
+    }))
+
+    // Combine: catalog items first, then styling items (max 6 total for layout)
+    const flatLayItems = [...catalogFlatLayItems, ...stylingFlatLayItems].slice(0, 6)
     const occasionContext = outfit.description
     const generationType = 'flat-lay'
 
@@ -269,9 +157,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
     try {
       const imageResponse = await fetch('/api/generate-image', {
         method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
+        headers: { 'Content-Type': 'application/json' },
         body: JSON.stringify({
           description: outfit.description || 'LOOKs Inspiration',
           generationType,
@@ -284,9 +170,6 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
       if (imageData.success && (imageData.imageUrl || imageData.imageBase64)) {
         console.log(`[Chat] Flat-lay generated successfully for outfit ${outfit.id}`)
-
-        // Update the message's outfit with the flat-lay image
-        // Note: Product items were already updated above if replacements were made
         setMessages((prev) =>
           prev.map((msg) => {
             if (msg.id === messageId && msg.outfits) {
@@ -294,15 +177,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
                 ...msg,
                 outfits: msg.outfits.map((o) =>
                   o.id === outfit.id
-                    ? {
-                      ...o,
-                      flatLayImageUrl: imageData.imageUrl,
-                      flatLayImageBase64: imageData.imageBase64,
-                      isGeneratingFlatLay: false,
-                      // Ensure items are the effective items (with replacements)
-                      items: effectiveOutfit.items,
-                      totalPrice: effectiveOutfit.totalPrice,
-                    }
+                    ? { ...o, flatLayImageUrl: imageData.imageUrl, flatLayImageBase64: imageData.imageBase64, isGeneratingFlatLay: false }
                     : o
                 ),
               }
@@ -312,22 +187,13 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         )
       } else {
         console.error('[Chat] Flat-lay generation failed:', imageData.message)
-        // Mark as not generating (will show fallback thumbnail)
-        // Still apply any product replacements even if image generation failed
         setMessages((prev) =>
           prev.map((msg) => {
             if (msg.id === messageId && msg.outfits) {
               return {
                 ...msg,
                 outfits: msg.outfits.map((o) =>
-                  o.id === outfit.id
-                    ? {
-                      ...o,
-                      isGeneratingFlatLay: false,
-                      items: effectiveOutfit.items,
-                      totalPrice: effectiveOutfit.totalPrice,
-                    }
-                    : o
+                  o.id === outfit.id ? { ...o, isGeneratingFlatLay: false } : o
                 ),
               }
             }
@@ -337,22 +203,13 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
       }
     } catch (error) {
       console.error('[Chat] Flat-lay generation error:', error)
-      // Mark as not generating on error
-      // Still apply any product replacements even if image generation failed
       setMessages((prev) =>
         prev.map((msg) => {
           if (msg.id === messageId && msg.outfits) {
             return {
               ...msg,
               outfits: msg.outfits.map((o) =>
-                o.id === outfit.id
-                  ? {
-                    ...o,
-                    isGeneratingFlatLay: false,
-                    items: effectiveOutfit.items,
-                    totalPrice: effectiveOutfit.totalPrice,
-                  }
-                  : o
+                o.id === outfit.id ? { ...o, isGeneratingFlatLay: false } : o
               ),
             }
           }
@@ -360,7 +217,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         })
       )
     }
-  }, [applyProductReplacements, loadFallbackCatalog])
+  }, [])
 
   const handleSendMessage = async (content: string) => {
     if (!content.trim()) return
@@ -419,13 +276,6 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         console.log(`[Chat] Converted ${data.looks.length} v5 looks → Outfit[]`)
       }
 
-      // v8.0: Collect all products from outfits for visual consistency replacement lookup
-      const outfitProducts: Product[] = resolvedOutfits.flatMap((o: Outfit) => o.items || [])
-      const replacementCatalog = mergeProductsBySku(allProducts, outfitProducts)
-      if (outfitProducts.length > 0) {
-        setAllProducts((prev) => mergeProductsBySku(prev, outfitProducts))
-      }
-
       // v5.0: Mark outfits as generating flat-lay if we have image request
       const outfitsWithLoading = resolvedOutfits.map((outfit: Outfit) => ({
         ...outfit,
@@ -461,10 +311,10 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
         setGeneratingImage(true)
         setImageGenerationError(null)
 
-        // Generate flat-lay for each outfit, passing allProducts for visual consistency replacement
+        // Generate flat-lay for each outfit (isolated per-look, no cross-look replacement)
         for (const outfit of outfitsWithLoading) {
           if (outfit.items.length > 0) {
-            await generateFlatLayForOutfit(outfit, messageId, replacementCatalog)
+            await generateFlatLayForOutfit(outfit, messageId)
           }
         }
 
@@ -515,7 +365,7 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
 
         for (const outfit of mockOutfitsWithLoading) {
           if (outfit.items.length > 0) {
-            await generateFlatLayForOutfit(outfit, messageId, allProducts)
+            await generateFlatLayForOutfit(outfit, messageId)
           }
         }
 
@@ -607,6 +457,8 @@ export function ChatAssistant({ onViewOutfit }: ChatAssistantProps) {
                       key={outfit.id}
                       outfit={outfit}
                       onViewOutfit={onViewOutfit}
+                      isInWishlist={isInWishlist?.(outfit.id)}
+                      onToggleWishlist={onToggleWishlist}
                     />
                   ))}
                 </div>

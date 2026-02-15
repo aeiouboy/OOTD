@@ -34,6 +34,9 @@ export interface Database {
           thai_climate_rating: number | null
           temple_appropriate: boolean | null
           ac_friendly: boolean | null
+          formality_level: number | null
+          gender: string | null
+          specific_category: string | null
           embedding: string | null
           created_at: string | null
           updated_at: string | null
@@ -57,6 +60,9 @@ export interface Database {
           thai_climate_rating?: number | null
           temple_appropriate?: boolean | null
           ac_friendly?: boolean | null
+          formality_level?: number | null
+          gender?: string | null
+          specific_category?: string | null
           embedding?: string | null
           created_at?: string | null
           updated_at?: string | null
@@ -80,6 +86,9 @@ export interface Database {
           thai_climate_rating?: number | null
           temple_appropriate?: boolean | null
           ac_friendly?: boolean | null
+          formality_level?: number | null
+          gender?: string | null
+          specific_category?: string | null
           embedding?: string | null
           created_at?: string | null
           updated_at?: string | null

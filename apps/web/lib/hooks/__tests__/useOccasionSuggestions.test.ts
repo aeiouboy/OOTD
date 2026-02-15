@@ -31,13 +31,22 @@ afterEach(() => {
 })
 
 describe('useOccasionSuggestions', () => {
-  it('returns empty products array when occasion is null', async () => {
+  it('fetches products even when occasion is null', async () => {
+    mockFetch.mockResolvedValue({
+      ok: true,
+      json: async () => ({ data: mockProducts, total: 1, totalPages: 1 }),
+    })
+
     const { result } = renderHook(() => useOccasionSuggestions(null))
 
-    // Should not call fetch at all
-    expect(mockFetch).not.toHaveBeenCalled()
-    expect(result.current.products).toEqual([])
-    expect(result.current.isLoading).toBe(false)
+    // Should still call fetch (now fetches all products when no occasion)
+    await waitFor(() => {
+      expect(mockFetch).toHaveBeenCalled()
+    })
+    await waitFor(() => {
+      expect(result.current.isLoading).toBe(false)
+    })
+    expect(result.current.products).toEqual(mockProducts)
     expect(result.current.error).toBeNull()
   })
 

@@ -1,7 +1,0 @@
-{
-  "session_id": "44b19246-626f-47b6-9157-3754e4345a40",
-  "prompts": [
-    " /plan_w_team \"AI chat recommends products that don't match the requested occasion. Example:\n  casual items for work outfits. Fix product-occasion filtering in ai-chat-service.ts and\n  strengthen the system prompt v5 occasion constraints.\" \"1 researcher to analyze current product\n   matching logic and identify gaps, 1 builder for service-layer fixes, 1 builder for system\n  prompt improvements, 1 validator for E2E chat testing. Run builders in parallel after\n  research.\""
-  ],
-  "agent_name": "Prism"
-}

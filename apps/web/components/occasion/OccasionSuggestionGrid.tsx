@@ -4,7 +4,7 @@ import { OccasionSuggestionCard } from './OccasionSuggestionCard'
 import type { SuggestionProduct } from './OccasionSuggestionCard'
 import { Skeleton } from '@/components/ui/skeleton'
 import { Pagination } from '@/components/ui/Pagination'
-import type { OccasionType } from '@/lib/supabase/types'
+import type { OccasionType } from '@/lib/types/enums'
 import { ShoppingBag, AlertCircle } from 'lucide-react'
 
 interface OccasionSuggestionGridProps {

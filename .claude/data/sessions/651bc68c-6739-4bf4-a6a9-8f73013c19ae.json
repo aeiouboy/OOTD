@@ -1,7 +1,0 @@
-{
-  "session_id": "651bc68c-6739-4bf4-a6a9-8f73013c19ae",
-  "prompts": [
-    "/plan_w_team \"Add pagination to GET /api/suggestions endpoint. Support ?page=1&limit=20 query\n  params. Return { data, total, page, totalPages }.\" \"1 builder, 1 validator. Simple task.\""
-  ],
-  "agent_name": "Catalyst"
-}

@@ -46,6 +46,8 @@ export interface Outfit {
   totalPrice: number
   items: Product[]
   imageUrl?: string
+  /** Styling accessories for flat-lay only (not purchasable) */
+  stylingItems?: import('./types/chat-types').ChatLookStyling[]
   /** Flat-lay image URL for outfit visualization (v5.0) */
   flatLayImageUrl?: string
   /** Flat-lay image as base64 fallback (v5.0) */

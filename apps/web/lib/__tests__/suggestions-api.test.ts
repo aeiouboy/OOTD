@@ -90,7 +90,7 @@ describe('/api/suggestions response schema', () => {
   it('GET returns correct response schema with data array', async () => {
     const { GET } = await import('@/app/api/suggestions/route')
 
-    const request = createMockNextRequest('http://localhost:3000/api/suggestions?occasion=weekend_social&limit=10')
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?occasion=work&limit=10')
     const response = await GET(request)
     const body = await response.json()
 
@@ -130,13 +130,13 @@ describe('/api/suggestions response schema', () => {
   it('GET with occasion filter returns matching occasion', async () => {
     const { GET } = await import('@/app/api/suggestions/route')
 
-    const request = createMockNextRequest('http://localhost:3000/api/suggestions?occasion=date_night')
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?occasion=date')
     const response = await GET(request)
     const body = await response.json()
 
-    expect(body.occasion).toBe('date_night')
+    expect(body.occasion).toBe('date')
     for (const product of body.data) {
-      expect(product.primary_occasion).toBe('date_night')
+      expect(product.primary_occasion).toBe('date')
     }
   })
 
@@ -157,15 +157,15 @@ describe('/api/suggestions response schema', () => {
     const response = await GET(request)
     const body = await response.json()
 
-    // total is the full count of women items (2), data.length <= total
-    expect(body.total).toBe(2)
+    // total is the full count of all items (3), data.length <= total
+    expect(body.total).toBe(3)
     expect(body.data.length).toBeLessThanOrEqual(body.total)
   })
 
-  it('GET filters to women_clothing only (MVP)', async () => {
+  it('GET with gender=women filters to women_clothing only', async () => {
     const { GET } = await import('@/app/api/suggestions/route')
 
-    const request = createMockNextRequest('http://localhost:3000/api/suggestions')
+    const request = createMockNextRequest('http://localhost:3000/api/suggestions?gender=women')
     const response = await GET(request)
     const body = await response.json()
 
@@ -199,9 +199,9 @@ describe('/api/suggestions response schema', () => {
     const body = await response.json()
 
     expect(body.page).toBe(2)
-    // With 2 women items and limit=1, page 2 should have 1 item (the second one)
+    // With 3 items and limit=1, page 2 should have 1 item
     expect(body.data.length).toBeLessThanOrEqual(1)
-    expect(body.total).toBe(2)
+    expect(body.total).toBe(3)
   })
 
   it('GET with page beyond total returns empty data array', async () => {
@@ -223,9 +223,9 @@ describe('/api/suggestions response schema', () => {
     const response = await GET(request)
     const body = await response.json()
 
-    // With 2 women items and limit=1, totalPages should be 2
+    // With 3 items and limit=1, totalPages should be 3
     expect(body.totalPages).toBe(body.total)
-    expect(body.totalPages).toBe(2)
+    expect(body.totalPages).toBe(3)
   })
 })
 
@@ -251,7 +251,7 @@ const mockSupabaseProducts = [
     link: 'https://example.com/blouse',
     availability: 'in_stock',
     product_description: 'A lovely weekend blouse',
-    primary_occasion: 'weekend_social',
+    primary_occasion: 'chill',
   },
 ]
 
@@ -266,15 +266,15 @@ describe('POST /api/suggestions', () => {
     mockGetProductsByOccasion.mockResolvedValue(mockSupabaseProducts)
 
     const { POST } = await import('@/app/api/suggestions/route')
-    const request = createMockPostRequest({ occasion: 'weekend_social' })
+    const request = createMockPostRequest({ occasion: 'chill' })
     const response = await POST(request)
     const body = await response.json()
 
     expect(response.status).toBe(200)
     expect(body.products).toEqual(mockSupabaseProducts)
-    expect(body.occasion).toBe('weekend_social')
+    expect(body.occasion).toBe('chill')
     expect(body.source).toBe('supabase')
-    expect(mockGetProductsByOccasion).toHaveBeenCalledWith('weekend_social', 20)
+    expect(mockGetProductsByOccasion).toHaveBeenCalledWith('chill', 20)
   })
 
   it('POST with invalid occasion returns 400', async () => {
@@ -295,7 +295,7 @@ describe('POST /api/suggestions', () => {
     const { POST } = await import('@/app/api/suggestions/route')
     const request = createMockPostRequest({
       query: 'floral summer dress',
-      occasion: 'weekend_social',
+      occasion: 'chill',
     })
     const response = await POST(request)
     const body = await response.json()
@@ -306,8 +306,9 @@ describe('POST /api/suggestions', () => {
     expect(mockGenerateEmbedding).toHaveBeenCalledWith('floral summer dress')
     expect(mockSearchProductsBySimilarity).toHaveBeenCalledWith(
       fakeVector,
-      'weekend_social',
-      20
+      'chill',
+      20,
+      undefined  // genderFilter
     )
   })
 
@@ -315,7 +316,7 @@ describe('POST /api/suggestions', () => {
     process.env.SUPABASE_PRODUCTS_ENABLED = 'false'
 
     const { POST } = await import('@/app/api/suggestions/route')
-    const request = createMockPostRequest({ occasion: 'weekend_social' })
+    const request = createMockPostRequest({ occasion: 'chill' })
     const response = await POST(request)
     const body = await response.json()
 
@@ -333,7 +334,7 @@ describe('POST /api/suggestions', () => {
     const { POST } = await import('@/app/api/suggestions/route')
     const request = createMockPostRequest({
       query: 'summer outfit',
-      occasion: 'weekend_social',
+      occasion: 'chill',
     })
     const response = await POST(request)
     const body = await response.json()
@@ -341,6 +342,6 @@ describe('POST /api/suggestions', () => {
     expect(response.status).toBe(200)
     // Falls back to occasion-only filtering (source: 'supabase', not 'supabase_semantic')
     expect(body.source).toBe('supabase')
-    expect(mockGetProductsByOccasion).toHaveBeenCalledWith('weekend_social', 20)
+    expect(mockGetProductsByOccasion).toHaveBeenCalledWith('chill', 20)
   })
 })

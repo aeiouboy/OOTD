@@ -2,15 +2,29 @@ import { NextRequest, NextResponse } from 'next/server'
 import { getProductsByOccasion, getAllProducts, searchProductsBySimilarity, getProductCount } from '@/lib/supabase/products'
 import { computeOccasionScores } from '@/lib/supabase/occasion-scoring'
 import { generateEmbedding } from '@/lib/rag/embeddings'
-import type { OccasionType } from '@/lib/supabase/types'
+import type { OccasionType as EnumOccasionType } from '@/lib/types/enums'
 import fs from 'fs'
 import path from 'path'
 
-const VALID_OCCASIONS: OccasionType[] = [
-  'weekend_social',
-  'date_night',
-  'everyday_casual',
+const VALID_OCCASIONS: EnumOccasionType[] = [
+  'work', 'chill', 'wedding', 'sport', 'travel', 'date', 'dinner', 'cafe', 'party',
 ]
+
+// Direct DB primary_occasion values
+const VALID_PRIMARY_OCCASIONS = ['everyday_casual', 'date_night', 'weekend_social']
+
+// Map OccasionType → DB primary_occasion value
+const OCCASION_TO_PRIMARY: Record<string, string> = {
+  work: 'weekend_social',
+  chill: 'everyday_casual',
+  wedding: 'date_night',
+  sport: 'everyday_casual',
+  travel: 'everyday_casual',
+  date: 'date_night',
+  dinner: 'date_night',
+  cafe: 'everyday_casual',
+  party: 'date_night',
+}
 
 interface ProductMasterEntry {
   category: string
@@ -42,16 +56,27 @@ function loadJsonProducts(): ProductMasterEntry[] {
   return []
 }
 
-function fallbackJsonResponse(occasion: OccasionType | null, limit: number, page: number, offset: number) {
+function fallbackJsonResponse(
+  occasion: string | null,
+  limit: number,
+  page: number,
+  offset: number,
+  gender?: string,
+  priceMin?: number,
+  priceMax?: number,
+) {
   const raw = loadJsonProducts()
 
-  // Filter to women's clothing (MVP focus)
-  const women = raw.filter(
-    (p) => p.category === 'women_clothing' && p.product_name && p.image_url
-  )
+  // Filter by gender category
+  let filtered = raw.filter((p) => p.product_name && p.image_url)
+  if (gender === 'women') {
+    filtered = filtered.filter((p) => p.category === 'women_clothing')
+  } else if (gender === 'men') {
+    filtered = filtered.filter((p) => p.category === 'men_clothing')
+  }
 
   // Score each product
-  const scored = women.map((p) => {
+  const scored = filtered.map((p) => {
     const scores = computeOccasionScores({
       product_name: p.product_name,
       brand: p.brand || null,
@@ -77,20 +102,22 @@ function fallbackJsonResponse(occasion: OccasionType | null, limit: number, page
     }
   })
 
-  // Filter by occasion if provided
-  let filtered = scored
-  if (occasion) {
-    filtered = scored.filter((p) => p.primary_occasion === occasion)
-    const occasionKey = `occasion_${occasion}` as const
-    filtered.sort(
-      (a, b) =>
-        (b[occasionKey as keyof typeof b] as number) -
-        (a[occasionKey as keyof typeof a] as number)
-    )
+  // Apply price filter
+  let result = scored
+  if (priceMin != null) {
+    result = result.filter((p) => (p.price ?? 0) >= priceMin)
+  }
+  if (priceMax != null) {
+    result = result.filter((p) => (p.price ?? Infinity) <= priceMax)
   }
 
-  const total = filtered.length
-  const products = filtered.slice(offset, offset + limit)
+  // Filter by occasion if provided
+  if (occasion) {
+    result = result.filter((p) => p.primary_occasion === occasion)
+  }
+
+  const total = result.length
+  const products = result.slice(offset, offset + limit)
 
   return NextResponse.json({
     data: products,
@@ -102,40 +129,79 @@ function fallbackJsonResponse(occasion: OccasionType | null, limit: number, page
   })
 }
 
-// GET /api/suggestions?occasion=weekend_social&limit=20&page=1
+// GET /api/suggestions?occasion=work&limit=20&page=1&gender=women&price_min=500&price_max=5000
 export async function GET(request: NextRequest) {
   const { searchParams } = request.nextUrl
-  const occasion = searchParams.get('occasion') as OccasionType | null
+  const occasion = searchParams.get('occasion') as EnumOccasionType | null
   const limit = Math.min(Math.max(1, parseInt(searchParams.get('limit') ?? '20', 10)), 100)
   const page = Math.max(1, parseInt(searchParams.get('page') ?? '1', 10))
   const offset = (page - 1) * limit
+  const gender = searchParams.get('gender') || undefined
+  const priceMinStr = searchParams.get('price_min')
+  const priceMaxStr = searchParams.get('price_max')
+  const priceMin = priceMinStr ? parseInt(priceMinStr, 10) : undefined
+  const priceMax = priceMaxStr ? parseInt(priceMaxStr, 10) : undefined
 
   try {
     const supabaseEnabled =
       process.env.SUPABASE_PRODUCTS_ENABLED === 'true'
 
     if (!supabaseEnabled) {
-      return fallbackJsonResponse(occasion, limit, page, offset)
+      return fallbackJsonResponse(occasion, limit, page, offset, gender, priceMin, priceMax)
     }
 
-    if (occasion && !VALID_OCCASIONS.includes(occasion)) {
+    const allValid = [...VALID_OCCASIONS, ...VALID_PRIMARY_OCCASIONS]
+    if (occasion && !allValid.includes(occasion)) {
       return NextResponse.json(
         {
           error:
-            'Invalid occasion. Must be one of: weekend_social, date_night, everyday_casual',
+            'Invalid occasion. Must be one of: ' + allValid.join(', '),
         },
         { status: 400 }
       )
     }
 
-    const total = await getProductCount(occasion ?? undefined)
+    // Build Supabase query with filters
+    const { createServerClient } = await import('@/lib/supabase/client')
+    const supabase = createServerClient()
 
-    const products = occasion
-      ? await getProductsByOccasion(occasion, limit, offset)
-      : await getAllProducts(limit, offset)
+    let query = supabase.from('products').select('*', { count: 'exact' })
+
+    // Occasion filter: map to DB primary_occasion value
+    if (occasion) {
+      // If it's already a DB primary_occasion value, use directly; otherwise map
+      const primaryOccasion = VALID_PRIMARY_OCCASIONS.includes(occasion)
+        ? occasion
+        : OCCASION_TO_PRIMARY[occasion] ?? occasion
+      query = query.eq('primary_occasion', primaryOccasion)
+    }
+
+    // Gender filter
+    if (gender === 'women') {
+      query = query.eq('category', 'women_clothing')
+    } else if (gender === 'men') {
+      query = query.eq('category', 'men_clothing')
+    }
+
+    // Price filters
+    if (priceMin != null) {
+      query = query.gte('price', priceMin)
+    }
+    if (priceMax != null) {
+      query = query.lte('price', priceMax)
+    }
+
+    // Pagination
+    query = query.range(offset, offset + limit - 1)
+
+    const { data, count, error } = await query
+
+    if (error) throw error
+
+    const total = count ?? 0
 
     return NextResponse.json({
-      data: products,
+      data: data ?? [],
       total,
       page,
       totalPages: Math.ceil(total / limit),
@@ -144,7 +210,7 @@ export async function GET(request: NextRequest) {
     })
   } catch (error) {
     console.error('[suggestions] Supabase error, falling back to JSON:', error)
-    return fallbackJsonResponse(occasion, limit, page, offset)
+    return fallbackJsonResponse(occasion, limit, page, offset, gender, priceMin, priceMax)
   }
 }
 
@@ -154,7 +220,7 @@ export async function POST(request: NextRequest) {
     const body = await request.json()
     const { query, occasion, limit: bodyLimit } = body as {
       query?: string
-      occasion?: OccasionType
+      occasion?: EnumOccasionType
       limit?: number
     }
     const limit = bodyLimit ?? 20
@@ -163,7 +229,7 @@ export async function POST(request: NextRequest) {
       return NextResponse.json(
         {
           error:
-            'Invalid occasion. Must be one of: weekend_social, date_night, everyday_casual',
+            'Invalid occasion. Must be one of: ' + VALID_OCCASIONS.join(', '),
         },
         { status: 400 }
       )
@@ -202,7 +268,7 @@ export async function POST(request: NextRequest) {
 
     // Occasion-only filtering (no query or embedding failed)
     const products = occasion
-      ? await getProductsByOccasion(occasion, limit)
+      ? await getProductsByOccasion(occasion as any, limit)
       : await getAllProducts(limit)
 
     return NextResponse.json({

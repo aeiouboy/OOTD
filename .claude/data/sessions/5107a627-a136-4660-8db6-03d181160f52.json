@@ -1,9 +1,0 @@
-{
-  "session_id": "5107a627-a136-4660-8db6-03d181160f52",
-  "prompts": [
-    "/prime ",
-    " Vectra in-memory is for? pls explain   ",
-    "to avoid error pls only use Supabase"
-  ],
-  "agent_name": "Zenith"
-}

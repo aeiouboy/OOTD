@@ -34,6 +34,7 @@ export function convertLooksToOutfits(looks: ChatLook[], responseId = Date.now()
       totalPrice: typeof look.totalPrice === 'number' ? look.totalPrice : computedTotalPrice,
       items,
       imageUrl: look.imageUrl,
+      stylingItems: look.stylingItems || [],
     }
   })
 }

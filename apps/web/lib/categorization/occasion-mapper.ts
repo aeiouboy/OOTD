@@ -195,16 +195,16 @@ export function calculateFormalityLevel(input: OccasionMappingInput): FormalityL
   }
   // Business casual (5-6)
   else if (
-    nameDesc.includes('polo') ||
     nameDesc.includes('dress shirt') ||
     nameDesc.includes('เสื้อเชิ้ต') ||
-    nameDesc.includes('โปโล') ||
     nameDesc.includes('business')
   ) {
     formality = 6
   }
-  // Casual (3-4)
+  // Casual (3-4) — polo shirts, t-shirts, jeans
   else if (
+    nameDesc.includes('polo') ||
+    nameDesc.includes('โปโล') ||
     nameDesc.includes('t-shirt') ||
     nameDesc.includes('jeans') ||
     nameDesc.includes('casual') ||

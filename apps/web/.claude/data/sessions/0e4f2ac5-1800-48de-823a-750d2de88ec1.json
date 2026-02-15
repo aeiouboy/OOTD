@@ -1,8 +1,0 @@
-{
-  "session_id": "0e4f2ac5-1800-48de-823a-750d2de88ec1",
-  "prompts": [
-    "<task-notification>\n<task-id>bf76ab9</task-id>\n<output-file>/private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/bf76ab9.output</output-file>\n<status>failed</status>\n<summary>Background command \"Run full test suite\" failed with exit code 1</summary>\n</task-notification>\nRead the output file to retrieve the result: /private/tmp/claude-502/-Users-tachongrak-Projects-OOTD/tasks/bf76ab9.output",
-    "/playwright-mcp test ai-chat-service.ts ",
-    " see, product image and link are wrong"
-  ]
-}

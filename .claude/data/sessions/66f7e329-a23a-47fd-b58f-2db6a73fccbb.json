@@ -1,9 +1,0 @@
-{
-  "session_id": "66f7e329-a23a-47fd-b58f-2db6a73fccbb",
-  "prompts": [
-    "/prime ",
-    "/prime ",
-    "/plan_w_team \"Our Chat with Agent UI for Desktop and Mobile version not the same chat history, look difference  version. fix the issues and fully validate the front-end UI, also include other the other issues may have\" \"Create subgroups of agent for each implementation task. one builder one validator task. then at the end have a documentation agent update the README.md\""
-  ],
-  "agent_name": "Phoenix"
-}
