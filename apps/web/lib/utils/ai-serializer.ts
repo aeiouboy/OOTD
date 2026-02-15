@@ -180,7 +180,7 @@ export function parseAIOutfitResponse(response: string): string[] {
  * Serialize a single product for v5 pipe-delimited format
  * Format: SKU|Name|Brand|Category|Role|Price|Color|URL
  */
-export function serializeProductForV5(product: EnhancedProduct): string {
+export function serializeProductForV5(product: EnhancedProduct, highlightSkus?: Set<string>): string {
   const sku = product.sku || product.id || 'UNKNOWN';
   const name = product.name?.en || product.name?.th || 'Unknown Product';
   const brand = product.brand || 'Unknown';
@@ -188,8 +188,12 @@ export function serializeProductForV5(product: EnhancedProduct): string {
                    product.classification?.category?.department || 'Clothing';
   const role = product.classification?.role || 'unknown';
   const price = product.pricing?.currentPrice || 0;
-  const color = product.style?.colors?.primary || 'unknown';
+  const rawColor = product.style?.colors?.primary || 'unknown';
   const url = product.centralIntegration?.productUrl || '';
+
+  // Tag color-matched products so the AI knows to prefer them
+  const isHighlighted = highlightSkus && highlightSkus.has(sku);
+  const color = isHighlighted ? `★${rawColor}` : rawColor;
 
   // Escape pipes in field values to prevent parsing issues
   const escapePipe = (s: string) => s.replace(/\|/g, '/');
@@ -219,7 +223,7 @@ export function serializeProductForV5(product: EnhancedProduct): string {
  * === END CATALOG (N products) ===
  * ```
  */
-export function serializeCatalogForV5(products: EnhancedProduct[]): string {
+export function serializeCatalogForV5(products: EnhancedProduct[], highlightSkus?: Set<string>): string {
   if (!products || products.length === 0) {
     return '=== PRODUCT CATALOG (Use ONLY these products. Copy URLs exactly.) ===\n=== END CATALOG (0 products) ===';
   }
@@ -228,7 +232,7 @@ export function serializeCatalogForV5(products: EnhancedProduct[]): string {
   const columnHeader = 'SKU|Name|Brand|Category|Role|Price|Color|URL';
   const footer = `=== END CATALOG (${products.length} products) ===`;
 
-  const productLines = products.map(p => serializeProductForV5(p));
+  const productLines = products.map(p => serializeProductForV5(p, highlightSkus));
 
   return [header, columnHeader, ...productLines, footer].join('\n');
 }

@@ -266,8 +266,10 @@ Provide outfit recommendations in RECOMMENDATION MODE.
 - Conversational text MUST NOT include product names, brands, SKUs, prices, or URLs
 - Put all product details (SKU, price, URL) only in ---LOOKS_DATA--- block
 - Each look should have unique outfit roles (avoid duplicate tops/bottoms/shoes in one look)
-- CRITICAL: Each LOOK must have AT LEAST 3 ITEM lines (e.g., dress + shoes + bag, or top + pants + shoes). A look with only 1-2 items is INCOMPLETE.
-- CRITICAL: Each LOOK must also have 1-2 STYLING lines for accessories not in the catalog (bag, jewelry, hat, belt, scarf)`
+- CRITICAL: Keep ITEM lines focused on garment silhouette only (usually 1 hero garment, optional 1 layering outerwear, max 2 garment ITEMs).
+- CRITICAL: NEVER mix two different main garments in one look (e.g. two dresses, or dress + jumpsuit).
+- CRITICAL: Use STYLING lines to complete missing pieces (footwear/bag/jewelry) instead of adding extra garment ITEM lines.
+- CRITICAL: Include 1-3 STYLING lines so the flat-lay can render a complete look without cross-look contamination.`
   }
 
   return `[CATEGORY: OTHER - v5]
@@ -426,7 +428,7 @@ async function retrieveVectorKnowledge(
 ): Promise<RetrievalResult> {
   // Build retrieval options
   const retrievalOptions: RetrievalOptions = {
-    topK: 5,
+    topK: 15,
     threshold: 0.25,
     filters: {},
   }
@@ -435,9 +437,8 @@ async function retrieveVectorKnowledge(
 
   // Supabase-only retrieval (no Vectra fallback)
   try {
-    console.log('[AI Chat] RAG: Using Supabase pgvector')
     const result = await retrieveFromSupabase(query, retrievalOptions)
-    console.log(`[AI Chat] RAG: Supabase retrieved ${result.documents.length} documents`)
+    console.log(`[AI Chat] RAG: Supabase retrieved ${result.documents.length} documents, scores=[${result.scores.map(s => s.toFixed(3)).join(', ')}]`)
     return result
   } catch (err) {
     console.error('[AI Chat] RAG: Supabase retrieval failed:', err)
@@ -498,6 +499,50 @@ function mergeRAGResults(
     retrievedIds,
     usedFallback,
   }
+}
+
+/**
+ * เดช/ศรี/มนตรี/กาลกิณี Thai auspicious color system.
+ * When a user asks "เสริมดวง" (boost fortune) for a specific day of the week,
+ * this returns the auspicious colors for that day so the product filter can
+ * select items in matching colors. Uses ColorName values from the color lexicon.
+ */
+const AUSPICIOUS_COLORS_BY_DAY: Record<string, string[]> = {
+  'จันทร์':  ['green', 'purple', 'blue', 'navy'],  // เดช=เขียว, ศรี=ม่วง, มนตรี=ฟ้า/น้ำเงิน (navy=shade of blue)
+  'อังคาร':  ['purple', 'orange', 'red'],           // เดช=ม่วง, ศรี=ส้ม, มนตรี=แดง
+  'พุธ':     ['orange', 'black', 'green'],           // เดช=ส้ม, ศรี=ดำ/เทา, มนตรี=เขียว
+  'พฤหัสบดี': ['yellow', 'gold', 'green', 'orange'], // เดช=เหลือง/ทอง, ศรี=เขียว, มนตรี=ส้ม
+  'พฤหัส':   ['yellow', 'gold', 'green', 'orange'],
+  'ศุกร์':   ['pink', 'blue', 'navy', 'purple'],    // เดช=ชมพู, ศรี=ฟ้า/น้ำเงิน, มนตรี=ม่วง
+  'เสาร์':   ['black', 'red', 'purple'],             // เดช=ดำ, ศรี=แดง, มนตรี=ม่วง
+  'อาทิตย์': ['red', 'orange', 'yellow'],            // เดช=แดง, ศรี=ส้ม, มนตรี=เหลือง
+}
+
+function detectAuspiciousColorRequest(message: string): string[] {
+  const lower = message.toLowerCase()
+
+  // Must contain fortune/auspicious keywords
+  const fortuneKeywords = ['เสริมดวง', 'สีมงคล', 'สีเสริม', 'สีนำโชค', 'เสริมโชค', 'สีดี', 'สีอะไรดี']
+  const hasFortune = fortuneKeywords.some(kw => lower.includes(kw))
+  if (!hasFortune) return []
+
+  // Find which day is mentioned
+  for (const [day, colors] of Object.entries(AUSPICIOUS_COLORS_BY_DAY)) {
+    if (lower.includes(day)) {
+      return colors
+    }
+  }
+
+  // No specific day mentioned — check if today's day should be used
+  // (user might say "วันนี้ใส่สีอะไรเสริมดวง" without naming the day)
+  const todayKeywords = ['วันนี้', 'today']
+  if (todayKeywords.some(kw => lower.includes(kw))) {
+    const dayIndex = new Date().getDay() // 0=Sunday
+    const dayMap = ['อาทิตย์', 'จันทร์', 'อังคาร', 'พุธ', 'พฤหัสบดี', 'ศุกร์', 'เสาร์']
+    return AUSPICIOUS_COLORS_BY_DAY[dayMap[dayIndex]] || []
+  }
+
+  return []
 }
 
 /**
@@ -975,11 +1020,25 @@ async function processAIChatRequestV5(
 
   // STEP 5: Filter products
   // Resolve colors from multiple sources (priority: follow-up newColor > current message > session context)
-  const resolvedColors: string[] = followUpDetection.parameters.newColor
+  let resolvedColors: string[] = followUpDetection.parameters.newColor
     ? [followUpDetection.parameters.newColor]
     : userQuery.detectedColors || sessionContext.conversationContext.colors || []
 
-  let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion, resolvedColors.length > 0 ? resolvedColors : undefined)
+  // v5.3: Auto-inject auspicious colors when user asks "เสริมดวง" but doesn't name specific colors
+  let isAuspiciousColorRequest = false
+  if (resolvedColors.length === 0) {
+    const auspiciousColors = detectAuspiciousColorRequest(request.message)
+    if (auspiciousColors.length > 0) {
+      resolvedColors = auspiciousColors
+      isAuspiciousColorRequest = true
+      console.log(`[AI Chat v5] Auspicious color injection: ${auspiciousColors.join(', ')}`)
+    }
+  }
+
+  // For auspicious colors, don't pass to initial filter (it zeros out products).
+  // Apply as soft preference at the re-apply step later.
+  const initialFilterColors = isAuspiciousColorRequest ? undefined : (resolvedColors.length > 0 ? resolvedColors : undefined)
+  let filteredProducts = filterProductsForRequest(availableProducts, request, occasion, thaiOccasion, initialFilterColors)
 
   // Semantic-first pipeline: When no hardcoded occasion is detected (e.g. user types free-form
   // Thai like "อยากได้ชุดไปงานบุญ"), the keyword-based heuristic filter may return generic or
@@ -994,8 +1053,12 @@ async function processAIChatRequestV5(
       const resolvedGender = userQuery.detectedGender ||
                             sessionContext.conversationContext.gender ||
                             request.userPreferences?.gender
+      // v5.3: Enrich semantic query with auspicious color names for better product matching
+      const semanticQuery = isAuspiciousColorRequest
+        ? `${request.message} ${resolvedColors.join(' ')} outfit`
+        : request.message
       const semanticProducts = await searchProductsFromSupabase(
-        request.message,
+        semanticQuery,
         occasion || undefined,
         30,
         resolvedGender
@@ -1076,11 +1139,24 @@ async function processAIChatRequestV5(
 
   // Re-apply explicit color constraints after semantic merge + occasion filtering.
   // This prevents non-matching colors from being reintroduced by semantic supplementation.
+  let auspiciousColorMatchedSkus: Set<string> = new Set()
   if (resolvedColors.length > 0 && filteredProducts.length > 0) {
     const colorConstrained = applyFilters(filteredProducts, { colors: resolvedColors })
     if (colorConstrained.length > 0) {
-      filteredProducts = colorConstrained
-      console.log(`[AI Chat v5] Re-applied strict color filter (${resolvedColors.join(', ')}): ${filteredProducts.length} products`)
+      // Put color-matched products FIRST so the AI sees them at the top of the catalog
+      if (isAuspiciousColorRequest) {
+        // Soft filter for auspicious colors: color-matched first, then remaining products as fallback
+        auspiciousColorMatchedSkus = new Set(colorConstrained.map(p => p.sku || p.id))
+        const remaining = filteredProducts.filter(p => !auspiciousColorMatchedSkus.has(p.sku || p.id))
+        filteredProducts = [...colorConstrained, ...remaining.slice(0, 10)]
+        console.log(`[AI Chat v5] Auspicious color filter: ${colorConstrained.length} matched + ${Math.min(remaining.length, 10)} fallback = ${filteredProducts.length} products`)
+      } else {
+        filteredProducts = colorConstrained
+        console.log(`[AI Chat v5] Re-applied strict color filter (${resolvedColors.join(', ')}): ${filteredProducts.length} products`)
+      }
+    } else if (isAuspiciousColorRequest) {
+      // Auspicious colors found no exact matches — keep all products, AI will do its best
+      console.log(`[AI Chat v5] Auspicious color filter (${resolvedColors.join(', ')}) found 0 matches, keeping ${filteredProducts.length} products for AI`)
     } else {
       filteredProducts = []
       console.log(`[AI Chat v5] Strict color filter (${resolvedColors.join(', ')}) removed all candidates after semantic merge`)
@@ -1122,8 +1198,12 @@ async function processAIChatRequestV5(
   console.log(`[AI Chat v5] Ranked ${filteredProducts.length} products by relevance`)
 
   // STEP 6: Serialize catalog for v5 pipe-delimited format
-  const catalogContext = serializeCatalogForV5(filteredProducts.slice(0, 50))
-  console.log(`[AI Chat v5] Catalog injected: ${Math.min(filteredProducts.length, 50)} products`)
+  // Tag auspicious-color-matched products with ★ so the AI knows to prefer them
+  const catalogContext = serializeCatalogForV5(
+    filteredProducts.slice(0, 50),
+    auspiciousColorMatchedSkus.size > 0 ? auspiciousColorMatchedSkus : undefined
+  )
+  console.log(`[AI Chat v5] Catalog injected: ${Math.min(filteredProducts.length, 50)} products${auspiciousColorMatchedSkus.size > 0 ? ` (${auspiciousColorMatchedSkus.size} color-tagged)` : ''}`)
 
   // Category detection for template instruction
   const categoryDetection = detectCategory(request.message)
@@ -1136,6 +1216,7 @@ async function processAIChatRequestV5(
     userQuery.detectedOccasion || sessionContext.conversationContext.occasion
   )
   const knowledgeContext = ragResult.knowledgeContext
+  console.log(`[AI Chat v5] RAG knowledge retrieved: ${knowledgeContext.length} chars, ${ragResult.retrievedIds.length} docs, fallback=${ragResult.usedFallback}`)
 
   if (ragResult.retrievedIds.length > 0) {
     sessionContext = {
@@ -1182,10 +1263,23 @@ The products below are the closest alternatives. Be honest with the user — say
     console.log('[AI Chat v5] No-exact-match instruction injected')
   }
 
+  // v5.4: Auspicious color instruction — tell AI to prefer ★-tagged products
+  let auspiciousColorInstruction = ''
+  if (isAuspiciousColorRequest && auspiciousColorMatchedSkus.size > 0) {
+    auspiciousColorInstruction = `\n[CRITICAL — AUSPICIOUS COLOR MATCHING]
+The user asked for auspicious colors (เสริมดวง). Products marked with ★ in the Color column are in the recommended auspicious colors (${resolvedColors.join(', ')}).
+RULES:
+1. Each look MUST include at least one ★-tagged product as the HERO piece (the most visible garment)
+2. PRIORITIZE ★-tagged products over non-tagged ones
+3. Non-tagged products may be used as supporting pieces (e.g. neutral pants, basics) but the main garment must be in an auspicious color
+4. The look name and description should reference the auspicious color of the hero piece\n`
+    console.log(`[AI Chat v5] Auspicious color instruction injected (${auspiciousColorMatchedSkus.size} tagged products)`)
+  }
+
   // v5.0: Build prompt with catalog context (pipe-delimited) instead of old createOutfitPrompt
   // CRITICAL: Occasion instruction is placed AFTER the catalog and BEFORE the user message
   // so the AI sees it last and prioritizes it (recency bias)
-  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\n${occasionInstruction}${noMatchInstruction}\nUser message: ${request.message}`
+  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\n${occasionInstruction}${noMatchInstruction}${auspiciousColorInstruction}\nUser message: ${request.message}`
 
   if (followUpInstruction) {
     enhancedPrompt = `${followUpInstruction}\n\n${enhancedPrompt}`

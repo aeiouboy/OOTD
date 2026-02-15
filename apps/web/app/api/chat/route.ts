@@ -40,11 +40,15 @@ export async function POST(request: NextRequest) {
     // Load enhanced products - prefer Supabase, fallback to JSON files
     let products: EnhancedProduct[] = []
     const detectedColors = detectColorsInMessage(message)
+    // Also check for auspicious color requests (เสริมดวง/สีมงคล) — these need more products
+    // even though no explicit color name is mentioned in the user message
+    const auspiciousKeywords = ['เสริมดวง', 'สีมงคล', 'สีเสริม', 'สีนำโชค', 'เสริมโชค', 'สีอะไรดี']
+    const hasAuspiciousRequest = auspiciousKeywords.some(kw => message.includes(kw))
     const parsedDefaultLimit = Number(process.env.SUPABASE_CHAT_PRODUCT_LIMIT)
     const parsedColorLimit = Number(process.env.SUPABASE_CHAT_COLOR_PRODUCT_LIMIT)
     const defaultSupabaseLimit = Number.isFinite(parsedDefaultLimit) && parsedDefaultLimit > 0 ? parsedDefaultLimit : 200
     const colorAwareSupabaseLimit = Number.isFinite(parsedColorLimit) && parsedColorLimit > 0 ? parsedColorLimit : 1000
-    const supabaseLimit = detectedColors.length > 0 ? colorAwareSupabaseLimit : defaultSupabaseLimit
+    const supabaseLimit = (detectedColors.length > 0 || hasAuspiciousRequest) ? colorAwareSupabaseLimit : defaultSupabaseLimit
 
     if (process.env.SUPABASE_PRODUCTS_ENABLED === 'true') {
       console.log(`[Chat API] Supabase load limit: ${supabaseLimit} (colors: ${detectedColors.join(', ') || 'none'})`)
