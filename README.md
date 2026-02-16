@@ -1,136 +1,170 @@
 # OOTDay - AI Fashion Assistant
 
-An AI-powered fashion assistant platform that helps users with daily outfit decisions and connects fashion inspiration directly to purchase opportunities.
+OOTDay is an AI-powered fashion assistant for Thai users that turns chat-based styling advice into shoppable outfit recommendations.
 
-## Overview
+## Latest Updates (February 2026)
 
-OOTDay combines:
-- **AI Chat Interface**: Natural language fashion recommendations powered by Gemini AI
-- **Product Matching**: Integration with Central Group inventory for direct purchases
-- **RAG Pipeline**: Supabase pgvector semantic search for fashion knowledge and products
+- **Cross-look deduplication v8.0+**: Fixed cross-look contamination issues by removing global product replacement and per-look isolated flat-lay generation.
+- Dynamic response mode is now first-turn vs follow-up aware.
+- First message + informational-looking query still returns `CLOTHS` recommendations (looks).
+- Follow-up informational query (after recommendations) returns text-first knowledge with CTA before generating more looks.
+- CTA behavior is explicit.
+  - `Yes` generates looks.
+  - `No` keeps conversation in info mode (no auto-look generation loop).
+- Flat-lay fallback UI no longer uses product photos.
+  - When image generation fails, UI shows abstract fallback cards (no model leakage from source product images).
+- Flat-lay generation is stricter against human outputs.
+  - Default flat-lay mode now avoids reference images (`FLAT_LAY_REFERENCE_IMAGE_MODE=none` unless overridden).
+  - Prompt now includes stronger "flat-lay purity lock" to reject human/model/mannequin outputs.
 
-## Quick Start
+## Core Capabilities
 
-### Frontend Development
-
-```bash
-cd apps/web
-pnpm install
-pnpm dev
-```
-
-Open [http://localhost:3000](http://localhost:3000) to view the app.
-
-### Environment Setup
-
-```bash
-cd apps/web
-cp .env.sample .env
-# Add your API keys:
-# - OPENROUTER_API_KEY for AI models (Gemini, OpenAI embeddings)
-# - NEXT_PUBLIC_SUPABASE_URL, NEXT_PUBLIC_SUPABASE_ANON_KEY for Supabase
-# - SUPABASE_SERVICE_ROLE_KEY for server-side operations
-```
-
-## Project Structure
-
-```
-/
-├── apps/
-│   ├── web/                        # Next.js 14 frontend (TypeScript)
-│   │   ├── components/             # React components (chat, outfit, occasion, ui)
-│   │   ├── lib/                    # Core logic (services, hooks, utils, types)
-│   │   ├── tests/                  # Test suites
-│   │   │   ├── e2e/                # Playwright E2E specs
-│   │   │   ├── fixtures/           # Mock data & test fixtures
-│   │   │   └── utils/              # Test utilities (evaluator, scenarios, exporter)
-│   │   └── scripts/                # Standalone scripts (seeding, testing)
-│   └── sentiment_classification/   # ML sentiment classifier
-├── docs/                           # Documentation
-│   ├── architecture/               # System design & analysis docs
-│   ├── prd/                        # Product requirements
-│   ├── guides/                     # Development & testing guides
-│   ├── bugs/                       # Bug reports
-│   └── migration/                  # Migration guides
-├── scripts/                        # Automation scripts
-│   ├── classification/             # Product scraping & occasion classification
-│   ├── image_processing/           # Image processing (Python)
-│   └── migration/                  # DB migration scripts
-├── data/                           # Data files
-│   ├── products/                   # Product JSON (fallback)
-│   ├── personas/                   # AI persona definitions + knowledge base
-│   ├── catalogs/                   # Product catalog CSVs
-│   └── assets/                     # Static images
-├── specs/                          # Feature specs & implementation plans
-├── tasks/                          # Task definitions
-├── research/                       # Research documents
-└── .claude/                        # Claude Code config (agents, skills, commands)
-```
+- AI chat stylist (Thai + English) with session-aware context.
+- Occasion-aware outfit recommendations with structured `looks`.
+- RAG knowledge retrieval from Supabase pgvector + keyword fallback.
+- Product retrieval from Supabase catalog with JSON fallback.
+- Flat-lay image generation for each look (isolated per-look, no cross-contamination).
+- Direct shopping links to Central Group product pages.
 
 ## Tech Stack
 
-### Frontend (apps/web/)
-- **Framework**: Next.js 14.2 with TypeScript, App Router
-- **UI**: Radix UI + shadcn/ui components
-- **Styling**: Tailwind CSS v4
-- **Testing**: Vitest (1032+ tests), Playwright E2E
-- **Package Manager**: pnpm
+| Layer | Technology |
+|-------|------------|
+| **Frontend** | Next.js 14, TypeScript 5.3+, Tailwind CSS v4 |
+| **UI Components** | Radix UI + shadcn/ui |
+| **State Management** | Zustand |
+| **Backend** | Azure Functions, Node.js/TypeScript |
+| **AI/ML** | Claude AI, n8n, Langflow |
+| **Database** | Azure Cosmos DB, Redis Cache |
+| **Storage** | Azure Blob Storage |
+| **Testing** | Playwright (E2E), Vitest |
+| **Auth** | Azure AD B2C |
+| **Product Data** | Central Group API |
 
-### Backend & AI
-- **Database**: Supabase (PostgreSQL + pgvector)
-- **AI Models**: OpenRouter (Gemini 3 Flash, Gemini 2.5 Flash Image, OpenAI embeddings)
-- **RAG**: Supabase pgvector (225 knowledge chunks, 1000+ products with embeddings)
-- **Image Generation**: Gemini vision-based flat-lay generation
+## Architecture At A Glance
 
-### Development Tools
-- **AI Assistant**: Claude Code with custom skills
-- **Browser Automation**: Playwright MCP
+- Chat entrypoint: `/api/chat` -> `/Users/tachongrak/Projects/OOTD/apps/web/app/api/chat/route.ts`
+- Core chat pipeline: `/Users/tachongrak/Projects/OOTD/apps/web/lib/services/ai-chat-service.ts`
+- v5 flow: guardrails -> query analysis -> product filtering -> RAG retrieval -> prompt build -> AI -> looks parse/validate -> response
+- Image endpoint: `/api/generate-image` -> `/Users/tachongrak/Projects/OOTD/apps/web/app/api/generate-image/route.ts`
+- Image client and flat-lay logic: `/Users/tachongrak/Projects/OOTD/apps/web/lib/services/image-generation-service.ts`
+- Flat-lay prompt builder: `/Users/tachongrak/Projects/OOTD/apps/web/lib/prompts/image-prompts.ts`
+
+## Quick Start
+
+```bash
+cd /Users/tachongrak/Projects/OOTD/apps/web
+pnpm install
+cp .env.sample .env.local
+pnpm dev
+```
+
+Open [http://localhost:3000](http://localhost:3000).
+
+If you need a custom port:
+
+```bash
+pnpm dev -p 3100
+```
+
+## Environment Variables
+
+Minimum required for end-to-end AI flow:
+
+| Variable | Required | Purpose |
+| --- | --- | --- |
+| `OPENROUTER_API_KEY` | Yes | Server-side chat + image generation |
+| `NEXT_PUBLIC_SUPABASE_URL` | Yes | Supabase endpoint |
+| `NEXT_PUBLIC_SUPABASE_ANON_KEY` | Yes | Supabase client auth |
+| `SUPABASE_SERVICE_ROLE_KEY` | Yes (server ops) | Server-side Supabase access |
+
+Common feature flags:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `SUPABASE_PRODUCTS_ENABLED` | `true` | Use Supabase products (`false` = JSON fallback) |
+| `SUPABASE_RAG_ENABLED` | `true` | Enable semantic product search path |
+| `SYSTEM_PROMPT_VERSION` | `v5.0` | Chat prompt version selector |
+| `FLAT_LAY_USE_VISION` | `true` | Vision description enrichment mode |
+| `FLAT_LAY_STRICT_PRODUCT_ONLY` | `true` | Enforce strict product-only image behavior |
+
+Advanced flat-lay controls:
+
+| Variable | Default | Purpose |
+| --- | --- | --- |
+| `FLAT_LAY_REFERENCE_IMAGE_MODE` | `none` | `none`, `non-garment`, `all` reference image usage |
+| `FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE` | `false` | Opt-in to include hero garment reference in `non-garment` mode |
 
 ## Development Commands
 
 ```bash
-# Frontend
-cd apps/web
-pnpm install      # Install dependencies
-pnpm dev          # Development server
-pnpm build        # Production build
-pnpm lint         # Run linting
-pnpm test         # Run tests (Vitest)
+cd /Users/tachongrak/Projects/OOTD/apps/web
+pnpm dev
+pnpm build
+pnpm lint
+pnpm test
 ```
 
 ## Testing
 
+Vitest:
+
 ```bash
-cd apps/web
-pnpm test              # Run unit tests (Vitest, 1032+ tests)
-pnpm vitest run        # Run tests once (CI mode)
+cd /Users/tachongrak/Projects/OOTD/apps/web
+pnpm vitest run
 ```
 
-Test utilities live in `apps/web/tests/utils/` (evaluator, scenarios, result exporter).
+Playwright (example):
 
-## Documentation
+```bash
+cd /Users/tachongrak/Projects/OOTD/apps/web
+pnpm exec playwright test tests/e2e/e2e-chat-journey.spec.ts --project=chromium
+```
 
-- [Architecture](docs/architecture/architecture.md)
-- [Loop Analysis](docs/architecture/loop-analysis.md)
-- [Vision Flat-Lay](docs/architecture/vision-flat-lay-implementation.md)
-- [Product Requirements](docs/prd/)
-- [Development Guides](docs/guides/)
-- [Test Mode](docs/guides/test-mode.md)
+E2E screenshots and debugging artifacts are typically saved under:
 
-## 12 Leverage Points of Agentic Coding
+- `/Users/tachongrak/Projects/OOTD/test-result`
 
-### In Agent (Core Four)
-1. Context
-2. Model
-3. Prompt
-4. Tools
+## Repository Structure
 
-### Through Agent
-5. Standard Output
-6. Types
-7. Docs
-8. Tests
-9. Architecture
-10. Plans
-11. Templates
-12. AI Developer Workflows
+```text
+/Users/tachongrak/Projects/OOTD
+├── apps/
+│   ├── web/                      # Next.js app
+│   └── sentiment_classification/ # ML service
+├── data/                         # Products, personas, assets
+├── docs/                         # Architecture, guides, PRDs
+├── research/                     # Research documents
+├── scripts/                      # Automation and tooling
+├── specs/                        # Feature specs and implementation plans
+├── tasks/                        # Task definitions
+└── test-result/                  # Playwright outputs/screenshots
+```
+
+## Target Users
+
+1. **Fashion-Curious & Social Users** (15-28)
+2. **Fashion-Struggling Shoppers** (18-35)
+3. **Mobile-First Inspiration Seekers** (20-35)
+4. **Special Occasions & Professionals** (25-45)
+
+## Integration Points
+
+| System | Purpose |
+|--------|---------|
+| **Central Group API** | Product catalog and inventory |
+| **Claude AI API** | Fashion recommendations and chat |
+| **Kling AI** | Virtual try-on image generation |
+| **Azure Functions** | Serverless backend APIs |
+| **Azure Cosmos DB** | Product and user data |
+| **Azure Blob Storage** | Images and media |
+| **Azure AD B2C** | User authentication |
+| **Playwright MCP** | Browser automation testing |
+
+## Key References
+
+- Architecture: `/Users/tachongrak/Projects/OOTD/docs/architecture/architecture.md`
+- Loop analysis: `/Users/tachongrak/Projects/OOTD/docs/architecture/loop-analysis.md`
+- Test mode guide: `/Users/tachongrak/Projects/OOTD/docs/guides/test-mode.md`
+- Informational query detection spec: `/Users/tachongrak/Projects/OOTD/specs/informational-query-detection.md`
+- Vision flat-lay implementation spec: `/Users/tachongrak/Projects/OOTD/apps/web/specs/VISION_FLAT_LAY_IMPLEMENTATION.md`
