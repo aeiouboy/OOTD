@@ -152,8 +152,8 @@ export interface ChatResponse {
 
 const MAX_CHAT_MESSAGE_CHARS = 160
 const MAX_CHAT_MESSAGE_LINES = 3
-const MAX_INFO_CHAT_MESSAGE_CHARS = 420
-const MAX_INFO_CHAT_MESSAGE_LINES = 8
+const MAX_INFO_CHAT_MESSAGE_CHARS = 560
+const MAX_INFO_CHAT_MESSAGE_LINES = 10
 const MAX_LOOKS_PER_RESPONSE = 2
 
 const LOOK_CONFIRMATION_YES_PREFIX = '__LOOK_CTA_YES__::'
@@ -207,18 +207,21 @@ function isExplicitLookGenerationRequest(message: string): boolean {
  */
 function shortenAssistantMessage(
   rawMessage: string,
-  options?: { maxChars?: number; maxLines?: number }
+  options?: { maxChars?: number; maxLines?: number; mode?: 'default' | 'info' }
 ): string {
   if (!rawMessage || typeof rawMessage !== 'string') return ''
 
   const maxChars = options?.maxChars ?? MAX_CHAT_MESSAGE_CHARS
   const maxLines = options?.maxLines ?? MAX_CHAT_MESSAGE_LINES
+  const mode = options?.mode ?? 'default'
 
   const withoutStructuredBlock = rawMessage
     .replace(/---LOOKS_DATA---[\s\S]*?---END_LOOKS_DATA---/gi, '')
     .trim()
 
-  const sanitized = sanitizeConversationalText(withoutStructuredBlock)
+  const sanitized = mode === 'info'
+    ? sanitizeInfoConversationalText(withoutStructuredBlock)
+    : sanitizeConversationalText(withoutStructuredBlock)
   const normalized = sanitized
     .replace(/\r\n/g, '\n')
     .replace(/[ \t]+/g, ' ')
@@ -308,6 +311,33 @@ function sanitizeConversationalText(rawMessage: string): string {
       return !hadListPrefix || line.length <= 45
     })
     .map(({ line }) => line)
+
+  return cleanedLines.join('\n').trim()
+}
+
+function sanitizeInfoConversationalText(rawMessage: string): string {
+  if (!rawMessage) return ''
+
+  const withoutLinks = rawMessage
+    .replace(/\[คลิกดูสินค้า[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi, '')
+    .replace(/https?:\/\/[^\s)]+/gi, '')
+    .replace(/\(\s*https?:\/\/[^\s)]+\s*\)/gi, '')
+
+  const structuralPatterns = [
+    /^---.*---$/i,
+    /^\[(?:CATEGORY|USER PROFILE|FASHION KNOWLEDGE CONTEXT|SYSTEM INSTRUCTION).*\]$/i,
+    /^(?:LOOK|ITEM|STYLING|TOTAL_PRICE|IMAGE_PROMPT|SKU)\s*:/i,
+  ]
+
+  const cleanedLines = withoutLinks
+    .split('\n')
+    .map((line) => line.trim())
+    .filter((line) => line.length > 0)
+    .map((line) => line.replace(/^([•*-]|\d+\.)\s*/, '').trim())
+    .filter((line) => line.length > 0)
+    .filter((line) => !structuralPatterns.some((pattern) => pattern.test(line)))
+    .filter((line) => !/\bsku\b/i.test(line))
+    .filter((line) => !/central\.co\.th/i.test(line))
 
   return cleanedLines.join('\n').trim()
 }
@@ -718,6 +748,28 @@ function buildLookConfirmationKnowledgeMessage(
     lines.push('โอเค เดี๋ยวคุยข้อมูลต่อแบบไม่สร้างลุคก่อนนะ ถ้าอยากให้สร้างเมื่อไหร่บอกได้เลย')
   }
   return lines.join('\n')
+}
+
+function buildKnowledgeContextFallbackMessage(
+  knowledgeContext: string,
+  options?: { includeQuestion?: boolean }
+): string | undefined {
+  if (!knowledgeContext?.trim()) return undefined
+
+  const includeQuestion = options?.includeQuestion ?? true
+  const summarizedKnowledge = shortenAssistantMessage(knowledgeContext, {
+    maxChars: Math.max(180, MAX_INFO_CHAT_MESSAGE_CHARS - 120),
+    maxLines: Math.max(4, MAX_INFO_CHAT_MESSAGE_LINES - 2),
+    mode: 'info',
+  })
+
+  if (!summarizedKnowledge) return undefined
+
+  if (includeQuestion) {
+    return `${summarizedKnowledge}\nถ้าพร้อมแล้วกด "สร้างลุคให้ดู" ได้เลย`
+  }
+
+  return `${summarizedKnowledge}\nคุยข้อมูลต่อได้เลย เดี๋ยวช่วยไกด์ให้`
 }
 
 /**
@@ -1154,7 +1206,21 @@ async function processAIChatRequestV5(
   // STEP 3: Check turn count and force recommendations
   const clarificationCount = getClarificationCount(sessionContext)
   const shouldForceNow = shouldForceRecommendationsUtil(sessionContext)
-  const hasProvidedRecommendations = sessionContext.hasProvidedRecommendations || false
+  let hasProvidedRecommendations = Boolean(
+    sessionContext.hasProvidedRecommendations ||
+    (sessionContext.recommendationCount || 0) > 0 ||
+    (sessionContext.recommendedProductIds?.length || 0) > 0
+  )
+  if (!sessionContext.hasProvidedRecommendations && hasProvidedRecommendations) {
+    sessionContext = {
+      ...sessionContext,
+      hasProvidedRecommendations: true,
+      recommendationCount: Math.max(sessionContext.recommendationCount || 0, 1),
+      dialoguePhase: sessionContext.dialoguePhase === 'clarification' ? 'follow-up' : sessionContext.dialoguePhase,
+    }
+    hasProvidedRecommendations = true
+    console.log('[AI Chat v5] Healed session context: inferred follow-up phase from previously recommended products')
+  }
   const isFollowUpPhase = sessionContext.dialoguePhase === 'follow-up' || hasProvidedRecommendations
   let followUpResponseMode: 'auto' | 'info' = sessionContext.followUpResponseMode || 'auto'
 
@@ -1208,25 +1274,19 @@ async function processAIChatRequestV5(
   }
 
   if (lookConfirmation.decision === 'no') {
-    const infoLockedSessionContext = {
+    sessionContext = {
       ...sessionContext,
       followUpResponseMode: 'info' as const,
     }
-    console.log('[AI Chat v5] User declined look confirmation CTA — returning info-only continuation')
-    return {
-      message: buildLookConfirmationKnowledgeMessage(userMessage, occasion, thaiOccasion, {
-        includeQuestion: false,
-      }),
-      recommendedProducts: [],
-      looks: [],
-      sessionContext: infoLockedSessionContext,
-      imageRequest: false,
-    }
+    followUpResponseMode = 'info'
+    console.log('[AI Chat v5] User declined look confirmation CTA — switching to INFO mode with RAG response')
   }
 
   const preliminaryCategory = detectCategory(userMessage)
   const isExplicitLookRequest = isExplicitLookGenerationRequest(userMessage)
-  const shouldBypassLookConfirmation = followUpResponseMode === 'info' && isExplicitLookRequest
+  const shouldBypassLookConfirmation = lookConfirmation.decision !== 'no' &&
+    followUpResponseMode === 'info' &&
+    isExplicitLookRequest
   if (shouldBypassLookConfirmation) {
     sessionContext = {
       ...sessionContext,
@@ -1245,16 +1305,7 @@ async function processAIChatRequestV5(
     hasOccasionContext
 
   if (shouldAskLookConfirmation) {
-    console.log('[AI Chat v5] Follow-up look request requires user confirmation CTA')
-    return {
-      message: buildLookConfirmationKnowledgeMessage(userMessage, occasion, thaiOccasion),
-      recommendedProducts: [],
-      looks: [],
-      sessionContext,
-      imageRequest: false,
-      responseType: 'look_confirmation',
-      pendingLookQuery: userMessage,
-    }
+    console.log('[AI Chat v5] Follow-up look request detected — will answer with RAG knowledge before confirmation CTA')
   }
 
   // STEP 5: Filter products
@@ -1444,11 +1495,13 @@ async function processAIChatRequestV5(
   const isInfoByCategory = categoryDetection.category === 'INFO' && hasProvidedRecommendations
   const isInfoFirstMessage = categoryDetection.category === 'INFO' && !hasProvidedRecommendations
   const isInfoByMode = followUpResponseMode === 'info' && !isExplicitLookRequest
+  const isInfoForLookConfirmationPrompt = shouldAskLookConfirmation
   let infoModeActive = !isInfoOverriddenByLookConfirmationYes && (
     isInfoFromLookDecline ||
     isInfoFollowUp ||
     isInfoByCategory ||
-    isInfoByMode
+    isInfoByMode ||
+    isInfoForLookConfirmationPrompt
   )
 
   if (isInfoOverriddenByLookConfirmationYes) {
@@ -1476,6 +1529,14 @@ async function processAIChatRequestV5(
       recommendedTemplate: 'C',
     }
     console.log('[AI Chat v5] INFO mode activated via follow-up info question')
+  } else if (isInfoForLookConfirmationPrompt) {
+    categoryDetection = {
+      category: 'INFO',
+      confidence: Math.max(categoryDetection.confidence, 0.8),
+      matchedKeywords: [...new Set([...categoryDetection.matchedKeywords, 'look_confirmation_cta'])],
+      recommendedTemplate: 'C',
+    }
+    console.log('[AI Chat v5] INFO mode activated for RAG-first response before look confirmation CTA')
   } else if (isInfoByCategory) {
     console.log('[AI Chat v5] INFO mode activated via category detection in follow-up phase')
   } else if (isInfoByMode) {
@@ -1663,22 +1724,36 @@ RULES:
   const finalLooks = infoModeActive ? [] : cappedLooks
   const recommendedProducts = infoModeActive ? [] : filteredProducts.slice(0, 6)
   const newProductIds = infoModeActive ? [] : extractProductIds(recommendedProducts)
-  const shouldShowInfoCTA = infoModeActive && !isInfoFromLookDecline && followUpResponseMode !== 'info'
+  const shouldShowLookConfirmationCTA = shouldAskLookConfirmation
+  const shouldShowInfoCTA = infoModeActive &&
+    !shouldShowLookConfirmationCTA &&
+    !isInfoFromLookDecline &&
+    followUpResponseMode !== 'info'
   const updatedSessionContext = infoModeActive
     ? sessionContext
     : updateSessionContext(sessionContext, newProductIds)
 
   if (infoModeActive) {
-    console.log('[AI Chat v5] INFO mode response returned (text-only + CTA trigger)')
+    if (shouldShowLookConfirmationCTA) {
+      console.log('[AI Chat v5] INFO mode response returned (RAG knowledge + look confirmation CTA)')
+    } else {
+      console.log('[AI Chat v5] INFO mode response returned (text-only + CTA trigger)')
+    }
   } else {
     console.log(`[AI Chat v5] Recommended ${newProductIds.length} new products. Total in session: ${updatedSessionContext.recommendedProductIds.length}`)
   }
 
+  const infoFallbackMessage = buildKnowledgeContextFallbackMessage(knowledgeContext, {
+    includeQuestion: shouldShowLookConfirmationCTA || shouldShowInfoCTA,
+  }) || buildLookConfirmationKnowledgeMessage(userMessage, occasion, thaiOccasion, {
+    includeQuestion: shouldShowLookConfirmationCTA || shouldShowInfoCTA,
+  })
   const finalAssistantMessage = infoModeActive
-    ? shortenAssistantMessage(cleanedTextResult.text, {
+    ? (shortenAssistantMessage(cleanedTextResult.text, {
       maxChars: MAX_INFO_CHAT_MESSAGE_CHARS,
       maxLines: MAX_INFO_CHAT_MESSAGE_LINES,
-    })
+      mode: 'info',
+    }) || infoFallbackMessage)
     : shortenAssistantMessage(cleanedTextResult.text)
 
   // STEP 10: Return response with looks
@@ -1691,8 +1766,8 @@ RULES:
       : `Found ${filteredProducts.length} unique products, AI curated ${finalLooks.length} looks`,
     sessionContext: updatedSessionContext,
     looks: finalLooks,
-    responseType: shouldShowInfoCTA ? 'info' : undefined,
-    pendingLookQuery: shouldShowInfoCTA ? userMessage : undefined,
+    responseType: shouldShowLookConfirmationCTA ? 'look_confirmation' : (shouldShowInfoCTA ? 'info' : undefined),
+    pendingLookQuery: (shouldShowLookConfirmationCTA || shouldShowInfoCTA) ? userMessage : undefined,
     // INFO mode is always text-only.
     imageRequest: infoModeActive ? false : finalLooks.some(l => l.items.length > 0),
     outfitDescription: !infoModeActive && finalLooks.length > 0

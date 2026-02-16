@@ -399,12 +399,13 @@ export function ChatAssistant({
         )
       }
 
+      // CTA-triggered look generation should render the same flat-lay experience
+      // as regular outfit recommendations (avoid falling back to mannequin photos).
       const shouldAutoGenerateFlatLay = Boolean(
         data.imageRequest &&
-        validOutfits.length > 0 &&
-        !isLookGenerationCtaRequest
+        validOutfits.length > 0
       )
-      const allowLazyFlatLayGeneration = !isLookGenerationCtaRequest
+      const allowLazyFlatLayGeneration = true
 
       // v5.0: Mark outfits as generating flat-lay only when auto image generation is enabled
       const outfitsWithLoading = validOutfits.map((outfit: Outfit) => ({
@@ -459,8 +460,6 @@ export function ChatAssistant({
         ))
 
         setGeneratingImage(false)
-      } else if (data.imageRequest && isLookGenerationCtaRequest) {
-        console.log('[Chat] Skipping auto flat-lay generation for CTA look request to keep follow-up UX stable')
       }
     } catch (error) {
       console.error('Chat error:', error)
