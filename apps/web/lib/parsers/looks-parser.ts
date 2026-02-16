@@ -467,9 +467,11 @@ export function validateLooksAgainstCatalog(
           catalogProduct = urlMap.get(normalizeUrl(item.url));
         }
 
-        // Tertiary: Fallback to a similar catalog product when SKU/URL doesn't resolve.
-        // This keeps "View Look" actionable even when the exact SKU is missing.
-        if (!catalogProduct) {
+        // Tertiary: Fallback to a similar catalog product only for non-garment roles.
+        // For core garments, dropping unresolved items is safer than introducing
+        // cross-look contamination into a flat-lay composition.
+        const inferredItemRole = inferRoleFromLookItem(item);
+        if (!catalogProduct && shouldAllowSimilarCatalogFallback(inferredItemRole)) {
           catalogProduct = findSimilarCatalogProduct(item, catalog, usedCatalogSkusInLook);
         }
 
@@ -512,23 +514,25 @@ export function validateLooksAgainstCatalog(
       .filter((item): item is (ChatLookItem & { __role: string }) => item !== null);
 
     // Enforce category-role uniqueness per look to prevent duplicate tops/shoes in flat-lay.
-    // Keep the first occurrence of each role.
+    // Keep the first occurrence of each inferred role.
     const seenRoles = new Set<string>();
     const validatedItems: ChatLookItem[] = [];
     for (const item of validatedItemsWithRole) {
-      const roleKey = (item.__role || '').toLowerCase();
+      const roleKey = inferRoleFromLookItem(item);
       if (roleKey && seenRoles.has(roleKey)) continue;
       if (roleKey) seenRoles.add(roleKey);
       const { __role, ...cleanItem } = item;
       validatedItems.push(cleanItem);
     }
 
+    const silhouetteSafeItems = enforceSingleOutfitSilhouette(validatedItems);
+
     // Recalculate total from validated items
-    const totalPrice = validatedItems.reduce((sum, item) => sum + item.price, 0);
+    const totalPrice = silhouetteSafeItems.reduce((sum, item) => sum + item.price, 0);
 
     return {
       ...look,
-      items: validatedItems,
+      items: silhouetteSafeItems,
       totalPrice,
     };
   }).filter(look => look.items.length > 0); // Drop looks with no valid items
@@ -560,32 +564,93 @@ function getCatalogDescription(product: EnhancedProduct): string {
  * Resolve canonical outfit role for de-duplication (top, bottom, footwear, etc.)
  */
 function resolveOutfitRole(product: EnhancedProduct, item: ChatLookItem): string {
+  const catalogRole = inferRoleFromCatalogProduct(product);
+  const itemRole = inferRoleFromLookItem(item);
+  const itemNameRole = inferRoleFromRawText(`${item.name || ''} ${item.description || ''}`);
+
+  // Product name/description usually carries the strongest silhouette signal
+  // (e.g. "jumpsuit", "dress"), even when category/role fields are noisy.
+  if (itemNameRole) {
+    const conflictsWithCatalog = catalogRole && catalogRole !== itemNameRole;
+    const conflictsWithItem = itemRole && itemRole !== itemNameRole;
+    if (conflictsWithCatalog || conflictsWithItem || !catalogRole) {
+      return itemNameRole;
+    }
+  }
+
+  if (catalogRole) return catalogRole;
+  if (itemRole) return itemRole;
+  if (itemNameRole) return itemNameRole;
+
   const explicitRole = product.classification?.role;
   if (explicitRole && explicitRole.trim()) {
     return explicitRole.trim().toLowerCase();
   }
 
-  const raw = `${item.category || ''} ${item.name || ''}`.toLowerCase();
-
-  if (/dress|เดรส/.test(raw)) return 'dress';
-  if (/shirt|tee|t-shirt|blouse|เสื้อ/.test(raw)) return 'top';
-  if (/pants|jeans|trouser|skirt|shorts|กางเกง|กระโปรง/.test(raw)) return 'bottom';
-  if (/shoe|sneaker|heel|sandal|loafer|รองเท้า/.test(raw)) return 'footwear';
-  if (/bag|belt|hat|cap|jewelry|accessor|กระเป๋า|เข็มขัด|หมวก|เครื่องประดับ/.test(raw)) return 'accessory';
-  if (/blazer|jacket|coat|cardigan|outer/.test(raw)) return 'outerwear';
-
   return (item.category || 'item').toLowerCase();
+}
+
+function inferRoleFromLookItem(item: ChatLookItem & { __role?: string }): string {
+  return (
+    inferRoleFromRawText(`${item.name || ''} ${item.description || ''}`) ||
+    inferRoleFromRawText(item.category || '') ||
+    (item.__role || '')
+  ).toLowerCase();
+}
+
+function inferRoleFromCatalogProduct(product: EnhancedProduct): string {
+  return (
+    inferRoleFromRawText(`${getCatalogDisplayName(product)} ${getCatalogDescription(product)}`) ||
+    inferRoleFromRawText(`${getCatalogCategoryText(product)} ${product.classification?.role || ''}`)
+  );
+}
+
+/**
+ * Guardrail: one look should map to one core outfit silhouette.
+ * If a one-piece garment (dress/jumpsuit/romper) is present, keep only one
+ * one-piece and drop top/bottom/outerwear pieces that imply a second look
+ * bleeding into the same flat-lay.
+ */
+function enforceSingleOutfitSilhouette(items: ChatLookItem[]): ChatLookItem[] {
+  const firstOnePieceIndex = items.findIndex((item) =>
+    inferRoleFromRawText(`${item.category || ''} ${item.name || ''} ${item.description || ''}`) === 'dress'
+  );
+
+  if (firstOnePieceIndex === -1) return items;
+
+  return items.filter((item, index) => {
+    const role = inferRoleFromRawText(`${item.category || ''} ${item.name || ''} ${item.description || ''}`);
+
+    if (role === 'dress') {
+      return index === firstOnePieceIndex;
+    }
+
+    if (role === 'top' || role === 'bottom') {
+      return false;
+    }
+
+    if (role === 'outerwear') {
+      // One-piece looks should stay single-garment to avoid blazer/jacket bleed.
+      return false;
+    }
+
+    return true;
+  });
 }
 
 function inferRoleFromRawText(raw: string): string {
   const value = raw.toLowerCase();
-  if (/dress|เดรส/.test(value)) return 'dress';
+  if (/dress|gown|one[\s-]?piece|เดรส|ชุดเดรส|ชุดแซก|แซก|jumpsuit|romper|playsuit|จั๊มสูท|จัมป์สูท|วันพีซ/.test(value)) return 'dress';
+  if (/blazer|jacket|coat|cardigan|outer|สูท|แจ็กเก็ต/.test(value)) return 'outerwear';
   if (/shirt|tee|t-shirt|blouse|เสื้อ|top/.test(value)) return 'top';
   if (/pants|jeans|trouser|skirt|shorts|กางเกง|กระโปรง|bottom/.test(value)) return 'bottom';
   if (/shoe|sneaker|heel|sandal|loafer|รองเท้า|footwear/.test(value)) return 'footwear';
   if (/bag|belt|hat|cap|jewelry|accessor|กระเป๋า|เข็มขัด|หมวก|เครื่องประดับ/.test(value)) return 'accessory';
-  if (/blazer|jacket|coat|cardigan|outer/.test(value)) return 'outerwear';
   return '';
+}
+
+function shouldAllowSimilarCatalogFallback(role: string): boolean {
+  return role === 'footwear' || role === 'accessory';
 }
 
 function normalizeText(value: string): string {
@@ -635,9 +700,7 @@ function findSimilarCatalogProduct(
     const candidateSku = (candidate.sku || candidate.centralIntegration?.centralSKU || '').toLowerCase();
     if (candidateSku && usedCatalogSkusInLook.has(candidateSku)) continue;
 
-    const candidateRole = inferRoleFromRawText(
-      `${candidate.classification?.role || ''} ${getCatalogCategoryText(candidate)} ${getCatalogDisplayName(candidate)}`
-    );
+    const candidateRole = inferRoleFromCatalogProduct(candidate);
 
     // If we know the expected role, skip incompatible roles.
     if (requestedRole && candidateRole && requestedRole !== candidateRole) continue;
@@ -685,7 +748,7 @@ function findSimilarCatalogProduct(
     // Guardrail: avoid weak random matches.
     const hasSemanticSignal = requestedRole || nameOverlap > 0 || categoryOverlap > 0;
     if (!hasSemanticSignal) continue;
-    if (score < 20) continue;
+    if (score < 28) continue;
 
     if (!best || score > best.score) {
       best = { product: candidate, score };

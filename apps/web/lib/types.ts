@@ -54,6 +54,10 @@ export interface Outfit {
   flatLayImageBase64?: string
   /** Flag indicating flat-lay image is being generated (v5.0) */
   isGeneratingFlatLay?: boolean
+  /** True when server-side flat-lay generation already failed for this look in current chat turn */
+  flatLayGenerationFailed?: boolean
+  /** Allow card-level lazy flat-lay generation fallback when parent does not provide image */
+  allowLazyFlatLayGeneration?: boolean
   /** True when some item colors in flat-lay couldn't be determined from product name */
   hasApproximateColors?: boolean
   /** Try-on image URL for fitting model visualization (v6.0) */
@@ -97,6 +101,12 @@ export interface ChatMessage {
   sender: "user" | "assistant"
   timestamp: Date
   outfits?: Outfit[]
+  /** Show one-tap CTA to request outfit recommendations after info response */
+  showInfoCTA?: boolean
+  /** Show yes/no confirmation CTA before generating follow-up looks */
+  showLookConfirmationCTA?: boolean
+  /** Original user query that the confirmation CTA refers to */
+  pendingLookQuery?: string
   /** Image URL for generated outfit visualization (v3.1) */
   imageUrl?: string
   /** Base64-encoded image data (v3.1) */

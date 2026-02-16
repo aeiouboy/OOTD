@@ -144,10 +144,60 @@ export interface ChatResponse {
   outfitDescription?: string
   /** v5.0: Structured looks with per-look items and flat-lay images */
   looks?: ChatLook[]
+  /** v5.5: response mode hint for frontend UI behavior */
+  responseType?: 'info' | 'look_confirmation'
+  /** Original query kept for CTA confirmation buttons */
+  pendingLookQuery?: string
 }
 
 const MAX_CHAT_MESSAGE_CHARS = 160
 const MAX_CHAT_MESSAGE_LINES = 3
+const MAX_INFO_CHAT_MESSAGE_CHARS = 420
+const MAX_INFO_CHAT_MESSAGE_LINES = 8
+const MAX_LOOKS_PER_RESPONSE = 2
+
+const LOOK_CONFIRMATION_YES_PREFIX = '__LOOK_CTA_YES__::'
+const LOOK_CONFIRMATION_NO_PREFIX = '__LOOK_CTA_NO__::'
+
+function parseLookConfirmationMessage(rawMessage: string): {
+  decision: 'yes' | 'no' | 'none'
+  query: string
+} {
+  const trimmed = rawMessage.trim()
+
+  if (trimmed.startsWith(LOOK_CONFIRMATION_YES_PREFIX)) {
+    const query = trimmed.slice(LOOK_CONFIRMATION_YES_PREFIX.length).trim()
+    return {
+      decision: 'yes',
+      query: query || 'แนะนำลุคให้หน่อย',
+    }
+  }
+
+  if (trimmed.startsWith(LOOK_CONFIRMATION_NO_PREFIX)) {
+    const query = trimmed.slice(LOOK_CONFIRMATION_NO_PREFIX.length).trim()
+    return {
+      decision: 'no',
+      query: query || 'แนะนำลุคให้หน่อย',
+    }
+  }
+
+  return {
+    decision: 'none',
+    query: trimmed,
+  }
+}
+
+function isExplicitLookGenerationRequest(message: string): boolean {
+  const patterns = [
+    /(?:สร้าง|จัด|แนะนำ|ขอ).*(?:ลุค|outfit|ชุด)/i,
+    /(?:another|more).*(?:look|outfit)/i,
+    /(?:show|generate).*(?:look|outfit)/i,
+    /(?:ลุค|outfit|ชุด).*(?:ใหม่|เพิ่ม)/i,
+    /แต่งตัว.*ให้หน่อย/i,
+  ]
+
+  return patterns.some((pattern) => pattern.test(message))
+}
 
 /**
  * Keep assistant text concise for chat bubbles.
@@ -155,8 +205,14 @@ const MAX_CHAT_MESSAGE_LINES = 3
  * - Removes product-line noise (prices/links) from conversational text
  * - Limits message by line count and character count
  */
-function shortenAssistantMessage(rawMessage: string): string {
+function shortenAssistantMessage(
+  rawMessage: string,
+  options?: { maxChars?: number; maxLines?: number }
+): string {
   if (!rawMessage || typeof rawMessage !== 'string') return ''
+
+  const maxChars = options?.maxChars ?? MAX_CHAT_MESSAGE_CHARS
+  const maxLines = options?.maxLines ?? MAX_CHAT_MESSAGE_LINES
 
   const withoutStructuredBlock = rawMessage
     .replace(/---LOOKS_DATA---[\s\S]*?---END_LOOKS_DATA---/gi, '')
@@ -174,15 +230,15 @@ function shortenAssistantMessage(rawMessage: string): string {
   const limitedLines = normalized
     .split('\n')
     .filter((line) => line.trim().length > 0)
-    .slice(0, MAX_CHAT_MESSAGE_LINES)
+    .slice(0, maxLines)
     .join('\n')
     .trim()
 
-  if (limitedLines.length <= MAX_CHAT_MESSAGE_CHARS) {
+  if (limitedLines.length <= maxChars) {
     return limitedLines
   }
 
-  const maxContentChars = Math.max(1, MAX_CHAT_MESSAGE_CHARS - 3)
+  const maxContentChars = Math.max(1, maxChars - 3)
   const cutoff = limitedLines.slice(0, maxContentChars)
   const breakpoints = [
     cutoff.lastIndexOf('\n'),
@@ -210,6 +266,8 @@ function sanitizeConversationalText(rawMessage: string): string {
     .replace(/\[คลิกดูสินค้า[^\]]*\]\((https?:\/\/[^\s)]+)\)/gi, '')
     .replace(/https?:\/\/[^\s)]+/gi, '')
     .replace(/\(\s*https?:\/\/[^\s)]+\s*\)/gi, '')
+    // Keep chat copy natural: avoid forcing explicit look counts in bubble text.
+    .replace(/\b\d+\s*(?:ลุค|look(?:s)?|outfit(?:s)?)\b/gi, '')
     // Strip "Look N:" / "**Look N:" prefixes — look details are in cards, not chat text
     .replace(/\*{0,2}Look\s*\d+\s*[:.]?\s*\*{0,2}\s*/gi, '')
     .replace(/\b(?:ลุค|look)\s*(?:ที่)?\s*(?:\d+|แรก|สอง|สาม)\s*[:.]?\s*/gi, '')
@@ -258,7 +316,7 @@ function sanitizeConversationalText(rawMessage: string): string {
  * v5-specific template instruction.
  * Legacy template instructions include "prices/links in text", which conflicts with v5 UI.
  */
-function getV5TemplateInstruction(category: 'CLOTHS' | 'OTHER'): string {
+function getV5TemplateInstruction(category: 'CLOTHS' | 'OTHER' | 'INFO'): string {
   if (category === 'CLOTHS') {
     return `[CATEGORY: CLOTHS - v5]
 Provide outfit recommendations in RECOMMENDATION MODE.
@@ -270,6 +328,16 @@ Provide outfit recommendations in RECOMMENDATION MODE.
 - CRITICAL: NEVER mix two different main garments in one look (e.g. two dresses, or dress + jumpsuit).
 - CRITICAL: Use STYLING lines to complete missing pieces (footwear/bag/jewelry) instead of adding extra garment ITEM lines.
 - CRITICAL: Include 1-3 STYLING lines so the flat-lay can render a complete look without cross-look contamination.`
+  }
+
+  if (category === 'INFO') {
+    return `[CATEGORY: INFO - v5]
+Provide factual guidance in INFO MODE.
+- Respond TEXT ONLY in conversational chat style
+- DO NOT include ---LOOKS_DATA--- block
+- DO NOT include product recommendations, prices, SKUs, or URLs
+- Use knowledge context as the source of truth
+- Keep the answer concise and actionable`
   }
 
   return `[CATEGORY: OTHER - v5]
@@ -518,6 +586,35 @@ const AUSPICIOUS_COLORS_BY_DAY: Record<string, string[]> = {
   'อาทิตย์': ['red', 'orange', 'yellow'],            // เดช=แดง, ศรี=ส้ม, มนตรี=เหลือง
 }
 
+const COLOR_NAME_TO_THAI: Record<string, string> = {
+  red: 'แดง',
+  orange: 'ส้ม',
+  yellow: 'เหลือง',
+  gold: 'ทอง',
+  green: 'เขียว',
+  blue: 'ฟ้า',
+  navy: 'น้ำเงิน',
+  purple: 'ม่วง',
+  pink: 'ชมพู',
+  black: 'ดำ',
+  white: 'ขาว',
+  gray: 'เทา',
+  grey: 'เทา',
+}
+
+const THAI_OCCASION_LABELS: Partial<Record<ThaiOccasion, string>> = {
+  temple: 'ไปวัด',
+  'wedding-morning': 'งานแต่งช่วงเช้า',
+  'wedding-evening': 'งานแต่งช่วงเย็น',
+  funeral: 'งานศพ',
+  'songkran-temple': 'ทำบุญสงกรานต์',
+  'songkran-water': 'เล่นน้ำสงกรานต์',
+  'loy-krathong': 'ลอยกระทง',
+  'chinese-new-year': 'ตรุษจีน',
+  'royal-event': 'งานพิธีการ',
+  casual: 'วันสบายๆ',
+}
+
 function detectAuspiciousColorRequest(message: string): string[] {
   const lower = message.toLowerCase()
 
@@ -543,6 +640,84 @@ function detectAuspiciousColorRequest(message: string): string[] {
   }
 
   return []
+}
+
+function toThaiColor(color: string): string {
+  return COLOR_NAME_TO_THAI[color.toLowerCase()] || color
+}
+
+function formatThaiColorList(colors: string[]): string {
+  const translated = colors
+    .map(toThaiColor)
+    .filter((color, index, arr) => arr.indexOf(color) === index)
+    .slice(0, 3)
+
+  if (translated.length === 0) return ''
+  if (translated.length === 1) return translated[0]
+  if (translated.length === 2) return `${translated[0]} และ ${translated[1]}`
+  return `${translated[0]}, ${translated[1]} และ ${translated[2]}`
+}
+
+function extractThaiDayLabel(message: string): string | undefined {
+  const match = message.match(/วัน(จันทร์|อังคาร|พุธ|พฤหัส(?:บดี)?|ศุกร์|เสาร์|อาทิตย์)/i)
+  if (!match) return undefined
+
+  const normalizedDay = match[1] === 'พฤหัส' ? 'พฤหัสบดี' : match[1]
+  return `วัน${normalizedDay}`
+}
+
+function buildLookConfirmationKnowledgeMessage(
+  message: string,
+  occasion?: OccasionType,
+  thaiOccasion?: ThaiOccasion | null,
+  options?: { includeQuestion?: boolean }
+): string {
+  const includeQuestion = options?.includeQuestion ?? true
+  const lines: string[] = []
+  const occasionLabel = occasion
+    ? OCCASIONS[occasion]?.name?.th
+    : (thaiOccasion ? THAI_OCCASION_LABELS[thaiOccasion] : undefined)
+
+  const occasionConfig = occasion ? OCCASIONS[occasion] : undefined
+  if (occasionConfig) {
+    const keyPieces = occasionConfig.styleGuidelines?.keyPieces?.slice(0, 2).join(' + ') || ''
+    const avoidItem = occasionConfig.styleGuidelines?.avoidItems?.[0]
+    const label = occasionConfig.name?.th || occasionLabel || 'โอกาสนี้'
+    if (keyPieces && avoidItem) {
+      lines.push(`สำหรับ${label} ให้เน้น ${keyPieces} และเลี่ยง ${avoidItem}`)
+    } else {
+      lines.push(`สำหรับ${label} เน้นความสุภาพและบาลานซ์โทนสีให้เหมาะกับบริบท`)
+    }
+  } else if (occasionLabel) {
+    lines.push(`สำหรับ${occasionLabel} ควรเลือกโทนสีและความทางการให้เหมาะกับบรรยากาศงาน`)
+  }
+
+  const auspiciousColors = detectAuspiciousColorRequest(message)
+  if (auspiciousColors.length > 0) {
+    const dayLabel = extractThaiDayLabel(message)
+    const colorLabel = formatThaiColorList(auspiciousColors)
+    if (colorLabel) {
+      lines.push(`${dayLabel || 'วันนี้'}โทนมงคลที่แมตช์ง่ายคือ ${colorLabel}`)
+    }
+  }
+
+  if (auspiciousColors.length === 0 && occasionConfig?.styleGuidelines?.colorSuggestions?.length) {
+    const suggestedColors = formatThaiColorList(occasionConfig.styleGuidelines.colorSuggestions.slice(0, 3))
+    if (suggestedColors) {
+      lines.push(`โทนที่แต่งแล้วปลอดภัยคือ ${suggestedColors}`)
+    }
+  }
+
+  if (lines.length === 0) {
+    lines.push('เข้าใจโจทย์แล้ว เดี๋ยวเราช่วยคุมโทนและระดับความทางการให้เหมาะกับสถานการณ์นี้')
+  }
+
+  if (includeQuestion) {
+    lines.push('ต้องการให้เราสร้างลุคตัวอย่างจากแนวนี้ต่อเลยไหม')
+  } else {
+    lines.push('โอเค เดี๋ยวคุยข้อมูลต่อแบบไม่สร้างลุคก่อนนะ ถ้าอยากให้สร้างเมื่อไหร่บอกได้เลย')
+  }
+  return lines.join('\n')
 }
 
 /**
@@ -918,17 +1093,20 @@ async function processAIChatRequestV5(
   request: ChatRequest,
   availableProducts: EnhancedProduct[]
 ): Promise<ChatResponse> {
+  const lookConfirmation = parseLookConfirmationMessage(request.message)
+  const userMessage = lookConfirmation.query || request.message
+
   // Initialize or get session context
   let sessionContext = request.sessionContext || createSessionContext(request.conversationId)
 
   // Check if session should be reset
-  if (shouldResetSession(request.message)) {
+  if (shouldResetSession(userMessage)) {
     sessionContext = createSessionContext(request.conversationId)
     console.log('[AI Chat v5] Session reset requested')
   }
 
   // STEP 1: Check guardrails first - redirect if off-topic
-  const guardrailMessage = checkGuardrails(request.message)
+  const guardrailMessage = checkGuardrails(userMessage)
   if (guardrailMessage) {
     console.log('[AI Chat v5] Off-topic query detected, redirecting')
     return {
@@ -940,11 +1118,11 @@ async function processAIChatRequestV5(
   }
 
   // STEP 1.5: Check for image generation request (v3.1)
-  const isImageRequest = detectImageRequest(request.message)
+  const isImageRequest = detectImageRequest(userMessage)
   if (isImageRequest) {
     console.log('[AI Chat v5] Image generation request detected')
     const conversationMessages = request.conversationHistory || []
-    const outfitDescription = extractOutfitDescription(request.message, conversationMessages, 5)
+    const outfitDescription = extractOutfitDescription(userMessage, conversationMessages, 5)
     return {
       message: 'เจ๋งเลย! กำลังสร้างภาพชุดที่เราแนะนำให้ดูนะ ✨ รอแป๊บนึงนะจ้า! 📸',
       recommendedProducts: [],
@@ -956,7 +1134,7 @@ async function processAIChatRequestV5(
   }
 
   // STEP 2: Analyze user query and extract detected info
-  const userQuery = analyzeUserQuery(request.message)
+  const userQuery = analyzeUserQuery(userMessage)
   const detectedInfo: Partial<SessionContext['conversationContext']> = {}
   if (userQuery.detectedGender) detectedInfo.gender = userQuery.detectedGender
   if (userQuery.detectedOccasion) detectedInfo.occasion = userQuery.detectedOccasion
@@ -978,9 +1156,20 @@ async function processAIChatRequestV5(
   const shouldForceNow = shouldForceRecommendationsUtil(sessionContext)
   const hasProvidedRecommendations = sessionContext.hasProvidedRecommendations || false
   const isFollowUpPhase = sessionContext.dialoguePhase === 'follow-up' || hasProvidedRecommendations
+  let followUpResponseMode: 'auto' | 'info' = sessionContext.followUpResponseMode || 'auto'
+
+  // User explicitly opted back into look generation (via CTA) -> restore auto mode.
+  if (lookConfirmation.decision === 'yes' && followUpResponseMode === 'info') {
+    sessionContext = {
+      ...sessionContext,
+      followUpResponseMode: 'auto',
+    }
+    followUpResponseMode = 'auto'
+    console.log('[AI Chat v5] Follow-up response mode reset to auto (user confirmed look generation)')
+  }
 
   // v2.2: Detect follow-up request
-  const followUpDetection = detectFollowUpRequest(request.message, hasProvidedRecommendations)
+  const followUpDetection = detectFollowUpRequest(userMessage, hasProvidedRecommendations)
   console.log(formatFollowUpDetection(followUpDetection))
 
   // Check if clarifications are needed
@@ -1008,14 +1197,64 @@ async function processAIChatRequestV5(
   }
 
   // STEP 4: Detect occasion (fall back to session context from previous turns)
-  const occasionFromMessage = detectOccasion(request.message)
+  const occasionFromMessage = detectOccasion(userMessage)
   const occasion = occasionFromMessage || (sessionContext.conversationContext.occasion as OccasionType | undefined)
-  const thaiOccasion = detectThaiOccasionFromMessage(request.message)
+  const thaiOccasion = detectThaiOccasionFromMessage(userMessage)
   if (occasion && !occasionFromMessage) {
     console.log(`[AI Chat v5] Occasion carried from session context: ${occasion}`)
   }
   if (thaiOccasion) {
     console.log(`[AI Chat v5] Thai occasion detected: ${thaiOccasion}`)
+  }
+
+  if (lookConfirmation.decision === 'no') {
+    const infoLockedSessionContext = {
+      ...sessionContext,
+      followUpResponseMode: 'info' as const,
+    }
+    console.log('[AI Chat v5] User declined look confirmation CTA — returning info-only continuation')
+    return {
+      message: buildLookConfirmationKnowledgeMessage(userMessage, occasion, thaiOccasion, {
+        includeQuestion: false,
+      }),
+      recommendedProducts: [],
+      looks: [],
+      sessionContext: infoLockedSessionContext,
+      imageRequest: false,
+    }
+  }
+
+  const preliminaryCategory = detectCategory(userMessage)
+  const isExplicitLookRequest = isExplicitLookGenerationRequest(userMessage)
+  const shouldBypassLookConfirmation = followUpResponseMode === 'info' && isExplicitLookRequest
+  if (shouldBypassLookConfirmation) {
+    sessionContext = {
+      ...sessionContext,
+      followUpResponseMode: 'auto',
+    }
+    followUpResponseMode = 'auto'
+    console.log('[AI Chat v5] User explicitly requested looks while in info mode — bypassing confirmation CTA')
+  }
+  const hasOccasionContext = Boolean(occasion || thaiOccasion || userQuery.detectedOccasion)
+  const shouldAskLookConfirmation = hasProvidedRecommendations &&
+    lookConfirmation.decision === 'none' &&
+    !shouldBypassLookConfirmation &&
+    followUpResponseMode !== 'info' &&
+    followUpDetection.type !== 'info_question' &&
+    preliminaryCategory.category === 'CLOTHS' &&
+    hasOccasionContext
+
+  if (shouldAskLookConfirmation) {
+    console.log('[AI Chat v5] Follow-up look request requires user confirmation CTA')
+    return {
+      message: buildLookConfirmationKnowledgeMessage(userMessage, occasion, thaiOccasion),
+      recommendedProducts: [],
+      looks: [],
+      sessionContext,
+      imageRequest: false,
+      responseType: 'look_confirmation',
+      pendingLookQuery: userMessage,
+    }
   }
 
   // STEP 5: Filter products
@@ -1027,7 +1266,7 @@ async function processAIChatRequestV5(
   // v5.3: Auto-inject auspicious colors when user asks "เสริมดวง" but doesn't name specific colors
   let isAuspiciousColorRequest = false
   if (resolvedColors.length === 0) {
-    const auspiciousColors = detectAuspiciousColorRequest(request.message)
+    const auspiciousColors = detectAuspiciousColorRequest(userMessage)
     if (auspiciousColors.length > 0) {
       resolvedColors = auspiciousColors
       isAuspiciousColorRequest = true
@@ -1046,7 +1285,7 @@ async function processAIChatRequestV5(
   // product source, with heuristic results added only as a small supplement. When an occasion
   // IS detected, semantic results are still prioritized (placed first in the merge) so the AI
   // sees the most relevant products at the top of the catalog, but heuristic results fill gaps.
-  if (process.env.SUPABASE_RAG_ENABLED === 'true' && request.message.length > 5) {
+  if (process.env.SUPABASE_RAG_ENABLED === 'true' && userMessage.length > 5) {
     try {
       const heuristicCount = filteredProducts.length
       // v5.2: Pass detected/profile gender to semantic search for better filtering
@@ -1055,8 +1294,8 @@ async function processAIChatRequestV5(
                             request.userPreferences?.gender
       // v5.3: Enrich semantic query with auspicious color names for better product matching
       const semanticQuery = isAuspiciousColorRequest
-        ? `${request.message} ${resolvedColors.join(' ')} outfit`
-        : request.message
+        ? `${userMessage} ${resolvedColors.join(' ')} outfit`
+        : userMessage
       const semanticProducts = await searchProductsFromSupabase(
         semanticQuery,
         occasion || undefined,
@@ -1105,7 +1344,7 @@ async function processAIChatRequestV5(
   if (occasion && filteredProducts.length > 0) {
     // Beach sub-occasion: tighten formality to 1-3 (instead of travel's 2-5)
     const beachKeywords = ['ทะเล', 'ชายหาด', 'เกาะ', 'ริมทะเล', 'ริมหาด', 'beach', 'island', 'seaside']
-    const isBeach = beachKeywords.some(kw => request.message.toLowerCase().includes(kw))
+    const isBeach = beachKeywords.some(kw => userMessage.toLowerCase().includes(kw))
     const resolvedFormalityRange = isBeach
       ? { min: 1 as FormalityLevel, max: 3 as FormalityLevel }
       : OCCASIONS[occasion]?.formalityRange
@@ -1193,25 +1432,83 @@ async function processAIChatRequestV5(
   }
 
   // Rank products by relevance so truncation keeps the best candidates
-  const budget = request.userPreferences?.budget || extractBudget(request.message)
+  const budget = request.userPreferences?.budget || extractBudget(userMessage)
   filteredProducts = rankProductsByRelevance(filteredProducts, occasion, budget)
   console.log(`[AI Chat v5] Ranked ${filteredProducts.length} products by relevance`)
 
+  // Category detection + INFO gate
+  let categoryDetection = detectCategory(userMessage)
+  const isInfoFollowUp = followUpDetection.type === 'info_question'
+  const isInfoFromLookDecline = lookConfirmation.decision === 'no'
+  const isInfoOverriddenByLookConfirmationYes = lookConfirmation.decision === 'yes'
+  const isInfoByCategory = categoryDetection.category === 'INFO' && hasProvidedRecommendations
+  const isInfoFirstMessage = categoryDetection.category === 'INFO' && !hasProvidedRecommendations
+  const isInfoByMode = followUpResponseMode === 'info' && !isExplicitLookRequest
+  let infoModeActive = !isInfoOverriddenByLookConfirmationYes && (
+    isInfoFromLookDecline ||
+    isInfoFollowUp ||
+    isInfoByCategory ||
+    isInfoByMode
+  )
+
+  if (isInfoOverriddenByLookConfirmationYes) {
+    categoryDetection = {
+      ...categoryDetection,
+      category: 'CLOTHS',
+      recommendedTemplate: 'A',
+      matchedKeywords: [...new Set([...categoryDetection.matchedKeywords, 'look_confirmation_yes'])],
+    }
+    infoModeActive = false
+    console.log('[AI Chat v5] INFO gate bypassed by explicit look confirmation CTA YES')
+  } else if (isInfoFromLookDecline) {
+    categoryDetection = {
+      category: 'INFO',
+      confidence: 1,
+      matchedKeywords: ['look_confirmation_declined'],
+      recommendedTemplate: 'C',
+    }
+    console.log('[AI Chat v5] INFO mode forced by user declining look confirmation CTA')
+  } else if (isInfoFollowUp) {
+    categoryDetection = {
+      category: 'INFO',
+      confidence: Math.max(categoryDetection.confidence, followUpDetection.confidence),
+      matchedKeywords: [...new Set([...categoryDetection.matchedKeywords, ...followUpDetection.matchedKeywords])],
+      recommendedTemplate: 'C',
+    }
+    console.log('[AI Chat v5] INFO mode activated via follow-up info question')
+  } else if (isInfoByCategory) {
+    console.log('[AI Chat v5] INFO mode activated via category detection in follow-up phase')
+  } else if (isInfoByMode) {
+    categoryDetection = {
+      ...categoryDetection,
+      category: 'INFO',
+      recommendedTemplate: 'C',
+      matchedKeywords: [...new Set([...categoryDetection.matchedKeywords, 'user_info_mode'])],
+    }
+    console.log('[AI Chat v5] INFO mode locked by user preference (post-CTA decline)')
+  } else if (isInfoFirstMessage) {
+    categoryDetection = {
+      ...categoryDetection,
+      category: 'CLOTHS',
+      recommendedTemplate: 'A',
+    }
+    infoModeActive = false
+    console.log('[AI Chat v5] INFO detected on first message, forcing CLOTHS recommendation mode')
+  }
+  console.log(formatCategoryDetection(categoryDetection))
+
   // STEP 6: Serialize catalog for v5 pipe-delimited format
-  // Tag auspicious-color-matched products with ★ so the AI knows to prefer them
+  // INFO mode keeps a smaller catalog for context while staying text-only.
+  const catalogLimit = infoModeActive ? 20 : 50
   const catalogContext = serializeCatalogForV5(
-    filteredProducts.slice(0, 50),
+    filteredProducts.slice(0, catalogLimit),
     auspiciousColorMatchedSkus.size > 0 ? auspiciousColorMatchedSkus : undefined
   )
-  console.log(`[AI Chat v5] Catalog injected: ${Math.min(filteredProducts.length, 50)} products${auspiciousColorMatchedSkus.size > 0 ? ` (${auspiciousColorMatchedSkus.size} color-tagged)` : ''}`)
-
-  // Category detection for template instruction
-  const categoryDetection = detectCategory(request.message)
-  console.log(formatCategoryDetection(categoryDetection))
+  console.log(`[AI Chat v5] Catalog injected: ${Math.min(filteredProducts.length, catalogLimit)} products${auspiciousColorMatchedSkus.size > 0 ? ` (${auspiciousColorMatchedSkus.size} color-tagged)` : ''}${infoModeActive ? ' [INFO mode]' : ''}`)
 
   // RAG-based knowledge retrieval
   const ragResult = await retrieveKnowledgeWithRAG(
-    request.message,
+    userMessage,
     userQuery.detectedGender || sessionContext.conversationContext.gender,
     userQuery.detectedOccasion || sessionContext.conversationContext.occasion
   )
@@ -1250,9 +1547,11 @@ async function processAIChatRequestV5(
   // v5.0: Build occasion instruction for explicit AI guidance
   // Placed RIGHT BEFORE the user message for maximum attention (recency bias)
   let occasionInstruction = ''
-  if (occasion) {
-    occasionInstruction = await buildOccasionInstruction(occasion, request.message)
+  if (occasion && !infoModeActive) {
+    occasionInstruction = await buildOccasionInstruction(occasion, userMessage)
     console.log(`[AI Chat v5] Occasion instruction injected for: ${occasion}`)
+  } else if (occasion && infoModeActive) {
+    console.log('[AI Chat v5] INFO mode active — skipping occasion recommendation instruction')
   }
 
   // v5.3: No-match honest messaging when formality filter had to be widened
@@ -1279,7 +1578,7 @@ RULES:
   // v5.0: Build prompt with catalog context (pipe-delimited) instead of old createOutfitPrompt
   // CRITICAL: Occasion instruction is placed AFTER the catalog and BEFORE the user message
   // so the AI sees it last and prioritizes it (recency bias)
-  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\n${occasionInstruction}${noMatchInstruction}${auspiciousColorInstruction}\nUser message: ${request.message}`
+  let enhancedPrompt = `${userPreferencesContext}${templateInstruction}${knowledgeContext}\n\n${catalogContext}\n\n${occasionInstruction}${noMatchInstruction}${auspiciousColorInstruction}\nUser message: ${userMessage}`
 
   if (followUpInstruction) {
     enhancedPrompt = `${followUpInstruction}\n\n${enhancedPrompt}`
@@ -1290,10 +1589,13 @@ RULES:
   const lastAssistantMessage = request.conversationHistory?.filter(m => m.role === 'assistant').pop()
   const isAnsweringPreviousClarification = lastAssistantMessage &&
     sessionContext.askedClarifications.length > 0 &&
-    isAnsweringClarification(request.message, sessionContext.askedClarifications[sessionContext.askedClarifications.length - 1])
-  const shouldInjectForceInstruction = shouldForceNow || isAnsweringPreviousClarification || isFollowUpPhase
+    isAnsweringClarification(userMessage, sessionContext.askedClarifications[sessionContext.askedClarifications.length - 1])
+  const shouldInjectForceInstruction = !infoModeActive &&
+    (shouldForceNow || isAnsweringPreviousClarification || isFollowUpPhase)
 
-  if (shouldInjectForceInstruction) {
+  if (infoModeActive) {
+    console.log('[AI Chat v5] INFO mode active — skipping force recommendation lockout')
+  } else if (shouldInjectForceInstruction) {
     console.log('[AI Chat v5] Force recommendation mode active')
   }
 
@@ -1317,7 +1619,12 @@ RULES:
       console.log('[AI Chat v5] Retrying with force instruction due to loop detection')
       const retryForceInstruction = generateForceInstruction(loopDetection.loopType, clarificationCount)
       const retryPrompt = `${enhancedPrompt}\n\n${retryForceInstruction}`
-      aiResponse = await callOpenRouter(retryPrompt, request.conversationHistory, sessionContext, true)
+      aiResponse = await callOpenRouter(
+        retryPrompt,
+        request.conversationHistory,
+        sessionContext,
+        !infoModeActive
+      )
       hasRetriedForLoop = true
     }
   }
@@ -1340,6 +1647,10 @@ RULES:
   // STEP 9: Validate looks against catalog (anti-hallucination)
   const validatedLooks = validateLooksAgainstCatalog(parsedResponse.looks, filteredProducts)
   console.log(`[AI Chat v5] Validated: ${validatedLooks.length} looks (${validatedLooks.reduce((sum, l) => sum + l.items.length, 0)} items)`)
+  const cappedLooks = validatedLooks.slice(0, MAX_LOOKS_PER_RESPONSE)
+  if (validatedLooks.length > MAX_LOOKS_PER_RESPONSE) {
+    console.log(`[AI Chat v5] Capped looks: ${validatedLooks.length} → ${cappedLooks.length}`)
+  }
 
   // Remove hallucinated/dropped product mentions from text so bubble content
   // always matches the validated look cards.
@@ -1349,25 +1660,43 @@ RULES:
     validatedLooks
   )
 
-  // Collect recommended products from validated looks for session tracking
-  const recommendedProducts = filteredProducts.slice(0, 6)
-  const newProductIds = extractProductIds(recommendedProducts)
-  const updatedSessionContext = updateSessionContext(sessionContext, newProductIds)
+  const finalLooks = infoModeActive ? [] : cappedLooks
+  const recommendedProducts = infoModeActive ? [] : filteredProducts.slice(0, 6)
+  const newProductIds = infoModeActive ? [] : extractProductIds(recommendedProducts)
+  const shouldShowInfoCTA = infoModeActive && !isInfoFromLookDecline && followUpResponseMode !== 'info'
+  const updatedSessionContext = infoModeActive
+    ? sessionContext
+    : updateSessionContext(sessionContext, newProductIds)
 
-  console.log(`[AI Chat v5] Recommended ${newProductIds.length} new products. Total in session: ${updatedSessionContext.recommendedProductIds.length}`)
+  if (infoModeActive) {
+    console.log('[AI Chat v5] INFO mode response returned (text-only + CTA trigger)')
+  } else {
+    console.log(`[AI Chat v5] Recommended ${newProductIds.length} new products. Total in session: ${updatedSessionContext.recommendedProductIds.length}`)
+  }
+
+  const finalAssistantMessage = infoModeActive
+    ? shortenAssistantMessage(cleanedTextResult.text, {
+      maxChars: MAX_INFO_CHAT_MESSAGE_CHARS,
+      maxLines: MAX_INFO_CHAT_MESSAGE_LINES,
+    })
+    : shortenAssistantMessage(cleanedTextResult.text)
 
   // STEP 10: Return response with looks
   return {
-    message: shortenAssistantMessage(cleanedTextResult.text),
+    message: finalAssistantMessage,
     recommendedProducts,
     occasion,
-    reasoning: `Found ${filteredProducts.length} unique products, AI curated ${validatedLooks.length} looks`,
+    reasoning: infoModeActive
+      ? `Answered informational query with ${ragResult.retrievedIds.length} retrieved knowledge docs`
+      : `Found ${filteredProducts.length} unique products, AI curated ${finalLooks.length} looks`,
     sessionContext: updatedSessionContext,
-    looks: validatedLooks,
-    // Still trigger auto-image if looks have items
-    imageRequest: validatedLooks.some(l => l.items.length > 0),
-    outfitDescription: validatedLooks.length > 0
-      ? `Fashion looks for ${occasion || 'daily wear'}: ${validatedLooks.map(l => l.styleName).join(', ')}`
+    looks: finalLooks,
+    responseType: shouldShowInfoCTA ? 'info' : undefined,
+    pendingLookQuery: shouldShowInfoCTA ? userMessage : undefined,
+    // INFO mode is always text-only.
+    imageRequest: infoModeActive ? false : finalLooks.some(l => l.items.length > 0),
+    outfitDescription: !infoModeActive && finalLooks.length > 0
+      ? `Fashion looks for ${occasion || 'daily wear'}: ${finalLooks.map(l => l.styleName).join(', ')}`
       : undefined,
   }
 }
@@ -1772,7 +2101,11 @@ export async function processAIChatRequest(
       console.warn('[AI Chat] 🔁 RETRYING due to template validation failure')
 
       // Generate correction instruction
-      const expectedTemplate = categoryDetection.category === 'CLOTHS' ? 'A' : 'B'
+      const expectedTemplate = categoryDetection.category === 'CLOTHS'
+        ? 'A'
+        : categoryDetection.category === 'INFO'
+          ? 'C'
+          : 'B'
       const correctionInstruction = `[CRITICAL CORRECTION - TEMPLATE VIOLATION DETECTED]
 
 Your previous response did not follow Template ${expectedTemplate} requirements.
@@ -1783,7 +2116,13 @@ ${validation.errors.join('\n')}
 You MUST regenerate your response following Template ${expectedTemplate} structure EXACTLY:
 ${getTemplateInstruction(categoryDetection.category)}
 
-MANDATORY: Fix all errors listed above and provide a complete ${expectedTemplate === 'A' ? 'outfit recommendation with products, prices, and links' : 'tips-based response without prices or links'}.`
+MANDATORY: Fix all errors listed above and provide a complete ${
+  expectedTemplate === 'A'
+    ? 'outfit recommendation with products, prices, and links'
+    : expectedTemplate === 'B'
+      ? 'tips-based response without prices or links'
+      : 'informational text-only response without product recommendations'
+}.`
 
       // Retry with correction instruction
       const correctionPrompt = `${enhancedPrompt}\n\n${correctionInstruction}`

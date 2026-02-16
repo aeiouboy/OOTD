@@ -49,6 +49,7 @@ export async function retrieveFromSupabase(
       topK,
       matchThreshold
     )
+    console.log(`[supabase-retrieval] searchKnowledge returned ${rows.length} rows, top similarity=${rows[0]?.similarity?.toFixed(3) ?? 'N/A'}`)
 
     // 4. Map rows to KnowledgeDocument[]
     const documents: KnowledgeDocument[] = rows.map((row, index) => ({

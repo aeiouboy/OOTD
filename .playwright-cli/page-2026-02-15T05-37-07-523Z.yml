@@ -1,0 +1,140 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - complementary "Navigation and Filters" [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "OOTDay" [level=1] [ref=e8]
+          - paragraph [ref=e9]: Your AI Fashion Assistant
+        - generic [ref=e10]:
+          - heading "Category" [level=3] [ref=e11]
+          - radiogroup [ref=e12]:
+            - generic [ref=e13]:
+              - radio "All" [ref=e14]
+              - generic [ref=e15] [cursor=pointer]: All
+            - generic [ref=e16]:
+              - radio "Women" [checked] [ref=e17]:
+                - img [ref=e19]
+              - generic [ref=e21] [cursor=pointer]: Women
+            - generic [ref=e22]:
+              - radio "Men" [ref=e23]
+              - generic [ref=e24] [cursor=pointer]: Men
+        - generic [ref=e25]:
+          - heading "Occasion" [level=3] [ref=e26]
+          - generic [ref=e27]:
+            - button "Weekend" [ref=e28]:
+              - img [ref=e29]
+              - generic [ref=e31]: Weekend
+            - button "Date Night" [ref=e32]:
+              - img [ref=e33]
+              - generic [ref=e35]: Date Night
+            - button "Everyday" [ref=e36]:
+              - img [ref=e37]
+              - generic [ref=e39]: Everyday
+          - generic [ref=e40]:
+            - button "ทำงาน/ออฟฟิศ" [ref=e41]:
+              - img [ref=e42]
+              - generic [ref=e45]: ทำงาน/ออฟฟิศ
+            - button "วันชิลล์/วันหยุด" [ref=e46]:
+              - img [ref=e47]
+              - generic [ref=e53]: วันชิลล์/วันหยุด
+            - button "งานแต่งงาน" [ref=e54]:
+              - img [ref=e55]
+              - generic [ref=e58]: งานแต่งงาน
+            - button "ออกกำลังกาย" [ref=e59]:
+              - img [ref=e60]
+              - generic [ref=e66]: ออกกำลังกาย
+            - button "ท่องเที่ยว" [ref=e67]:
+              - img [ref=e68]
+              - generic [ref=e70]: ท่องเที่ยว
+            - button "เดท" [ref=e71]:
+              - img [ref=e72]
+              - generic [ref=e74]: เดท
+            - button "ดินเนอร์" [ref=e75]:
+              - img [ref=e76]
+              - generic [ref=e81]: ดินเนอร์
+            - button "คาเฟ่" [ref=e82]:
+              - img [ref=e83]
+              - generic [ref=e85]: คาเฟ่
+            - button "ปาร์ตี้" [ref=e86]:
+              - img [ref=e87]
+              - generic [ref=e93]: ปาร์ตี้
+        - generic [ref=e94]:
+          - heading "Price Range" [level=3] [ref=e95]
+          - generic [ref=e97] [cursor=pointer]:
+            - slider "Minimum" [ref=e101]
+            - slider "Maximum" [ref=e103]
+          - generic [ref=e104]:
+            - generic [ref=e105]: ฿0
+            - generic [ref=e106]: "-"
+            - generic [ref=e107]: ฿20,000
+        - button "Clear all filters" [ref=e108]
+    - main "Product Discovery" [ref=e109]:
+      - generic [ref=e110]:
+        - heading "Discover Products" [level=2] [ref=e111]
+        - 'button "Wishlist: 0 items" [ref=e112]':
+          - img
+    - generic "Chat and outfit details" [ref=e194]:
+      - separator "Resize chat panel" [ref=e195]:
+        - img [ref=e196]
+      - generic [ref=e205]:
+        - generic [ref=e206]:
+          - generic [ref=e207]: OOTDay Stylist
+          - generic [ref=e208]:
+            - button "Set panel to compact size, 320 pixels" [ref=e209]:
+              - img
+              - generic [ref=e210]: Compact
+            - button "Set panel to default size, 420 pixels" [ref=e211]:
+              - img
+              - generic [ref=e212]: Default
+            - button "Set panel to wide size, 560 pixels" [ref=e213]:
+              - img
+              - generic [ref=e214]: Wide
+        - generic [ref=e216]:
+          - generic [ref=e217]:
+            - img [ref=e220]
+            - generic [ref=e223]:
+              - heading "OOTDay Stylist" [level=2] [ref=e224]
+              - paragraph [ref=e227]: Online
+          - button [ref=e228]:
+            - img
+        - generic [ref=e232]:
+          - img [ref=e234]
+          - generic [ref=e236]:
+            - generic [ref=e238]: ฮ้ายฮายย👋 กำลังหาชุดไปไหนอยู่น้าา
+            - paragraph [ref=e239]: 12:37
+        - generic [ref=e241]:
+          - generic [ref=e242]:
+            - button "ทำงาน" [ref=e243]:
+              - img
+              - text: ทำงาน
+            - button "งานแต่ง" [ref=e244]:
+              - img
+              - text: งานแต่ง
+            - button "เที่ยว" [ref=e245]:
+              - img
+              - text: เที่ยว
+            - button "วันหยุด" [ref=e246]:
+              - img
+              - text: วันหยุด
+            - button "ปาร์ตี้" [ref=e247]:
+              - img
+              - text: ปาร์ตี้
+            - button "รับปริญญา" [ref=e248]:
+              - img
+              - text: รับปริญญา
+            - button "แคชชวล" [ref=e249]:
+              - img
+              - text: แคชชวล
+            - button "เพิ่ม" [ref=e250]:
+              - img
+              - text: เพิ่ม
+          - button [ref=e251]:
+            - img [ref=e252]
+        - generic [ref=e255]:
+          - button [ref=e256]:
+            - img
+          - textbox "พิมพ์ข้อความ..." [ref=e257]
+          - button [disabled]:
+            - img
+      - status [ref=e258]

@@ -1,0 +1,11 @@
+- generic [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e11]:
+    - button [ref=e13]:
+      - img
+    - generic [ref=e23]:
+      - heading "Hey there, What should I call you?" [level=1] [ref=e25]
+      - textbox "Your name" [active] [ref=e29]
+      - generic [ref=e30]:
+        - button [disabled]:
+          - img

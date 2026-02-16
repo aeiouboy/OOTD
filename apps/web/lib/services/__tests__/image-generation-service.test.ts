@@ -83,4 +83,82 @@ describe('image-generation-service', () => {
     expect(result.error).toBe('GENERATION_FAILED');
     expect(mockFetch).toHaveBeenCalledTimes(3);
   });
+
+  it('falls back to text-only generation when multimodal flat-lay fails', async () => {
+    mockFetch
+      .mockResolvedValueOnce(
+        makeOpenRouterResponse({
+          choices: [
+            {
+              message: {
+                content: 'no image payload yet',
+              },
+            },
+          ],
+        })
+      )
+      .mockResolvedValueOnce(
+        makeOpenRouterResponse({
+          choices: [
+            {
+              message: {
+                content: 'still no image payload',
+              },
+            },
+          ],
+        })
+      )
+      .mockResolvedValueOnce(
+        makeOpenRouterResponse({
+          choices: [
+            {
+              message: {
+                content: 'multimodal retries exhausted',
+              },
+            },
+          ],
+        })
+      )
+      .mockResolvedValueOnce(
+        makeOpenRouterResponse({
+          choices: [
+            {
+              message: {
+                images: [
+                  {
+                    image_url: {
+                      url: 'data:image/png;base64,ZmFrZS1mYWxsYmFjay1pbWFnZQ==',
+                    },
+                  },
+                ],
+              },
+            },
+          ],
+        })
+      );
+
+    const requestWithReferenceImage: FlatLayRequest = {
+      ...baseRequest,
+      items: [
+        {
+          ...baseRequest.items[0],
+          thumbnailUrl: 'https://example.com/dress.png',
+        },
+      ],
+    };
+
+    const client = new OpenRouterImageClient('test-api-key');
+    (client as any).sleep = vi.fn().mockResolvedValue(undefined);
+
+    const result = await client.generateFlatLayImage(requestWithReferenceImage);
+
+    expect(result.success).toBe(true);
+    expect(result.imageBase64).toBe('data:image/png;base64,ZmFrZS1mYWxsYmFjay1pbWFnZQ==');
+    expect(mockFetch).toHaveBeenCalledTimes(4);
+
+    const firstRequest = JSON.parse(mockFetch.mock.calls[0][1].body as string);
+    const fallbackRequest = JSON.parse(mockFetch.mock.calls[3][1].body as string);
+    expect(Array.isArray(firstRequest.messages[0].content)).toBe(true);
+    expect(typeof fallbackRequest.messages[0].content).toBe('string');
+  });
 });

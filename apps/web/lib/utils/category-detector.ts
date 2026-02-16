@@ -13,7 +13,7 @@
 /**
  * Product category types
  */
-export type ProductCategory = 'CLOTHS' | 'OTHER'
+export type ProductCategory = 'CLOTHS' | 'OTHER' | 'INFO'
 
 /**
  * Category detection result
@@ -26,7 +26,7 @@ export interface CategoryDetection {
   /** Matched keywords */
   matchedKeywords: string[]
   /** Recommended template */
-  recommendedTemplate: 'A' | 'B'
+  recommendedTemplate: 'A' | 'B' | 'C'
 }
 
 /**
@@ -145,6 +145,34 @@ const OTHER_KEYWORDS = {
 }
 
 /**
+ * INFO query patterns
+ * Informational intent (knowledge question) that should use INFO mode.
+ * NOTE: first-message vs follow-up gate is handled in ai-chat-service.ts.
+ */
+const INFO_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+  { label: 'คืออะไร', pattern: /คืออะไร/i },
+  { label: 'ทำไม', pattern: /ทำไม/i },
+  { label: 'กาลกิณี', pattern: /กาลกิณี/i },
+  { label: 'สีไหนไม่ควร', pattern: /สีไหน.*(?:ไม่ควร|ควรหลีกเลี่ยง)/i },
+  { label: 'ข้อห้าม', pattern: /ข้อห้าม/i },
+  { label: 'ธรรมเนียม/กฎ', pattern: /(?:ธรรมเนียม|กฎแต่งตัว|dress\s*code)/i },
+  { label: 'จับคู่ได้ไหม', pattern: /ใส่.+กับ.+ได้ไหม/i },
+]
+
+/**
+ * Explicit outfit-request patterns.
+ * These override INFO detection and should remain CLOTHS.
+ */
+const EXPLICIT_OUTFIT_PATTERNS: Array<{ label: string; pattern: RegExp }> = [
+  { label: 'แนะนำลุค', pattern: /แนะนำลุค/i },
+  { label: 'จัดลุค', pattern: /จัดลุค/i },
+  { label: 'หาชุด', pattern: /หาชุด/i },
+  { label: 'อยากได้ชุด', pattern: /อยากได้(?:ชุด|ลุค|เสื้อ|กางเกง|เดรส)/i },
+  { label: 'recommend outfit', pattern: /(?:recommend|suggest).*(?:outfit|look)/i },
+  { label: 'show outfit', pattern: /show.*(?:outfit|look)/i },
+]
+
+/**
  * Detects product category from user query
  *
  * @param query - User's query/message
@@ -152,6 +180,25 @@ const OTHER_KEYWORDS = {
  */
 export function detectCategory(query: string): CategoryDetection {
   const lowerQuery = query.toLowerCase()
+
+  // INFO detection runs first, but explicit outfit requests override it.
+  const infoMatches = INFO_PATTERNS
+    .filter(({ pattern }) => pattern.test(query))
+    .map(({ label }) => label)
+  if (infoMatches.length > 0) {
+    const explicitOutfitMatches = EXPLICIT_OUTFIT_PATTERNS
+      .filter(({ pattern }) => pattern.test(query))
+      .map(({ label }) => label)
+
+    if (explicitOutfitMatches.length === 0) {
+      return {
+        category: 'INFO',
+        confidence: Math.min(0.65 + infoMatches.length * 0.1, 1.0),
+        matchedKeywords: infoMatches,
+        recommendedTemplate: 'C',
+      }
+    }
+  }
 
   // Check CLOTHS keywords
   const clothsMatches: string[] = []
@@ -313,6 +360,24 @@ Template A Structure:
 7. Overall outfit summary
 
 MANDATORY: Include prices and links for all products.`
+  }
+
+  if (category === 'INFO') {
+    return `[CATEGORY: INFO - Use Template C]
+You MUST answer as informational guidance only:
+- Respond with text-only explanation (knowledge answer)
+- DO NOT include product recommendations
+- DO NOT include prices (no 💰)
+- DO NOT include links (no 🔗)
+- Keep answer concise and practical
+
+Template C Structure:
+1. Direct answer to the question
+2. Short explanation/context
+3. Optional practical tip
+4. Friendly closing
+
+FORBIDDEN: Do NOT create product list sections, prices, links, or shopping CTA text.`
   }
 
   return `[CATEGORY: OTHER - Use Template B]

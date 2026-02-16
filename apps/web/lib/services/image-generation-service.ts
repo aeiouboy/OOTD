@@ -9,7 +9,7 @@
  * - Rate limiting awareness
  */
 
-import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest } from '../types/image-types';
+import type { ImageGenerationRequest, ImageGenerationResponse, FlatLayRequest, FlatLayItem } from '../types/image-types';
 import { buildFlatLayPrompt, buildFashionPrompt, computeFlatLayLayout } from '../prompts/image-prompts';
 
 /**
@@ -30,6 +30,34 @@ const OPENROUTER_CONFIG = {
   /** Exponential backoff base delay (ms) */
   retryDelay: 1000,
 };
+
+const GARMENT_REFERENCE_PATTERN = /\b(dress|top|tops|shirt|blouse|tee|t-shirt|pants|trouser|trousers|skirt|shorts|jacket|blazer|coat|outerwear|cardigan|sweater|jumpsuit|romper|เดรส|เสื้อ|กางเกง|กระโปรง|แจ็กเก็ต)\b/i;
+const OUTERWEAR_REFERENCE_PATTERN = /\b(jacket|blazer|coat|outerwear|cardigan|suit|แจ็กเก็ต|เสื้อคลุม)\b/i;
+type FlatLayReferenceImageMode = 'all' | 'none' | 'non-garment';
+
+function getFlatLayReferenceImageMode(): FlatLayReferenceImageMode {
+  const rawMode = (process.env.FLAT_LAY_REFERENCE_IMAGE_MODE || 'non-garment').trim().toLowerCase();
+  if (rawMode === 'all' || rawMode === 'none' || rawMode === 'non-garment') {
+    return rawMode;
+  }
+  return 'non-garment';
+}
+
+function shouldUseFlatLayReferenceImage(item: FlatLayItem, mode: FlatLayReferenceImageMode): boolean {
+  if (mode === 'none') return false;
+  if (mode === 'all') return true;
+
+  const signals = `${item.category || ''} ${item.name || ''} ${item.visualDescription || ''}`;
+  return !GARMENT_REFERENCE_PATTERN.test(signals);
+}
+
+function isGarmentItem(item: FlatLayItem): boolean {
+  return GARMENT_REFERENCE_PATTERN.test(`${item.category || ''} ${item.name || ''} ${item.visualDescription || ''}`);
+}
+
+function isOuterwearItem(item: FlatLayItem): boolean {
+  return OUTERWEAR_REFERENCE_PATTERN.test(`${item.category || ''} ${item.name || ''} ${item.visualDescription || ''}`);
+}
 
 /**
  * OpenRouter Image Generation Client
@@ -304,7 +332,42 @@ export class OpenRouterImageClient {
       };
     }
 
-    // Attempt generation with retries
+    const referenceMode = getFlatLayReferenceImageMode();
+    const layout = computeFlatLayLayout(request.items);
+    const selectedImageUrls = layout
+      .filter(entry =>
+        entry.item.thumbnailUrl?.startsWith('https://') &&
+        shouldUseFlatLayReferenceImage(entry.item, referenceMode)
+      )
+      .map(entry => entry.item.thumbnailUrl!);
+
+    if (referenceMode === 'non-garment') {
+      const garmentEntries = layout.filter((entry) =>
+        entry.item.thumbnailUrl?.startsWith('https://') && isGarmentItem(entry.item)
+      );
+      const hasOuterwear = garmentEntries.some((entry) => isOuterwearItem(entry.item));
+      const shouldIncludePrimaryGarment = garmentEntries.length === 1 && !hasOuterwear;
+      if (shouldIncludePrimaryGarment) {
+        const primaryGarmentUrl = garmentEntries[0]?.item.thumbnailUrl;
+        if (primaryGarmentUrl && !selectedImageUrls.includes(primaryGarmentUrl)) {
+          selectedImageUrls.unshift(primaryGarmentUrl);
+        }
+      }
+    }
+
+    const imageUrls = selectedImageUrls.slice(0, 5);
+    const hasImages = imageUrls.length > 0;
+    const prompt = buildFlatLayPrompt(request.items, request.occasionContext, hasImages);
+
+    console.log('[ImageGen] Flat-lay reference mode:', {
+      mode: referenceMode,
+      selectedImages: imageUrls.length,
+      totalItems: request.items.length,
+    });
+
+    let shouldTryTextOnlyFallback = hasImages;
+
+    // Attempt generation with retries (primary mode: include reference images when available)
     for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
       try {
         if (attempt > 0) {
@@ -313,16 +376,6 @@ export class OpenRouterImageClient {
           await this.sleep(delay);
           console.log(`[ImageGen] Flat-lay retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
         }
-
-        // Extract valid product image URLs in layout order (max 5)
-        const layout = computeFlatLayLayout(request.items);
-        const imageUrls = layout
-          .filter(entry => entry.item.thumbnailUrl?.startsWith('https://'))
-          .slice(0, 5)
-          .map(entry => entry.item.thumbnailUrl!);
-
-        const hasImages = imageUrls.length > 0;
-        const prompt = buildFlatLayPrompt(request.items, request.occasionContext, hasImages);
         const result = await this.makeFlatLayRequest(prompt, hasImages ? imageUrls : undefined);
         return result;
       } catch (error) {
@@ -330,7 +383,31 @@ export class OpenRouterImageClient {
 
         // Don't retry on certain errors
         if (this.isNonRetryableError(error)) {
+          shouldTryTextOnlyFallback = false;
           break;
+        }
+      }
+    }
+
+    // Secondary fallback: if multi-modal generation failed, retry with text-only prompt.
+    // This handles intermittent provider behavior where image references yield text-only responses.
+    if (shouldTryTextOnlyFallback) {
+      console.warn('[ImageGen] Multi-modal flat-lay failed. Retrying with text-only fallback prompt.');
+      for (let attempt = 0; attempt <= OPENROUTER_CONFIG.maxRetries; attempt++) {
+        try {
+          if (attempt > 0) {
+            const delay = OPENROUTER_CONFIG.retryDelay * Math.pow(2, attempt - 1);
+            await this.sleep(delay);
+            console.log(`[ImageGen] Flat-lay text-only fallback retry attempt ${attempt}/${OPENROUTER_CONFIG.maxRetries}`);
+          }
+
+          const fallbackResult = await this.makeFlatLayRequest(prompt);
+          return fallbackResult;
+        } catch (fallbackError) {
+          console.error(`[ImageGen] Flat-lay text-only fallback attempt ${attempt + 1} failed:`, fallbackError);
+          if (this.isNonRetryableError(fallbackError)) {
+            break;
+          }
         }
       }
     }

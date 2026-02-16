@@ -26,7 +26,14 @@ import { spawn } from 'child_process';
  */
 const rateLimitMap = new Map<string, { count: number; resetTime: number }>();
 const RATE_LIMIT_WINDOW = 60000; // 1 minute in milliseconds
-const RATE_LIMIT_MAX_REQUESTS = 10;
+const RATE_LIMIT_MAX_REQUESTS = Number.parseInt(
+  process.env.IMAGE_GEN_RATE_LIMIT_MAX_REQUESTS || '10',
+  10
+);
+
+function isLocalDevIP(ip: string): boolean {
+  return ip === '::1' || ip === '127.0.0.1' || ip === '::ffff:127.0.0.1';
+}
 
 /**
  * Checks if request is rate limited
@@ -35,6 +42,12 @@ const RATE_LIMIT_MAX_REQUESTS = 10;
  * @returns true if rate limited, false if allowed
  */
 function isRateLimited(ip: string): boolean {
+  // Local development can trigger multiple image calls per turn.
+  // Skip hard throttling for localhost to avoid false "generation failed" UX while testing.
+  if (isLocalDevIP(ip)) {
+    return false;
+  }
+
   const now = Date.now();
   const record = rateLimitMap.get(ip);
 

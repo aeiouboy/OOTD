@@ -1,0 +1,76 @@
+- generic [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e78]:
+    - button [ref=e80]:
+      - img
+    - generic [ref=e82]:
+      - generic [ref=e83]:
+        - heading "What's your style?" [level=1] [ref=e84]
+        - paragraph [ref=e85]: Choose styles that spark you (select one or more)
+      - generic [ref=e168]:
+        - generic [ref=e169]: 1 selected
+        - generic [ref=e171]: Minimal
+      - generic [ref=e86]:
+        - button "Minimal style Minimal Timeless Less is more, clean, simple, neutral palette, pieces that last forever" [active] [ref=e87]:
+          - img [ref=e173]
+          - img "Minimal style" [ref=e89]
+          - generic [ref=e91]:
+            - heading "Minimal" [level=3] [ref=e92]
+            - paragraph [ref=e93]: Timeless
+            - paragraph [ref=e94]: Less is more, clean, simple, neutral palette, pieces that last forever
+        - button "Luxury style Luxury Elegant Sophisticated and polished with premium fabrics and impeccable tailoring" [ref=e95]:
+          - img "Luxury style" [ref=e97]
+          - generic [ref=e99]:
+            - heading "Luxury" [level=3] [ref=e100]
+            - paragraph [ref=e101]: Elegant
+            - paragraph [ref=e102]: Sophisticated and polished with premium fabrics and impeccable tailoring
+        - button "Eccentric style Eccentric Creative Highly artistic and individual; uses unique shapes, bold colors, and clashing patterns and playful" [ref=e103]:
+          - img "Eccentric style" [ref=e105]
+          - generic [ref=e107]:
+            - heading "Eccentric" [level=3] [ref=e108]
+            - paragraph [ref=e109]: Creative
+            - paragraph [ref=e110]: Highly artistic and individual; uses unique shapes, bold colors, and clashing patterns and playful
+        - button "Business style Business Refined Smart, structured, and professional" [ref=e111]:
+          - img "Business style" [ref=e113]
+          - generic [ref=e115]:
+            - heading "Business" [level=3] [ref=e116]
+            - paragraph [ref=e117]: Refined
+            - paragraph [ref=e118]: Smart, structured, and professional
+        - button "Vanilla style Vanilla Clean Soft neutrals, fresh, and cozy in light tones" [ref=e119]:
+          - img "Vanilla style" [ref=e121]
+          - generic [ref=e123]:
+            - heading "Vanilla" [level=3] [ref=e124]
+            - paragraph [ref=e125]: Clean
+            - paragraph [ref=e126]: Soft neutrals, fresh, and cozy in light tones
+        - button "Sporty style Sporty Active Athletic wear, functional, ready for movement and confident" [ref=e127]:
+          - img "Sporty style" [ref=e129]
+          - generic [ref=e131]:
+            - heading "Sporty" [level=3] [ref=e132]
+            - paragraph [ref=e133]: Active
+            - paragraph [ref=e134]: Athletic wear, functional, ready for movement and confident
+        - button "Edgy style Edgy Trendy Bold, modern, and daring; follows the very latest fashion trends" [ref=e135]:
+          - img "Edgy style" [ref=e137]
+          - generic [ref=e139]:
+            - heading "Edgy" [level=3] [ref=e140]
+            - paragraph [ref=e141]: Trendy
+            - paragraph [ref=e142]: Bold, modern, and daring; follows the very latest fashion trends
+        - button "Bohemian style Bohemian Natural Relaxed, earthy, featuring flowly silhouettes and natural fabrics" [ref=e143]:
+          - img "Bohemian style" [ref=e145]
+          - generic [ref=e147]:
+            - heading "Bohemian" [level=3] [ref=e148]
+            - paragraph [ref=e149]: Natural
+            - paragraph [ref=e150]: Relaxed, earthy, featuring flowly silhouettes and natural fabrics
+        - button "Classic style Classic Old Money Understated 'quiet luxury' built on timeless, tailored, and preppy pieces" [ref=e151]:
+          - img "Classic style" [ref=e153]
+          - generic [ref=e155]:
+            - heading "Classic" [level=3] [ref=e156]
+            - paragraph [ref=e157]: Old Money
+            - paragraph [ref=e158]: Understated 'quiet luxury' built on timeless, tailored, and preppy pieces
+        - button "Mystery Style style Mystery Style 🔮 Random style" [ref=e159]:
+          - img "Mystery Style style" [ref=e161]
+          - generic [ref=e163]:
+            - heading "Mystery Style" [level=3] [ref=e164]
+            - paragraph [ref=e165]: 🔮
+            - paragraph [ref=e166]: Random style
+      - button [ref=e175]:
+        - img

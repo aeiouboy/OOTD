@@ -39,6 +39,9 @@ export function OutfitRecommendationCard({
 }: OutfitRecommendationCardProps) {
   const [isLiked, setIsLiked] = useState(false)
   const [imageError, setImageError] = useState(false)
+  const hasFlatLayGenerationFailure = outfit.flatLayGenerationFailed === true
+  const allowLazyFlatLayGeneration =
+    outfit.allowLazyFlatLayGeneration !== false && !hasFlatLayGenerationFailure
 
   // v8.1: Keep ref to the latest outfit to ensure onViewOutfit passes current data
   // This solves the issue where clicking "View Outfit" during/after flat-lay generation
@@ -81,6 +84,10 @@ export function OutfitRecommendationCard({
   // v10: Intersection observer with delayed fallback generation
   const observerRef = useIntersectionObserver(
     () => {
+      if (!allowLazyFlatLayGeneration) {
+        return
+      }
+
       // Only consider fallback if no image exists and parent isn't actively generating
       if (!existingFlatLay && !hookGeneratedImage && !outfit.isGeneratingFlatLay) {
         // Delay fallback generation to avoid racing with ChatAssistant
@@ -131,9 +138,14 @@ export function OutfitRecommendationCard({
   // 1. Parent-provided flat-lay (from ChatAssistant)
   // 2. Hook-generated flat-lay (from useFlatLayGeneration with caching)
   // 3. FlatLayComposite CSS fallback (last resort)
-  const hasFlatLayImage = !!(existingFlatLay || hookGeneratedImage)
-  const flatLayImage = existingFlatLay || hookGeneratedImage
+  const hookImageCandidate = allowLazyFlatLayGeneration ? hookGeneratedImage : undefined
+  const flatLayImage = hasFlatLayGenerationFailure
+    ? undefined
+    : (existingFlatLay || hookImageCandidate)
+  const hasFlatLayImage = Boolean(flatLayImage)
   const isGenerating = outfit.isGeneratingFlatLay || isHookGenerating || isQueued
+  const canRenderCompositeFallback = Boolean(outfit.items && outfit.items.length > 0)
+  const hasCatalogItems = canRenderCompositeFallback
 
   // Try-on image to display
   const tryOnImage = tryOnImageUrl || tryOnImageBase64
@@ -147,6 +159,11 @@ export function OutfitRecommendationCard({
       setTryOnImageBase64(outfit.tryOnImageBase64)
     }
   }, [outfit.tryOnImageUrl, outfit.tryOnImageBase64])
+
+  // Reset broken-image state when the card receives a fresh image source.
+  useEffect(() => {
+    setImageError(false)
+  }, [outfit.id, flatLayImage])
 
   /**
    * Handle try-on button click
@@ -296,15 +313,25 @@ export function OutfitRecommendationCard({
                 </div>
               )}
             </>
-          ) : outfit.items && outfit.items.length > 0 && !flatLayError ? (
-            // Fallback: Use FlatLayComposite (CSS-based flat-lay) instead of mannequin thumbnail
-            <FlatLayComposite items={outfit.items} />
-          ) : flatLayError ? (
-            // When generation fails, avoid showing misleading pseudo-flatlay from raw product thumbnails.
+          ) : canRenderCompositeFallback ? (
+            // Fallback: keep showing a product-based preview even if AI generation fails.
+            // This prevents the card from looking broken on transient API errors.
+            <div className="relative w-full h-full">
+              <FlatLayComposite items={outfit.items} />
+              {(flatLayError || hasFlatLayGenerationFailure) && (
+                <div className="absolute bottom-1 left-1 right-1 rounded bg-black/55 px-2 py-1">
+                  <p className="text-[10px] text-white text-center">
+                    แสดงภาพพรีวิวจากสินค้าแทนชั่วคราว
+                  </p>
+                </div>
+              )}
+            </div>
+          ) : !hasCatalogItems ? (
+            // Defensive fallback for malformed looks with no catalog items.
+            // Keep the card stable instead of showing an image-generation error.
             <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 px-4">
-              <AlertCircle className="w-6 h-6 text-amber-600 mb-2" />
-              <p className="text-xs text-gray-600 text-center">สร้างภาพลุคไม่สำเร็จ</p>
-              <p className="text-[10px] text-gray-500 text-center mt-1">กรุณาลองใหม่อีกครั้ง</p>
+              <p className="text-xs text-gray-600 text-center">กำลังเตรียมรายละเอียดลุค</p>
+              <p className="text-[10px] text-gray-500 text-center mt-1">ลองเปิดดูลุคเพื่อดูรายการสินค้า</p>
             </div>
           ) : (
             // Placeholder when no image and no items available

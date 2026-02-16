@@ -30,6 +30,7 @@ export function createSessionContext(sessionId?: string): SessionContext {
     clarificationTurnCount: 0, // Track clarification turns (v2.1)
     hasProvidedRecommendations: false, // No recommendations yet (v2.2)
     recommendationCount: 0, // Track recommendation rounds (v2.2)
+    followUpResponseMode: 'auto', // Dynamic follow-up mode (v5.6)
   };
 }
 
@@ -126,6 +127,7 @@ export function resetSessionContext(context: SessionContext, newSessionId?: stri
     clarificationTurnCount: 0, // Reset turn count (v2.1)
     hasProvidedRecommendations: false, // Reset recommendation flag (v2.2)
     recommendationCount: 0, // Reset recommendation count (v2.2)
+    followUpResponseMode: 'auto', // Reset to automatic mode
   };
 }
 

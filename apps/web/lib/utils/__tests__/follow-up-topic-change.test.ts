@@ -39,6 +39,36 @@ describe('Follow-up Detection', () => {
       expect(detection.type).toBe('color_change');
     });
 
+    it('should classify informational Thai follow-up as info_question', () => {
+      const detection = detectFollowUpRequest(
+        'สีไหนที่ไม่ควรใส่วันอังคาร',
+        true
+      );
+
+      expect(detection.isFollowUp).toBe(true);
+      expect(detection.type).toBe('info_question');
+    });
+
+    it('should classify auspicious day-color question as info_question', () => {
+      const detection = detectFollowUpRequest(
+        'ถ้าไปทำงานวันอังคารสีมงคลใส่ไรดี',
+        true
+      );
+
+      expect(detection.isFollowUp).toBe(true);
+      expect(detection.type).toBe('info_question');
+    });
+
+    it('should classify rule question as info_question', () => {
+      const detection = detectFollowUpRequest(
+        'กฎแต่งตัวไปวัดคืออะไร',
+        true
+      );
+
+      expect(detection.isFollowUp).toBe(true);
+      expect(detection.type).toBe('info_question');
+    });
+
     it('should classify "cheaper options" as budget_change follow-up', () => {
       const detection = detectFollowUpRequest('show me cheaper options', true);
 
@@ -68,6 +98,15 @@ describe('Follow-up Detection', () => {
       expect(detection.type).toBe('brand_change');
     });
 
+    it('should not classify explicit look request as info_question even with lucky-color keywords', () => {
+      const detection = detectFollowUpRequest(
+        'ช่วยจัดลุคสีมงคลวันอังคารให้หน่อย',
+        true
+      );
+
+      expect(detection.type).not.toBe('info_question');
+    });
+
     it('should classify unrelated message as not a follow-up', () => {
       const detection = detectFollowUpRequest(
         'hello how are you today',
@@ -90,6 +129,16 @@ describe('Follow-up Detection', () => {
     it('should return none for any message when no recommendations provided', () => {
       const detection = detectFollowUpRequest(
         'show me party outfits',
+        false
+      );
+
+      expect(detection.isFollowUp).toBe(false);
+      expect(detection.type).toBe('none');
+    });
+
+    it('should NOT mark info question as follow-up before first recommendation', () => {
+      const detection = detectFollowUpRequest(
+        'กาลกิณีคืออะไร',
         false
       );
 

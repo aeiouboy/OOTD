@@ -93,6 +93,12 @@ export interface SessionContext {
    * Used to filter and personalize knowledge retrieval based on user characteristics
    */
   userProfile?: UserProfile;
+  /**
+   * Preferred follow-up response mode after first recommendations.
+   * - auto: system can ask confirmation CTA for look generation
+   * - info: stay in knowledge Q&A mode unless user explicitly asks for looks
+   */
+  followUpResponseMode?: 'auto' | 'info';
 }
 
 /**

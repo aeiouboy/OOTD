@@ -70,13 +70,24 @@ vi.mock('../../utils/duplicate-filter', () => ({
 }));
 
 vi.mock('../../utils/category-detector', () => ({
-  detectCategory: vi.fn().mockReturnValue({ category: 'CLOTHS', confidence: 0.9 }),
+  detectCategory: vi.fn().mockReturnValue({
+    category: 'CLOTHS',
+    confidence: 0.9,
+    matchedKeywords: ['outfit'],
+    recommendedTemplate: 'A',
+  }),
   getTemplateInstruction: vi.fn().mockReturnValue('[Template A Instruction]'),
   formatCategoryDetection: vi.fn().mockReturnValue('[Category: CLOTHS]'),
 }));
 
 vi.mock('../../utils/follow-up-handler', () => ({
-  detectFollowUpRequest: vi.fn().mockReturnValue({ isFollowUp: false, type: null, parameters: {} }),
+  detectFollowUpRequest: vi.fn().mockReturnValue({
+    isFollowUp: false,
+    type: 'none',
+    confidence: 1,
+    matchedKeywords: [],
+    parameters: {},
+  }),
   generateFollowUpInstruction: vi.fn().mockReturnValue(''),
   formatFollowUpDetection: vi.fn().mockReturnValue('[Follow-up: none]'),
 }));
@@ -216,6 +227,9 @@ import { filterAndValidateProducts } from '../../utils/duplicate-filter';
 import { getClarificationsNeeded, analyzeUserQuery } from '../../utils/clarification-detector';
 import { VersionUtils } from '../../prompts/prompt-version';
 import { parseLooksData } from '../../parsers/looks-parser';
+import { detectCategory } from '../../utils/category-detector';
+import { detectFollowUpRequest } from '../../utils/follow-up-handler';
+import { serializeCatalogForV5 } from '../../utils/ai-serializer';
 
 // ---------------------------------------------------------------------------
 // Test Helpers
@@ -1302,6 +1316,244 @@ describe('ai-chat-service', () => {
       const result = await processAIChatRequest(request, products);
 
       expect(result.message.length).toBeLessThanOrEqual(160);
+    });
+
+    it('v5 activates INFO mode only for follow-up informational questions', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(detectCategory).mockReturnValueOnce({
+        category: 'INFO',
+        confidence: 0.95,
+        matchedKeywords: ['คืออะไร'],
+        recommendedTemplate: 'C',
+      });
+      vi.mocked(detectFollowUpRequest).mockReturnValueOnce({
+        isFollowUp: true,
+        type: 'info_question',
+        confidence: 0.95,
+        matchedKeywords: ['คืออะไร'],
+        parameters: {},
+      });
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: 'วันอังคารสีกาลกิณีคือสีม่วงจ้า',
+        looks: [],
+      });
+
+      const manyProducts = Array.from({ length: 35 }, (_, i) =>
+        createMockProduct({ id: `info-${i}`, sku: `INFO${i}` })
+      );
+      const request = createMockRequest({
+        message: 'กาลกิณีวันอังคารคืออะไร',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+        }),
+      });
+
+      const result = await processAIChatRequest(request, manyProducts);
+
+      expect(result.responseType).toBe('info');
+      expect(result.recommendedProducts).toEqual([]);
+      expect(result.looks).toEqual([]);
+      expect(result.imageRequest).toBe(false);
+      expect(result.pendingLookQuery).toBe('กาลกิณีวันอังคารคืออะไร');
+      expect(vi.mocked(serializeCatalogForV5).mock.calls.at(-1)?.[0]).toHaveLength(20);
+    });
+
+    it('v5 keeps info follow-up in knowledge mode instead of look confirmation CTA', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(detectCategory).mockReturnValueOnce({
+        category: 'CLOTHS',
+        confidence: 0.8,
+        matchedKeywords: ['ใส่'],
+        recommendedTemplate: 'A',
+      });
+      vi.mocked(detectFollowUpRequest).mockReturnValueOnce({
+        isFollowUp: true,
+        type: 'info_question',
+        confidence: 0.92,
+        matchedKeywords: ['สีมงคล'],
+        parameters: {},
+      });
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: 'วันอังคารสีมงคลที่เหมาะคือโทนม่วง ส้ม และแดงค่ะ',
+        looks: [],
+      });
+
+      const request = createMockRequest({
+        message: 'วันอังคารสีมงคลใส่ไรดี',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+        }),
+      });
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBe('info');
+      expect(result.pendingLookQuery).toBe('วันอังคารสีมงคลใส่ไรดี');
+      expect(result.looks).toEqual([]);
+      expect(result.recommendedProducts).toEqual([]);
+    });
+
+    it('v5 treats first-message INFO queries as CLOTHS recommendation mode', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(detectCategory).mockReturnValueOnce({
+        category: 'INFO',
+        confidence: 0.9,
+        matchedKeywords: ['คืออะไร'],
+        recommendedTemplate: 'C',
+      });
+      vi.mocked(detectFollowUpRequest).mockReturnValueOnce({
+        isFollowUp: false,
+        type: 'none',
+        confidence: 1,
+        matchedKeywords: [],
+        parameters: {},
+      });
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: 'จัดมาให้แล้วนะ 2 ลุค ✨',
+        looks: [],
+      });
+
+      const request = createMockRequest({
+        message: 'กาลกิณีคืออะไร',
+        sessionContext: createMockSessionContext({ hasProvidedRecommendations: false }),
+      });
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBeUndefined();
+      expect((result.recommendedProducts || []).length).toBeGreaterThan(0);
+    });
+
+    it('v5 asks look confirmation CTA for follow-up CLOTHS requests with occasion context', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+
+      const request = createMockRequest({
+        message: 'จัดลุคไปทำงานวันอังคารให้หน่อย',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBe('look_confirmation');
+      expect(result.pendingLookQuery).toBe('จัดลุคไปทำงานวันอังคารให้หน่อย');
+      expect(result.looks).toEqual([]);
+      expect(result.imageRequest).toBe(false);
+      expect(parseLooksData).not.toHaveBeenCalled();
+    });
+
+    it('v5 generates looks when look confirmation YES payload is received', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+
+      const request = createMockRequest({
+        message: '__LOOK_CTA_YES__::จัดลุคให้หน่อย',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBeUndefined();
+      expect((result.recommendedProducts || []).length).toBeGreaterThan(0);
+    });
+
+    it('v5 forces recommendation mode when INFO CTA YES payload carries informational query', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(detectCategory).mockReturnValueOnce({
+        category: 'INFO',
+        confidence: 0.9,
+        matchedKeywords: ['สีมงคล'],
+        recommendedTemplate: 'C',
+      });
+
+      const request = createMockRequest({
+        message: '__LOOK_CTA_YES__::สีมงคลวันอังคารใส่อะไรดี',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+          followUpResponseMode: 'info',
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBeUndefined();
+      expect(result.recommendedProducts.length).toBeGreaterThan(0);
+      expect(result.sessionContext?.followUpResponseMode).toBe('auto');
+    });
+
+    it('v5 switches to INFO mode without repeating CTA when look confirmation NO payload is received', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+
+      const request = createMockRequest({
+        message: '__LOOK_CTA_NO__::จัดลุคให้หน่อย',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBeUndefined();
+      expect(result.looks).toEqual([]);
+      expect(result.recommendedProducts).toEqual([]);
+      expect(result.imageRequest).toBe(false);
+      expect(result.pendingLookQuery).toBeUndefined();
+      expect(result.sessionContext?.followUpResponseMode).toBe('info');
+    });
+
+    it('v5 keeps user in info mode after CTA decline and does not re-open confirmation CTA', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+      vi.mocked(parseLooksData).mockReturnValueOnce({
+        text: 'วันอังคารสีมงคลที่แมตช์ง่ายคือม่วง ส้ม และแดง',
+        looks: [],
+      });
+
+      const request = createMockRequest({
+        message: 'ถ้าไปทำงานวันอังคารสีมงคลใส่ไรดี',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+          followUpResponseMode: 'info',
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).not.toBe('look_confirmation');
+      expect(result.looks).toEqual([]);
+      expect(result.recommendedProducts).toEqual([]);
+      expect(result.sessionContext?.followUpResponseMode).toBe('info');
+    });
+
+    it('v5 exits info mode when user explicitly asks to generate looks', async () => {
+      vi.mocked(VersionUtils.isV5Active).mockReturnValueOnce(true);
+
+      const request = createMockRequest({
+        message: 'แนะนำลุคให้หน่อย',
+        sessionContext: createMockSessionContext({
+          hasProvidedRecommendations: true,
+          dialoguePhase: 'follow-up',
+          recommendationCount: 1,
+          followUpResponseMode: 'info',
+        }),
+      });
+
+      const result = await processAIChatRequest(request, products);
+
+      expect(result.responseType).toBeUndefined();
+      expect((result.recommendedProducts || []).length).toBeGreaterThan(0);
+      expect(result.sessionContext?.followUpResponseMode).toBe('auto');
     });
   });
 });

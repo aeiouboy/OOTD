@@ -13,6 +13,7 @@ import {
   DialogTitle,
   DialogDescription,
 } from '@/components/ui/dialog'
+import { FlatLayComposite } from '@/components/outfit/FlatLayComposite'
 import { useFlatLayGeneration, useIntersectionObserver, cleanupExpiredCache } from '@/lib/hooks/useFlatLayGeneration'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { buildTryOnPromptItems } from '@/lib/utils/styling-completion'
@@ -216,6 +217,7 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
   const displayImage = existingFlatLay || flatLayImageBase64
   const showActiveLoading = isGenerating && !displayImage
   const showQueuedLoading = isQueued && !displayImage && !isGenerating
+  const canRenderCompositeFallback = Boolean(outfit.items && outfit.items.length > 0)
   const showFallback = !displayImage && !isGenerating && !isQueued && error
   // Show waiting state before intersection triggers (no cache, no error, not generating, not queued)
   const showWaitingState = !displayImage && !isGenerating && !isQueued && !error
@@ -283,11 +285,17 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
               sizes="(max-width: 768px) 50vw, 200px"
               unoptimized={displayImage.startsWith('data:')}
             />
-          ) : showFallback ? (
-            // Avoid misleading fallback image when generation fails.
-            <div className="w-full h-full flex flex-col items-center justify-center bg-gray-100 px-3">
-              <AlertCircle className="w-5 h-5 text-amber-600 mb-1.5" />
-              <p className="text-[11px] text-gray-600 text-center">สร้างภาพลุคไม่สำเร็จ</p>
+          ) : canRenderCompositeFallback ? (
+            // Soft fallback: keep the card usable even if image generation fails.
+            <div className="relative w-full h-full">
+              <FlatLayComposite items={outfit.items} />
+              {showFallback && (
+                <div className="absolute bottom-1 left-1 right-1 rounded bg-black/55 px-2 py-1">
+                  <p className="text-[10px] text-white text-center">
+                    แสดงภาพพรีวิวจากสินค้าแทนชั่วคราว
+                  </p>
+                </div>
+              )}
             </div>
           ) : null}
         </div>

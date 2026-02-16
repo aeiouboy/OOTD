@@ -18,7 +18,11 @@ export type KnowledgeCategory =
   | 'occasions'
   | 'thai_culture'
   | 'brand_intelligence'
-  | 'seasonal_trends';
+  | 'seasonal_trends'
+  | 'foundation'
+  | 'advanced'
+  | 'implementation'
+  | 'special';
 
 /**
  * Gender options for filtering

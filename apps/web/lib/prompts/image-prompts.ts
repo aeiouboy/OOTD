@@ -502,7 +502,63 @@ export function buildFlatLayPrompt(
       .join('\n')}\nKeep each item's hue and tone aligned with this map for consistent styling.`
     : '';
 
-  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is laid perfectly flat and straight, viewed from directly above. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality.${colorConsistencySection} Square 1:1 format.`;
+  const garmentPattern = /\b(dress|top|shirt|blouse|pants|trouser|skirt|jacket|blazer|coat|outerwear|cardigan|sweater|jumpsuit|romper|เดรส|เสื้อ|กางเกง|กระโปรง|แจ็กเก็ต)\b/i;
+  const footwearPattern = /\b(shoes?|footwear|heels?|sandals?|sneakers?|boots?|รองเท้า)\b/i;
+  const bagPattern = /\b(bag|handbag|clutch|tote|crossbody|กระเป๋า)\b/i;
+  const jewelryPattern = /\b(jewelry|earrings?|necklace|bracelet|ring|watch|เครื่องประดับ|นาฬิกา)\b/i;
+  const garmentEntries = colorResolvedLayout.filter((entry) =>
+    garmentPattern.test(`${entry.cleanedCategory} ${entry.item.category || ''}`)
+  );
+  const garmentCategories = Array.from(
+    new Set(garmentEntries.map((entry) => entry.cleanedCategory.toLowerCase()))
+  );
+  const hasOuterwearInManifest = garmentEntries.some((entry) =>
+    /\b(jacket|blazer|coat|cardigan|outerwear|แจ็กเก็ต|เสื้อคลุม)\b/i.test(
+      `${entry.cleanedCategory} ${entry.item.category || ''} ${entry.item.name || ''}`
+    )
+  );
+  const familyCounts = colorResolvedLayout.reduce(
+    (acc, entry) => {
+      const source = `${entry.cleanedCategory} ${entry.item.category || ''} ${entry.item.name || ''} ${entry.item.visualDescription || ''}`;
+      if (garmentPattern.test(source)) {
+        acc.garment += 1;
+      } else if (footwearPattern.test(source)) {
+        acc.footwear += 1;
+      } else if (bagPattern.test(source)) {
+        acc.bag += 1;
+      } else if (jewelryPattern.test(source)) {
+        acc.jewelry += 1;
+      } else {
+        acc.accessory += 1;
+      }
+      return acc;
+    },
+    { garment: 0, footwear: 0, bag: 0, jewelry: 0, accessory: 0 }
+  );
+  const itemManifestSection = `\n\nLocked item manifest:\n${colorResolvedLayout
+    .map((entry, index) => {
+      const descriptor = `${entry.resolvedColor ? `${entry.resolvedColor} ` : ''}${entry.cleanedCategory.toLowerCase()}`.trim();
+      return `- #${index + 1}: ${descriptor} (${entry.position})`;
+    })
+    .join('\n')}`;
+  const garmentLockSection = garmentCategories.length > 0
+    ? `\nGarment scope lock:\n- Allowed garment categories in this look: ${garmentCategories.join(', ')}.\n- Do not introduce any additional garment category outside this list.\n- If only one garment category is listed, keep the image to a single main garment piece and style it only with listed footwear/accessories.`
+    : '';
+  const singleGarmentLockSection = familyCounts.garment === 1
+    ? `\nSingle garment lock:\n- Render exactly ONE garment piece total.\n- Do not add a second clothing piece (no blazer, jacket, coat, cardigan, top, bottom, or layered garment).`
+    : '';
+  const noOuterwearSection = familyCounts.garment > 0 && !hasOuterwearInManifest
+    ? `\nOuterwear exclusion lock:\n- This look has NO outerwear in the manifest.\n- Do NOT render any blazer, jacket, coat, cardigan, suit, or extra layer garment.`
+    : '';
+  const quantityLockSection = `\nQuantity lock:\n- Total visible items must be exactly ${itemCount}.\n- Each manifest entry appears exactly once (no substitutes, no duplicates).\n- Garments: exactly ${familyCounts.garment}.\n- Footwear pairs: exactly ${familyCounts.footwear}.\n- Bags: exactly ${familyCounts.bag}.\n- Jewelry items: exactly ${familyCounts.jewelry}.\n- Other accessories: exactly ${familyCounts.accessory}.`;
+
+  let prompt = `Generate a single cohesive professional overhead flat-lay photograph styled like a fashion magazine editorial. NO text, labels, watermarks, or written words anywhere in the image. Products only: NO people, NO mannequin, NO body parts, NO hands, NO feet, NO face. All ${itemCount} fashion items are arranged together on ONE continuous clean light grey-white studio surface as a ${occasionLabel} outfit. This must look like ONE styled photograph, not a collage or grid of separate images. The composition is a ${layoutPattern}:\n${itemLines}\nItems are placed with natural, organic spacing. Edges of adjacent items may slightly overlap or touch to create a cohesive, styled grouping. Every item is laid perfectly flat and straight, viewed from directly above. All ${itemCount} items are fully visible within the frame. Preserve true product colors and textures, avoid overexposure, avoid blown highlights, avoid washed-out whites. Photographed from directly overhead with soft, diffused studio lighting casting gentle shadows beneath items. Professional fashion editorial flat-lay photography quality.
+
+CRITICAL ITEM LOCK:
+- The item list above is exhaustive and locked.
+- Render EXACTLY ${itemCount} items and NOTHING ELSE.
+- NEVER add extra garments, duplicate dresses/tops/bottoms, or alternative outfits.
+- If uncertain about an item detail, keep the silhouette simple but do not invent new clothing pieces.${itemManifestSection}${garmentLockSection}${singleGarmentLockSection}${noOuterwearSection}${quantityLockSection}${colorConsistencySection} Square 1:1 format.`;
 
   // Append reference image mapping instructions when multi-modal images are provided
   if (hasReferenceImages) {

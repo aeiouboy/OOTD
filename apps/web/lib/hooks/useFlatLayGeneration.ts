@@ -3,6 +3,7 @@
 import { useState, useCallback, useRef, useEffect } from 'react'
 import type { Product } from '@/lib/types'
 import type { FlatLayItem, ImageGenerationResponse, BackgroundStyle, UserAesthetic } from '@/lib/types/image-types'
+import { selectCatalogFlatLayItems } from '@/lib/utils/styling-completion'
 
 /**
  * Cache configuration for localStorage
@@ -410,10 +411,24 @@ export function useFlatLayGeneration({
     setIsGenerating(true)
     setError(undefined)
     hasAttemptedRef.current = true
+
+    // Select a coherent per-look catalog subset to avoid mixed silhouettes/duplicate families.
+    const scopedCatalogItems = selectCatalogFlatLayItems(items, 5)
+
+    // Nothing to generate (defensive guard for malformed looks with empty items).
+    if (scopedCatalogItems.length === 0) {
+      if (isMountedRef.current) {
+        setIsGenerating(false)
+        setError(undefined)
+      }
+      processQueue()
+      return
+    }
+
     currentGenerations++
 
-    // Direct mapping — no replacement, no validation, no cross-catalog contamination
-    const flatLayItems: FlatLayItem[] = items.map((item) => ({
+    // Direct mapping from scoped items — no cross-catalog replacement.
+    const flatLayItems: FlatLayItem[] = scopedCatalogItems.map((item) => ({
       name: item.name,
       category: item.subCategory || item.category || 'clothing',
       color: item.colors?.[0],
@@ -451,11 +466,13 @@ export function useFlatLayGeneration({
           return
         }
 
-        if (result.success && result.imageBase64) {
-          setFlatLayImageBase64(result.imageBase64)
+        const generatedImage = result.imageBase64 || result.imageUrl
+        if (result.success && generatedImage) {
+          setFlatLayImageBase64(generatedImage)
           setIsFromCache(false)
           setError(undefined)
-          setCachedImage(outfitId, result.imageBase64)
+          // Prefer caching base64 payloads. When only URL is available, cache it as fallback.
+          setCachedImage(outfitId, result.imageBase64 || generatedImage)
           currentGenerations--
           setIsGenerating(false)
           processQueue()
@@ -488,6 +505,13 @@ export function useFlatLayGeneration({
       return
     }
 
+    // Defensive guard: don't call API for item-less looks.
+    if (!items || items.length === 0) {
+      hasAttemptedRef.current = true
+      setError(undefined)
+      return
+    }
+
     // Check cache again in case it was populated while not observing
     const cached = getCachedImage(outfitId)
     if (cached) {
@@ -512,7 +536,7 @@ export function useFlatLayGeneration({
 
     // Slot available, generate immediately
     performGeneration()
-  }, [outfitId, isGenerating, isQueued, flatLayImageBase64, performGeneration])
+  }, [outfitId, items, isGenerating, isQueued, flatLayImageBase64, performGeneration])
 
   return {
     isGenerating,

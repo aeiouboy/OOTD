@@ -394,10 +394,10 @@ describe('validateLooksAgainstCatalog', () => {
     expect(validated[0].totalPrice).toBe(790);
   });
 
-  it('should fallback to a similar catalog product when SKU is missing but item intent is clear', () => {
+  it('should drop unresolved garment items instead of fallback-mapping to random catalog clothing', () => {
     const looks = [{
       lookNumber: 1,
-      styleName: 'Fallback',
+      styleName: 'No garment fallback',
       items: [
         { name: 'White office shirt', brand: 'AI', category: 'Tops', color: 'White', description: 'clean formal shirt', sku: 'MISSING-001', price: 850, url: '' },
       ],
@@ -406,12 +406,37 @@ describe('validateLooksAgainstCatalog', () => {
 
     const validated = validateLooksAgainstCatalog(looks, catalog);
 
+    expect(validated).toHaveLength(0);
+  });
+
+  it('should fallback to a similar catalog product for accessory/footwear roles when SKU is missing', () => {
+    const accessoryCatalog: EnhancedProduct[] = [
+      {
+        ...mockProduct('BAG001', 'https://central.co.th/real/bag001', 1890, 'CPS'),
+        name: { th: 'Structured Black Tote Bag', en: 'Structured Black Tote Bag' },
+        classification: {
+          category: { department: 'Accessories', category: 'Bag' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'accessory',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Accessory fallback',
+      items: [
+        { name: 'Structured black tote bag', brand: 'AI', category: 'Bag', color: 'Black', description: 'office handbag', sku: 'MISSING-BAG', price: 1500, url: '' },
+      ],
+      totalPrice: 1500,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, accessoryCatalog);
     expect(validated).toHaveLength(1);
     expect(validated[0].items).toHaveLength(1);
-    // Should map to a real catalog product (not keep hallucinated SKU)
-    expect(validated[0].items[0].sku).toMatch(/^SKU00[1-3]$/);
-    expect(validated[0].items[0].url).toContain('https://central.co.th/real/');
-    expect(validated[0].items[0].price).toBeGreaterThan(0);
+    expect(validated[0].items[0].sku).toBe('BAG001');
+    expect(validated[0].items[0].url).toBe('https://central.co.th/real/bag001');
   });
 
   it('should drop looks with no valid items', () => {
@@ -545,5 +570,385 @@ describe('validateLooksAgainstCatalog', () => {
     expect(validated[0].items.some((item) => item.sku === 'TOP001')).toBe(true);
     expect(validated[0].items.some((item) => item.sku === 'TOP002')).toBe(false);
     expect(validated[0].items.some((item) => item.sku === 'BTM001')).toBe(true);
+  });
+
+  it('should keep a single silhouette when a dress conflicts with top/bottom pieces', () => {
+    const mixedCatalog = [
+      {
+        ...mockProduct('DRS001', 'https://central.co.th/real/drs001', 2450, 'LOOKSI'),
+        name: { th: 'Floral Midi Dress', en: 'Floral Midi Dress' },
+        // Intentional mismatch to simulate imperfect classification in source catalog.
+        classification: {
+          category: { department: 'Clothing', category: 'Tops' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'top',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('TOP010', 'https://central.co.th/real/top010', 890, 'LOOKSI'),
+        name: { th: 'White Shirt', en: 'White Shirt' },
+        classification: {
+          category: { department: 'Clothing', category: 'Tops' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'top',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('BTM010', 'https://central.co.th/real/btm010', 1190, 'LOOKSI'),
+        name: { th: 'Black Skirt', en: 'Black Skirt' },
+        classification: {
+          category: { department: 'Clothing', category: 'Bottoms' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'bottom',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('SHO010', 'https://central.co.th/real/sho010', 1590, 'LOOKSI'),
+        name: { th: 'Black Pumps', en: 'Black Pumps' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Mixed silhouette',
+      items: [
+        { name: 'Floral Midi Dress', brand: 'AI', category: 'Dress', color: 'White', description: '', sku: 'DRS001', price: 0, url: '' },
+        { name: 'White Shirt', brand: 'AI', category: 'Top', color: 'White', description: '', sku: 'TOP010', price: 0, url: '' },
+        { name: 'Black Skirt', brand: 'AI', category: 'Bottom', color: 'Black', description: '', sku: 'BTM010', price: 0, url: '' },
+        { name: 'Black Pumps', brand: 'AI', category: 'Footwear', color: 'Black', description: '', sku: 'SHO010', price: 0, url: '' },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, mixedCatalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items.some((item) => item.sku === 'DRS001')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'SHO010')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'TOP010')).toBe(false);
+    expect(validated[0].items.some((item) => item.sku === 'BTM010')).toBe(false);
+  });
+
+  it('should drop outerwear when a one-piece dress exists in the same look', () => {
+    const catalog = [
+      {
+        ...mockProduct('DRS110', 'https://central.co.th/real/drs110', 2450, 'LOOKSI'),
+        name: { th: 'Navy Work Dress', en: 'Navy Work Dress' },
+        classification: {
+          category: { department: 'Clothing', category: 'Dresses' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'dress',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('BLZ110', 'https://central.co.th/real/blz110', 2890, 'LOOKSI'),
+        name: { th: 'Navy Tailored Blazer', en: 'Navy Tailored Blazer' },
+        classification: {
+          category: { department: 'Clothing', category: 'Outerwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'outerwear',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('SHO110', 'https://central.co.th/real/sho110', 1590, 'LOOKSI'),
+        name: { th: 'Black Loafers', en: 'Black Loafers' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'One-piece no outerwear',
+      items: [
+        { name: 'Navy Work Dress', brand: 'AI', category: 'Dress', color: 'Navy', description: '', sku: 'DRS110', price: 0, url: '' },
+        { name: 'Navy Tailored Blazer', brand: 'AI', category: 'Outerwear', color: 'Navy', description: '', sku: 'BLZ110', price: 0, url: '' },
+        { name: 'Black Loafers', brand: 'AI', category: 'Footwear', color: 'Black', description: '', sku: 'SHO110', price: 0, url: '' },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, catalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items.some((item) => item.sku === 'DRS110')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'SHO110')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'BLZ110')).toBe(false);
+  });
+
+  it('should prefer catalog garment role over hallucinated item category when resolving role', () => {
+    const roleCatalog = [
+      {
+        ...mockProduct('BLZ100', 'https://central.co.th/real/blz100', 2590, 'TEST'),
+        name: { th: 'Black Tailored Blazer', en: 'Black Tailored Blazer' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Role Preference',
+      items: [
+        {
+          name: 'Black Tailored Blazer',
+          brand: 'AI',
+          category: 'footwear',
+          color: 'black',
+          description: 'classic work blazer',
+          sku: 'BLZ100',
+          price: 0,
+          url: '',
+        },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, roleCatalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(1);
+    expect(validated[0].items[0].category).toBe('outerwear');
+  });
+
+  it('should de-duplicate duplicate outerwear even when one AI item is mislabeled as footwear', () => {
+    const roleCatalog = [
+      {
+        ...mockProduct('BLZ101', 'https://central.co.th/real/blz101', 2590, 'TEST'),
+        name: { th: 'Black Tailored Blazer', en: 'Black Tailored Blazer' },
+        classification: {
+          category: { department: 'Clothing', category: 'Outerwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'outerwear',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('BLZ102', 'https://central.co.th/real/blz102', 2890, 'TEST'),
+        name: { th: 'Black Double Breasted Blazer', en: 'Black Double Breasted Blazer' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'Duplicate Outerwear',
+      items: [
+        {
+          name: 'Black Tailored Blazer',
+          brand: 'AI',
+          category: 'outerwear',
+          color: 'black',
+          description: '',
+          sku: 'BLZ101',
+          price: 0,
+          url: '',
+        },
+        {
+          name: 'Black Double Breasted Blazer',
+          brand: 'AI',
+          category: 'footwear',
+          color: 'black',
+          description: '',
+          sku: 'BLZ102',
+          price: 0,
+          url: '',
+        },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, roleCatalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items).toHaveLength(1);
+    expect(validated[0].items[0].category).toBe('outerwear');
+  });
+
+  it('should treat jumpsuit as one-piece and keep only one main garment silhouette', () => {
+    const roleCatalog = [
+      {
+        ...mockProduct('JMP201', 'https://central.co.th/real/jmp201', 3290, 'TEST'),
+        name: { th: 'Black Tailored Jumpsuit', en: 'Black Tailored Jumpsuit' },
+        classification: {
+          category: { department: 'Clothing', category: 'Outerwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'outerwear',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('DRS201', 'https://central.co.th/real/drs201', 2890, 'TEST'),
+        name: { th: 'White Floral Dress', en: 'White Floral Dress' },
+        classification: {
+          category: { department: 'Clothing', category: 'Dresses' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'dress',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('SHO201', 'https://central.co.th/real/sho201', 1490, 'TEST'),
+        name: { th: 'Black Pumps', en: 'Black Pumps' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'One-piece guardrail',
+      items: [
+        {
+          name: 'Black Tailored Jumpsuit',
+          brand: 'AI',
+          category: 'outerwear',
+          color: 'black',
+          description: '',
+          sku: 'JMP201',
+          price: 0,
+          url: '',
+        },
+        {
+          name: 'White Floral Dress',
+          brand: 'AI',
+          category: 'dress',
+          color: 'white',
+          description: '',
+          sku: 'DRS201',
+          price: 0,
+          url: '',
+        },
+        {
+          name: 'Black Pumps',
+          brand: 'AI',
+          category: 'footwear',
+          color: 'black',
+          description: '',
+          sku: 'SHO201',
+          price: 0,
+          url: '',
+        },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, roleCatalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items.some((item) => item.sku === 'SHO201')).toBe(true);
+    const garmentItems = validated[0].items.filter((item) =>
+      ['dress', 'top', 'bottom', 'outerwear'].includes(item.category)
+    );
+    expect(garmentItems).toHaveLength(1);
+    expect(garmentItems[0].category).toBe('dress');
+  });
+
+  it('should treat "one-piece" wording as single-garment silhouette and drop outerwear', () => {
+    const roleCatalog = [
+      {
+        ...mockProduct('OP300', 'https://central.co.th/real/op300', 3590, 'TEST'),
+        name: { th: 'Elegant One-Piece Midi', en: 'Elegant One-Piece Midi' },
+        classification: {
+          category: { department: 'Clothing', category: 'Tops' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'top',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('BLZ300', 'https://central.co.th/real/blz300', 2990, 'TEST'),
+        name: { th: 'Black Office Blazer', en: 'Black Office Blazer' },
+        classification: {
+          category: { department: 'Clothing', category: 'Outerwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'outerwear',
+        },
+      } as EnhancedProduct,
+      {
+        ...mockProduct('SHO300', 'https://central.co.th/real/sho300', 1590, 'TEST'),
+        name: { th: 'Nude Heels', en: 'Nude Heels' },
+        classification: {
+          category: { department: 'Shoes', category: 'Footwear' },
+          gender: 'women',
+          tags: { occasion: [], style: [], season: [] },
+          role: 'footwear',
+        },
+      } as EnhancedProduct,
+    ];
+
+    const looks = [{
+      lookNumber: 1,
+      styleName: 'One-piece phrase guardrail',
+      items: [
+        {
+          name: 'Elegant One-Piece Midi',
+          brand: 'AI',
+          category: 'Outfit',
+          color: 'navy',
+          description: '',
+          sku: 'OP300',
+          price: 0,
+          url: '',
+        },
+        {
+          name: 'Black Office Blazer',
+          brand: 'AI',
+          category: 'Outerwear',
+          color: 'black',
+          description: '',
+          sku: 'BLZ300',
+          price: 0,
+          url: '',
+        },
+        {
+          name: 'Nude Heels',
+          brand: 'AI',
+          category: 'Footwear',
+          color: 'nude',
+          description: '',
+          sku: 'SHO300',
+          price: 0,
+          url: '',
+        },
+      ],
+      totalPrice: 0,
+    }];
+
+    const validated = validateLooksAgainstCatalog(looks, roleCatalog);
+
+    expect(validated).toHaveLength(1);
+    expect(validated[0].items.some((item) => item.sku === 'OP300')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'SHO300')).toBe(true);
+    expect(validated[0].items.some((item) => item.sku === 'BLZ300')).toBe(false);
   });
 });

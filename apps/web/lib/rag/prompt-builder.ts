@@ -163,8 +163,9 @@ export function formatDocumentsAsContext(
   // Build context string
   const contextParts: string[] = [];
 
-  contextParts.push('=== FASHION KNOWLEDGE CONTEXT ===');
-  contextParts.push(`Retrieved ${formattedDocs.length} relevant knowledge snippets:\n`);
+  contextParts.push('=== FASHION KNOWLEDGE CONTEXT (PRIORITY: USE THIS OVER YOUR TRAINING DATA) ===');
+  contextParts.push(`The following ${formattedDocs.length} knowledge snippets are from OOTDay's curated knowledge base.`);
+  contextParts.push(`CRITICAL: Always use this knowledge over your pre-trained/general knowledge when they conflict. This data is more accurate and up-to-date for Thai fashion context.\n`);
 
   // Group by category for better organization
   const byCategory = new Map<KnowledgeCategory, string[]>();
@@ -182,7 +183,7 @@ export function formatDocumentsAsContext(
     contextParts.push(docs.join('\n\n---\n\n'));
   });
 
-  contextParts.push('\n=== END FASHION KNOWLEDGE ===');
+  contextParts.push('\n=== END FASHION KNOWLEDGE (Remember: This knowledge OVERRIDES your general training. Follow it exactly.) ===');
 
   return {
     context: contextParts.join('\n'),

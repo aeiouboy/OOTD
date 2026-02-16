@@ -10,7 +10,7 @@ import { InteractiveTestMode } from './InteractiveTestMode'
 import { Button } from '@/components/ui/button'
 import { PanelSizeControls } from '@/components/layout/PanelSizeControls'
 import { useResizablePanelContext } from '@/components/layout/ResizablePanel'
-import { Beaker } from 'lucide-react'
+import { ArrowRight, Beaker, BookOpen, Check, Info, Shirt, Sparkles, X } from 'lucide-react'
 import { SettingsDialog } from './SettingsDialog'
 import { UserProfileDialog } from './UserProfileDialog'
 import type { ChatMessage as ChatMessageType, Outfit, FlatLayItem, Product } from '@/lib/types'
@@ -21,7 +21,7 @@ import type { SessionContext } from '@/lib/types/chat-types'
 import { createSessionContext } from '@/lib/utils/session-context'
 import { useUserProfile } from '@/lib/hooks/useUserProfile'
 import { convertLooksToOutfits } from '@/lib/utils/chat-look-transformers'
-import { ensureFootwearStyling } from '@/lib/utils/styling-completion'
+import { selectCatalogFlatLayItems, selectFlatLaySupplements } from '@/lib/utils/styling-completion'
 
 interface ChatAssistantProps {
   onViewOutfit: (outfit: Outfit) => void
@@ -85,6 +85,12 @@ export function ChatAssistant({
   }
 
   const isTestModeEnabled = process.env.NEXT_PUBLIC_ENABLE_TEST_MODE === 'true'
+  const INFO_CTA_PROMPT = 'แนะนำลุคให้หน่อย'
+  const INFO_CTA_LABEL = 'สร้างลุคให้ดู'
+  const LOOK_CTA_YES_PREFIX = '__LOOK_CTA_YES__::'
+  const LOOK_CTA_NO_PREFIX = '__LOOK_CTA_NO__::'
+  const MAX_LOOKS_PER_RESPONSE = 2
+  const ENABLE_CHAT_MOCK_FALLBACK = process.env.NEXT_PUBLIC_ENABLE_CHAT_MOCK_FALLBACK === 'true'
 
   // v8.0: (Removed) applyProductReplacements and loadFallbackCatalog removed to fix cross-look contamination
 
@@ -117,6 +123,14 @@ export function ChatAssistant({
     return 'online'
   }, [isTyping, generatingImage])
 
+  const dismissMessageCtas = useCallback((messageId: string) => {
+    setMessages((prev) => prev.map((msg) => (
+      msg.id === messageId
+        ? { ...msg, showInfoCTA: false, showLookConfirmationCTA: false }
+        : msg
+    )))
+  }, [])
+
   /**
    * v5.0: Generate flat-lay image for an outfit and update the message
    * v8.1: Simplified -- no cross-look replacement, includes stylingItems for total look
@@ -127,8 +141,10 @@ export function ChatAssistant({
   ) => {
     console.log(`[Chat] Generating flat-lay for outfit ${outfit.id}...`)
 
-    // Build flat-lay items from catalog products (max 5)
-    const catalogFlatLayItems: FlatLayItem[] = outfit.items.slice(0, 5).map((item: Product) => ({
+    const scopedCatalogItems = selectCatalogFlatLayItems(outfit.items, 5)
+
+    // Build flat-lay items from catalog products (strict scoped subset)
+    const catalogFlatLayItems: FlatLayItem[] = scopedCatalogItems.map((item: Product) => ({
       name: item.name,
       category: item.subCategory || item.category || 'Item',
       color: item.colors?.[0],
@@ -137,17 +153,17 @@ export function ChatAssistant({
       thumbnailUrl: item.imageUrl,
     }))
 
-    const completedStylingItems = ensureFootwearStyling({
+    const flatLaySupplements = selectFlatLaySupplements({
       outfitTitle: outfit.title,
       outfitDescription: outfit.description,
-      catalogItems: outfit.items,
+      catalogItems: scopedCatalogItems,
       stylingItems: outfit.stylingItems || [],
     })
 
-    // Add styling items (knowledge-based) for flat-lay visualization only
-    const stylingFlatLayItems: FlatLayItem[] = completedStylingItems.map((s) => ({
+    // Add only non-garment supplements (footwear/accessories) to avoid cross-look contamination
+    const stylingFlatLayItems: FlatLayItem[] = flatLaySupplements.map((s) => ({
       name: s.description,
-      category: s.category || 'Accessory',
+      category: s.category || 'Shoes',
       visualDescription: s.description,
       // No sku, no thumbnailUrl -- these are knowledge-based, not catalog products
     }))
@@ -185,7 +201,13 @@ export function ChatAssistant({
                 ...msg,
                 outfits: msg.outfits.map((o) =>
                   o.id === outfit.id
-                    ? { ...o, flatLayImageUrl: imageData.imageUrl, flatLayImageBase64: imageData.imageBase64, isGeneratingFlatLay: false }
+                    ? {
+                      ...o,
+                      flatLayImageUrl: imageData.imageUrl,
+                      flatLayImageBase64: imageData.imageBase64,
+                      isGeneratingFlatLay: false,
+                      flatLayGenerationFailed: false,
+                    }
                     : o
                 ),
               }
@@ -201,7 +223,15 @@ export function ChatAssistant({
               return {
                 ...msg,
                 outfits: msg.outfits.map((o) =>
-                  o.id === outfit.id ? { ...o, isGeneratingFlatLay: false } : o
+                  o.id === outfit.id
+                    ? {
+                      ...o,
+                      flatLayImageUrl: undefined,
+                      flatLayImageBase64: undefined,
+                      isGeneratingFlatLay: false,
+                      flatLayGenerationFailed: true,
+                    }
+                    : o
                 ),
               }
             }
@@ -217,7 +247,15 @@ export function ChatAssistant({
             return {
               ...msg,
               outfits: msg.outfits.map((o) =>
-                o.id === outfit.id ? { ...o, isGeneratingFlatLay: false } : o
+                o.id === outfit.id
+                  ? {
+                    ...o,
+                    flatLayImageUrl: undefined,
+                    flatLayImageBase64: undefined,
+                    isGeneratingFlatLay: false,
+                    flatLayGenerationFailed: true,
+                  }
+                  : o
               ),
             }
           }
@@ -227,49 +265,111 @@ export function ChatAssistant({
     }
   }, [])
 
-  const handleSendMessage = async (content: string) => {
-    if (!content.trim()) return
+  const handleSendMessage = async (
+    content: string,
+    options?: { apiMessage?: string }
+  ) => {
+    const normalizedMessage = content.trim()
+    if (!normalizedMessage) return
+    const apiMessage = options?.apiMessage?.trim() || normalizedMessage
+    const isLookGenerationCtaRequest = apiMessage.startsWith(LOOK_CTA_YES_PREFIX)
+    const pendingLookQueryFromCta = isLookGenerationCtaRequest
+      ? apiMessage.slice(LOOK_CTA_YES_PREFIX.length).trim()
+      : ''
 
     // Add user message
     const userMessage: ChatMessageType = {
       id: `user-${Date.now()}`,
-      content: content.trim(),
+      content: normalizedMessage,
       sender: 'user',
       timestamp: new Date(),
     }
 
-    setMessages((prev) => [...prev, userMessage])
+    // Hide old INFO CTA chips when user sends a new message.
+    setMessages((prev) => [
+      ...prev.map((msg) => (
+        msg.showInfoCTA || msg.showLookConfirmationCTA
+          ? { ...msg, showInfoCTA: false, showLookConfirmationCTA: false }
+          : msg
+      )),
+      userMessage,
+    ])
     setIsTyping(true)
 
     try {
-      // Call real chat API
-      const response = await fetch('/api/chat', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          message: content.trim(),
-          conversationHistory: messages.map((msg) => ({
-            role: msg.sender === 'user' ? 'user' : 'assistant',
-            content: msg.content,
-          })),
-          sessionContext, // v2.0: Send current session context
-          conversationId, // v2.0: Send conversation ID
-          userPreferences: {
-            gender: profile?.gender as 'men' | 'women' | undefined,
-            userName: profile?.userName,
-            ageRange: profile?.ageRange,
-            stylePreferences: profile?.stylePreferences,
-          }, // v2.5: Pass detailed profile info
-        }),
-      })
-
-      if (!response.ok) {
-        throw new Error('Failed to get response from chat API')
+      const requestBody = {
+        message: apiMessage,
+        conversationHistory: messages.map((msg) => ({
+          role: msg.sender === 'user' ? 'user' : 'assistant',
+          content: msg.content,
+        })),
+        sessionContext, // v2.0: Send current session context
+        conversationId, // v2.0: Send conversation ID
+        userPreferences: {
+          gender: profile?.gender as 'men' | 'women' | undefined,
+          userName: profile?.userName,
+          ageRange: profile?.ageRange,
+          stylePreferences: profile?.stylePreferences,
+        }, // v2.5: Pass detailed profile info
       }
 
-      const data = await response.json()
+      type RetriableChatError = Error & { retriable?: boolean }
+      const isRetriableNetworkError = (error: unknown): error is RetriableChatError => {
+        if (error instanceof TypeError) {
+          return /failed to fetch|networkerror|load failed/i.test(error.message)
+        }
+        if (error instanceof Error && 'retriable' in error) {
+          return Boolean((error as RetriableChatError).retriable)
+        }
+        return false
+      }
+
+      const fetchChatResponse = async () => {
+        const response = await fetch('/api/chat', {
+          method: 'POST',
+          headers: {
+            'Content-Type': 'application/json',
+          },
+          body: JSON.stringify(requestBody),
+        })
+
+        if (!response.ok) {
+          const retriableStatuses = new Set([502, 503, 504])
+          const error: RetriableChatError = new Error(`Failed to get response from chat API (${response.status})`)
+          error.retriable = retriableStatuses.has(response.status)
+          throw error
+        }
+
+        return response.json()
+      }
+
+      const maxRetryAttempts = 2
+      let data: Awaited<ReturnType<typeof fetchChatResponse>> | null = null
+      let lastError: unknown = null
+
+      for (let attempt = 1; attempt <= maxRetryAttempts; attempt++) {
+        try {
+          data = await fetchChatResponse()
+          lastError = null
+          break
+        } catch (error) {
+          lastError = error
+          if (attempt >= maxRetryAttempts || !isRetriableNetworkError(error)) {
+            break
+          }
+
+          const retryDelayMs = attempt * 350
+          console.warn(
+            `[Chat] /api/chat attempt ${attempt} failed with retriable error. Retrying in ${retryDelayMs}ms...`,
+            error
+          )
+          await new Promise((resolve) => setTimeout(resolve, retryDelayMs))
+        }
+      }
+
+      if (!data) {
+        throw (lastError instanceof Error ? lastError : new Error('Failed to get response from chat API'))
+      }
 
       // v2.0: Update session context if returned
       if (data.sessionContext) {
@@ -280,14 +380,38 @@ export function ChatAssistant({
       // v5.0: Convert looks → Outfit[] if v5 API returned structured looks
       let resolvedOutfits: Outfit[] = data.outfits || []
       if (data.looks && Array.isArray(data.looks) && data.looks.length > 0) {
-        resolvedOutfits = convertLooksToOutfits(data.looks)
-        console.log(`[Chat] Converted ${data.looks.length} v5 looks → Outfit[]`)
+        const cappedLooks = data.looks.slice(0, MAX_LOOKS_PER_RESPONSE)
+        if (data.looks.length > cappedLooks.length) {
+          console.log(`[Chat] Capped looks on client: ${data.looks.length} → ${cappedLooks.length}`)
+        }
+        resolvedOutfits = convertLooksToOutfits(cappedLooks)
+        console.log(`[Chat] Converted ${cappedLooks.length} v5 looks → Outfit[]`)
       }
 
-      // v5.0: Mark outfits as generating flat-lay if we have image request
-      const outfitsWithLoading = resolvedOutfits.map((outfit: Outfit) => ({
+      // Guardrail: Drop malformed looks that have no catalog items.
+      // Rendering item-less cards causes flat-lay generation failures and poor UX.
+      const validOutfits = resolvedOutfits.filter((outfit: Outfit) =>
+        Array.isArray(outfit.items) && outfit.items.length > 0
+      )
+      if (validOutfits.length !== resolvedOutfits.length) {
+        console.warn(
+          `[Chat] Dropped ${resolvedOutfits.length - validOutfits.length} malformed outfit(s) without items`
+        )
+      }
+
+      const shouldAutoGenerateFlatLay = Boolean(
+        data.imageRequest &&
+        validOutfits.length > 0 &&
+        !isLookGenerationCtaRequest
+      )
+      const allowLazyFlatLayGeneration = !isLookGenerationCtaRequest
+
+      // v5.0: Mark outfits as generating flat-lay only when auto image generation is enabled
+      const outfitsWithLoading = validOutfits.map((outfit: Outfit) => ({
         ...outfit,
-        isGeneratingFlatLay: data.imageRequest && outfit.items.length > 0,
+        isGeneratingFlatLay: shouldAutoGenerateFlatLay && outfit.items.length > 0,
+        flatLayGenerationFailed: false,
+        allowLazyFlatLayGeneration,
       }))
 
       // Create AI response message
@@ -298,13 +422,16 @@ export function ChatAssistant({
         sender: 'assistant',
         timestamp: new Date(),
         outfits: outfitsWithLoading,
+        showInfoCTA: data.responseType === 'info',
+        showLookConfirmationCTA: data.responseType === 'look_confirmation',
+        pendingLookQuery: data.pendingLookQuery,
       }
 
       setMessages((prev) => [...prev, aiResponse])
       setIsTyping(false)
 
       // v5.0: Generate flat-lay images for each outfit (embedded in card, no separate message)
-      if (data.imageRequest && outfitsWithLoading.length > 0) {
+      if (shouldAutoGenerateFlatLay && outfitsWithLoading.length > 0) {
         console.log('[Chat] Image request detected, generating flat-lay for outfit cards...')
 
         // Add AI acknowledgment message for generation
@@ -332,58 +459,94 @@ export function ChatAssistant({
         ))
 
         setGeneratingImage(false)
+      } else if (data.imageRequest && isLookGenerationCtaRequest) {
+        console.log('[Chat] Skipping auto flat-lay generation for CTA look request to keep follow-up UX stable')
       }
     } catch (error) {
       console.error('Chat error:', error)
 
-      // Fallback to mock response on error
-      const aiResponse = getMockOutfitResponse(content)
-      const messageId = `ai-mock-${Date.now()}`
-
-      // v5.0: Mark mock outfits as generating flat-lay
-      const mockOutfitsWithLoading = (aiResponse.outfits || []).map((outfit: Outfit) => ({
-        ...outfit,
-        isGeneratingFlatLay: outfit.items.length > 0,
-      }))
-
-      const mockMessage: ChatMessageType = {
-        ...aiResponse,
-        id: messageId,
-        outfits: mockOutfitsWithLoading,
-      }
-
-      setMessages((prev) => [...prev, mockMessage])
-      setIsTyping(false)
-
-      // v5.0: Auto-generate flat-lay for mock responses
-      if (mockOutfitsWithLoading.length > 0) {
-        console.log('[Chat] Fallback: Auto-generating flat-lay for mock response...')
-
-        // Add acknowledgement
-        const acknowledgmentMessage: ChatMessageType = {
-          id: `ai-ack-${Date.now()}`,
-          content: 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
+      // CTA look-generation path should never fall back to generic mock looks.
+      // Keep UX in "information mode" and let user retry generation explicitly.
+      if (isLookGenerationCtaRequest) {
+        const ctaFallbackMessage: ChatMessageType = {
+          id: `ai-cta-fallback-${Date.now()}`,
+          content: 'ยังสร้างลุคไม่สำเร็จในรอบนี้ เดี๋ยวคุยข้อมูลต่อให้ก่อนนะ ถ้าพร้อมเมื่อไรค่อยกดสร้างลุคอีกครั้งได้เลย',
           sender: 'assistant',
           timestamp: new Date(),
+          showInfoCTA: true,
+          pendingLookQuery: pendingLookQueryFromCta || INFO_CTA_PROMPT,
         }
-        setMessages((prev) => [...prev, acknowledgmentMessage])
-
-        setGeneratingImage(true)
-        setImageGenerationError(null)
-
-        for (const outfit of mockOutfitsWithLoading) {
-          if (outfit.items.length > 0) {
-            await generateFlatLayForOutfit(outfit, messageId)
-          }
-        }
-
-        // Remove the acknowledgment message now that flat-lay images are shown in cards
-        setMessages((prev) => prev.filter((msg) =>
-          msg.content !== 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨'
-        ))
-
+        setMessages((prev) => [...prev, ctaFallbackMessage])
+        setIsTyping(false)
         setGeneratingImage(false)
+        return
       }
+
+      // Optional debug fallback: only enable mock payload if explicitly requested.
+      if (ENABLE_CHAT_MOCK_FALLBACK) {
+        const aiResponse = getMockOutfitResponse(content)
+        const messageId = `ai-mock-${Date.now()}`
+
+        // v5.0: Mark mock outfits as generating flat-lay
+        const mockOutfitsWithLoading = (aiResponse.outfits || [])
+          .filter((outfit: Outfit) => Array.isArray(outfit.items) && outfit.items.length > 0)
+          .map((outfit: Outfit) => ({
+          ...outfit,
+          isGeneratingFlatLay: outfit.items.length > 0,
+          flatLayGenerationFailed: false,
+        }))
+
+        const mockMessage: ChatMessageType = {
+          ...aiResponse,
+          id: messageId,
+          outfits: mockOutfitsWithLoading,
+        }
+
+        setMessages((prev) => [...prev, mockMessage])
+        setIsTyping(false)
+
+        // v5.0: Auto-generate flat-lay for mock responses
+        if (mockOutfitsWithLoading.length > 0) {
+          console.log('[Chat] Fallback: Auto-generating flat-lay for mock response...')
+
+          // Add acknowledgement
+          const acknowledgmentMessage: ChatMessageType = {
+            id: `ai-ack-${Date.now()}`,
+            content: 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨',
+            sender: 'assistant',
+            timestamp: new Date(),
+          }
+          setMessages((prev) => [...prev, acknowledgmentMessage])
+
+          setGeneratingImage(true)
+          setImageGenerationError(null)
+
+          for (const outfit of mockOutfitsWithLoading) {
+            if (outfit.items.length > 0) {
+              await generateFlatLayForOutfit(outfit, messageId)
+            }
+          }
+
+          // Remove the acknowledgment message now that flat-lay images are shown in cards
+          setMessages((prev) => prev.filter((msg) =>
+            msg.content !== 'กำลังสร้างภาพ LOOKs จากสินค้าที่แนะนำสักครู่นะคะ... 🎨'
+          ))
+
+          setGeneratingImage(false)
+        }
+
+        return
+      }
+
+      setMessages((prev) => [...prev, {
+        id: `ai-error-${Date.now()}`,
+        content: 'ตอนนี้เชื่อมต่อระบบไม่เสถียรชั่วคราว เลยยังสร้างลุคไม่ได้ ลองส่งอีกครั้งได้เลย เดี๋ยวช่วยต่อให้ทันที',
+        sender: 'assistant',
+        timestamp: new Date(),
+      }])
+      setImageGenerationError('Network error while requesting /api/chat')
+      setIsTyping(false)
+      setGeneratingImage(false)
     }
   }
 
@@ -469,6 +632,117 @@ export function ChatAssistant({
                       onToggleWishlist={onToggleWishlist}
                     />
                   ))}
+                </div>
+              )}
+
+              {message.showInfoCTA && message.sender === 'assistant' && (
+                <div className="relative ml-10 mt-3 max-w-md overflow-hidden rounded-2xl border border-amber-200/80 bg-gradient-to-br from-amber-50 via-orange-50 to-white p-3 shadow-[0_10px_28px_-22px_rgba(194,65,12,0.85)]">
+                  <div className="absolute -right-9 -top-9 h-24 w-24 rounded-full bg-orange-200/35 blur-3xl" />
+                  <div className="relative">
+                    <div className="flex items-start gap-2.5">
+                      <div className="mt-0.5 rounded-full bg-amber-100 p-1.5 text-amber-700">
+                        <Info className="h-3.5 w-3.5" />
+                      </div>
+                      <div className="min-w-0">
+                        <div className="inline-flex items-center gap-1 rounded-full border border-amber-200 bg-white/80 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-amber-800">
+                          <Sparkles className="h-3 w-3" />
+                          โหมดข้อมูล
+                        </div>
+                        <p className="mt-1.5 text-xs font-semibold text-amber-950">
+                          ได้คำตอบแล้ว ถ้าต้องการเดี๋ยวต่อยอดเป็นลุคให้ดูทันที
+                        </p>
+                        <p className="mt-0.5 text-[11px] leading-relaxed text-amber-900/80">
+                          ใช้บริบทเดิมทั้งหมด และยังคุยแบบข้อมูลต่อได้
+                        </p>
+                      </div>
+                    </div>
+
+                    <div className="mt-3 flex flex-wrap gap-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleSendMessage(INFO_CTA_LABEL, {
+                          apiMessage: `${LOOK_CTA_YES_PREFIX}${message.pendingLookQuery || INFO_CTA_PROMPT}`,
+                        })}
+                        disabled={isTyping}
+                        className="h-8 rounded-full bg-amber-600 px-3 text-xs text-white transition-transform hover:-translate-y-0.5 hover:bg-amber-700"
+                      >
+                        <Shirt className="mr-1.5 h-3.5 w-3.5" />
+                        {INFO_CTA_LABEL}
+                        <ArrowRight className="ml-1 h-3.5 w-3.5" />
+                      </Button>
+                      <Button
+                        variant="ghost"
+                        size="sm"
+                        onClick={() => dismissMessageCtas(message.id)}
+                        disabled={isTyping}
+                        className="h-8 rounded-full px-3 text-xs text-amber-900 hover:bg-amber-100/80"
+                      >
+                        <BookOpen className="mr-1.5 h-3.5 w-3.5" />
+                        ถามต่อ
+                      </Button>
+                    </div>
+                  </div>
+                </div>
+              )}
+
+              {message.showLookConfirmationCTA && message.sender === 'assistant' && (
+                <div className="relative ml-10 mt-3 max-w-md overflow-hidden rounded-2xl border border-sky-200/80 bg-gradient-to-br from-sky-50 via-cyan-50 to-white p-3 shadow-[0_10px_28px_-22px_rgba(2,132,199,0.85)]">
+                  <div className="absolute -left-9 -bottom-9 h-24 w-24 rounded-full bg-sky-200/35 blur-3xl" />
+                  <div className="relative">
+                    <div className="flex items-center justify-between gap-2">
+                      <div className="inline-flex items-center gap-1 rounded-full border border-sky-200 bg-white/80 px-2 py-0.5 text-[10px] font-semibold tracking-wide text-sky-800">
+                        <Sparkles className="h-3 w-3" />
+                        เลือกโหมดตอบ
+                      </div>
+                      <span className="text-[10px] font-medium text-sky-800/80">ขั้นตอนถัดไป</span>
+                    </div>
+                    <p className="mt-2 text-sm font-semibold text-sky-950">
+                      ต่อจากข้อมูลนี้ อยากให้เราสร้างลุคให้ดูเลยไหม
+                    </p>
+                    <p className="mt-1 text-[11px] leading-relaxed text-sky-900/80">
+                      เลือกได้เลยว่าจะ “สร้างลุคทันที” หรือ “คุยข้อมูลต่อก่อน”
+                    </p>
+
+                    <div className="mt-3 grid grid-cols-1 gap-2 sm:grid-cols-2">
+                      <Button
+                        size="sm"
+                        onClick={() => handleSendMessage('ใช่ สร้างลุคให้ดู', {
+                          apiMessage: `${LOOK_CTA_YES_PREFIX}${message.pendingLookQuery || ''}`,
+                        })}
+                        disabled={isTyping}
+                        className="h-auto min-h-14 rounded-xl bg-sky-600 px-3 py-2 text-left text-xs text-white transition-transform hover:-translate-y-0.5 hover:bg-sky-700"
+                      >
+                        <span className="flex w-full items-start gap-2">
+                          <Check className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span className="leading-tight">
+                            <span className="block font-semibold">ใช่ สร้างลุคให้ดู</span>
+                            <span className="mt-0.5 block text-[10px] text-sky-100">
+                              ใช้บริบทเดิม สร้างทันที
+                            </span>
+                          </span>
+                        </span>
+                      </Button>
+                      <Button
+                        variant="outline"
+                        size="sm"
+                        onClick={() => handleSendMessage('ไม่ ขอดูข้อมูลก่อน', {
+                          apiMessage: `${LOOK_CTA_NO_PREFIX}${message.pendingLookQuery || ''}`,
+                        })}
+                        disabled={isTyping}
+                        className="h-auto min-h-14 rounded-xl border-sky-200 bg-white/85 px-3 py-2 text-left text-xs text-sky-900 transition-transform hover:-translate-y-0.5 hover:bg-sky-100"
+                      >
+                        <span className="flex w-full items-start gap-2">
+                          <X className="mt-0.5 h-3.5 w-3.5 shrink-0" />
+                          <span className="leading-tight">
+                            <span className="block font-semibold">ยังไม่ คุยข้อมูลต่อ</span>
+                            <span className="mt-0.5 block text-[10px] text-sky-700/80">
+                              จะไม่สร้างลุคอัตโนมัติ
+                            </span>
+                          </span>
+                        </span>
+                      </Button>
+                    </div>
+                  </div>
                 </div>
               )}
             </div>

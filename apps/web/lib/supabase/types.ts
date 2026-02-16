@@ -106,6 +106,8 @@ export interface Database {
           embedding: string | null
           metadata: Json | null
           created_at: string | null
+          updated_at: string | null
+          is_active: boolean
         }
         Insert: {
           id?: string
@@ -117,6 +119,8 @@ export interface Database {
           embedding?: string | null
           metadata?: Json | null
           created_at?: string | null
+          updated_at?: string | null
+          is_active?: boolean
         }
         Update: {
           id?: string
@@ -128,6 +132,8 @@ export interface Database {
           embedding?: string | null
           metadata?: Json | null
           created_at?: string | null
+          updated_at?: string | null
+          is_active?: boolean
         }
         Relationships: []
       }

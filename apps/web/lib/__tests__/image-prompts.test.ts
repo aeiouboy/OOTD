@@ -140,6 +140,19 @@ describe('buildFlatLayPrompt', () => {
     expect(prompt).toContain('TOP-CENTER')
     expect(prompt).toContain('navy blue')
   })
+
+  it('adds strict single-garment lock when manifest has only one garment', () => {
+    const prompt = buildFlatLayPrompt([
+      { name: 'Navy Midi Dress', category: 'Dress', color: 'navy blue' },
+      { name: 'Black Pumps', category: 'Shoes', color: 'black' },
+      { name: 'Beige Tote Bag', category: 'Bag', color: 'beige' },
+      { name: 'Gold Hoop Earrings', category: 'Jewelry', color: 'gold' },
+    ])
+
+    expect(prompt).toContain('Single garment lock:')
+    expect(prompt).toContain('Render exactly ONE garment piece total.')
+    expect(prompt).toContain('Outerwear exclusion lock:')
+  })
 })
 
 // ---------------------------------------------------------------------------

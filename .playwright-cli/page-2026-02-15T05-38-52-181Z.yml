@@ -1,0 +1,253 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e3]:
+    - complementary "Navigation and Filters" [ref=e5]:
+      - generic [ref=e6]:
+        - generic [ref=e7]:
+          - heading "OOTDay" [level=1] [ref=e8]
+          - paragraph [ref=e9]: Your AI Fashion Assistant
+        - generic [ref=e10]:
+          - heading "Category" [level=3] [ref=e11]
+          - radiogroup [ref=e12]:
+            - generic [ref=e13]:
+              - radio "All" [ref=e14]
+              - generic [ref=e15] [cursor=pointer]: All
+            - generic [ref=e16]:
+              - radio "Women" [checked] [ref=e17]:
+                - img [ref=e19]
+              - generic [ref=e21] [cursor=pointer]: Women
+            - generic [ref=e22]:
+              - radio "Men" [ref=e23]
+              - generic [ref=e24] [cursor=pointer]: Men
+        - generic [ref=e25]:
+          - heading "Occasion" [level=3] [ref=e26]
+          - generic [ref=e27]:
+            - button "Weekend" [ref=e28]:
+              - img [ref=e29]
+              - generic [ref=e31]: Weekend
+            - button "Date Night" [ref=e32]:
+              - img [ref=e33]
+              - generic [ref=e35]: Date Night
+            - button "Everyday" [ref=e36]:
+              - img [ref=e37]
+              - generic [ref=e39]: Everyday
+          - generic [ref=e40]:
+            - button "ทำงาน/ออฟฟิศ" [ref=e41]:
+              - img [ref=e42]
+              - generic [ref=e45]: ทำงาน/ออฟฟิศ
+            - button "วันชิลล์/วันหยุด" [ref=e46]:
+              - img [ref=e47]
+              - generic [ref=e53]: วันชิลล์/วันหยุด
+            - button "งานแต่งงาน" [ref=e54]:
+              - img [ref=e55]
+              - generic [ref=e58]: งานแต่งงาน
+            - button "ออกกำลังกาย" [ref=e59]:
+              - img [ref=e60]
+              - generic [ref=e66]: ออกกำลังกาย
+            - button "ท่องเที่ยว" [ref=e67]:
+              - img [ref=e68]
+              - generic [ref=e70]: ท่องเที่ยว
+            - button "เดท" [ref=e71]:
+              - img [ref=e72]
+              - generic [ref=e74]: เดท
+            - button "ดินเนอร์" [ref=e75]:
+              - img [ref=e76]
+              - generic [ref=e81]: ดินเนอร์
+            - button "คาเฟ่" [ref=e82]:
+              - img [ref=e83]
+              - generic [ref=e85]: คาเฟ่
+            - button "ปาร์ตี้" [ref=e86]:
+              - img [ref=e87]
+              - generic [ref=e93]: ปาร์ตี้
+        - generic [ref=e94]:
+          - heading "Price Range" [level=3] [ref=e95]
+          - generic [ref=e97] [cursor=pointer]:
+            - slider "Minimum" [ref=e101]
+            - slider "Maximum" [ref=e103]
+          - generic [ref=e104]:
+            - generic [ref=e105]: ฿0
+            - generic [ref=e106]: "-"
+            - generic [ref=e107]: ฿20,000
+        - button "Clear all filters" [ref=e108]
+    - main "Product Discovery" [ref=e109]:
+      - generic [ref=e110]:
+        - heading "Discover Products" [level=2] [ref=e111]
+        - 'button "Wishlist: 0 items" [ref=e112]':
+          - img
+      - generic [ref=e113]:
+        - generic [ref=e259]:
+          - article "Jacket Women Wmpokninfb20623 Navy" [ref=e260] [cursor=pointer]:
+            - generic [ref=e262]: Date Night
+            - generic [ref=e263]:
+              - heading "Jacket Women Wmpokninfb20623 Navy" [level=3] [ref=e264]
+              - paragraph [ref=e265]: POLO RALPH LAUREN
+              - paragraph [ref=e266]: ฿9,700
+          - article "Shirttriped Knit Oxfordhirt Wmpoknin6820165 400 Blue" [ref=e267] [cursor=pointer]:
+            - generic [ref=e269]: Date Night
+            - generic [ref=e270]:
+              - heading "Shirttriped Knit Oxfordhirt Wmpoknin6820165 400 Blue" [level=3] [ref=e271]
+              - paragraph [ref=e272]: POLO RALPH LAUREN
+              - paragraph [ref=e273]: ฿6,100
+          - article "Mardimercrediactif Crop Tshirt Actif Emblem Black Ivory F" [ref=e274] [cursor=pointer]:
+            - generic [ref=e276]: Weekend
+            - generic [ref=e277]:
+              - heading "Mardimercrediactif Crop Tshirt Actif Emblem Black Ivory F" [level=3] [ref=e278]
+              - paragraph [ref=e279]: MARDI MERCREDI ACTIF
+              - paragraph [ref=e280]: ฿1,990
+          - article "Thirt Women Wmpoknincu21099 Red" [ref=e281] [cursor=pointer]:
+            - generic [ref=e283]: Date Night
+            - generic [ref=e284]:
+              - heading "Thirt Women Wmpoknincu21099 Red" [level=3] [ref=e285]
+              - paragraph [ref=e286]: POLO RALPH LAUREN
+              - paragraph [ref=e287]: ฿5,500
+          - article "Women Clothing Cotton Blend Tweed Round Neck Jacket Easy Fit Off White" [ref=e288] [cursor=pointer]:
+            - generic [ref=e290]: Weekend
+            - generic [ref=e291]:
+              - heading "Women Clothing Cotton Blend Tweed Round Neck Jacket Easy Fit Off White" [level=3] [ref=e292]
+              - paragraph [ref=e293]: ฿2,090
+          - article "Women Relaxed Fit Thirt White" [ref=e294] [cursor=pointer]:
+            - generic [ref=e296]: Everyday
+            - generic [ref=e297]:
+              - heading "Women Relaxed Fit Thirt White" [level=3] [ref=e298]
+              - paragraph [ref=e299]: CALVIN KLEIN
+              - paragraph [ref=e300]: ฿919
+          - article "Mardimercrediactif Airlift Sleeveless Tank Top Flowermardi Grcds53725020117" [ref=e301] [cursor=pointer]:
+            - generic [ref=e303]: Weekend
+            - generic [ref=e304]:
+              - heading "Mardimercrediactif Airlift Sleeveless Tank Top Flowermardi Grcds53725020117" [level=3] [ref=e305]
+              - paragraph [ref=e306]: MARDI MERCREDI ACTIF
+              - paragraph [ref=e307]: ฿1,701
+          - article "Giordano Womens Relax Elastic Waist Twill Audrey Pants Black" [ref=e308] [cursor=pointer]:
+            - generic [ref=e310]: Everyday
+            - generic [ref=e311]:
+              - heading "Giordano Womens Relax Elastic Waist Twill Audrey Pants Black" [level=3] [ref=e312]
+              - paragraph [ref=e313]: GIORDANO
+              - paragraph [ref=e314]: ฿600
+          - article "Bra Halter Top Woman White" [ref=e315] [cursor=pointer]:
+            - generic [ref=e317]: Everyday
+            - generic [ref=e318]:
+              - heading "Bra Halter Top Woman White" [level=3] [ref=e319]
+              - paragraph [ref=e320]: SABINA
+              - paragraph [ref=e321]: ฿990
+          - article "Mardimercrediactif A Line Mini Skirt Theflower Deep Green Cream Grcds54525060339" [ref=e322] [cursor=pointer]:
+            - generic [ref=e324]: Weekend
+            - generic [ref=e325]:
+              - heading "Mardimercrediactif A Line Mini Skirt Theflower Deep Green Cream Grcds54525060339" [level=3] [ref=e326]
+              - paragraph [ref=e327]: MARDI MERCREDI ACTIF
+              - paragraph [ref=e328]: ฿2,890
+          - article "Nike Women Hoodie Full Zip French Terry Oversized Saillt Orewood Brn Grcds54524100195" [ref=e329] [cursor=pointer]:
+            - generic [ref=e331]: Weekend
+            - generic [ref=e332]:
+              - heading "Nike Women Hoodie Full Zip French Terry Oversized Saillt Orewood Brn Grcds54524100195" [level=3] [ref=e333]
+              - paragraph [ref=e334]: NIKE
+              - paragraph [ref=e335]: ฿3,100
+          - article "Women Graphichorttack Thirt White" [ref=e336] [cursor=pointer]:
+            - generic [ref=e338]: Everyday
+            - generic [ref=e339]:
+              - heading "Women Graphichorttack Thirt White" [level=3] [ref=e340]
+              - paragraph [ref=e341]: ฿595
+          - article "Emis Women T Shirt Lettering Rhinestone Grcds53725070726" [ref=e342] [cursor=pointer]:
+            - generic [ref=e344]: Weekend
+            - generic [ref=e345]:
+              - heading "Emis Women T Shirt Lettering Rhinestone Grcds53725070726" [level=3] [ref=e346]
+              - paragraph [ref=e347]: EMIS
+              - paragraph [ref=e348]: ฿2,290
+          - article "Estimate Women Blouse Short Sleeves Embroidered Grcds54525080015" [ref=e349] [cursor=pointer]:
+            - generic [ref=e351]: Weekend
+            - generic [ref=e352]:
+              - heading "Estimate Women Blouse Short Sleeves Embroidered Grcds54525080015" [level=3] [ref=e353]
+              - paragraph [ref=e354]: ESTIMATE
+              - paragraph [ref=e355]: ฿2,395
+          - article "Expressionsevening Women Maxi Dress V Neck With Drape Detail Grcds54525060058" [ref=e356] [cursor=pointer]:
+            - generic [ref=e358]: Weekend
+            - generic [ref=e359]:
+              - heading "Expressionsevening Women Maxi Dress V Neck With Drape Detail Grcds54525060058" [level=3] [ref=e360]
+              - paragraph [ref=e361]: EXPRESSIONS EVENING
+              - paragraph [ref=e362]: ฿2,796
+          - article "Ss24 Brielle Twisted Women Blouse Lavender" [ref=e363] [cursor=pointer]:
+            - generic [ref=e365]: Weekend
+            - generic [ref=e366]:
+              - heading "Ss24 Brielle Twisted Women Blouse Lavender" [level=3] [ref=e367]
+              - paragraph [ref=e368]: ASV
+              - paragraph [ref=e369]: ฿1,990
+          - article "Marksspenceronline Women Blouse Linen Rich V Neck Kimono Sleeve Black Grcds53724110467" [ref=e370] [cursor=pointer]:
+            - generic [ref=e372]: Weekend
+            - generic [ref=e373]:
+              - heading "Marksspenceronline Women Blouse Linen Rich V Neck Kimono Sleeve Black Grcds53724110467" [level=3] [ref=e374]
+              - paragraph [ref=e375]: MARKS & SPENCER
+              - paragraph [ref=e376]: ฿1,695
+          - article "Marksspenceronline Women Wide Leg Trousers Pleat Front Soft Green Grcds11524080195" [ref=e377] [cursor=pointer]:
+            - generic [ref=e379]: Weekend
+            - generic [ref=e380]:
+              - heading "Marksspenceronline Women Wide Leg Trousers Pleat Front Soft Green Grcds11524080195" [level=3] [ref=e381]
+              - paragraph [ref=e382]: MARKS & SPENCER
+              - paragraph [ref=e383]: ฿1,695
+          - article "Oversized Fluid Striped Cotton T Shirt White" [ref=e384] [cursor=pointer]:
+            - generic [ref=e386]: Weekend
+            - generic [ref=e387]:
+              - heading "Oversized Fluid Striped Cotton T Shirt White" [level=3] [ref=e388]
+              - paragraph [ref=e389]: LACOSTE
+              - paragraph [ref=e390]: ฿1,596
+          - article "Adidas Women Hoodie Future Icons 3 Stripes Sandy Pink Grcds54624110315" [ref=e391] [cursor=pointer]:
+            - generic [ref=e393]: Everyday
+            - generic [ref=e394]:
+              - heading "Adidas Women Hoodie Future Icons 3 Stripes Sandy Pink Grcds54624110315" [level=3] [ref=e395]
+              - paragraph [ref=e396]: ADIDAS
+              - paragraph [ref=e397]: ฿1,440
+        - generic [ref=e398]:
+          - button "Previous page" [disabled]:
+            - img
+          - generic [ref=e399]:
+            - button "Page 1": "1"
+            - button "Page 2" [ref=e400]: "2"
+            - generic [ref=e401]: ...
+            - button "Page 63" [ref=e402]: "63"
+          - button "Next page" [ref=e403]:
+            - img
+    - generic "Chat and outfit details" [ref=e194]:
+      - separator "Resize chat panel" [ref=e195]:
+        - img [ref=e196]
+      - generic [ref=e456]:
+        - generic [ref=e458]:
+          - button "Explore more outfits" [ref=e459]:
+            - img
+            - text: Explore more outfits
+          - generic [ref=e460]:
+            - button "Set panel to compact size, 320 pixels" [ref=e461]:
+              - img
+              - generic [ref=e462]: Compact
+            - button "Set panel to default size, 420 pixels" [ref=e463]:
+              - img
+              - generic [ref=e464]: Default
+            - button "Set panel to wide size, 560 pixels" [ref=e465]:
+              - img
+              - generic [ref=e466]: Wide
+        - generic [ref=e468]:
+          - heading "Modern Red Chic" [level=2] [ref=e469]
+          - paragraph [ref=e470]: ใส่คู่กับรองเท้าส้นสูงสีดำจะช่วยให้ลุคดูเปรี้ยวและลงตัวสุดๆ
+          - img "Modern Red Chic" [ref=e472]
+          - generic [ref=e473]:
+            - generic [ref=e474]:
+              - img [ref=e475]
+              - heading "Shop this look (1 items)" [level=3] [ref=e478]
+            - paragraph [ref=e479]: Products featured in the outfit above
+            - generic [ref=e481]:
+              - img [ref=e484]
+              - generic [ref=e487]:
+                - paragraph [ref=e488]: Zip Neck Rib Knit Polo Dress Red
+                - paragraph [ref=e489]: LACOSTE
+                - paragraph [ref=e490]: ฿2,895
+              - button "Buy Now" [ref=e491]
+        - generic [ref=e492]:
+          - generic [ref=e493]:
+            - generic [ref=e494]: Total outfit price
+            - generic [ref=e495]: ฿2,895
+          - generic [ref=e496]:
+            - button "Save to wishlist" [ref=e497]:
+              - img
+            - button "ซื้อทั้งหมด" [ref=e498]:
+              - img
+              - text: ซื้อทั้งหมด
+            - button "Share outfit" [ref=e499]:
+              - img
+      - status [ref=e258]

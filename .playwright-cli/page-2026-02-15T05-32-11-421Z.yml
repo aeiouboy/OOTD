@@ -1,0 +1,8 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e5]:
+    - img "OOTDay Logo" [ref=e6]
+    - generic [ref=e7]:
+      - heading "Hi FRIEND!" [level=1] [ref=e8]
+      - paragraph [ref=e9]: Think outfit. Think OOTDay
+    - button "Let's Go →" [ref=e10]

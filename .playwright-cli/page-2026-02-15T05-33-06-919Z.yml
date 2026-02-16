@@ -1,0 +1,14 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e32]:
+    - button [ref=e34]:
+      - img
+    - generic [ref=e44]:
+      - generic [ref=e45]:
+        - heading "What's your vibe?" [level=1] [ref=e46]
+        - paragraph [ref=e47]: Choose your fashion department
+      - generic [ref=e50] [cursor=pointer]:
+        - img "Women's Fashion" [ref=e51]
+        - generic [ref=e52]: Selected
+      - button [ref=e54]:
+        - img

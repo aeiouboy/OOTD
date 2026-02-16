@@ -1,0 +1,18 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e176]:
+    - button [ref=e178]:
+      - img
+    - generic [ref=e188]:
+      - generic [ref=e189]:
+        - heading "Show your face — your style starts here" [level=1] [ref=e190]
+        - paragraph [ref=e191]: Upload your photo — or let the magic happen
+      - generic [ref=e193] [cursor=pointer]:
+        - img [ref=e194]
+        - paragraph [ref=e197]: Click to upload your photo
+        - paragraph [ref=e198]: Max 5MB
+      - generic [ref=e199]:
+        - button "Upload" [ref=e200]
+        - button "Mystery" [ref=e201]:
+          - img
+          - text: Mystery

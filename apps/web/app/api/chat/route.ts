@@ -138,6 +138,8 @@ export async function POST(request: NextRequest) {
         occasion: response.occasion,
         reasoning: response.reasoning,
         sessionContext: response.sessionContext,
+        responseType: response.responseType,
+        pendingLookQuery: response.pendingLookQuery,
         imageRequest: response.imageRequest,
         outfitDescription: response.outfitDescription,
       })
@@ -204,6 +206,8 @@ export async function POST(request: NextRequest) {
       occasion: response.occasion,
       reasoning: response.reasoning,
       sessionContext: response.sessionContext, // v2.0: Return updated session context to client
+      responseType: response.responseType,
+      pendingLookQuery: response.pendingLookQuery,
       imageRequest: response.imageRequest, // Image generation flag
       outfitDescription: response.outfitDescription, // Outfit description for image generation
     })

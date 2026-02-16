@@ -1,0 +1,22 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e203]:
+    - generic [ref=e204]:
+      - heading "Nice to meet you Test" [level=1] [ref=e205]
+      - paragraph [ref=e206]: Successfully Registered
+    - generic [ref=e207]:
+      - img [ref=e209]
+      - paragraph [ref=e211]: Creating your personalized fitting model...
+      - paragraph [ref=e212]: This may take a moment
+    - generic [ref=e213]:
+      - generic [ref=e214]:
+        - generic [ref=e215]: "Department:"
+        - generic [ref=e216]: Women's Fashion
+      - generic [ref=e217]:
+        - generic [ref=e218]: "Age Range:"
+        - generic [ref=e219]: 20-29
+      - generic [ref=e220]:
+        - generic [ref=e221]: "Style:"
+        - generic [ref=e223]: Minimal
+    - paragraph [ref=e224]: Your BFF's here — ready to find your perfect look
+    - button "Time to Chat" [ref=e225]

@@ -15,6 +15,7 @@ import { detectColorsInMessage } from './color-normalizer';
  * Follow-up request types
  */
 export type FollowUpType =
+  | 'info_question'  // User asks informational knowledge question after recommendations
   | 'more_options'    // User wants to see more products
   | 'color_change'    // User wants different colors
   | 'budget_change'   // User wants different price range (lower/higher)
@@ -49,6 +50,33 @@ export interface FollowUpDetection {
  * Follow-up keywords by type (Thai and English)
  */
 const FOLLOW_UP_KEYWORDS: Record<FollowUpType, { thai: string[]; english: string[] }> = {
+  info_question: {
+    thai: [
+      'คืออะไร',
+      'ทำไม',
+      'กาลกิณี',
+      'สีกาลกิณี',
+      'สีมงคล',
+      'สีประจำวัน',
+      'เสริมดวง',
+      'สีอะไรดี',
+      'สีไหนดี',
+      'สีไหนที่ไม่ควร',
+      'สีไหนไม่ควร',
+      'ข้อห้าม',
+      'ธรรมเนียม',
+      'กฎแต่งตัว',
+    ],
+    english: [
+      'what is',
+      'why',
+      'should not wear',
+      'what color should i avoid',
+      'dress code',
+      'rule',
+      'etiquette',
+    ],
+  },
   more_options: {
     thai: [
       'มีอื่นมั้ย',
@@ -218,6 +246,27 @@ const FOLLOW_UP_KEYWORDS: Record<FollowUpType, { thai: string[]; english: string
 };
 
 /**
+ * Extra info-question regex patterns that are easier to match via regex than plain keywords.
+ */
+const THAI_DAY_OF_WEEK_PATTERN = 'วัน(?:จันทร์|อังคาร|พุธ|พฤหัส(?:บดี)?|ศุกร์|เสาร์|อาทิตย์)';
+const INFO_QUESTION_PATTERNS = [
+  /สีไหน.*(?:ไม่ควร|ควรหลีกเลี่ยง)/i,
+  /(?:กฎ|ธรรมเนียม).*(?:แต่งตัว|ไปวัด|งาน)/i,
+  /ใส่.+กับ.+ได้ไหม/i,
+  new RegExp(`${THAI_DAY_OF_WEEK_PATTERN}.*(?:สีมงคล|สีกาลกิณี|สีอะไรดี|สีไหนดี)`, 'i'),
+  new RegExp(`(?:สีมงคล|สีกาลกิณี|สีประจำวัน|เสริมดวง).*(?:${THAI_DAY_OF_WEEK_PATTERN})`, 'i'),
+  /(?:สีมงคล|สีกาลกิณี|เสริมดวง).*(?:ใส่|แต่ง|เลือก).*(?:อะไร|ไร|ไหนดี)/i,
+];
+
+const EXPLICIT_LOOK_REQUEST_PATTERNS = [
+  /จัดลุค/i,
+  /แนะนำลุค/i,
+  /ขอลุค/i,
+  /outfit/i,
+  /\blook\b/i,
+];
+
+/**
  * Detects follow-up request type from user message
  *
  * @param message - User's message
@@ -242,9 +291,33 @@ export function detectFollowUpRequest(
   const lowerMessage = message.toLowerCase();
   const matchedTypes: Array<{ type: FollowUpType; keywords: string[]; score: number }> = [];
 
+  // INFO questions are checked first to avoid being overshadowed by generic follow-up types.
+  const infoKeywords = [
+    ...FOLLOW_UP_KEYWORDS.info_question.thai,
+    ...FOLLOW_UP_KEYWORDS.info_question.english,
+  ];
+  const matchedInfoKeywords = infoKeywords.filter((keyword) =>
+    lowerMessage.includes(keyword.toLowerCase())
+  );
+  const matchedInfoPatterns = INFO_QUESTION_PATTERNS
+    .filter((pattern) => pattern.test(message))
+    .map(() => 'info-question-pattern');
+  const isExplicitLookRequest = EXPLICIT_LOOK_REQUEST_PATTERNS.some((pattern) => pattern.test(message));
+
+  if (!isExplicitLookRequest && (matchedInfoKeywords.length > 0 || matchedInfoPatterns.length > 0)) {
+    const allMatches = [...matchedInfoKeywords, ...matchedInfoPatterns];
+    return {
+      isFollowUp: true,
+      type: 'info_question',
+      confidence: Math.min(0.7 + allMatches.length * 0.1, 1.0),
+      matchedKeywords: allMatches,
+      parameters: {},
+    };
+  }
+
   // Check each follow-up type
   for (const [type, keywords] of Object.entries(FOLLOW_UP_KEYWORDS)) {
-    if (type === 'none') continue;
+    if (type === 'none' || type === 'info_question') continue;
 
     const matched: string[] = [];
     const allKeywords = [...keywords.thai, ...keywords.english];
@@ -384,6 +457,14 @@ DO NOT ask any clarifying questions. Provide NEW recommendations immediately.
 `;
 
   switch (detection.type) {
+    case 'info_question':
+      return `[FOLLOW-UP MODE ACTIVE - INFO MODE]
+User is asking a knowledge/factual follow-up question after recommendations.
+DO NOT ask clarifying questions.
+DO NOT generate LOOKS_DATA.
+DO NOT recommend products, prices, or URLs.
+Answer with concise text-only guidance from knowledge context.`;
+
     case 'more_options':
       return `${baseInstruction}User wants MORE OPTIONS.
 - Show DIFFERENT products from previous recommendations

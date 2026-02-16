@@ -1,0 +1,17 @@
+- generic [active] [ref=e1]:
+  - alert [ref=e2]
+  - generic [ref=e55]:
+    - button [ref=e57]:
+      - img
+    - generic [ref=e67]:
+      - generic [ref=e68]:
+        - heading "Age is just a number 🎂" [level=1] [ref=e69]
+        - paragraph [ref=e70]: Help me curate the perfect styles for you
+      - generic [ref=e71]:
+        - button "Less than 20" [ref=e72]
+        - button "20-29" [ref=e73]
+        - button "30-39" [ref=e74]
+        - button "40+" [ref=e75]
+      - generic [ref=e76]:
+        - button [disabled]:
+          - img
