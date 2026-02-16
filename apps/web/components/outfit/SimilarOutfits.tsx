@@ -288,11 +288,11 @@ function SimilarOutfitCard({ outfit, onSelect }: SimilarOutfitCardProps) {
           ) : canRenderCompositeFallback ? (
             // Soft fallback: keep the card usable even if image generation fails.
             <div className="relative w-full h-full">
-              <FlatLayComposite items={outfit.items} />
+              <FlatLayComposite items={outfit.items} renderMode="abstract" />
               {showFallback && (
                 <div className="absolute bottom-1 left-1 right-1 rounded bg-black/55 px-2 py-1">
                   <p className="text-[10px] text-white text-center">
-                    แสดงภาพพรีวิวจากสินค้าแทนชั่วคราว
+                    แสดงพรีวิวแบบไม่ใช้รูปสินค้าแทนชั่วคราว
                   </p>
                 </div>
               )}

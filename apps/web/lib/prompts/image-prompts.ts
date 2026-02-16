@@ -121,6 +121,32 @@ export function cleanCategoryForPrompt(category: string): string {
 }
 
 /**
+ * Removes human/model language from item descriptions so flat-lay prompts
+ * stay focused on isolated products.
+ */
+function sanitizeVisualDescriptionForFlatLay(
+  description: string,
+  fallbackCategory: string,
+): string {
+  const cleaned = description
+    .replace(/\b(on model|worn by (?:a )?(?:model|person|woman|man))\b/gi, ' ')
+    .replace(
+      /\b(?:woman|women|man|men|model|person|people|human|girl|boy|lady|gentleman|face|head|body|torso|arm|arms|hand|hands|leg|legs|foot|feet)\b/gi,
+      ' ',
+    )
+    .replace(/\b(?:wearing|wears|worn|posing|posed|standing|sitting|holding)\b/gi, ' ')
+    .replace(/\s{2,}/g, ' ')
+    .replace(/^[,;:\- ]+|[,;:\- ]+$/g, '')
+    .trim();
+
+  if (!cleaned || cleaned.length < 3) {
+    return fallbackCategory.toLowerCase();
+  }
+
+  return cleaned;
+}
+
+/**
  * Cleans a raw product name for use in AI image-generation prompts.
  * Strips noise (brand names, SKU codes, season codes, gender prefixes,
  * marketing/fit text) while preserving descriptive fashion words.
@@ -488,7 +514,11 @@ export function buildFlatLayPrompt(
     const colorInfo = entry.resolvedColor ? `${entry.resolvedColor} ` : '';
     let itemDesc: string;
     if (entry.item.visualDescription && !containsProductNameOrSku(entry.item.visualDescription)) {
-      itemDesc = `${colorInfo}${entry.item.visualDescription}`;
+      const sanitizedVisualDescription = sanitizeVisualDescriptionForFlatLay(
+        entry.item.visualDescription,
+        entry.cleanedCategory,
+      );
+      itemDesc = `${colorInfo}${sanitizedVisualDescription}`;
     } else {
       itemDesc = `${colorInfo}${entry.cleanedCategory.toLowerCase()}`;
     }
@@ -558,7 +588,12 @@ CRITICAL ITEM LOCK:
 - The item list above is exhaustive and locked.
 - Render EXACTLY ${itemCount} items and NOTHING ELSE.
 - NEVER add extra garments, duplicate dresses/tops/bottoms, or alternative outfits.
-- If uncertain about an item detail, keep the silhouette simple but do not invent new clothing pieces.${itemManifestSection}${garmentLockSection}${singleGarmentLockSection}${noOuterwearSection}${quantityLockSection}${colorConsistencySection} Square 1:1 format.`;
+- If uncertain about an item detail, keep the silhouette simple but do not invent new clothing pieces.
+
+FLAT-LAY PURITY LOCK:
+- The scene must show isolated garments/accessories only.
+- Do not render any human, model, mannequin, body silhouette, skin, or person reflection.
+- Do not render clothing as worn on a body. Every piece must appear as an individual laid-flat product item.${itemManifestSection}${garmentLockSection}${singleGarmentLockSection}${noOuterwearSection}${quantityLockSection}${colorConsistencySection} Square 1:1 format.`;
 
   // Append reference image mapping instructions when multi-modal images are provided
   if (hasReferenceImages) {
@@ -569,7 +604,7 @@ CRITICAL ITEM LOCK:
         return `- Reference Image ${idx + 1} shows the ${colorInfo}${entry.cleanedCategory.toLowerCase()} at ${entry.position}`;
       }).join('\n');
 
-      prompt += `\n\nReference product images are provided below in order. Match the exact color, pattern, texture, and silhouette from each reference image:\n${imageMapping}`;
+      prompt += `\n\nReference product images are provided below in order. Match the exact color, pattern, texture, and silhouette from each reference image:\n${imageMapping}\nIf any reference image includes a model or body parts, ignore the person and copy only the product itself.`;
     }
   }
 

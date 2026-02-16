@@ -314,14 +314,14 @@ export function OutfitRecommendationCard({
               )}
             </>
           ) : canRenderCompositeFallback ? (
-            // Fallback: keep showing a product-based preview even if AI generation fails.
-            // This prevents the card from looking broken on transient API errors.
+            // Fallback: use abstract flat-lay preview (no product photos) when image generation fails.
+            // This keeps the card stable and avoids showing model-shot catalog images.
             <div className="relative w-full h-full">
-              <FlatLayComposite items={outfit.items} />
+              <FlatLayComposite items={outfit.items} renderMode="abstract" />
               {(flatLayError || hasFlatLayGenerationFailure) && (
                 <div className="absolute bottom-1 left-1 right-1 rounded bg-black/55 px-2 py-1">
                   <p className="text-[10px] text-white text-center">
-                    แสดงภาพพรีวิวจากสินค้าแทนชั่วคราว
+                    แสดงพรีวิวแบบไม่ใช้รูปสินค้าแทนชั่วคราว
                   </p>
                 </div>
               )}

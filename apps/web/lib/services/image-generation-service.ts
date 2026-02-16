@@ -36,11 +36,15 @@ const OUTERWEAR_REFERENCE_PATTERN = /\b(jacket|blazer|coat|outerwear|cardigan|su
 type FlatLayReferenceImageMode = 'all' | 'none' | 'non-garment';
 
 function getFlatLayReferenceImageMode(): FlatLayReferenceImageMode {
-  const rawMode = (process.env.FLAT_LAY_REFERENCE_IMAGE_MODE || 'non-garment').trim().toLowerCase();
+  const rawMode = (process.env.FLAT_LAY_REFERENCE_IMAGE_MODE || 'none').trim().toLowerCase();
   if (rawMode === 'all' || rawMode === 'none' || rawMode === 'non-garment') {
     return rawMode;
   }
-  return 'non-garment';
+  return 'none';
+}
+
+function shouldIncludePrimaryGarmentReference(): boolean {
+  return process.env.FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE === 'true';
 }
 
 function shouldUseFlatLayReferenceImage(item: FlatLayItem, mode: FlatLayReferenceImageMode): boolean {
@@ -342,11 +346,15 @@ export class OpenRouterImageClient {
       .map(entry => entry.item.thumbnailUrl!);
 
     if (referenceMode === 'non-garment') {
+      const allowPrimaryGarmentReference = shouldIncludePrimaryGarmentReference();
       const garmentEntries = layout.filter((entry) =>
         entry.item.thumbnailUrl?.startsWith('https://') && isGarmentItem(entry.item)
       );
       const hasOuterwear = garmentEntries.some((entry) => isOuterwearItem(entry.item));
-      const shouldIncludePrimaryGarment = garmentEntries.length === 1 && !hasOuterwear;
+      const shouldIncludePrimaryGarment =
+        allowPrimaryGarmentReference &&
+        garmentEntries.length === 1 &&
+        !hasOuterwear;
       if (shouldIncludePrimaryGarment) {
         const primaryGarmentUrl = garmentEntries[0]?.item.thumbnailUrl;
         if (primaryGarmentUrl && !selectedImageUrls.includes(primaryGarmentUrl)) {
@@ -361,6 +369,7 @@ export class OpenRouterImageClient {
 
     console.log('[ImageGen] Flat-lay reference mode:', {
       mode: referenceMode,
+      includePrimaryGarmentReference: shouldIncludePrimaryGarmentReference(),
       selectedImages: imageUrls.length,
       totalItems: request.items.length,
     });

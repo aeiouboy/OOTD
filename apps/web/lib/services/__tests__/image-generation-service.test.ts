@@ -1,10 +1,13 @@
-import { beforeEach, describe, expect, it, vi } from 'vitest';
+import { afterAll, beforeEach, describe, expect, it, vi } from 'vitest';
 import { OpenRouterImageClient } from '../image-generation-service';
 import type { FlatLayRequest } from '@/lib/types/image-types';
 
 const mockFetch = vi.fn();
 
 global.fetch = mockFetch;
+
+const ORIGINAL_FLAT_LAY_REFERENCE_IMAGE_MODE = process.env.FLAT_LAY_REFERENCE_IMAGE_MODE;
+const ORIGINAL_FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE = process.env.FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE;
 
 function makeOpenRouterResponse(payload: unknown): Response {
   return {
@@ -28,6 +31,22 @@ const baseRequest: FlatLayRequest = {
 describe('image-generation-service', () => {
   beforeEach(() => {
     vi.clearAllMocks();
+    delete process.env.FLAT_LAY_REFERENCE_IMAGE_MODE;
+    delete process.env.FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE;
+  });
+
+  afterAll(() => {
+    if (ORIGINAL_FLAT_LAY_REFERENCE_IMAGE_MODE === undefined) {
+      delete process.env.FLAT_LAY_REFERENCE_IMAGE_MODE;
+    } else {
+      process.env.FLAT_LAY_REFERENCE_IMAGE_MODE = ORIGINAL_FLAT_LAY_REFERENCE_IMAGE_MODE;
+    }
+
+    if (ORIGINAL_FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE === undefined) {
+      delete process.env.FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE;
+    } else {
+      process.env.FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE = ORIGINAL_FLAT_LAY_INCLUDE_PRIMARY_GARMENT_REFERENCE;
+    }
   });
 
   it('parses image payload from array-based content responses', async () => {
@@ -85,6 +104,8 @@ describe('image-generation-service', () => {
   });
 
   it('falls back to text-only generation when multimodal flat-lay fails', async () => {
+    process.env.FLAT_LAY_REFERENCE_IMAGE_MODE = 'all';
+
     mockFetch
       .mockResolvedValueOnce(
         makeOpenRouterResponse({
@@ -160,5 +181,43 @@ describe('image-generation-service', () => {
     const fallbackRequest = JSON.parse(mockFetch.mock.calls[3][1].body as string);
     expect(Array.isArray(firstRequest.messages[0].content)).toBe(true);
     expect(typeof fallbackRequest.messages[0].content).toBe('string');
+  });
+
+  it('defaults to text-only flat-lay generation even when thumbnail URLs are available', async () => {
+    mockFetch.mockResolvedValueOnce(
+      makeOpenRouterResponse({
+        choices: [
+          {
+            message: {
+              images: [
+                {
+                  image_url: {
+                    url: 'data:image/png;base64,ZmFrZS10ZXh0LW9ubHk=',
+                  },
+                },
+              ],
+            },
+          },
+        ],
+      })
+    );
+
+    const requestWithThumbnail: FlatLayRequest = {
+      ...baseRequest,
+      items: [
+        {
+          ...baseRequest.items[0],
+          thumbnailUrl: 'https://example.com/dress.jpg',
+        },
+      ],
+    };
+
+    const client = new OpenRouterImageClient('test-api-key');
+    const result = await client.generateFlatLayImage(requestWithThumbnail);
+
+    expect(result.success).toBe(true);
+    expect(mockFetch).toHaveBeenCalledTimes(1);
+    const requestBody = JSON.parse(mockFetch.mock.calls[0][1].body as string);
+    expect(typeof requestBody.messages[0].content).toBe('string');
   });
 });

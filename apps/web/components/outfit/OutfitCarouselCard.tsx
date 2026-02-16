@@ -72,7 +72,7 @@ export function OutfitCarouselCard({
           />
         ) : outfit.items && outfit.items.length > 0 ? (
           // Fallback: Use FlatLayComposite (CSS-based flat-lay) instead of mannequin thumbnail
-          <FlatLayComposite items={outfit.items} />
+          <FlatLayComposite items={outfit.items} renderMode="abstract" />
         ) : (
           // Placeholder when no image and no items available
           <div className="w-full h-full bg-gradient-to-br from-gray-100 to-gray-200 flex items-center justify-center">
